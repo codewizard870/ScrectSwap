@@ -70,6 +70,8 @@ function getClientEnvironment(publicUrl) {
         SECRET_WS: process.env.SECRET_WS,
         SSCRT_CONTRACT: process.env.SSCRT_CONTRACT,
         WSCRT_PROXY_CONTRACT: process.env.WSCRT_PROXY_CONTRACT,
+        AMM_TOKENS: process.env.AMM_TOKENS,
+        AMM_PAIRS: process.env.AMM_PAIRS,
 
         ETH_MANAGER_CONTRACT: process.env.ETH_MANAGER_CONTRACT,
         SCRT_SWAP_CONTRACT: process.env.SCRT_SWAP_CONTRACT,

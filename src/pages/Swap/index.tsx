@@ -29,13 +29,18 @@ import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
-  const { user, tokens, secretSwapPairs } = useStores();
+  let { user, tokens, secretSwapPairs } = useStores();
   secretSwapPairs.init({
     isLocal: true,
     sorter: 'none',
     pollingInterval: 60000,
   });
   secretSwapPairs.fetch();
+
+  if (process.env.ENV === 'DEV') {
+    tokens = { allData: JSON.parse(process.env.AMM_TOKENS) } as Tokens;
+    secretSwapPairs = { allData: JSON.parse(process.env.AMM_PAIRS) } as SecretSwapPairs;
+  }
 
   return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} />;
 });

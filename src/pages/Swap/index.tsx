@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box } from 'grommet';
 import * as styles from '../FAQ/faq-styles.styl';
+import createGraph, { Graph } from 'ngraph.graph';
+import path from 'ngraph.path';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
@@ -59,6 +61,8 @@ export class SwapRouter extends React.Component<
     selectedToken0: string;
     selectedToken1: string;
     queries: string[];
+    routingGraph: Graph;
+    routerSupportedTokens: Set<string>;
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
@@ -71,6 +75,8 @@ export class SwapRouter extends React.Component<
     selectedToken0: string;
     selectedToken1: string;
     queries: string[];
+    routerSupportedTokens: Set<string>;
+    routingGraph: Graph;
   } = {
     allTokens: new Map<string, SwapToken>(),
     balances: {},
@@ -79,6 +85,8 @@ export class SwapRouter extends React.Component<
     selectedToken0: process.env.SSCRT_CONTRACT,
     selectedToken1: '',
     queries: [],
+    routingGraph: createGraph(),
+    routerSupportedTokens: new Set(),
   };
 
   constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs }) {
@@ -168,6 +176,18 @@ export class SwapRouter extends React.Component<
       // this.registerPairQueries();
       //}
     };
+
+    while (!this.props.user.secretjs) {
+      await sleep(100);
+    }
+
+    const routerSupportedTokens: Set<string> = new Set(
+      await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
+        supported_tokens: {},
+      }),
+    );
+
+    this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
   }
 
   private async refreshBalances(params: { tokenSymbols: string[]; pair?: SwapPair; height?: number }) {
@@ -526,11 +546,7 @@ export class SwapRouter extends React.Component<
       swapTokens.set(t.identifier, t);
     }
 
-    this.setState(_currentState => {
-      return {
-        allTokens: swapTokens,
-      };
-    });
+    this.setState({ allTokens: swapTokens });
 
     return swapTokens;
   };
@@ -573,7 +589,30 @@ export class SwapRouter extends React.Component<
       newPairs.set(newPair.identifier(), newPair);
     }
 
-    this.setState({ pairs: newPairs });
+    this.setState({ pairs: newPairs }, this.updateRoutingGraph);
+  };
+
+  updateRoutingGraph = () => {
+    const { pairs, allTokens, routerSupportedTokens } = this.state;
+
+    const graph = createGraph();
+    for (const pair of pairs.values()) {
+      const [token0, token1] = pair.assetIds();
+      if (!routerSupportedTokens.has(token0) || !routerSupportedTokens.has(token1)) {
+        continue;
+      }
+
+      graph.addLink(token0, token1);
+    }
+    try {
+      const x = path
+        .aStar(graph)
+        .find('secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg', 'secret18r5szma8hm93pvx6lwpjwyxruw27e0k57tncfy');
+      console.log(x);
+    } catch (e) {
+      console.log(e);
+    }
+    this.setState({ routingGraph: graph });
   };
 
   notify(type: 'success' | 'error', msg: string, hideAfterSec: number = 120) {

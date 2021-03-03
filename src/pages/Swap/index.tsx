@@ -1,8 +1,6 @@
 import React from 'react';
 import { Box } from 'grommet';
 import * as styles from '../FAQ/faq-styles.styl';
-import createGraph, { Graph } from 'ngraph.graph';
-import path from 'ngraph.path';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
@@ -28,6 +26,8 @@ import { pairIdFromTokenIds, PairMap, SwapPair } from './types/SwapPair';
 import { KeplrButton } from '../../components/Secret/KeplrButton';
 import { NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
+import createGraph, { Graph, Link, Node } from 'ngraph.graph';
+import path from 'ngraph.path';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
@@ -61,8 +61,9 @@ export class SwapRouter extends React.Component<
     selectedToken0: string;
     selectedToken1: string;
     queries: string[];
-    routingGraph: Graph;
     routerSupportedTokens: Set<string>;
+    routingGraph: Graph;
+    selectedPairRoutes: Node[][];
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
@@ -77,6 +78,7 @@ export class SwapRouter extends React.Component<
     queries: string[];
     routerSupportedTokens: Set<string>;
     routingGraph: Graph;
+    selectedPairRoutes: Node[][];
   } = {
     allTokens: new Map<string, SwapToken>(),
     balances: {},
@@ -85,8 +87,9 @@ export class SwapRouter extends React.Component<
     selectedToken0: process.env.SSCRT_CONTRACT,
     selectedToken1: '',
     queries: [],
-    routingGraph: createGraph(),
     routerSupportedTokens: new Set(),
+    routingGraph: createGraph(),
+    selectedPairRoutes: [],
   };
 
   constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs }) {
@@ -554,11 +557,34 @@ export class SwapRouter extends React.Component<
   setCurrentPair = async (token0: string, token1: string) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
 
-    this.setState(currentState => {
-      return {
-        ...currentState,
-        selectedPair: selectedPair,
-      };
+    const routes: Node[][] = [];
+    if (!selectedPair) {
+      const graph = this.state.routingGraph; // TODO clone graph
+      const removedLinks: Link[] = [];
+      try {
+        while (true) {
+          let route = path.aStar(graph).find(token0, token1);
+          if (route.length <= 2) {
+            break;
+          }
+          route = route.reverse();
+          routes.push(route);
+
+          const linkToRemove = graph.getLink(route[0].id, route[1].id);
+          graph.removeLink(linkToRemove);
+          removedLinks.push(linkToRemove);
+        }
+
+        // restore graph
+        for (const l of removedLinks) {
+          graph.addLink(l.fromId, l.toId, l.data);
+        }
+      } catch (e) {}
+    }
+
+    this.setState({
+      selectedPair: selectedPair,
+      selectedPairRoutes: routes,
     });
 
     const height = await this.props.user.secretjs.getHeight();
@@ -593,7 +619,7 @@ export class SwapRouter extends React.Component<
   };
 
   updateRoutingGraph = () => {
-    const { pairs, allTokens, routerSupportedTokens } = this.state;
+    const { pairs, routerSupportedTokens } = this.state;
 
     const graph = createGraph();
     for (const pair of pairs.values()) {
@@ -602,16 +628,9 @@ export class SwapRouter extends React.Component<
         continue;
       }
 
-      graph.addLink(token0, token1);
+      graph.addLink(token0, token1, pair);
     }
-    try {
-      const x = path
-        .aStar(graph)
-        .find('secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg', 'secret18r5szma8hm93pvx6lwpjwyxruw27e0k57tncfy');
-      console.log(x);
-    } catch (e) {
-      console.log(e);
-    }
+
     this.setState({ routingGraph: graph });
   };
 
@@ -669,6 +688,7 @@ export class SwapRouter extends React.Component<
                   selectedPair={this.state.selectedPair}
                   selectedToken0={this.state.selectedToken0}
                   selectedToken1={this.state.selectedToken1}
+                  selectedPairRoutes={this.state.selectedPairRoutes}
                   notify={this.notify}
                   onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
                 />

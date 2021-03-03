@@ -16,6 +16,7 @@ import { DownArrow } from '../../ui/Icons/DownArrow';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
+import { Link, Node } from 'ngraph.graph';
 
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';
@@ -33,6 +34,7 @@ export class SwapTab extends React.Component<
     selectedToken0?: string;
     selectedToken1?: string;
     selectedPair: SwapPair;
+    selectedPairRoutes: Node[][];
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     onSetTokens: CallableFunction;
   },
@@ -87,7 +89,6 @@ export class SwapTab extends React.Component<
   }
 
   async updateInputs() {
-    //const selectedPairSymbol = `${this.state.fromToken}-${this.state.toToken}`;
     const pair = this.props.selectedPair;
     if (!pair) {
       this.setState({
@@ -170,8 +171,6 @@ export class SwapTab extends React.Component<
   }
 
   render() {
-    // const selectedPairSymbol = `${this.state.fromToken}/${this.state.toToken}`;
-    // const pair = this.props.pairFromSymbol[selectedPairSymbol];
     const pair = this.props.selectedPair;
 
     const ask_pool = pair
@@ -257,7 +256,10 @@ export class SwapTab extends React.Component<
                     fromInput: this.state.toInput,
                     isFromEstimated: this.state.isToEstimated,
                   },
-                  () => this.updateInputs(),
+                  () => {
+                    this.updateInputs();
+                    this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+                  },
                 );
               }}
             >
@@ -523,7 +525,7 @@ export class SwapTab extends React.Component<
         await this.updateInputs();
       }
 
-      await this.props.onSetTokens(this.state.fromToken, identifier);
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
     };
 
     if (identifier === this.state.fromToken) {
@@ -558,7 +560,7 @@ export class SwapTab extends React.Component<
         await this.updateInputs();
       }
 
-      await this.props.onSetTokens(identifier, this.state.toToken);
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
     };
 
     if (identifier === this.state.toToken) {

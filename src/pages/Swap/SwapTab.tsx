@@ -37,6 +37,7 @@ export class SwapTab extends React.Component<
     selectedPairRoutes: Node[][];
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     onSetTokens: CallableFunction;
+    refreshBalances: CallableFunction;
   },
   {
     fromToken: string;
@@ -51,6 +52,7 @@ export class SwapTab extends React.Component<
     slippageTolerance: BigNumber;
     buttonMessage: string;
     loadingSwap: boolean;
+    loadingBestRoute: boolean;
   }
 > {
   constructor(props) {
@@ -69,6 +71,7 @@ export class SwapTab extends React.Component<
       slippageTolerance: new BigNumber(0.5 / 100),
       buttonMessage: BUTTON_MSG_ENTER_AMOUNT,
       loadingSwap: false,
+      loadingBestRoute: false,
     };
   }
 
@@ -88,15 +91,118 @@ export class SwapTab extends React.Component<
     // }
   }
 
+  async updateInputsFromBestRoute() {
+    if (Number(this.state.fromInput) === 0 && this.state.isToEstimated) {
+      return;
+    }
+    if (Number(this.state.toInput) === 0 && this.state.isFromEstimated) {
+      return;
+    }
+    if (Number(this.state.fromInput) === 0 && Number(this.state.toInput) === 0) {
+      return;
+    }
+
+    this.setState({ loadingBestRoute: true });
+
+    // TODO if isFromEstimated:
+    // 1. reverse all the routes
+    // 2. use fromInput as offer_amount
+
+    const routes = this.props.selectedPairRoutes;
+    let bestRoute: Node[];
+    let bestRouteOutput = new BigNumber(0);
+    for (const routeTokens of routes) {
+      let from = new BigNumber(this.state.fromInput);
+      let to = new BigNumber(0);
+      for (let i = 0; i < routeTokens.length - 1; i++) {
+        const fromToken = String(routeTokens[i].id);
+        const toToken = String(routeTokens[i + 1].id);
+        const pair: SwapPair = routeTokens[i].links.find(
+          l => [l.fromId, l.toId].sort().join() === [fromToken, toToken].sort().join(),
+        ).data;
+
+        const fromDecimals = this.props.tokens.get(fromToken).decimals;
+        const toDecimals = this.props.tokens.get(toToken).decimals;
+
+        // we normalize offer_pool & ask_pool
+        // we could also canonicalize offer_amount & ask_amount
+        // but this way is less code because we get the results normalized
+        let offer_pool = humanizeBalance(
+          new BigNumber(this.props.balances[`${fromToken}-${pair.identifier()}`] as any),
+          fromDecimals,
+        );
+        let ask_pool = humanizeBalance(
+          new BigNumber(this.props.balances[`${toToken}-${pair.identifier()}`] as any),
+          toDecimals,
+        );
+
+        if (offer_pool.isNaN() || ask_pool.isNaN()) {
+          const balances = await this.props.refreshBalances({
+            tokenSymbols: [],
+            pair,
+          });
+          offer_pool = humanizeBalance(
+            new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any),
+            fromDecimals,
+          );
+          ask_pool = humanizeBalance(new BigNumber(balances[`${toToken}-${pair.identifier()}`] as any), toDecimals);
+        }
+
+        if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+          to = new BigNumber(0);
+          break;
+        }
+
+        const offer_amount = from;
+
+        const { return_amount, spread_amount, commission_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
+
+        if (return_amount.isNaN() || from.isNaN() || from.isZero()) {
+          to = new BigNumber(0);
+          break;
+        }
+
+        to = return_amount;
+
+        if (i < routeTokens.length - 2) {
+          from = return_amount;
+        }
+      }
+
+      if (to.isGreaterThan(bestRouteOutput)) {
+        bestRouteOutput = to;
+        bestRoute = routeTokens;
+      }
+    }
+
+    // TODO if isFromEstimated:
+    // 1. reverse bestRoute
+    // 2. use fromInput as ask_amount (? TODO make sure this is correct)
+
+    if (bestRoute) {
+      const toDecimals = this.props.tokens.get(String(bestRoute.slice(-1)[0].id)).decimals;
+      this.setState({ toInput: bestRouteOutput.toFixed(toDecimals) });
+    }
+
+    this.setState({ loadingBestRoute: false });
+  }
+
   async updateInputs() {
     const pair = this.props.selectedPair;
-    if (!pair) {
+    const routes = this.props.selectedPairRoutes;
+
+    if (!pair && routes.length === 0) {
       this.setState({
         fromInput: '',
         isFromEstimated: false,
         toInput: '',
         isToEstimated: false,
       });
+      return;
+    }
+
+    if (!pair && routes.length > 0) {
+      this.updateInputsFromBestRoute();
       return;
     }
 

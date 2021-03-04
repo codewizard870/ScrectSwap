@@ -193,7 +193,7 @@ export class SwapRouter extends React.Component<
     this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
   }
 
-  private async refreshBalances(params: { tokenSymbols: string[]; pair?: SwapPair; height?: number }) {
+  refreshBalances = async (params: { tokenSymbols: string[]; pair?: SwapPair; height?: number }) => {
     const { pair, tokenSymbols } = params;
     let { height } = params;
 
@@ -226,7 +226,9 @@ export class SwapRouter extends React.Component<
         ...newObject,
       },
     }));
-  }
+
+    return newObject;
+  };
 
   private async onMessage(event: WebSocketMessageEvent | MessageEvent<any>) {
     try {
@@ -691,6 +693,7 @@ export class SwapRouter extends React.Component<
                   selectedPairRoutes={this.state.selectedPairRoutes}
                   notify={this.notify}
                   onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
+                  refreshBalances={this.refreshBalances}
                 />
               )}
               {isProvide && (

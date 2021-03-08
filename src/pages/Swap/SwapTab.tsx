@@ -105,22 +105,25 @@ export class SwapTab extends React.Component<
 
     this.setState({ loadingBestRoute: true, bestRoute: null });
 
+    let { fromToken, toToken } = this.state;
+    let fromInput = this.state.fromInput;
+    if (this.state.isFromEstimated) {
+      [fromToken, toToken] = [toToken, fromToken];
+      fromInput = this.state.toInput;
+    }
+
     const routes = this.props.selectedPairRoutes;
     for (let i = 0; i < routes.length; i++) {
-      if (routes[i][0].id === this.state.toToken && routes[i][routes[i].length - 1].id === this.state.fromToken) {
+      if (routes[i][0].id === toToken && routes[i][routes[i].length - 1].id === fromToken) {
         routes[i] = routes[i].reverse();
       }
     }
-
-    // TODO if isFromEstimated:
-    // 1. reverse all the routes
-    // 2. use fromInput as offer_amount
 
     let bestRoute: Node[];
     let bestRouteOutput = new BigNumber(0);
     let bestRoutePriceImpact = 0;
     for (const routeTokens of routes) {
-      let from = new BigNumber(this.state.fromInput);
+      let from = new BigNumber(fromInput);
       let to = new BigNumber(0);
       let priceImpacts: number[] = [];
       for (let i = 0; i < routeTokens.length - 1; i++) {
@@ -191,13 +194,24 @@ export class SwapTab extends React.Component<
     // 2. use fromInput as ask_amount (? TODO make sure this is correct)
 
     if (bestRoute) {
-      const toDecimals = this.props.tokens.get(String(bestRoute.slice(-1)[0].id)).decimals;
-      this.setState({
-        toInput: bestRouteOutput.toFixed(toDecimals),
-        bestRoute,
-        commission: (0.3 / 100) * Number(this.state.toInput),
-        priceImpact: bestRoutePriceImpact,
-      });
+      if (this.state.isFromEstimated) {
+        bestRoute = bestRoute.reverse();
+        const fromDecimals = this.props.tokens.get(String(bestRoute[0].id)).decimals;
+        this.setState({
+          fromInput: bestRouteOutput.toFixed(fromDecimals),
+          bestRoute,
+          commission: (0.3 / 100) * Number(this.state.toInput),
+          priceImpact: bestRoutePriceImpact,
+        });
+      } else {
+        const toDecimals = this.props.tokens.get(String(bestRoute.slice(-1)[0].id)).decimals;
+        this.setState({
+          toInput: bestRouteOutput.toFixed(toDecimals),
+          bestRoute,
+          commission: (0.3 / 100) * bestRouteOutput.toNumber(),
+          priceImpact: bestRoutePriceImpact,
+        });
+      }
     }
 
     this.setState({ loadingBestRoute: false });

@@ -428,7 +428,7 @@ export class ProvideTab extends React.Component<
           style={{
             padding: '1em',
             display: 'flex',
-            alignContent: 'center',
+            alignItems: 'center',
           }}
         >
           <FlexRowSpace />

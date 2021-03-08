@@ -17,6 +17,7 @@ import cn from 'classnames';
 import * as styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
 import { Link, Node } from 'ngraph.graph';
+import { RouteRow } from 'components/Swap/RouteRow';
 
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';
@@ -28,9 +29,7 @@ export class SwapTab extends React.Component<
   {
     secretjs: SigningCosmWasmClient;
     tokens: SwapTokenMap;
-    balances: {
-      [symbol: string]: BigNumber | JSX.Element;
-    };
+    balances: { [symbol: string]: BigNumber | JSX.Element };
     selectedToken0?: string;
     selectedToken1?: string;
     selectedPair: SwapPair;
@@ -53,6 +52,7 @@ export class SwapTab extends React.Component<
     buttonMessage: string;
     loadingSwap: boolean;
     loadingBestRoute: boolean;
+    bestRoute: Node[];
   }
 > {
   constructor(props) {
@@ -72,6 +72,7 @@ export class SwapTab extends React.Component<
       buttonMessage: BUTTON_MSG_ENTER_AMOUNT,
       loadingSwap: false,
       loadingBestRoute: false,
+      bestRoute: null,
     };
   }
 
@@ -102,18 +103,26 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    this.setState({ loadingBestRoute: true });
+    this.setState({ loadingBestRoute: true, bestRoute: null });
+
+    const routes = this.props.selectedPairRoutes;
+    for (let i = 0; i < routes.length; i++) {
+      if (routes[i][0].id === this.state.toToken && routes[i][routes[i].length - 1].id === this.state.fromToken) {
+        routes[i] = routes[i].reverse();
+      }
+    }
 
     // TODO if isFromEstimated:
     // 1. reverse all the routes
     // 2. use fromInput as offer_amount
 
-    const routes = this.props.selectedPairRoutes;
     let bestRoute: Node[];
     let bestRouteOutput = new BigNumber(0);
+    let bestRoutePriceImpact = 0;
     for (const routeTokens of routes) {
       let from = new BigNumber(this.state.fromInput);
       let to = new BigNumber(0);
+      let priceImpacts: number[] = [];
       for (let i = 0; i < routeTokens.length - 1; i++) {
         const fromToken = String(routeTokens[i].id);
         const toToken = String(routeTokens[i + 1].id);
@@ -163,6 +172,7 @@ export class SwapTab extends React.Component<
         }
 
         to = return_amount;
+        priceImpacts.push(spread_amount.dividedBy(return_amount).toNumber());
 
         if (i < routeTokens.length - 2) {
           from = return_amount;
@@ -172,6 +182,7 @@ export class SwapTab extends React.Component<
       if (to.isGreaterThan(bestRouteOutput)) {
         bestRouteOutput = to;
         bestRoute = routeTokens;
+        bestRoutePriceImpact = Math.max(...priceImpacts);
       }
     }
 
@@ -181,13 +192,20 @@ export class SwapTab extends React.Component<
 
     if (bestRoute) {
       const toDecimals = this.props.tokens.get(String(bestRoute.slice(-1)[0].id)).decimals;
-      this.setState({ toInput: bestRouteOutput.toFixed(toDecimals) });
+      this.setState({
+        toInput: bestRouteOutput.toFixed(toDecimals),
+        bestRoute,
+        commission: (0.3 / 100) * Number(this.state.toInput),
+        priceImpact: bestRoutePriceImpact,
+      });
     }
 
     this.setState({ loadingBestRoute: false });
   }
 
   async updateInputs() {
+    this.setState({ bestRoute: null });
+
     const pair = this.props.selectedPair;
     const routes = this.props.selectedPairRoutes;
 
@@ -298,7 +316,17 @@ export class SwapTab extends React.Component<
     const canonToInput = canonicalizeBalance(new BigNumber(this.state.toInput), toDecimals);
 
     let buttonMessage: string;
-    if (!pair) {
+    if (this.state.bestRoute) {
+      if (this.state.fromInput === '' && this.state.toInput === '') {
+        buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
+      } else if (new BigNumber(fromBalance as BigNumber).isLessThan(canonFromInput)) {
+        buttonMessage = `Insufficient ${this.props.tokens.get(this.state.fromToken)?.symbol} balance`;
+      } else if (this.state.fromInput === '' || this.state.toInput === '') {
+        buttonMessage = BUTTON_MSG_LOADING_PRICE;
+      } else {
+        buttonMessage = BUTTON_MSG_SWAP;
+      }
+    } else if (!pair) {
       buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {
       buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
@@ -345,7 +373,7 @@ export class SwapTab extends React.Component<
             style={{
               padding: '1em',
               display: 'flex',
-              alignContent: 'center',
+              alignItems: 'center',
             }}
           >
             <FlexRowSpace />
@@ -395,6 +423,9 @@ export class SwapTab extends React.Component<
               toToken={this.props.tokens.get(this.state.toToken).symbol}
               price={price}
             />
+          )}
+          {(this.state.bestRoute || this.state.loadingBestRoute) && (
+            <RouteRow tokens={this.props.tokens} isLoading={this.state.loadingBestRoute} route={this.state.bestRoute} />
           )}
           <Button
             disabled={buttonMessage !== BUTTON_MSG_SWAP || this.state.loadingSwap}

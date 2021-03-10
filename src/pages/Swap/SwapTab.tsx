@@ -94,6 +94,38 @@ export class SwapTab extends React.Component<
     // }
   }
 
+  async getOfferAndAskPools(
+    fromToken: string,
+    toToken: string,
+    pair: SwapPair,
+  ): Promise<{ offer_pool: BigNumber; ask_pool: BigNumber }> {
+    const fromDecimals = this.props.tokens.get(fromToken).decimals;
+    const toDecimals = this.props.tokens.get(toToken).decimals;
+
+    // we normalize offer_pool & ask_pool
+    // we could also canonicalize offer_amount & ask_amount
+    // but this way is less code because we get the results normalized
+    let offer_pool = humanizeBalance(
+      new BigNumber(this.props.balances[`${fromToken}-${pair.identifier()}`] as any),
+      fromDecimals,
+    );
+    let ask_pool = humanizeBalance(
+      new BigNumber(this.props.balances[`${toToken}-${pair.identifier()}`] as any),
+      toDecimals,
+    );
+
+    if (offer_pool.isNaN() || ask_pool.isNaN()) {
+      const balances = await this.props.refreshBalances({
+        tokenSymbols: [],
+        pair,
+      });
+      offer_pool = humanizeBalance(new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any), fromDecimals);
+      ask_pool = humanizeBalance(new BigNumber(balances[`${toToken}-${pair.identifier()}`] as any), toDecimals);
+    }
+
+    return { offer_pool, ask_pool };
+  }
+
   async updateInputsFromBestRoute() {
     if (Number(this.state.fromInput) === 0 && this.state.isToEstimated) {
       return;
@@ -107,12 +139,7 @@ export class SwapTab extends React.Component<
 
     this.setState({ loadingBestRoute: true, bestRoute: null });
 
-    let { fromToken, toToken } = this.state;
-    let fromInput = this.state.fromInput;
-    if (this.state.isFromEstimated) {
-      [fromToken, toToken] = [toToken, fromToken];
-      fromInput = this.state.toInput;
-    }
+    let { fromToken, toToken, fromInput, toInput } = this.state;
 
     const routes = this.props.selectedPairRoutes;
     for (let i = 0; i < routes.length; i++) {
@@ -121,96 +148,117 @@ export class SwapTab extends React.Component<
       }
     }
 
-    let bestRoute: Node[];
-    let bestRouteOutput = new BigNumber(0);
+    let bestRoute: Node[] = null;
+    let bestRouteToInput = new BigNumber(0);
+    let bestRouteFromInput = new BigNumber(Infinity);
     let bestRoutePriceImpact = 0;
-    for (const routeTokens of routes) {
-      let from = new BigNumber(fromInput);
-      let to = new BigNumber(0);
-      let priceImpacts: number[] = [];
-      for (let i = 0; i < routeTokens.length - 1; i++) {
-        const fromToken = String(routeTokens[i].id);
-        const toToken = String(routeTokens[i + 1].id);
-        const pair: SwapPair = routeTokens[i].links.find(
-          l => [l.fromId, l.toId].sort().join() === [fromToken, toToken].sort().join(),
-        ).data;
+    for (const route of routes) {
+      if (this.state.isToEstimated /* top input is filled */) {
+        let from = new BigNumber(fromInput);
+        let to = new BigNumber(0);
+        let priceImpacts: number[] = [];
+        for (let i = 0; i < route.length - 1; i++) {
+          const fromToken = String(route[i].id);
+          const toToken = String(route[i + 1].id);
+          const pair: SwapPair = route[i].links.find(
+            l => [l.fromId, l.toId].sort().join() === [fromToken, toToken].sort().join(),
+          ).data;
 
-        const fromDecimals = this.props.tokens.get(fromToken).decimals;
-        const toDecimals = this.props.tokens.get(toToken).decimals;
+          const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
 
-        // we normalize offer_pool & ask_pool
-        // we could also canonicalize offer_amount & ask_amount
-        // but this way is less code because we get the results normalized
-        let offer_pool = humanizeBalance(
-          new BigNumber(this.props.balances[`${fromToken}-${pair.identifier()}`] as any),
-          fromDecimals,
-        );
-        let ask_pool = humanizeBalance(
-          new BigNumber(this.props.balances[`${toToken}-${pair.identifier()}`] as any),
-          toDecimals,
-        );
+          if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+            to = new BigNumber(0);
+            break;
+          }
 
-        if (offer_pool.isNaN() || ask_pool.isNaN()) {
-          const balances = await this.props.refreshBalances({
-            tokenSymbols: [],
-            pair,
-          });
-          offer_pool = humanizeBalance(
-            new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any),
-            fromDecimals,
+          const offer_amount = from;
+
+          const { return_amount, spread_amount, commission_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
+
+          if (return_amount.isNaN() || from.isNaN() || from.isZero()) {
+            to = new BigNumber(0);
+            break;
+          }
+
+          to = return_amount;
+          priceImpacts.push(spread_amount.dividedBy(return_amount).toNumber());
+
+          if (i < route.length - 2) {
+            // setup for next iteration
+            from = return_amount;
+          }
+        }
+
+        if (to.isGreaterThan(bestRouteToInput)) {
+          bestRouteToInput = to;
+          bestRoute = route;
+          bestRoutePriceImpact = Math.max(...priceImpacts);
+        }
+      } else {
+        // isFromEstimated
+        // bottom input is filled
+        let from = new BigNumber(0);
+        let to = new BigNumber(toInput);
+        let priceImpacts: number[] = [];
+        for (let i = route.length - 1; i > 0; i--) {
+          const fromToken = String(route[i - 1].id);
+          const toToken = String(route[i].id);
+          const pair: SwapPair = route[i].links.find(
+            l => [l.fromId, l.toId].sort().join() === [fromToken, toToken].sort().join(),
+          ).data;
+
+          const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
+
+          if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+            from = new BigNumber(0);
+            break;
+          }
+
+          const ask_amount = to;
+          const { offer_amount, spread_amount, commission_amount } = compute_offer_amount(
+            offer_pool,
+            ask_pool,
+            ask_amount,
           );
-          ask_pool = humanizeBalance(new BigNumber(balances[`${toToken}-${pair.identifier()}`] as any), toDecimals);
+
+          if (offer_amount.isNaN() || to.isNaN() || to.isZero()) {
+            from = new BigNumber(0);
+            break;
+          }
+
+          from = offer_amount;
+          priceImpacts.push(spread_amount.dividedBy(ask_amount).toNumber());
+
+          if (i > 1) {
+            // setup for next iteration
+            to = offer_amount;
+          }
         }
 
-        if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
-          to = new BigNumber(0);
-          break;
+        if (from.isLessThan(bestRouteFromInput)) {
+          bestRouteFromInput = from;
+          bestRoute = route;
+          bestRoutePriceImpact = Math.max(...priceImpacts);
         }
-
-        const offer_amount = from;
-
-        const { return_amount, spread_amount, commission_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
-
-        if (return_amount.isNaN() || from.isNaN() || from.isZero()) {
-          to = new BigNumber(0);
-          break;
-        }
-
-        to = return_amount;
-        priceImpacts.push(spread_amount.dividedBy(return_amount).toNumber());
-
-        if (i < routeTokens.length - 2) {
-          from = return_amount;
-        }
-      }
-
-      if (to.isGreaterThan(bestRouteOutput)) {
-        bestRouteOutput = to;
-        bestRoute = routeTokens;
-        bestRoutePriceImpact = Math.max(...priceImpacts);
       }
     }
 
-    // TODO if isFromEstimated:
-    // 1. reverse bestRoute
-    // 2. use fromInput as ask_amount (? TODO make sure this is correct)
-
     if (bestRoute) {
-      if (this.state.isFromEstimated) {
-        bestRoute = bestRoute.reverse();
-        const fromDecimals = this.props.tokens.get(String(bestRoute[0].id)).decimals;
+      if (this.state.isToEstimated) {
+        const toDecimals = this.props.tokens.get(toToken).decimals;
         this.setState({
-          fromInput: bestRouteOutput.toFixed(fromDecimals),
+          toInput: bestRouteToInput.toFixed(toDecimals),
           bestRoute,
-          commission: (0.3 / 100) * Number(this.state.toInput),
+          commission: (0.3 / 100) * bestRouteToInput.toNumber(), // always denominated in toToken
           priceImpact: bestRoutePriceImpact,
         });
       } else {
-        const toDecimals = this.props.tokens.get(String(bestRoute.slice(-1)[0].id)).decimals;
+        // isFromEstimated
+        const fromDecimals = this.props.tokens.get(fromToken).decimals;
         this.setState({
-          toInput: bestRouteOutput.toFixed(toDecimals),
+          fromInput: bestRouteFromInput.toFixed(fromDecimals),
           bestRoute,
-          commission: (0.3 / 100) * bestRouteOutput.toNumber(),
+          commission: (0.3 / 100) * Number(this.state.toInput), // always denominated in toToken
           priceImpact: bestRoutePriceImpact,
         });
       }

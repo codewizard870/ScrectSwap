@@ -20,6 +20,7 @@ export const SwapAssetRow = ({
   label,
   maxButton,
   secretjs,
+  disabled,
 }: {
   tokens: SwapTokenMap;
   token: string;
@@ -31,6 +32,7 @@ export const SwapAssetRow = ({
   label: string;
   maxButton: boolean;
   secretjs: SigningCosmWasmClient;
+  disabled?: boolean;
 }) => {
   const font = {
     fontWeight: 500,
@@ -90,6 +92,7 @@ export const SwapAssetRow = ({
       >
         <SwapInput
           value={amount}
+          disabled={disabled}
           setValue={value => {
             if (isNaN(Number(value))) {
               return;

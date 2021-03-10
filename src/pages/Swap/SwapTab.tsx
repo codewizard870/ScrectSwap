@@ -8,7 +8,7 @@ import { compute_offer_amount, compute_swap } from '../../blockchain-bridge/scrt
 import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { TabsHeader } from './TabsHeader';
 import { BigNumber } from 'bignumber.js';
-import { extractValueFromLogs, GetContractCodeHash, getFeeForExecute } from '../../blockchain-bridge';
+import { extractValueFromLogs, getFeeForExecute } from '../../blockchain-bridge';
 import { SwapTokenMap } from './types/SwapToken';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 import { SwapPair } from './types/SwapPair';
@@ -342,6 +342,8 @@ export class SwapTab extends React.Component<
       } else {
         buttonMessage = BUTTON_MSG_SWAP;
       }
+    } else if (!pair && this.props.selectedPairRoutes?.length > 0) {
+      buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
     } else if (!pair) {
       buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {
@@ -372,6 +374,7 @@ export class SwapTab extends React.Component<
           <SwapAssetRow
             secretjs={this.props.secretjs}
             label="From"
+            disabled={this.state.isFromEstimated && this.state.loadingBestRoute}
             maxButton={true}
             balance={fromBalance}
             tokens={this.props.tokens}
@@ -421,6 +424,7 @@ export class SwapTab extends React.Component<
           <SwapAssetRow
             secretjs={this.props.secretjs}
             label="To"
+            disabled={this.state.isToEstimated && this.state.loadingBestRoute}
             maxButton={false}
             balance={toBalance}
             tokens={this.props.tokens}

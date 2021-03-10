@@ -1,6 +1,7 @@
 import { Asset, NativeToken, Token } from './trade';
 import { getSymbolsFromPair, Pair } from '../../../blockchain-bridge/scrt/swap';
 import { SwapTokenMap } from './SwapToken';
+import { CosmWasmClient } from 'secretjs';
 
 export class SwapPair {
   pair_identifier: string;
@@ -48,7 +49,7 @@ export class SwapPair {
   isIdInPair(id: string): boolean {
     const pairIdentifiers = this.pair_identifier.split('/');
 
-    for (const pId in pairIdentifiers) {
+    for (const pId of pairIdentifiers) {
       if (pId.toLowerCase() === id) {
         return true;
       }
@@ -75,6 +76,22 @@ export class SwapPair {
       pair.liquidity_token,
       pair_identifier,
     );
+  }
+
+  private static code_hash: string;
+  static getPairCodeHash(pair_address: string, secretjs: CosmWasmClient): Promise<string> {
+    // TODO fix this if we ever have a factory with multiple pair_code_id
+    // For now this is the best way to avoid a lot of secretjs requests
+    return new Promise(async (accept, reject) => {
+      try {
+        if (!SwapPair.code_hash) {
+          SwapPair.code_hash = await secretjs.getCodeHashByContractAddr(pair_address);
+        }
+        accept(SwapPair.code_hash);
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 }
 

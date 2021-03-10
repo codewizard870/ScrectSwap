@@ -17,8 +17,15 @@ export const validateBech32Address = (address: string): boolean => {
   return getScrtAddress(address) !== '';
 };
 
-export function extractValueFromLogs(txResult: ExecuteResult, key: string): string {
-  return txResult?.logs[0]?.events?.find(e => e.type === 'wasm')?.attributes?.find(a => a.key === key)?.value;
+export function extractValueFromLogs(txResult: ExecuteResult, key: string, lastValue?: boolean): string {
+  const wasmLogsReadonly = txResult?.logs[0]?.events?.find(e => e.type === 'wasm')?.attributes;
+  let wasmLogs = Array.from(wasmLogsReadonly ?? []);
+
+  if (lastValue) {
+    wasmLogs = wasmLogs.reverse();
+  }
+
+  return wasmLogs?.find(a => a.key === key)?.value;
 }
 
 // getAddress(address).bech32;

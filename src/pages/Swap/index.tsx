@@ -694,6 +694,7 @@ export class SwapRouter extends React.Component<
                   notify={this.notify}
                   onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
                   refreshBalances={this.refreshBalances}
+                  secretAddress={this.props.user.address}
                 />
               )}
               {isProvide && (

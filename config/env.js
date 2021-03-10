@@ -95,6 +95,8 @@ function getClientEnvironment(publicUrl) {
         GET_TOKENS_SERVICE: process.env.GET_TOKENS_SERVICE,
 
         TEST_COINS: !!process.env.TEST_COINS,
+        SIG_THRESHOLD: process.env.SIG_THRESHOLD,
+        LEADER_ACCOUNT: process.env.LEADER_ACCOUNT,
       },
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

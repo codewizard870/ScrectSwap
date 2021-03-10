@@ -29,7 +29,7 @@ const getTokenName = (tokenType: TOKEN, token: ITokenInfo) => {
       } else {
         return token.name;
       }
-    case TOKEN.ETH:
+    case TOKEN.NATIVE:
     default:
       return `ETH`;
   }
@@ -133,7 +133,7 @@ export const WalletBalances = observer(() => {
                 token.name !== 'WSCRT',
             ),
           )
-        : setDisplayedTokens(tokens.allData.filter(token => token.src_coin === 'Ethereum'));
+        : setDisplayedTokens(tokens.allData.filter(token => token.src_address === 'native'));
     };
 
     refreshSelectedToken();
@@ -187,7 +187,7 @@ export const WalletBalances = observer(() => {
               <AssetRow
                 asset="ETH"
                 value={userMetamask.ethBalance}
-                selected={exchange.token === TOKEN.ETH && exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT}
+                selected={exchange.token === TOKEN.NATIVE && exchange.mode === EXCHANGE_MODE.TO_SCRT}
               />
 
               {tokens.allData
@@ -280,7 +280,7 @@ export const WalletBalances = observer(() => {
                     link={`${process.env.SCRT_EXPLORER_URL}/contracts/${token.dst_address}`}
                     selected={
                       exchange.token === TOKEN.ERC20 &&
-                      exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH &&
+                      exchange.mode === EXCHANGE_MODE.FROM_SCRT &&
                       user.snip20Address === token.dst_address
                     }
                   />

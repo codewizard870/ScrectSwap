@@ -11,7 +11,7 @@ import { divDecimals, formatWithSixDecimals, mulDecimals } from '../../utils';
 export const OperationType = (props: { type: EXCHANGE_MODE }) => {
   return (
     <Box
-      direction={props.type === EXCHANGE_MODE.ETH_TO_SCRT ? 'row' : 'row-reverse'}
+      direction={props.type === EXCHANGE_MODE.TO_SCRT ? 'row' : 'row-reverse'}
       align="center"
       className={cn(styles.operationType)}
       margin={{ left: '20px' }}
@@ -74,7 +74,7 @@ export const FormatWithDecimals = observer((props: ITokenParams) => {
     if (token) {
       return <Box>{divDecimals(amount, token.decimals)}</Box>;
     }
-  } else if (type === TOKEN.ETH) {
+  } else if (type === TOKEN.NATIVE) {
     return <Box>{formatWithSixDecimals(amount)}</Box>;
   }
 
@@ -95,7 +95,7 @@ export const ERC20Token = observer((props: IERC20TokenProps) => {
         <Box>{token.display_props.symbol}</Box>
       );
     }
-  } else if (value === TOKEN.ETH) {
+  } else if (value === TOKEN.NATIVE) {
     return <Box>ETH</Box>;
   }
 
@@ -122,7 +122,7 @@ export const SecretToken = observer((props: ISecretTokenProps) => {
         <Box>secret{token.display_props.symbol}</Box>
       );
     }
-  } else if (value === TOKEN.ETH) {
+  } else if (value === TOKEN.NATIVE) {
     return <Box>secretETH</Box>;
   }
 

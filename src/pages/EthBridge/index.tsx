@@ -12,6 +12,11 @@ import { WalletBalances } from './WalletBalances';
 import { useEffect } from 'react';
 import { BridgeHealth } from '../../components/Secret/BridgeHealthIndicator';
 
+export const enum NETWORKS {
+  ETH,
+  BSC
+}
+
 const LargeButton = (props: {
   title: string;
   onClick: () => void;
@@ -54,7 +59,7 @@ const LargeButton = (props: {
 };
 
 export const EthBridge = observer((props: any) => {
-  const { user, exchange, routing, rewards, signerHealth } = useStores();
+  const { userMetamask, exchange, routing, rewards, signerHealth } = useStores();
 
   useEffect(() => {
     rewards.init({
@@ -67,11 +72,13 @@ export const EthBridge = observer((props: any) => {
     signerHealth.init({});
     signerHealth.fetch();
 
+
+
     if (props.match.params.token) {
-      if ([TOKEN.ETH, TOKEN.ERC20].includes(props.match.params.token)) {
+      if ([TOKEN.NATIVE, TOKEN.ERC20].includes(props.match.params.token)) {
         exchange.setToken(props.match.params.token);
       } else {
-        routing.push(TOKEN.ETH);
+        routing.push(TOKEN.NATIVE);
       }
     }
 
@@ -105,15 +112,15 @@ export const EthBridge = observer((props: any) => {
               <LargeButton
                 title="ETH -> Secret Network"
                 description="(Metamask)"
-                onClick={() => exchange.setMode(EXCHANGE_MODE.ETH_TO_SCRT)}
-                isActive={exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT}
+                onClick={() => exchange.setMode(EXCHANGE_MODE.TO_SCRT)}
+                isActive={exchange.mode === EXCHANGE_MODE.TO_SCRT}
               />
               <LargeButton
                 title="Secret Network -> ETH"
                 reverse={true}
                 description="(Keplr)"
-                onClick={() => exchange.setMode(EXCHANGE_MODE.SCRT_TO_ETH)}
-                isActive={exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH}
+                onClick={() => exchange.setMode(EXCHANGE_MODE.FROM_SCRT)}
+                isActive={exchange.mode === EXCHANGE_MODE.FROM_SCRT}
               />
             </Box>
 

@@ -57,8 +57,8 @@ const StepRow = ({
 };
 
 const WalletType: Record<EXCHANGE_MODE, string> = {
-  [EXCHANGE_MODE.ETH_TO_SCRT]: 'Metamask',
-  [EXCHANGE_MODE.SCRT_TO_ETH]: 'Keplr',
+  [EXCHANGE_MODE.TO_SCRT]: 'Metamask',
+  [EXCHANGE_MODE.FROM_SCRT]: 'Keplr',
 };
 
 const StatusDescription: Record<SwapStatus, string> = {

@@ -2,12 +2,12 @@ import { NativeToken, Token } from 'pages/Swap/types/trade';
 import { SwapStatus } from '../constants';
 
 export enum EXCHANGE_MODE {
-  ETH_TO_SCRT = 'eth_to_scrt',
-  SCRT_TO_ETH = 'scrt_to_eth',
+  TO_SCRT = 'eth_to_scrt',
+  FROM_SCRT = 'scrt_to_eth',
 }
 
 export enum TOKEN {
-  ETH = 'eth',
+  NATIVE = 'eth',
   ERC20 = 'erc20',
   S20 = 'secret20',
 }

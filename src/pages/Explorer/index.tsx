@@ -51,7 +51,7 @@ const getColumns = ({ user }): IColumn<ISwap>[] => [
     key: 'dst_address',
     dataIndex: 'dst_address',
     width: 200,
-    render: (value, data) => (data.src_network === 'Ethereum' ? secretAddress(value) : ethAddress(value)),
+    render: (value, data) => (data.src_network !== 'Secret' ? secretAddress(value) : ethAddress(value)),
   },
   {
     title: 'Status',
@@ -69,7 +69,7 @@ const getColumns = ({ user }): IColumn<ISwap>[] => [
     dataIndex: 'src_coin',
     width: 180,
     render: (value, data) => {
-      return data.src_network === 'Ethereum' ? (
+      return data.src_network !== 'Secret' ? (
         <ERC20Token value={TOKEN.ERC20} erc20Address={data.src_coin} />
       ) : (
         <SecretToken value={TOKEN.S20} secretAddress={data.src_coin} />
@@ -82,7 +82,7 @@ const getColumns = ({ user }): IColumn<ISwap>[] => [
     dataIndex: 'dst_coin',
     width: 180,
     render: (value, data) => {
-      return data.dst_network === 'Ethereum' ? (
+      return data.dst_network !== 'Secret' ? (
         <ERC20Token value={TOKEN.ERC20} erc20Address={data.dst_coin} />
       ) : (
         <SecretToken value={TOKEN.S20} secretAddress={data.dst_coin} />
@@ -95,7 +95,7 @@ const getColumns = ({ user }): IColumn<ISwap>[] => [
     dataIndex: 'amount',
     width: 120,
     render: (value, data) =>
-      data.src_network === 'Ethereum' ? (
+      data.src_network !== 'Secret' ? (
         <FormatWithDecimals type={TOKEN.ERC20} amount={value} address={data.src_coin} />
       ) : (
         <FormatWithDecimals type={TOKEN.ERC20} amount={value} address={data.dst_coin} />

@@ -36,7 +36,7 @@ const getActionFee = (action: IAction): { isEth: boolean; value: number } => {
 };
 
 export const getOperationFee = (operation: IOperation) => {
-  const isEth = operation.type === EXCHANGE_MODE.ETH_TO_SCRT;
+  const isEth = operation.type === EXCHANGE_MODE.TO_SCRT;
 
   const actionsFee = operation.actions.map(getActionFee).filter(a => a.isEth === isEth);
 

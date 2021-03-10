@@ -11,7 +11,7 @@ import { formatWithSixDecimals } from '../../utils';
 export const OperationType = (props: { type: EXCHANGE_MODE }) => {
   return (
     <Box
-      direction={props.type === EXCHANGE_MODE.ETH_TO_SCRT ? 'row' : 'row-reverse'}
+      direction={props.type === EXCHANGE_MODE.TO_SCRT ? 'row' : 'row-reverse'}
       align="center"
       className={cn(styles.operationType)}
       margin={{ left: '20px' }}

@@ -5,9 +5,10 @@ import { ACTION_TYPE, EXCHANGE_MODE, IOperation, ITokenInfo, TOKEN } from './int
 import * as operationService from 'services';
 
 import * as contract from '../blockchain-bridge';
+import { Snip20SendToBridge, Snip20SwapHash } from '../blockchain-bridge';
 import { balanceNumberFormat, divDecimals, mulDecimals, sleep, uuid } from '../utils';
 import { getNetworkFee } from '../blockchain-bridge/eth/helpers';
-import { Snip20SendToBridge, Snip20SwapHash } from '../blockchain-bridge';
+import { NETWORKS } from '../pages/EthBridge';
 
 export enum EXCHANGE_STEPS {
   GET_TOKEN_ADDRESS = 'GET_TOKEN_ADDRESS',
@@ -57,9 +58,10 @@ export class Exchange extends StoreConstructor {
   };
 
   @observable transaction = this.defaultTransaction;
-  @observable mode: EXCHANGE_MODE = EXCHANGE_MODE.ETH_TO_SCRT;
+  @observable mode: EXCHANGE_MODE = EXCHANGE_MODE.TO_SCRT;
   @observable token: TOKEN;
 
+  @observable network: NETWORKS = NETWORKS.ETH
   // constructor(stores) {
   //   super(stores);
   //
@@ -88,17 +90,17 @@ export class Exchange extends StoreConstructor {
 
   @computed
   get networkFee() {
-    return this.mode === EXCHANGE_MODE.ETH_TO_SCRT ? this.ethNetworkFee : 0.0134438;
+    return this.mode === EXCHANGE_MODE.TO_SCRT ? this.ethNetworkFee : 0.0134438;
   }
 
   @computed
   get swapFee() {
-    return this.mode === EXCHANGE_MODE.SCRT_TO_ETH ? Number(balanceNumberFormat.format(this.swapFeeToken)) : 0;
+    return this.mode === EXCHANGE_MODE.FROM_SCRT ? Number(balanceNumberFormat.format(this.swapFeeToken)) : 0;
   }
 
   @computed
   get swapFeeUSD() {
-    return this.mode === EXCHANGE_MODE.SCRT_TO_ETH ? this.swapFeeUsd : 0;
+    return this.mode === EXCHANGE_MODE.FROM_SCRT ? this.swapFeeUsd : 0;
   }
 
   stepsConfig: Array<IStepConfig> = [
@@ -113,7 +115,7 @@ export class Exchange extends StoreConstructor {
             this.transaction.snip20Address = this.stores.user.snip20Address;
 
             switch (this.mode) {
-              case EXCHANGE_MODE.ETH_TO_SCRT:
+              case EXCHANGE_MODE.TO_SCRT:
                 this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
 
                 this.isFeeLoading = true;
@@ -121,13 +123,16 @@ export class Exchange extends StoreConstructor {
                 this.ethNetworkFee = await getNetworkFee(Number(process.env.ETH_GAS_LIMIT) * 2);
                 this.isFeeLoading = false;
                 break;
-              case EXCHANGE_MODE.SCRT_TO_ETH:
+              case EXCHANGE_MODE.FROM_SCRT:
                 this.transaction.scrtAddress = this.stores.user.address;
                 this.isFeeLoading = true;
-                this.ethSwapFee = await getNetworkFee(process.env.SWAP_FEE);
+
+                const swapGasCost = this.network === NETWORKS.ETH ? process.env.ETH_SWAP_FEE : process.env.BSC_SWAP_FEE;
+
+                this.ethSwapFee = await getNetworkFee(swapGasCost);
                 let token: ITokenInfo;
-                if (this.token === TOKEN.ETH) {
-                  token = this.stores.tokens.allData.find(t => t.name === 'Ethereum');
+                if (this.token === TOKEN.NATIVE) {
+                  token = this.stores.tokens.allData.find(t => t.src_address === 'native');
                 } else {
                   token = this.stores.tokens.allData.find(t => t.dst_address === this.transaction.snip20Address);
                 }
@@ -179,10 +184,10 @@ export class Exchange extends StoreConstructor {
 
   @action.bound
   setAddressByMode() {
-    if (this.mode === EXCHANGE_MODE.ETH_TO_SCRT) {
+    if (this.mode === EXCHANGE_MODE.TO_SCRT) {
       this.transaction.scrtAddress = '';
       this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
-    } else if (this.mode === EXCHANGE_MODE.SCRT_TO_ETH) {
+    } else if (this.mode === EXCHANGE_MODE.FROM_SCRT) {
       this.transaction.ethAddress = '';
       this.transaction.scrtAddress = this.stores.user.address;
     }
@@ -234,17 +239,17 @@ export class Exchange extends StoreConstructor {
 
     if (swap.swap) {
       this.operation.type =
-        swap.swap.src_network === 'Ethereum' ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH;
+        swap.swap.src_network !== 'Secret' ? EXCHANGE_MODE.TO_SCRT : EXCHANGE_MODE.FROM_SCRT;
       this.token =
         swap.swap.src_coin === 'native'
-          ? TOKEN.ETH
-          : this.operation.type === EXCHANGE_MODE.ETH_TO_SCRT
+          ? TOKEN.NATIVE
+          : this.operation.type === EXCHANGE_MODE.TO_SCRT
           ? TOKEN.ERC20
           : TOKEN.S20;
 
       this.operation.status = swap.swap.status;
 
-      if (this.operation.type === EXCHANGE_MODE.ETH_TO_SCRT) {
+      if (this.operation.type === EXCHANGE_MODE.TO_SCRT) {
         this.transaction.ethAddress = swap.swap.src_address;
         this.transaction.scrtAddress = swap.swap.dst_address;
 
@@ -328,9 +333,9 @@ export class Exchange extends StoreConstructor {
       this.transaction.scrtAddress = this.transaction.scrtAddress.trim();
       this.transaction.ethAddress = this.transaction.ethAddress.trim();
 
-      if (this.mode === EXCHANGE_MODE.SCRT_TO_ETH) {
-        await this.swapSnip20ToEth(this.token === TOKEN.ETH);
-      } else if (this.mode === EXCHANGE_MODE.ETH_TO_SCRT) {
+      if (this.mode === EXCHANGE_MODE.FROM_SCRT) {
+        await this.swapSnip20ToEth(this.token === TOKEN.NATIVE);
+      } else if (this.mode === EXCHANGE_MODE.TO_SCRT) {
         if (this.token === TOKEN.ERC20) {
           await this.swapErc20ToScrt();
         } else {
@@ -373,7 +378,7 @@ export class Exchange extends StoreConstructor {
     this.setStatus();
 
     await this.createOperation();
-    this.stores.routing.push(TOKEN.ETH + '/operations/' + this.operation.id);
+    this.stores.routing.push(TOKEN.NATIVE + '/operations/' + this.operation.id);
 
     await contract.ethMethodsERC20.callApprove(
       this.transaction.erc20Address,
@@ -407,7 +412,7 @@ export class Exchange extends StoreConstructor {
     this.setStatus();
 
     await this.createOperation();
-    this.stores.routing.push(TOKEN.ETH + '/operations/' + this.operation.id);
+    this.stores.routing.push(TOKEN.NATIVE + '/operations/' + this.operation.id);
 
     let transaction = await contract.ethMethodsETH.swapEth(this.transaction.scrtAddress, this.transaction.amount);
 
@@ -422,7 +427,7 @@ export class Exchange extends StoreConstructor {
     return;
   }
 
-  async swapSnip20ToEth(isEth: boolean) {
+  async swapSnip20ToEth(isNative: boolean) {
     this.operation = this.defaultOperation;
     this.setStatus();
 
@@ -430,9 +435,9 @@ export class Exchange extends StoreConstructor {
     let decimals: number | string;
     let recipient = process.env.SCRT_SWAP_CONTRACT;
     let price: string;
-    if (isEth) {
-      decimals = 18;
-      const token = this.stores.tokens.allData.find(t => t.src_coin === 'Ethereum');
+    if (isNative) {
+      const token = this.stores.tokens.allData.find(t => t.src_address === 'native');
+      decimals = token.decimals;
       price = token.price;
       this.transaction.snip20Address = token.dst_address;
     } else {
@@ -458,9 +463,6 @@ export class Exchange extends StoreConstructor {
 
     const swappedAmountUSD = Number(this.transaction.amount) * Number(price);
     const swapFeeUSD = this.swapFeeUSD;
-
-    console.log(swappedAmountUSD);
-    console.log(swapFeeUSD);
 
     if (swapFeeUSD > swappedAmountUSD * 0.4) {
       if (

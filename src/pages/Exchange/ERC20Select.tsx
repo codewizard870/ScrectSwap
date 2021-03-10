@@ -10,11 +10,11 @@ import { truncateAddressString } from '../../utils';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
 
 const selectTokenText = (mode: string, token: ITokenInfo) => {
-  if (mode === EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {
+  if (mode === EXCHANGE_MODE.FROM_SCRT && !token.display_props.proxy) {
     return `Secret ${token.name} (secret${token.display_props.symbol})`;
-  } else if (mode !== EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {
+  } else if (mode !== EXCHANGE_MODE.FROM_SCRT && !token.display_props.proxy) {
     return `${token.display_props.label} (${token.display_props.symbol})`;
-  } else if (mode === EXCHANGE_MODE.SCRT_TO_ETH) {
+  } else if (mode === EXCHANGE_MODE.FROM_SCRT) {
     return `Secret ${token.display_props.label} (secret${token.display_props.label})`;
   } else {
     return `${token.display_props.label} (${token.name})`;
@@ -77,14 +77,14 @@ export const ERC20Select = observer(() => {
               <a
                 className={styles.addressLink}
                 href={
-                  exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT
+                  exchange.mode === EXCHANGE_MODE.TO_SCRT
                     ? `${process.env.ETH_EXPLORER_URL}/token/${token}`
                     : `${process.env.SCRT_EXPLORER_URL}/contracts/${snip20}`
                 }
                 target="_blank"
                 rel="noreferrer"
               >
-                {truncateAddressString(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? token : snip20, 16)}
+                {truncateAddressString(exchange.mode === EXCHANGE_MODE.TO_SCRT ? token : snip20, 16)}
               </a>
             </Box>
           ) : null}

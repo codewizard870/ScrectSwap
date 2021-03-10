@@ -5,7 +5,7 @@ import { ACTION_TYPE, EXCHANGE_MODE, IOperation, ITokenInfo, TOKEN } from './int
 import * as operationService from 'services';
 
 import * as contract from '../blockchain-bridge';
-import { Snip20SendToBridge, Snip20SwapHash } from '../blockchain-bridge';
+import { Snip20SendToBridge, Snip20SwapHash, swapContractAddress } from '../blockchain-bridge';
 import { balanceNumberFormat, divDecimals, mulDecimals, sleep, uuid } from '../utils';
 import { getNetworkFee } from '../blockchain-bridge/eth/helpers';
 import { NETWORKS } from '../pages/EthBridge';
@@ -62,21 +62,6 @@ export class Exchange extends StoreConstructor {
   @observable token: TOKEN;
 
   @observable network: NETWORKS = NETWORKS.ETH
-  // constructor(stores) {
-  //   super(stores);
-  //
-  //   setInterval(async () => {
-  //     if (this.operation && this.operation.id) {
-  //       const operation = await operationService.getSwap(
-  //         this.operation.id,
-  //       );
-  //       if (this.operation.id === operation.id) {
-  //         this.operation = operation;
-  //         this.setStatus();
-  //       }
-  //     }
-  //   }, 3000);
-  // }
 
   @computed
   get step() {
@@ -127,9 +112,9 @@ export class Exchange extends StoreConstructor {
                 this.transaction.scrtAddress = this.stores.user.address;
                 this.isFeeLoading = true;
 
-                const swapGasCost = this.network === NETWORKS.ETH ? process.env.ETH_SWAP_FEE : process.env.BSC_SWAP_FEE;
+                //const swapGasCost = this.network === NETWORKS.ETH ? process.env.ETH_SWAP_FEE : process.env.BSC_SWAP_FEE;
 
-                this.ethSwapFee = await getNetworkFee(swapGasCost);
+                this.ethSwapFee = await getNetworkFee(Number(process.env.SWAP_FEE));
                 let token: ITokenInfo;
                 if (this.token === TOKEN.NATIVE) {
                   token = this.stores.tokens.allData.find(t => t.src_address === 'native');
@@ -204,6 +189,13 @@ export class Exchange extends StoreConstructor {
   setToken(token: TOKEN) {
     // this.clear();
     this.token = token;
+    // this.setAddressByMode();
+  }
+
+  @action.bound
+  setNetwork(network: NETWORKS) {
+    // this.clear();
+    this.network = network;
     // this.setAddressByMode();
   }
 
@@ -380,7 +372,7 @@ export class Exchange extends StoreConstructor {
     await this.createOperation();
     this.stores.routing.push(TOKEN.NATIVE + '/operations/' + this.operation.id);
 
-    await contract.ethMethodsERC20.callApprove(
+    await contract.fromScrtMethods[this.network][this.token].callApprove(
       this.transaction.erc20Address,
       this.transaction.amount,
       this.stores.userMetamask.erc20TokenDetails.decimals,
@@ -389,7 +381,7 @@ export class Exchange extends StoreConstructor {
     this.operation.status = SwapStatus.SWAP_WAIT_SEND;
     this.setStatus();
 
-    const transaction = await contract.ethMethodsERC20.swapToken(
+    const transaction = await contract.fromScrtMethods[this.network][this.token].swapToken(
       this.transaction.erc20Address,
       this.transaction.scrtAddress,
       this.transaction.amount,
@@ -414,7 +406,7 @@ export class Exchange extends StoreConstructor {
     await this.createOperation();
     this.stores.routing.push(TOKEN.NATIVE + '/operations/' + this.operation.id);
 
-    let transaction = await contract.ethMethodsETH.swapEth(this.transaction.scrtAddress, this.transaction.amount);
+    let transaction = await contract.fromScrtMethods[this.network][this.token].swapEth(this.transaction.scrtAddress, this.transaction.amount);
 
     this.txHash = transaction.transactionHash;
 
@@ -433,7 +425,7 @@ export class Exchange extends StoreConstructor {
 
     let proxyContract: string;
     let decimals: number | string;
-    let recipient = process.env.SCRT_SWAP_CONTRACT;
+    let recipient = swapContractAddress[this.network];
     let price: string;
     if (isNative) {
       const token = this.stores.tokens.allData.find(t => t.src_address === 'native');

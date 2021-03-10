@@ -192,7 +192,7 @@ export const Exchange = observer((props: any) => {
       {exchange.step.id === EXCHANGE_STEPS.BASE ? (
         <Box direction="row">
           <Box
-            className={cn(styles.itemToken, exchange.token === TOKEN.ETH ? styles.selected : '')}
+            className={cn(styles.itemToken, exchange.token === TOKEN.NATIVE ? styles.selected : '')}
             onClick={() => {
               exchange.setToken(TOKEN.NATIVE);
               routing.push(`/${exchange.token}`);

@@ -1,8 +1,18 @@
 import { decode } from 'bech32';
 import { ExecuteResult } from 'secretjs';
 import { StdFee } from 'secretjs/types/types';
+import { NETWORKS } from '../../pages/EthBridge';
 
 const HRP = 'secret';
+
+export const swapContractAddress = (network: NETWORKS): string => {
+  switch (network) {
+    case NETWORKS.ETH:
+      return process.env.SCRT_SWAP_CONTRACT;
+    case NETWORKS.BSC:
+      return process.env.BSC_SCRT_SWAP_CONTRACT;
+  }
+}
 
 export const getScrtAddress = (address: string): string => {
   try {

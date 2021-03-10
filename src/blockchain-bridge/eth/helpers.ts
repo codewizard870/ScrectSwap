@@ -21,13 +21,13 @@ export const getGasPrice = async (web3: Web3) => {
   return gasPrice.lt(gasPriceApi) ? gasPriceApi : gasPrice;
 };
 
-export const getNetworkFee = async gas_amount => {
+export const getNetworkFee = async (gas_amount: number, decimals?: number) => {
   const gasPrice = await getGasPrice(web3);
   const gasLimit = new BN(gas_amount);
 
   const fee = gasLimit.mul(gasPrice);
 
-  return Number(divDecimals(fee, 18));
+  return Number(divDecimals(fee, decimals || 18));
 };
 
 export const ethToWei = (amount: string | number) => mulDecimals(amount, 18);

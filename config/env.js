@@ -72,7 +72,10 @@ function getClientEnvironment(publicUrl) {
         WSCRT_PROXY_CONTRACT: process.env.WSCRT_PROXY_CONTRACT,
 
         ETH_MANAGER_CONTRACT: process.env.ETH_MANAGER_CONTRACT,
+        BSC_MANAGER_CONTRACT: process.env.BSC_MANAGER_CONTRACT,
+
         SCRT_SWAP_CONTRACT: process.env.SCRT_SWAP_CONTRACT,
+        BSC_SCRT_SWAP_CONTRACT: process.env.BSC_SCRT_SWAP_CONTRACT,
 
         ETH_EXPLORER_URL: process.env.ETH_EXPLORER_URL,
         SCRT_EXPLORER_URL: process.env.SCRT_EXPLORER_URL,

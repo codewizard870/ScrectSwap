@@ -47,6 +47,10 @@ export class WithdrawLiquidityPanel extends React.Component<
       this.props.selectedPair.asset_infos[1].symbol,
     ];
 
+    if (symbolA === symbolB) {
+      return null;
+    }
+
     let selectedPair = this.props.selectedPair;
     if (symbolB === 'sSCRT') {
       selectedPair = new SwapPair(

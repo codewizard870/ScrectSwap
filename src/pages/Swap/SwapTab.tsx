@@ -11,12 +11,11 @@ import { BigNumber } from 'bignumber.js';
 import { extractValueFromLogs, getFeeForExecute } from '../../blockchain-bridge';
 import { SwapTokenMap } from './types/SwapToken';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
-import { SwapPair } from './types/SwapPair';
+import { PairMap, SwapPair } from './types/SwapPair';
 import { DownArrow } from '../../ui/Icons/DownArrow';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
-import { Link, Node } from 'ngraph.graph';
 import { RouteRow } from 'components/Swap/RouteRow';
 import { Token } from './types/trade';
 
@@ -25,6 +24,7 @@ const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
 const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
+const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
 
 export class SwapTab extends React.Component<
   {
@@ -34,11 +34,12 @@ export class SwapTab extends React.Component<
     selectedToken0?: string;
     selectedToken1?: string;
     selectedPair: SwapPair;
-    selectedPairRoutes: Node[][];
+    selectedPairRoutes: string[][];
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     onSetTokens: CallableFunction;
     refreshBalances: CallableFunction;
     secretAddress: string;
+    pairs: PairMap;
   },
   {
     fromToken: string;
@@ -54,7 +55,7 @@ export class SwapTab extends React.Component<
     buttonMessage: string;
     loadingSwap: boolean;
     loadingBestRoute: boolean;
-    bestRoute: Node[];
+    bestRoute: string[];
   }
 > {
   constructor(props) {
@@ -138,130 +139,134 @@ export class SwapTab extends React.Component<
     }
 
     this.setState({ loadingBestRoute: true, bestRoute: null });
+    try {
+      let { fromToken, toToken, fromInput, toInput } = this.state;
 
-    let { fromToken, toToken, fromInput, toInput } = this.state;
-
-    const routes = this.props.selectedPairRoutes;
-    for (let i = 0; i < routes.length; i++) {
-      if (routes[i][0].id === toToken && routes[i][routes[i].length - 1].id === fromToken) {
-        routes[i] = routes[i].reverse();
-      }
-    }
-
-    let bestRoute: Node[] = null;
-    let bestRouteToInput = new BigNumber(0);
-    let bestRouteFromInput = new BigNumber(Infinity);
-    let bestRoutePriceImpact = 0;
-    for (const route of routes) {
-      if (this.state.isToEstimated /* top input is filled */) {
-        let from = new BigNumber(fromInput);
-        let to = new BigNumber(0);
-        let priceImpacts: number[] = [];
-        for (let i = 0; i < route.length - 1; i++) {
-          const fromToken = String(route[i].id);
-          const toToken = String(route[i + 1].id);
-          const pair: SwapPair = route[i].links.find(
-            l => [l.fromId, l.toId].sort().join() === [fromToken, toToken].sort().join(),
-          ).data;
-
-          const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
-
-          if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
-            to = new BigNumber(0);
-            break;
-          }
-
-          const offer_amount = from;
-
-          const { return_amount, spread_amount, commission_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
-
-          if (return_amount.isNaN() || from.isNaN() || from.isZero()) {
-            to = new BigNumber(0);
-            break;
-          }
-
-          to = return_amount;
-          priceImpacts.push(spread_amount.dividedBy(return_amount).toNumber());
-
-          if (i < route.length - 2) {
-            // setup for next iteration
-            from = return_amount;
-          }
-        }
-
-        if (to.isGreaterThan(bestRouteToInput)) {
-          bestRouteToInput = to;
-          bestRoute = route;
-          bestRoutePriceImpact = Math.max(...priceImpacts);
-        }
-      } else {
-        // isFromEstimated
-        // bottom input is filled
-        let from = new BigNumber(0);
-        let to = new BigNumber(toInput);
-        let priceImpacts: number[] = [];
-        for (let i = route.length - 1; i > 0; i--) {
-          const fromToken = String(route[i - 1].id);
-          const toToken = String(route[i].id);
-          const pair: SwapPair = route[i].links.find(
-            l => [l.fromId, l.toId].sort().join() === [fromToken, toToken].sort().join(),
-          ).data;
-
-          const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
-
-          if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
-            from = new BigNumber(0);
-            break;
-          }
-
-          const ask_amount = to;
-          const { offer_amount, spread_amount, commission_amount } = compute_offer_amount(
-            offer_pool,
-            ask_pool,
-            ask_amount,
-          );
-
-          if (offer_amount.isNaN() || to.isNaN() || to.isZero()) {
-            from = new BigNumber(0);
-            break;
-          }
-
-          from = offer_amount;
-          priceImpacts.push(spread_amount.dividedBy(ask_amount).toNumber());
-
-          if (i > 1) {
-            // setup for next iteration
-            to = offer_amount;
-          }
-        }
-
-        if (from.isLessThan(bestRouteFromInput)) {
-          bestRouteFromInput = from;
-          bestRoute = route;
-          bestRoutePriceImpact = Math.max(...priceImpacts);
+      const routes = this.props.selectedPairRoutes;
+      for (let i = 0; i < routes.length; i++) {
+        if (routes[i][0] === toToken && routes[i][routes[i].length - 1] === fromToken) {
+          routes[i] = routes[i].reverse();
         }
       }
-    }
 
-    if (bestRoute) {
-      if (this.state.isToEstimated) {
-        const toDecimals = this.props.tokens.get(toToken).decimals;
-        this.setState({
-          toInput: bestRouteToInput.toFixed(toDecimals),
-          bestRoute,
-          commission: (0.3 / 100) * bestRouteToInput.toNumber(), // always denominated in toToken
-          priceImpact: bestRoutePriceImpact,
-        });
-      } else {
-        // isFromEstimated
-        const fromDecimals = this.props.tokens.get(fromToken).decimals;
-        this.setState({
-          fromInput: bestRouteFromInput.toFixed(fromDecimals),
-          bestRoute,
-          commission: (0.3 / 100) * Number(this.state.toInput), // always denominated in toToken
-          priceImpact: bestRoutePriceImpact,
-        });
+      let bestRoute: string[] = null;
+      let bestRouteToInput = new BigNumber(0);
+      let bestRouteFromInput = new BigNumber(Infinity);
+      let bestRoutePriceImpact = 0;
+      for (const route of routes) {
+        if (this.state.isToEstimated /* top input is filled */) {
+          let from = new BigNumber(fromInput);
+          let to = new BigNumber(0);
+          let priceImpacts: number[] = [];
+          for (let i = 0; i < route.length - 1; i++) {
+            const fromToken = route[i];
+            const toToken = route[i + 1];
+            const pair: SwapPair =
+              this.props.pairs.get(`${fromToken}/${toToken}`) ?? this.props.pairs.get(`${toToken}/${fromToken}`);
+
+            const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
+
+            if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+              to = new BigNumber(0);
+              break;
+            }
+
+            const offer_amount = from;
+
+            const { return_amount, spread_amount, commission_amount } = compute_swap(
+              offer_pool,
+              ask_pool,
+              offer_amount,
+            );
+
+            if (return_amount.isNaN() || from.isNaN() || from.isZero()) {
+              to = new BigNumber(0);
+              break;
+            }
+
+            to = return_amount;
+            priceImpacts.push(spread_amount.dividedBy(return_amount).toNumber());
+
+            if (i < route.length - 2) {
+              // setup for next iteration
+              from = return_amount;
+            }
+          }
+
+          if (to.isGreaterThan(bestRouteToInput)) {
+            bestRouteToInput = to;
+            bestRoute = route;
+            bestRoutePriceImpact = Math.max(...priceImpacts);
+          }
+        } else {
+          // isFromEstimated
+          // bottom input is filled
+          let from = new BigNumber(0);
+          let to = new BigNumber(toInput);
+          let priceImpacts: number[] = [];
+          for (let i = route.length - 1; i > 0; i--) {
+            const fromToken = route[i - 1];
+            const toToken = route[i];
+            const pair: SwapPair =
+              this.props.pairs.get(`${fromToken}/${toToken}`) ?? this.props.pairs.get(`${toToken}/${fromToken}`);
+            const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
+
+            if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+              from = new BigNumber(0);
+              break;
+            }
+
+            const ask_amount = to;
+            const { offer_amount, spread_amount, commission_amount } = compute_offer_amount(
+              offer_pool,
+              ask_pool,
+              ask_amount,
+            );
+
+            if (offer_amount.isNaN() || to.isNaN() || to.isZero()) {
+              from = new BigNumber(0);
+              break;
+            }
+
+            from = offer_amount;
+            priceImpacts.push(spread_amount.dividedBy(ask_amount).toNumber());
+
+            if (i > 1) {
+              // setup for next iteration
+              to = offer_amount;
+            }
+          }
+
+          if (from.isLessThan(bestRouteFromInput)) {
+            bestRouteFromInput = from;
+            bestRoute = route;
+            bestRoutePriceImpact = Math.max(...priceImpacts);
+          }
+        }
       }
+
+      if (bestRoute) {
+        if (this.state.isToEstimated) {
+          const toDecimals = this.props.tokens.get(toToken).decimals;
+          this.setState({
+            toInput: bestRouteToInput.toFixed(toDecimals),
+            bestRoute,
+            commission: (0.3 / 100) * bestRouteToInput.toNumber(), // always denominated in toToken
+            priceImpact: bestRoutePriceImpact,
+          });
+        } else {
+          // isFromEstimated
+          const fromDecimals = this.props.tokens.get(fromToken).decimals;
+          this.setState({
+            fromInput: bestRouteFromInput.toFixed(fromDecimals),
+            bestRoute,
+            commission: (0.3 / 100) * Number(this.state.toInput), // always denominated in toToken
+            priceImpact: bestRoutePriceImpact,
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Error finding best route:', e.message);
     }
 
     this.setState({ loadingBestRoute: false });
@@ -364,7 +369,9 @@ export class SwapTab extends React.Component<
     const ask_pool = pair
       ? new BigNumber(this.props.balances[`${this.state.toToken}-${pair?.identifier()}`] as BigNumber)
       : new BigNumber(0);
-    const offer_pool = new BigNumber(this.props.balances[`${this.state.fromToken}-${pair?.identifier()}`] as any);
+    const offer_pool = pair
+      ? new BigNumber(this.props.balances[`${this.state.fromToken}-${pair?.identifier()}`] as BigNumber)
+      : new BigNumber(0);
 
     const [fromBalance, toBalance] = [
       this.props.balances[this.state.fromToken],
@@ -380,7 +387,9 @@ export class SwapTab extends React.Component<
     const canonToInput = canonicalizeBalance(new BigNumber(this.state.toInput), toDecimals);
 
     let buttonMessage: string;
-    if (this.state.bestRoute) {
+    if (this.state.loadingBestRoute) {
+      buttonMessage = BUTTON_MSG_FINDING_ROUTE;
+    } else if (this.state.bestRoute) {
       if (this.state.fromInput === '' && this.state.toInput === '') {
         buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
       } else if (new BigNumber(fromBalance as BigNumber).isLessThan(canonFromInput)) {
@@ -390,8 +399,15 @@ export class SwapTab extends React.Component<
       } else {
         buttonMessage = BUTTON_MSG_SWAP;
       }
-    } else if (!pair && this.props.selectedPairRoutes?.length > 0) {
+    } else if (
+      !pair &&
+      this.props.selectedPairRoutes?.length > 0 &&
+      this.state.fromInput === '' &&
+      this.state.toInput === ''
+    ) {
       buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
+    } else if (!pair && this.props.selectedPairRoutes?.length > 0) {
+      buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
     } else if (!pair) {
       buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {
@@ -511,9 +527,8 @@ export class SwapTab extends React.Component<
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;
 
-              if (fromToken === 'uscrt' || toToken === 'uscrt') {
-                alert('Swapping native tokens is turened off.');
-                return;
+              if (fromToken === 'uscrt') {
+                alert('Warning: Swapping from SRCT is susceptible to front-running.');
               }
 
               this.setState({ loadingSwap: true });
@@ -549,39 +564,65 @@ export class SwapTab extends React.Component<
                   .toFormat(0, { groupSeparator: '' });
 
                 if (fromToken === 'uscrt') {
-                  const result = await this.props.secretjs.execute(
-                    pair.contract_addr,
-                    {
-                      swap: {
-                        offer_asset: {
-                          info: { native_token: { denom: 'uscrt' } },
-                          amount: fromAmount,
-                        },
-                        expected_return,
-                        // offer_asset: Asset,
-                        // expected_return: Option<Uint128>
-                        // belief_price: Option<Decimal>,
-                        // max_spread: Option<Decimal>,
-                        // to: Option<HumanAddr>, // TODO
-                      },
-                    },
-                    '',
-                    [
+                  let result: ExecuteResult;
+                  if (bestRoute) {
+                    const hops = await this.getHops(bestRoute, expected_return);
+
+                    result = await this.props.secretjs.execute(
+                      process.env.AMM_ROUTER_CONTRACT,
                       {
-                        amount: fromAmount,
-                        denom: 'uscrt',
+                        receive: {
+                          from: this.props.secretAddress,
+                          amount: fromAmount,
+                          msg: btoa(
+                            JSON.stringify({
+                              to: this.props.secretAddress,
+                              hops,
+                            }),
+                          ),
+                        },
                       },
-                    ],
-                    getFeeForExecute(500_000),
-                  );
+                      '',
+                      [
+                        {
+                          amount: fromAmount,
+                          denom: 'uscrt',
+                        },
+                      ],
+                      getFeeForExecute(bestRoute.length * 400_000),
+                    );
+                  } else {
+                    result = await this.props.secretjs.execute(
+                      pair.contract_addr,
+                      {
+                        swap: {
+                          offer_asset: {
+                            info: { native_token: { denom: 'uscrt' } },
+                            amount: fromAmount,
+                          },
+                          expected_return,
+                          // offer_asset: Asset,
+                          // expected_return: Option<Uint128>
+                          // belief_price: Option<Decimal>,
+                          // max_spread: Option<Decimal>,
+                          // to: Option<HumanAddr>, // TODO
+                        },
+                      },
+                      '',
+                      [
+                        {
+                          amount: fromAmount,
+                          denom: 'uscrt',
+                        },
+                      ],
+                      getFeeForExecute(500_000),
+                    );
+                  }
                   storeTxResultLocally(result);
 
-                  const sent = humanizeBalance(
-                    new BigNumber(extractValueFromLogs(result, 'offer_amount')),
-                    fromDecimals,
-                  ).toFixed();
+                  const sent = humanizeBalance(new BigNumber(fromAmount), fromDecimals).toFixed();
                   const received = humanizeBalance(
-                    new BigNumber(extractValueFromLogs(result, 'return_amount')),
+                    new BigNumber(extractValueFromLogs(result, 'return_amount', bestRoute != null)),
                     toDecimals,
                   ).toFixed();
 
@@ -594,53 +635,7 @@ export class SwapTab extends React.Component<
                 } else {
                   let result: ExecuteResult;
                   if (bestRoute) {
-                    const hops = (
-                      await Promise.all(
-                        bestRoute.map(async (fromNode, idx) => {
-                          if (idx === bestRoute.length - 1) {
-                            // destination token
-                            return null;
-                          }
-
-                          const toTokenAddress = String(bestRoute[idx + 1]?.id);
-
-                          const hop: {
-                            from_token: {
-                              address: string;
-                              code_hash: string;
-                            };
-                            pair_address: string;
-                            pair_code_hash: string;
-                            expected_return?: string;
-                          } = {
-                            from_token: {
-                              address: null,
-                              code_hash: null,
-                            },
-                            pair_address: null,
-                            pair_code_hash: null,
-                          };
-
-                          const pair: SwapPair = fromNode.links.find(l =>
-                            (l.data as SwapPair).isIdInPair(toTokenAddress),
-                          ).data;
-
-                          hop.from_token.address = String(fromNode.id);
-                          hop.from_token.code_hash = (pair.asset_infos.find(
-                            a => (a.info as Token).token.contract_addr === hop.from_token.address,
-                          ).info as Token).token.token_code_hash;
-
-                          hop.pair_address = pair.contract_addr;
-                          hop.pair_code_hash = await SwapPair.getPairCodeHash(hop.pair_address, this.props.secretjs);
-                          if (idx === bestRoute.length - 2) {
-                            // final hop
-                            hop.expected_return = expected_return;
-                          }
-
-                          return hop;
-                        }),
-                      )
-                    ).filter(x => x !== null);
+                    const hops = await this.getHops(bestRoute, expected_return);
 
                     result = await this.props.secretjs.execute(
                       fromToken,
@@ -658,7 +653,7 @@ export class SwapTab extends React.Component<
                       },
                       '',
                       [],
-                      getFeeForExecute(1_200_000),
+                      getFeeForExecute(bestRoute.length * 400_000),
                     );
                   } else {
                     result = await this.props.secretjs.execute(
@@ -749,6 +744,59 @@ export class SwapTab extends React.Component<
         )}
       </>
     );
+  }
+
+  async getHops(bestRoute: string[], expected_return: string) {
+    return (
+      await Promise.all(
+        bestRoute.map(async (fromToken, idx) => {
+          if (idx === bestRoute.length - 1) {
+            // destination token
+            return null;
+          }
+
+          const hop: {
+            from_token: {
+              address?: string; // must set only these if a token
+              code_hash?: string; // must set only these if a token
+              native_denom?: string; // must set only this if native coin
+            };
+            pair_address: string;
+            pair_code_hash: string;
+            expected_return?: string;
+          } = {
+            from_token: {
+              address: null,
+              code_hash: null,
+            },
+            pair_address: null,
+            pair_code_hash: null,
+          };
+
+          const toToken = bestRoute[idx + 1];
+          const pair: SwapPair =
+            this.props.pairs.get(`${fromToken}/${toToken}`) ?? this.props.pairs.get(`${toToken}/${fromToken}`);
+
+          if (fromToken === 'uscrt') {
+            hop.from_token.native_denom = 'uscrt';
+          } else {
+            hop.from_token.address = fromToken;
+            hop.from_token.code_hash = (pair.asset_infos.find(
+              a => (a.info as Token)?.token?.contract_addr === hop.from_token.address,
+            ).info as Token).token.token_code_hash;
+          }
+
+          hop.pair_address = pair.contract_addr;
+          hop.pair_code_hash = await SwapPair.getPairCodeHash(hop.pair_address, this.props.secretjs);
+          if (idx === bestRoute.length - 2) {
+            // final hop
+            hop.expected_return = expected_return;
+          }
+
+          return hop;
+        }),
+      )
+    ).filter(x => x !== null);
   }
 
   private setToAmount(value: string) {

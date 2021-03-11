@@ -1,8 +1,7 @@
 import { SwapTokenMap } from 'pages/Swap/types/SwapToken';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Icon, Image, Popup } from 'semantic-ui-react';
 import { FlexRowSpace } from './FlexRowSpace';
-import { Node } from 'ngraph.graph';
 import Loader from 'react-loader-spinner';
 
 const routeLink = (
@@ -21,7 +20,15 @@ const routeLink = (
   </svg>
 );
 
-export const RouteRow = ({ isLoading, tokens, route }: { isLoading: boolean; tokens: SwapTokenMap; route: Node[] }) => {
+export const RouteRow = ({
+  isLoading,
+  tokens,
+  route,
+}: {
+  isLoading: boolean;
+  tokens: SwapTokenMap;
+  route: string[];
+}) => {
   const [iconBackground, setIconBackground] = useState<string>('whitesmoke');
 
   if ((!route || route.length === 0) && !isLoading) {
@@ -60,7 +67,7 @@ export const RouteRow = ({ isLoading, tokens, route }: { isLoading: boolean; tok
         <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
       ) : (
         route.map((node, idx) => {
-          const token = tokens.get(String(node.id));
+          const token = tokens.get(node);
           return (
             <div
               style={{

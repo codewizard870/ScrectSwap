@@ -26,8 +26,7 @@ import { pairIdFromTokenIds, PairMap, SwapPair } from './types/SwapPair';
 import { KeplrButton } from '../../components/Secret/KeplrButton';
 import { NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
-import createGraph, { Graph, Link, Node } from 'ngraph.graph';
-import path from 'ngraph.path';
+import Graph from 'node-dijkstra';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
@@ -62,39 +61,28 @@ export class SwapRouter extends React.Component<
     selectedToken1: string;
     queries: string[];
     routerSupportedTokens: Set<string>;
-    routingGraph: Graph;
-    selectedPairRoutes: Node[][];
+    routingGraph: { [token0: string]: { [token1: string]: number } };
+    selectedPairRoutes: string[][];
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
   private ws: WebSocket;
-  public state: {
-    allTokens: SwapTokenMap;
-    balances: { [symbol: string]: BigNumber | JSX.Element };
-    pairs: PairMap;
-    selectedPair: SwapPair | undefined;
-    selectedToken0: string;
-    selectedToken1: string;
-    queries: string[];
-    routerSupportedTokens: Set<string>;
-    routingGraph: Graph;
-    selectedPairRoutes: Node[][];
-  } = {
-    allTokens: new Map<string, SwapToken>(),
-    balances: {},
-    pairs: new Map<string, SwapPair>(),
-    selectedPair: undefined,
-    selectedToken0: process.env.SSCRT_CONTRACT,
-    selectedToken1: '',
-    queries: [],
-    routerSupportedTokens: new Set(),
-    routingGraph: createGraph(),
-    selectedPairRoutes: [],
-  };
 
   constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs }) {
     super(props);
     window.onhashchange = this.onHashChange;
+    this.state = {
+      allTokens: new Map<string, SwapToken>(),
+      balances: {},
+      pairs: new Map<string, SwapPair>(),
+      selectedPair: undefined,
+      selectedToken0: process.env.SSCRT_CONTRACT,
+      selectedToken1: '',
+      queries: [],
+      routerSupportedTokens: new Set(),
+      routingGraph: {},
+      selectedPairRoutes: [],
+    };
   }
 
   onHashChange = () => {
@@ -189,6 +177,7 @@ export class SwapRouter extends React.Component<
         supported_tokens: {},
       }),
     );
+    routerSupportedTokens.add('uscrt');
 
     this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
   }
@@ -559,29 +548,25 @@ export class SwapRouter extends React.Component<
   setCurrentPair = async (token0: string, token1: string) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
 
-    const routes: Node[][] = [];
+    const routes: string[][] = [];
     if (!selectedPair) {
-      const graph = this.state.routingGraph; // TODO clone graph
-      const removedLinks: Link[] = [];
+      let graph = JSON.parse(JSON.stringify(this.state.routingGraph)); // deep copy
       try {
         while (true) {
-          let route = path.aStar(graph).find(token0, token1);
+          const dijkstra = new Graph(graph);
+          let route: string[] = dijkstra.path(token0, token1);
+
           if (route.length <= 2) {
             break;
           }
-          route = route.reverse();
           routes.push(route);
 
-          const linkToRemove = graph.getLink(route[0].id, route[1].id);
-          graph.removeLink(linkToRemove);
-          removedLinks.push(linkToRemove);
+          delete graph[route[0]][route[1]];
+          delete graph[route[1]][route[0]];
         }
-
-        // restore graph
-        for (const l of removedLinks) {
-          graph.addLink(l.fromId, l.toId, l.data);
-        }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Error computing selectedPairRoutes:', e.message);
+      }
     }
 
     this.setState({
@@ -623,14 +608,22 @@ export class SwapRouter extends React.Component<
   updateRoutingGraph = () => {
     const { pairs, routerSupportedTokens } = this.state;
 
-    const graph = createGraph();
+    const graph = {};
     for (const pair of pairs.values()) {
       const [token0, token1] = pair.assetIds();
       if (!routerSupportedTokens.has(token0) || !routerSupportedTokens.has(token1)) {
         continue;
       }
 
-      graph.addLink(token0, token1, pair);
+      if (!(token0 in graph)) {
+        graph[token0] = {};
+      }
+      if (!(token1 in graph)) {
+        graph[token1] = {};
+      }
+
+      graph[token0][token1] = 1;
+      graph[token1][token0] = 1;
     }
 
     this.setState({ routingGraph: graph });
@@ -695,6 +688,7 @@ export class SwapRouter extends React.Component<
                   onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
                   refreshBalances={this.refreshBalances}
                   secretAddress={this.props.user.address}
+                  pairs={this.state.pairs}
                 />
               )}
               {isProvide && (

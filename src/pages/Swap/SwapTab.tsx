@@ -527,10 +527,6 @@ export class SwapTab extends React.Component<
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;
 
-              if (fromToken === 'uscrt') {
-                alert('Warning: Swapping from SRCT is susceptible to front-running.');
-              }
-
               this.setState({ loadingSwap: true });
 
               if (priceImpact >= 0.15) {

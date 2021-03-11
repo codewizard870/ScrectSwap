@@ -2,11 +2,32 @@ import { action, observable } from 'mobx';
 import { statusFetching } from '../constants';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { StoreConstructor } from './core/StoreConstructor';
-import { getEthBalance, getErc20Balance, ethMethodsERC20 } from '../blockchain-bridge';
+import * as contract from '../blockchain-bridge';
+import { getErc20Balance, getEthBalance } from '../blockchain-bridge';
 import { divDecimals, formatWithSixDecimals } from '../utils';
 import Web3 from 'web3';
+import { TOKEN } from './interfaces';
+import { NETWORKS } from '../pages/EthBridge';
 
 const defaults = {};
+
+interface ConnectInfo {
+  chainId: string;
+}
+
+const ETH_MAINNET = '0x1';
+const BSC_MAINNET = '0x38';
+
+const chainIdMap: Record<string, NETWORKS> = {
+  '0x1': NETWORKS.ETH,
+  '0x2': NETWORKS.ETH,
+  '0x3': NETWORKS.ETH,
+  '0x4': NETWORKS.ETH,
+  '0x5': NETWORKS.ETH,
+  '0x2a': NETWORKS.ETH,
+  '0x38': NETWORKS.BSC,
+  '0x61': NETWORKS.BSC
+}
 
 export interface IERC20Token {
   name: string;
@@ -18,6 +39,11 @@ export interface IERC20Token {
 export class UserStoreMetamask extends StoreConstructor {
   @observable public isAuthorized: boolean;
   @observable error: string = '';
+
+  @observable public chainId: string;
+  @observable public network: NETWORKS;
+
+  @observable public mainnet: boolean;
 
   public status: statusFetching;
 
@@ -99,12 +125,21 @@ export class UserStoreMetamask extends StoreConstructor {
 
       this.provider = provider;
 
+      if (this.provider.chainId) {
+        this.setNetwork(this.provider.chainId);
+      }
+
       this.provider.autoRefreshOnNetworkChange = false;
 
       this.provider.on('accountsChanged', this.handleAccountsChanged);
 
-      this.provider.on('chainChanged', () => {
-        //document.location.reload()
+      this.provider.on('connect', (connectInfo: ConnectInfo) => {
+        this.setNetwork(connectInfo.chainId);
+      });
+
+      this.provider.on('chainChanged', (chainId: string) => {
+        this.setNetwork(chainId);
+        window.location.reload();
       });
 
       this.provider.on('disconnect', () => {
@@ -150,6 +185,20 @@ export class UserStoreMetamask extends StoreConstructor {
     }
   }
 
+  @action.bound
+  private setNetwork(chainId: string) {
+    this.chainId = chainId;
+
+    try {
+      this.network = chainIdMap[chainId];
+    } catch (e) {
+      console.error('Unknown chain ID, defaulting to ETH');
+      this.network = NETWORKS.ETH;
+    }
+
+    this.mainnet = (chainId === ETH_MAINNET || chainId === BSC_MAINNET);
+  }
+
   private syncLocalStorage() {
     localStorage.setItem(
       'metamask_session',
@@ -188,7 +237,7 @@ export class UserStoreMetamask extends StoreConstructor {
     this.stores.user.snip20Balance = '';
     this.stores.user.snip20BalanceMin = '';
 
-    this.erc20TokenDetails = await ethMethodsERC20.tokenDetails(erc20Address);
+    this.erc20TokenDetails = await contract.fromScrtMethods[this.network][TOKEN.ERC20].tokenDetails(erc20Address);
     this.erc20Address = erc20Address;
     this.erc20Balance = divDecimals(
       await getErc20Balance(this.ethAddress, erc20Address),

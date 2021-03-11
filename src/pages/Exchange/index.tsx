@@ -220,7 +220,7 @@ export const Exchange = observer((props: any) => {
               src={exchange.mode === EXCHANGE_MODE.TO_SCRT ?
                 messageToString(messages.image_logo, exchange.network) : '/static/scrt.svg'}
             />
-            <Text>{exchange.mode === EXCHANGE_MODE.FROM_SCRT ? 'SNIP20' : 'ERC20'}</Text>
+            <Text>{exchange.mode === EXCHANGE_MODE.FROM_SCRT ? 'SNIP20' : messageToString(messages.token_name, exchange.network)}</Text>
           </Box>
         </Box>
         ) : null}

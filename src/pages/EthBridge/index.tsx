@@ -9,8 +9,9 @@ import { EXCHANGE_MODE, TOKEN } from 'stores/interfaces';
 import cn from 'classnames';
 import { Text } from 'components/Base';
 import { WalletBalances } from './WalletBalances';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BridgeHealth } from '../../components/Secret/BridgeHealthIndicator';
+import { messages, messageToString } from './messages';
 
 export const enum NETWORKS {
   ETH,
@@ -23,6 +24,7 @@ const LargeButton = (props: {
   description: string;
   isActive: boolean;
   reverse?: boolean;
+  network?: NETWORKS;
 }) => {
   return (
     <Box
@@ -36,9 +38,10 @@ const LargeButton = (props: {
       <BridgeHealth from_scrt={props.reverse} />
       <Box direction={props.reverse ? 'row-reverse' : 'row'} align="center">
         <Box direction="row" align="center">
-          <img className={styles.imgToken} src="/static/eth.svg" />
+          <img className={styles.imgToken} src={
+            props.network ? messageToString(messages.image_logo, props.network) : '/static/eth.svg'} />
           <Text size="large" className={styles.title}>
-            ETH
+            {props.network ? messageToString(messages.currency_symbol, props.network) : 'ETH'}
           </Text>
         </Box>
         <Box direction="row" margin={{ horizontal: 'medium' }} align="center">
@@ -61,6 +64,8 @@ const LargeButton = (props: {
 export const EthBridge = observer((props: any) => {
   const { userMetamask, exchange, routing, rewards, signerHealth } = useStores();
 
+  const [network, setNetwork] = useState<NETWORKS>(NETWORKS.ETH);
+
   useEffect(() => {
     rewards.init({
       isLocal: true,
@@ -71,8 +76,6 @@ export const EthBridge = observer((props: any) => {
 
     signerHealth.init({});
     signerHealth.fetch();
-
-
 
     if (props.match.params.token) {
       if ([TOKEN.NATIVE, TOKEN.ERC20].includes(props.match.params.token)) {
@@ -87,6 +90,15 @@ export const EthBridge = observer((props: any) => {
       exchange.sendOperation(props.match.params.operationId);
     }
   }, []);
+
+  useEffect(() => {
+    if (userMetamask.network) {
+      exchange.setNetwork(userMetamask.network);
+      exchange.setMainnet(userMetamask.mainnet);
+      setNetwork(userMetamask.network);
+    }
+
+  }, [userMetamask.network, userMetamask.mainnet, exchange])
 
   return (
     <BaseContainer>
@@ -110,17 +122,19 @@ export const EthBridge = observer((props: any) => {
               margin={{ vertical: 'large' }}
             >
               <LargeButton
-                title="ETH -> Secret Network"
+                title={messageToString(messages.swap_direction_source, network)}
                 description="(Metamask)"
                 onClick={() => exchange.setMode(EXCHANGE_MODE.TO_SCRT)}
                 isActive={exchange.mode === EXCHANGE_MODE.TO_SCRT}
+                network={exchange.network}
               />
               <LargeButton
-                title="Secret Network -> ETH"
+                title={messageToString(messages.swap_direction_dst, network)}
                 reverse={true}
                 description="(Keplr)"
                 onClick={() => exchange.setMode(EXCHANGE_MODE.FROM_SCRT)}
                 isActive={exchange.mode === EXCHANGE_MODE.FROM_SCRT}
+                network={exchange.network}
               />
             </Box>
 

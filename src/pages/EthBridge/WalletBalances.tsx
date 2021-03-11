@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import { observer } from 'mobx-react-lite';
 import { Button, Icon, Text, Title } from 'components/Base';
@@ -13,7 +14,7 @@ import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import UnlockToken from 'components/Earn/EarnRow/UnlockToken';
-import { useEffect, useState } from 'react';
+import { messages, messageToString } from './messages';
 
 const getTokenName = (tokenType: TOKEN, token: ITokenInfo) => {
   switch (tokenType) {
@@ -133,7 +134,8 @@ export const WalletBalances = observer(() => {
                 token.name !== 'WSCRT',
             ),
           )
-        : setDisplayedTokens(tokens.allData.filter(token => token.src_address === 'native'));
+        : setDisplayedTokens(tokens.allData.filter(token => (token.src_address === 'native'
+        && token.src_network === messageToString(messages.full_name, userMetamask.network))));
     };
 
     refreshSelectedToken();
@@ -144,9 +146,6 @@ export const WalletBalances = observer(() => {
       const balances = [];
       for (const token of displayedTokens) {
         await user.updateBalanceForSymbol(token.display_props.symbol);
-
-        console.log(`${user.balanceToken[token.src_coin]}`);
-
         balances[token.display_props.symbol] = user.balanceToken[token.src_coin];
       }
 
@@ -164,8 +163,9 @@ export const WalletBalances = observer(() => {
         <Box direction="column" margin={{ bottom: 'large' }}>
           <Box direction="row" align="center" justify="between" margin={{ bottom: 'xsmall' }}>
             <Box direction="row" align="center">
-              <img className={styles.imgToken} src="/static/eth.svg" />
-              <Title margin={{ right: 'xsmall' }}>Ethereum</Title>
+              <img className={styles.imgToken} src={
+                exchange.network ? messageToString(messages.image_logo, exchange.network) : '/static/eth.svg'} />
+              <Title margin={{ right: 'xsmall' }}>{messageToString(messages.full_name, exchange.network)}</Title>
               <Text margin={{ top: '4px' }}>(Metamask)</Text>
             </Box>
             {userMetamask.isAuthorized && (
@@ -182,10 +182,10 @@ export const WalletBalances = observer(() => {
 
           {userMetamask.isAuthorized ? (
             <>
-              <AssetRow asset="ETH Address" value={userMetamask.ethAddress} address={true} />
+              <AssetRow asset={`${messageToString(messages.currency_symbol, exchange.network)} Address`} value={userMetamask.ethAddress} address={true} />
 
               <AssetRow
-                asset="ETH"
+                asset={messageToString(messages.currency_symbol, exchange.network)}
                 value={userMetamask.ethBalance}
                 selected={exchange.token === TOKEN.NATIVE && exchange.mode === EXCHANGE_MODE.TO_SCRT}
               />
@@ -253,22 +253,7 @@ export const WalletBalances = observer(() => {
                 link={`${process.env.SCRT_EXPLORER_URL}/contracts/${process.env.SSCRT_CONTRACT}`}
                 selected={user.snip20Address === process.env.SSCRT_CONTRACT}
               />
-              {/*{exchange.token === TOKEN.ETH ? (*/}
-              {/*  <AssetRow*/}
-              {/*    asset="secretETH"*/}
-              {/*    value={displayedBalances['ETH']}*/}
-              {/*    token={tokens.allData.find(token => token.src_coin === 'Ethereum')}*/}
-              {/*    userStore={user}*/}
-              {/*    link={(() => {*/}
-              {/*      const eth = tokens.allData.find(token => token.src_coin === 'Ethereum');*/}
-              {/*      if (!eth) {*/}
-              {/*        return undefined;*/}
-              {/*      }*/}
-              {/*      return `${process.env.SCRT_EXPLORER_URL}/contracts/${eth.dst_address}`;*/}
-              {/*    })()}*/}
-              {/*    selected={true}*/}
-              {/*  />*/}
-              {/*) : null}*/}
+
               {displayedTokens.map((token, idx) => {
                 return (
                   <AssetRow

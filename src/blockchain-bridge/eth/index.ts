@@ -15,24 +15,24 @@ const ethManagerContract = new web3.eth.Contract(ethManagerJson.abi, process.env
 const bscManagerContract = new web3.eth.Contract(ethManagerJson.abi, process.env.BSC_MANAGER_CONTRACT);
 
 export const fromScrtMethods: Record<NETWORKS, Record<TOKEN, any>> = {
-  [NETWORKS.ETH]: {[TOKEN.ERC20]: new EthMethods({
+  [NETWORKS.ETH]: {[TOKEN.NATIVE]: new EthMethods({
       web3: web3,
       ethManagerContract: ethManagerContract,
     }),
 
-    [TOKEN.NATIVE]: new EthMethodsERC20({
+    [TOKEN.ERC20]: new EthMethodsERC20({
       web3: web3,
       ethManagerContract: ethManagerContract,
       ethManagerAddress: process.env.ETH_MANAGER_CONTRACT,
     }),
     [TOKEN.S20]: null,
   },
-  [NETWORKS.BSC]: {[TOKEN.ERC20]: new EthMethods({
+  [NETWORKS.BSC]: {[TOKEN.NATIVE]: new EthMethods({
       web3: web3,
       ethManagerContract: bscManagerContract,
     }),
 
-    [TOKEN.NATIVE]: new EthMethodsERC20({
+    [TOKEN.ERC20]: new EthMethodsERC20({
       web3: web3,
       ethManagerContract: bscManagerContract,
       ethManagerAddress: process.env.BSC_MANAGER_CONTRACT,

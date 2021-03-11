@@ -20,6 +20,6 @@ export class Tokens extends ListStoreConstructor<ITokenInfo> {
   }
   //
   @computed get totalLockedUSD() {
-    return this.data.reduce((acc, v) => acc + Number(v.totalLockedUSD), 0);
+    return this.allData.reduce((acc, v) => acc + Number(v.totalLockedUSD), 0);
   }
 }

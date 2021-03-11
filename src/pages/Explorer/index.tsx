@@ -13,6 +13,8 @@ import { ERC20Token, FormatWithDecimals, SecretToken } from './Components';
 import { SwapStatus } from '../../constants';
 import { getScrtAddress } from '../../blockchain-bridge';
 import { SearchInput } from '../../components/Search';
+import { messages, messageToString } from '../EthBridge/messages';
+import { NETWORKS } from '../EthBridge';
 
 const ethAddress = value => (
   <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
@@ -45,7 +47,7 @@ const swapToText = (status: SwapStatus): string => {
   }
 };
 
-const getColumns = ({ user }): IColumn<ISwap>[] => [
+const getColumns = (): IColumn<ISwap>[] => [
   {
     title: 'Recipient',
     key: 'dst_address',
@@ -69,10 +71,11 @@ const getColumns = ({ user }): IColumn<ISwap>[] => [
     dataIndex: 'src_coin',
     width: 180,
     render: (value, data) => {
-      return data.src_network !== 'Secret' ? (
+
+      return data.dst_network === 'secret20' ? (
         <ERC20Token value={TOKEN.ERC20} erc20Address={data.src_coin} />
       ) : (
-        <SecretToken value={TOKEN.S20} secretAddress={data.src_coin} />
+        <SecretToken value={TOKEN.S20} secretAddress={data.src_coin}  />
       );
     },
   },
@@ -82,7 +85,8 @@ const getColumns = ({ user }): IColumn<ISwap>[] => [
     dataIndex: 'dst_coin',
     width: 180,
     render: (value, data) => {
-      return data.dst_network !== 'Secret' ? (
+
+      return data.dst_network !== 'secret20' ? (
         <ERC20Token value={TOKEN.ERC20} erc20Address={data.dst_coin} />
       ) : (
         <SecretToken value={TOKEN.S20} secretAddress={data.dst_coin} />
@@ -111,33 +115,47 @@ const getColumns = ({ user }): IColumn<ISwap>[] => [
 ];
 
 export const Explorer = observer((props: any) => {
-  const { operations, user, tokens } = useStores();
+  const { operations, user, tokens, userMetamask } = useStores();
 
-  const [columns, setColumns] = useState(getColumns({ user }));
+  const [columns, setColumns] = useState(getColumns());
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     tokens.init();
+    tokens.filters = {
+      src_network: messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH)
+    };
     tokens.fetch();
     operations.init({
       isLocal: true,
       sorter: 'created_on, desc',
       pollingInterval: 20000,
+      filters: {
+        src_network: messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH),
+      }
     });
     operations.fetch();
   }, []);
 
   useEffect(() => {
-    setColumns(getColumns({ user }));
+    setColumns(getColumns());
   }, [user.scrtRate, user.ethRate, tokens.data, tokens.fetchStatus]);
 
   const onChangeDataFlow = (props: any) => {
     operations.onChangeDataFlow(props);
   };
 
-  // todo: make this a button.. it's too slow as a live search
   const filteredData = operations.allData
+    .filter((value) => {
+      return !(value.dst_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH) &&
+        value.src_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH));
+
+    });
+
+  // todo: make this a button.. it's too slow as a live search
+  const filteredDataSearch = filteredData
     .filter(value => {
+
       if (search) {
         return (
           Object.values(value).some(
@@ -170,7 +188,7 @@ export const Explorer = observer((props: any) => {
           </Box>
 
           <Table
-            data={search ? filteredData : operations.data}
+            data={search ? filteredDataSearch : filteredData}
             columns={columns}
             isPending={operations.isPending}
             dataLayerConfig={operations.dataFlow}

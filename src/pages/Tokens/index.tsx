@@ -12,6 +12,8 @@ import { Text } from 'components/Base';
 import { SearchInput } from 'components/Search';
 import { getScrtAddress } from '../../blockchain-bridge';
 import { isMobile } from 'react-device-detect';
+import { messages, messageToString } from '../EthBridge/messages';
+import { NETWORKS } from '../EthBridge';
 
 const ethAddress = (value, num = 10) => (
   <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
@@ -64,7 +66,7 @@ const getColumns = (): IColumn<ITokenInfo>[] => [
     width: 160,
   },
   {
-    title: 'Ethereum Address',
+    title: 'Asset Address',
     key: 'src_address',
     dataIndex: 'src_address',
     width: 220,
@@ -113,7 +115,7 @@ const getColumns = (): IColumn<ITokenInfo>[] => [
 export const Tokens = observer((props: any) => {
   const { tokens } = useStores();
   const [search, setSearch] = useState<string>('');
-
+  const [tvl, setTVL] = useState<number>(tokens.totalLockedUSD);
   const [allColumns, setColumns] = useState<Array<any>>(getColumns());
 
   let columns = allColumns;
@@ -135,13 +137,27 @@ export const Tokens = observer((props: any) => {
     //tokens.fetch();
   }, []);
 
+  useEffect(() => {
+
+    if (tokens.allData.length > 0) {
+      setTVL(tokens.totalLockedUSD)
+    }
+  }, [tokens.allData.length])
+
   const onChangeDataFlow = (props: any) => {
     tokens.onChangeDataFlow(props);
   };
 
   const lastUpdateAgo = Math.ceil((Date.now() - tokens.lastUpdateTime) / 1000);
 
-  const filteredData = tokens.data
+  //const filteredData = ;
+    // .filter((value) => {
+    //   return !(value.dst_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH) &&
+    //     value.src_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH));
+    //
+    // });
+
+  const filteredDataSearch = tokens.allData
     .filter(token => {
       if (search) {
         // todo: check dst_network
@@ -206,7 +222,7 @@ export const Tokens = observer((props: any) => {
                   letterSpacing: 0.2,
                 }}
               >
-                ${formatWithTwoDecimals(tokens.totalLockedUSD)}
+                ${formatWithTwoDecimals(tvl)}
               </span>
             </span>
           </div>
@@ -227,7 +243,7 @@ export const Tokens = observer((props: any) => {
 
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Table
-            data={filteredData}
+            data={filteredDataSearch}
             columns={columns}
             isPending={tokens.isPending}
             hidePagination={true}

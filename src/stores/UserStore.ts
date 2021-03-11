@@ -55,6 +55,9 @@ export class UserStoreEx extends StoreConstructor {
 
     // Load tokens from DB
     this.stores.tokens.init();
+    this.stores.tokens.filters = {
+
+    }
     this.stores.tokens.fetch();
 
     const keplrCheckPromise = new Promise<void>((accept, _reject) => {

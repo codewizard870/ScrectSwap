@@ -6,7 +6,9 @@ import * as React from 'react';
 import { EXCHANGE_MODE, TOKEN } from 'stores/interfaces';
 import { observer } from 'mobx-react';
 import { useStores } from '../../stores';
-import { divDecimals, formatWithSixDecimals, mulDecimals } from '../../utils';
+import { divDecimals, formatWithSixDecimals } from '../../utils';
+import { NETWORKS } from '../EthBridge';
+import { messages, messageToString } from '../EthBridge/messages';
 
 export const OperationType = (props: { type: EXCHANGE_MODE }) => {
   return (
@@ -82,7 +84,7 @@ export const FormatWithDecimals = observer((props: ITokenParams) => {
 });
 
 export const ERC20Token = observer((props: IERC20TokenProps) => {
-  const { tokens } = useStores();
+  const { tokens, userMetamask } = useStores();
   const { value, erc20Address } = props;
 
   if (value === TOKEN.ERC20) {
@@ -96,14 +98,14 @@ export const ERC20Token = observer((props: IERC20TokenProps) => {
       );
     }
   } else if (value === TOKEN.NATIVE) {
-    return <Box>ETH</Box>;
+    return <Box>{messageToString(messages.currency_symbol, userMetamask.network || NETWORKS.ETH)}</Box>;
   }
 
   return <Box>{value ? value.toUpperCase() : '--'}</Box>;
 });
 
 export const SecretToken = observer((props: ISecretTokenProps) => {
-  const { tokens } = useStores();
+  const { tokens, userMetamask } = useStores();
   const { value, secretAddress } = props;
 
   if (value === TOKEN.ERC20 || value === TOKEN.S20) {
@@ -123,7 +125,7 @@ export const SecretToken = observer((props: ISecretTokenProps) => {
       );
     }
   } else if (value === TOKEN.NATIVE) {
-    return <Box>secretETH</Box>;
+    return <Box>{messageToString(messages.currency_symbol, userMetamask.network || NETWORKS.ETH)}</Box>;
   }
 
   return <Box>{value ? value.toUpperCase() : '--'}</Box>;

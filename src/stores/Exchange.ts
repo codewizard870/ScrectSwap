@@ -9,6 +9,7 @@ import { Snip20SendToBridge, Snip20SwapHash, swapContractAddress } from '../bloc
 import { balanceNumberFormat, divDecimals, mulDecimals, sleep, uuid } from '../utils';
 import { getNetworkFee } from '../blockchain-bridge/eth/helpers';
 import { NETWORKS } from '../pages/EthBridge';
+import { messages, messageToString } from '../pages/EthBridge/messages';
 
 export enum EXCHANGE_STEPS {
   GET_TOKEN_ADDRESS = 'GET_TOKEN_ADDRESS',
@@ -62,6 +63,7 @@ export class Exchange extends StoreConstructor {
   @observable token: TOKEN;
 
   @observable network: NETWORKS = NETWORKS.ETH
+  @observable mainnet: boolean = true
 
   @computed
   get step() {
@@ -194,9 +196,16 @@ export class Exchange extends StoreConstructor {
 
   @action.bound
   setNetwork(network: NETWORKS) {
-    // this.clear();
     this.network = network;
-    // this.setAddressByMode();
+    this.stores.tokens.filters = {
+      src_network: messageToString(messages.full_name, network)
+    };
+    this.stores.tokens.fetch();
+  }
+
+  @action.bound
+  setMainnet(mainnet: boolean) {
+    this.mainnet = mainnet;
   }
 
   @observable operation: IOperation;

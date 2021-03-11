@@ -8,6 +8,8 @@ import { Button, Select, Text } from 'components/Base';
 import * as styles from './styles.styl';
 import { truncateAddressString } from '../../utils';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
+import { messages, messageToString } from '../EthBridge/messages';
+import { NETWORKS } from '../EthBridge';
 
 const selectTokenText = (mode: string, token: ITokenInfo) => {
   if (mode === EXCHANGE_MODE.FROM_SCRT && !token.display_props.proxy) {
@@ -28,11 +30,23 @@ export const ERC20Select = observer(() => {
   const [token, setToken] = useState('');
   const [snip20, setSnip20] = useState('');
   const [custom, setCustom] = useState(false);
+  const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
 
   useEffect(() => {
     setERC20(userMetamask.erc20Address);
     setToken(userMetamask.erc20Address);
   }, [userMetamask.erc20Address]);
+
+  useEffect(() => {
+    if (tokens.allData.length > 0) {
+      setFilteredTokens(
+        tokens.allData
+          .filter((value) => {
+            return (value.src_network === messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH));
+          })
+      )
+    }
+  }, [tokens.allData, userMetamask.network])
 
   return (
     <Box direction="column" margin={{ top: 'xlarge' }}>
@@ -45,7 +59,7 @@ export const ERC20Select = observer(() => {
       {!custom ? (
         <Box margin={{ top: 'small', bottom: 'medium' }}>
           <Select
-            options={tokens.allData
+            options={filteredTokens
               .filter(token => token.display_props && token.src_coin !== 'Ethereum')
               .sort((a, b) =>
                 /* SCRT first */
@@ -60,7 +74,7 @@ export const ERC20Select = observer(() => {
             value={token}
             onChange={async value => {
               setToken(value);
-              setSnip20(tokens.allData.find(t => t.src_address === value).dst_address);
+              setSnip20(filteredTokens.find(t => t.src_address === value).dst_address);
 
               setError('');
               try {

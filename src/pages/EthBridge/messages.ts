@@ -8,7 +8,9 @@ export enum messages {
   currency_symbol,
   secret_currency_symbol,
   image_logo,
-  destination_network_address
+  destination_network_address,
+  full_name,
+  token_name
 }
 
 const message_map: Record<messages, Record<NETWORKS, string>> = {
@@ -38,7 +40,15 @@ const message_map: Record<messages, Record<NETWORKS, string>> = {
   },
   [messages.image_logo]: {
     [NETWORKS.ETH]: "/static/eth.svg",
-    [NETWORKS.BSC]: "/static/bnb.svg",
+    [NETWORKS.BSC]: "/static/binance-logo.png",
+  },
+  [messages.full_name]: {
+    [NETWORKS.ETH]: "Ethereum",
+    [NETWORKS.BSC]: "Binance Smart Chain",
+  },
+  [messages.token_name]: {
+    [NETWORKS.ETH]: "ERC20",
+    [NETWORKS.BSC]: "BEP20",
   }
 }
 

@@ -123,6 +123,10 @@ export class SwapRouter extends React.Component<
 
       // Register for pair events
       this.registerPairQueries(this.state.selectedPair);
+
+      // Register for pair events along all routes,
+      // because we need to know about changes in pool sizes
+      this.registerRoutesQueries();
     }
   }
 
@@ -219,6 +223,34 @@ export class SwapRouter extends React.Component<
     return newObject;
   };
 
+  refreshPools = async ({ pair, height }: { pair: SwapPair; height?: number }) => {
+    if (!height) {
+      height = await this.props.user.secretjs.getHeight();
+    }
+
+    const balanceTasks = [];
+
+    // these will return a list of promises, which we will flatten then map to a single object
+    balanceTasks.push(this.refreshPoolBalance(pair));
+
+    const results = await Promise.all([...balanceTasks]);
+
+    // flatten array to a single object
+    const newObject = Object.assign(
+      {},
+      ...results.flat().map(item => ({ [Object.keys(item)[0]]: Object.values(item)[0] })),
+    );
+
+    this.setState(currentState => ({
+      balances: {
+        ...currentState.balances,
+        ...newObject,
+      },
+    }));
+
+    return newObject;
+  };
+
   private async onMessage(event: WebSocketMessageEvent | MessageEvent<any>) {
     try {
       const data = JSON.parse(event.data);
@@ -227,11 +259,19 @@ export class SwapRouter extends React.Component<
         return;
       }
 
-      if (data.id === -1) {
+      if (Number(data.id) === -1) {
         return;
       }
 
-      const symbols: Array<string> = data.id.split('/');
+      const dataId: string = data.id;
+
+      if (dataId.startsWith('pools-')) {
+        const pair = this.state.pairs.get(dataId.replace('pools-', ''));
+        await this.refreshPools({ pair });
+        return;
+      }
+
+      const symbols: Array<string> = dataId.split('/');
 
       // refresh selected token balances as well (because why not?)
       if (this.state.selectedToken0) {
@@ -248,7 +288,7 @@ export class SwapRouter extends React.Component<
 
       console.log(`Refreshing ${filteredSymbols.join(' and ')} for height ${height}`);
 
-      const pairSymbol = data.id;
+      const pairSymbol: string = dataId;
       const pair = this.state.pairs.get(pairSymbol);
 
       await this.refreshBalances({ height, tokenSymbols: filteredSymbols, pair });
@@ -419,6 +459,10 @@ export class SwapRouter extends React.Component<
       const tokenAddress = token.address;
       const tokenQueries = [`message.contract_address='${tokenAddress}'`, `wasm.contract_address='${tokenAddress}'`];
       for (const query of tokenQueries) {
+        if (this.state.queries.includes(query)) {
+          // already subscribed
+          continue;
+        }
         this.ws.send(
           JSON.stringify({
             jsonrpc: '2.0',
@@ -429,7 +473,7 @@ export class SwapRouter extends React.Component<
         );
       }
       this.setState(currentState => ({
-        queries: currentState.queries.concat(tokenQueries),
+        queries: Array.from(new Set(currentState.queries.concat(tokenQueries))),
       }));
     }
   }
@@ -453,6 +497,10 @@ export class SwapRouter extends React.Component<
     const pairQueries = this.getPairQueries(pair);
 
     for (const query of pairQueries) {
+      if (this.state.queries.includes(query)) {
+        // alreay subscribed
+        continue;
+      }
       this.ws.send(
         JSON.stringify({
           jsonrpc: '2.0',
@@ -463,7 +511,65 @@ export class SwapRouter extends React.Component<
       );
     }
     this.setState(currentState => ({
-      queries: currentState.queries.concat(pairQueries),
+      queries: Array.from(new Set(currentState.queries.concat(pairQueries))),
+    }));
+  }
+
+  private getRoutesQueries(): { [pairId: string]: Array<string> } {
+    const queris: { [pairId: string]: Set<string> } = {};
+
+    for (const r of this.state.selectedPairRoutes) {
+      for (let i = 0; i < r.length - 2; i++) {
+        const pair = this.state.pairs.get(`${r[i]}${SwapPair.id_delimiter}${r[i + 1]}`);
+        if (pair) {
+          if (!(pair.identifier() in queris)) {
+            queris[pair.identifier()] = new Set();
+          }
+
+          const pairQueries = this.getPairQueries(pair);
+          for (const q of pairQueries) {
+            queris[pair.identifier()].add(q);
+          }
+        }
+      }
+    }
+
+    const result: { [pairId: string]: Array<string> } = {};
+    for (const pairId in queris) {
+      result[pairId] = Array.from(queris[pairId]);
+    }
+
+    return result;
+  }
+
+  private registerRoutesQueries() {
+    const routesQueries = this.getRoutesQueries();
+
+    if (Object.keys(routesQueries).length === 0) {
+      return;
+    }
+
+    const queriesToStoreInState: Array<string> = [];
+    for (const pairId in routesQueries) {
+      for (const query of routesQueries[pairId]) {
+        if (this.state.queries.includes(query)) {
+          // alreay subscribed
+          continue;
+        }
+        this.ws.send(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: `pools-${pairId}`, // jsonrpc id
+            method: 'subscribe',
+            params: { query },
+          }),
+        );
+        queriesToStoreInState.push(query);
+      }
+    }
+
+    this.setState(currentState => ({
+      queries: Array.from(new Set(currentState.queries.concat(queriesToStoreInState))),
     }));
   }
 
@@ -608,6 +714,14 @@ export class SwapRouter extends React.Component<
     for (const p of pairs) {
       const newPair = SwapPair.fromPair(p, tokens);
       newPairs.set(newPair.identifier(), newPair);
+      newPairs.set(
+        newPair
+          .identifier()
+          .split(SwapPair.id_delimiter)
+          .reverse()
+          .join(SwapPair.id_delimiter),
+        newPair,
+      );
     }
 
     this.setState({ pairs: newPairs }, this.updateRoutingGraph);
@@ -696,7 +810,7 @@ export class SwapRouter extends React.Component<
                   onSetTokens={async (token0, token1, refreshBalances) =>
                     await this.onSetTokens(token0, token1, refreshBalances)
                   }
-                  refreshBalances={this.refreshBalances}
+                  refreshPools={this.refreshPools}
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
                 />

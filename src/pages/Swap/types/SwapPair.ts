@@ -8,6 +8,7 @@ export class SwapPair {
   asset_infos: Asset[];
   contract_addr: string;
   liquidity_token: string;
+  static id_delimiter = '/';
 
   constructor(
     symbol0: string,
@@ -35,7 +36,7 @@ export class SwapPair {
   }
 
   assetIds(): string[] {
-    return this.pair_identifier.split('/');
+    return this.pair_identifier.split(SwapPair.id_delimiter);
   }
 
   isSymbolInPair(symbol: string): boolean {
@@ -47,7 +48,7 @@ export class SwapPair {
   }
 
   isIdInPair(id: string): boolean {
-    const pairIdentifiers = this.pair_identifier.split('/');
+    const pairIdentifiers = this.pair_identifier.split(SwapPair.id_delimiter);
 
     for (const pId of pairIdentifiers) {
       if (pId.toLowerCase() === id) {
@@ -96,6 +97,8 @@ export class SwapPair {
 }
 
 export const pairIdFromTokenIds = (id0: string, id1: string): string => {
-  return id0.localeCompare(id1) === -1 ? `${id0}/${id1}` : `${id1}/${id0}`;
+  return id0.localeCompare(id1) === -1
+    ? `${id0}${SwapPair.id_delimiter}${id1}`
+    : `${id1}${SwapPair.id_delimiter}${id0}`;
 };
 export type PairMap = Map<string, SwapPair>;

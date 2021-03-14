@@ -37,7 +37,7 @@ export class SwapTab extends React.Component<
     selectedPairRoutes: string[][];
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     onSetTokens: CallableFunction;
-    refreshBalances: CallableFunction;
+    refreshPools: CallableFunction;
     secretAddress: string;
     pairs: PairMap;
   },
@@ -118,10 +118,7 @@ export class SwapTab extends React.Component<
     );
 
     if (offer_pool.isNaN() || ask_pool.isNaN()) {
-      const balances = await this.props.refreshBalances({
-        tokenSymbols: [],
-        pair,
-      });
+      const balances = await this.props.refreshPools({ pair });
       offer_pool = humanizeBalance(new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any), fromDecimals);
       ask_pool = humanizeBalance(new BigNumber(balances[`${toToken}-${pair.identifier()}`] as any), toDecimals);
     }
@@ -163,8 +160,7 @@ export class SwapTab extends React.Component<
           for (let i = 0; i < route.length - 1; i++) {
             const fromToken = route[i];
             const toToken = route[i + 1];
-            const pair: SwapPair =
-              this.props.pairs.get(`${fromToken}/${toToken}`) ?? this.props.pairs.get(`${toToken}/${fromToken}`);
+            const pair: SwapPair = this.props.pairs.get(`${fromToken}${SwapPair.id_delimiter}${toToken}`);
 
             const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
 
@@ -213,8 +209,7 @@ export class SwapTab extends React.Component<
           for (let i = route.length - 1; i > 0; i--) {
             const fromToken = route[i - 1];
             const toToken = route[i];
-            const pair: SwapPair =
-              this.props.pairs.get(`${fromToken}/${toToken}`) ?? this.props.pairs.get(`${toToken}/${fromToken}`);
+            const pair: SwapPair = this.props.pairs.get(`${fromToken}${SwapPair.id_delimiter}${toToken}`);
             const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
 
             const ask_amount = to;
@@ -800,8 +795,7 @@ export class SwapTab extends React.Component<
           };
 
           const toToken = bestRoute[idx + 1];
-          const pair: SwapPair =
-            this.props.pairs.get(`${fromToken}/${toToken}`) ?? this.props.pairs.get(`${toToken}/${fromToken}`);
+          const pair: SwapPair = this.props.pairs.get(`${fromToken}${SwapPair.id_delimiter}${toToken}`);
 
           if (fromToken === 'uscrt') {
             hop.from_token.native_denom = 'uscrt';

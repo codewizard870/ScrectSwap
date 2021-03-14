@@ -68,7 +68,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     }
     if (selectedPair.pair_identifier.includes(process.env.SSCRT_CONTRACT)) {
       const tokenB = selectedPair.pair_identifier.split('/').filter(a => a !== process.env.SSCRT_CONTRACT);
-      selectedPair.pair_identifier = `${process.env.SSCRT_CONTRACT}/${tokenB}`;
+      selectedPair.pair_identifier = `${process.env.SSCRT_CONTRACT}${SwapPair.id_delimiter}${tokenB}`;
     }
 
     const [tokenA, tokenB] = selectedPair.assetIds();

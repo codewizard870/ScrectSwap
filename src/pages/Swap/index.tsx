@@ -545,7 +545,7 @@ export class SwapRouter extends React.Component<
     return swapTokens;
   };
 
-  setCurrentPair = async (token0: string, token1: string) => {
+  setCurrentPair = async (token0: string, token1: string, refreshBalances: boolean = true) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
 
     const routes: string[][] = [];
@@ -574,8 +574,10 @@ export class SwapRouter extends React.Component<
       selectedPairRoutes: routes,
     });
 
-    const height = await this.props.user.secretjs.getHeight();
-    await this.refreshBalances({ height, tokenSymbols: [token0, token1], pair: selectedPair });
+    if (refreshBalances) {
+      const height = await this.props.user.secretjs.getHeight();
+      await this.refreshBalances({ height, tokenSymbols: [token0, token1], pair: selectedPair });
+    }
   };
 
   updatePairs = async () => {
@@ -691,7 +693,9 @@ export class SwapRouter extends React.Component<
                   selectedToken1={this.state.selectedToken1}
                   selectedPairRoutes={this.state.selectedPairRoutes}
                   notify={this.notify}
-                  onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
+                  onSetTokens={async (token0, token1, refreshBalances) =>
+                    await this.onSetTokens(token0, token1, refreshBalances)
+                  }
                   refreshBalances={this.refreshBalances}
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
@@ -740,14 +744,14 @@ export class SwapRouter extends React.Component<
     );
   }
 
-  private onSetTokens = async (token0, token1) => {
+  private onSetTokens = async (token0, token1, refreshBalances = true) => {
     this.setState(currentState => ({
       ...currentState,
       selectedToken0: token0,
       selectedToken1: token1,
     }));
     if (token0 && token1) {
-      await this.setCurrentPair(token0, token1);
+      await this.setCurrentPair(token0, token1, refreshBalances);
     }
   };
 }

@@ -56,6 +56,7 @@ export class SwapTab extends React.Component<
     loadingSwap: boolean;
     loadingBestRoute: boolean;
     bestRoute: string[];
+    loadingPriceData: boolean;
   }
 > {
   constructor(props) {
@@ -76,6 +77,7 @@ export class SwapTab extends React.Component<
       loadingSwap: false,
       loadingBestRoute: false,
       bestRoute: null,
+      loadingPriceData: false,
     };
   }
 
@@ -293,6 +295,8 @@ export class SwapTab extends React.Component<
       return;
     }
 
+    this.setState({ loadingPriceData: true });
+
     const fromDecimals = this.props.tokens.get(this.state.fromToken).decimals;
     const toDecimals = this.props.tokens.get(this.state.toToken).decimals;
 
@@ -309,6 +313,7 @@ export class SwapTab extends React.Component<
     );
 
     if (offer_pool.isNaN() || ask_pool.isNaN() || offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+      this.setState({ loadingPriceData: false });
       return;
     }
 
@@ -361,6 +366,8 @@ export class SwapTab extends React.Component<
         });
       }
     }
+
+    this.setState({ loadingPriceData: false });
   }
 
   render() {
@@ -387,7 +394,9 @@ export class SwapTab extends React.Component<
     const canonToInput = canonicalizeBalance(new BigNumber(this.state.toInput), toDecimals);
 
     let buttonMessage: string;
-    if (this.state.loadingBestRoute) {
+    if (this.state.loadingPriceData) {
+      buttonMessage = BUTTON_MSG_LOADING_PRICE;
+    } else if (this.state.loadingBestRoute) {
       buttonMessage = BUTTON_MSG_FINDING_ROUTE;
     } else if (this.state.bestRoute) {
       if (this.state.fromInput === '' && this.state.toInput === '') {
@@ -418,8 +427,8 @@ export class SwapTab extends React.Component<
       offer_pool.isZero() ||
       ask_pool.isZero() ||
       ask_pool.isLessThan(canonToInput) ||
-      Number(this.state.fromInput) <= 0 ||
-      Number(this.state.toInput) <= 0
+      Number(this.state.fromInput) < 0 ||
+      Number(this.state.toInput) < 0
     ) {
       buttonMessage = BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
     } else if (this.state.fromInput === '' || this.state.toInput === '') {
@@ -473,16 +482,17 @@ export class SwapTab extends React.Component<
                 this.setState(
                   {
                     toToken: this.state.fromToken,
-                    toInput: this.state.fromInput,
+                    toInput: this.state.isFromEstimated ? '' : this.state.fromInput,
                     isToEstimated: this.state.isFromEstimated,
 
                     fromToken: this.state.toToken,
-                    fromInput: this.state.toInput,
+                    fromInput: this.state.isToEstimated ? '' : this.state.toInput,
                     isFromEstimated: this.state.isToEstimated,
                   },
-                  () => {
+                  async () => {
+                    await this.props.onSetTokens(this.state.fromToken, this.state.toToken, false);
+
                     this.updateInputs();
-                    this.props.onSetTokens(this.state.fromToken, this.state.toToken);
                   },
                 );
               }}
@@ -850,12 +860,16 @@ export class SwapTab extends React.Component<
   };
 
   private async setToToken(identifier: string) {
-    const setStateCallback = async () => {
-      if (this.state.fromToken) {
-        await this.updateInputs();
+    const setStateCallback = async (refreshBalances: boolean) => {
+      if (refreshBalances) {
+        this.setState({ loadingPriceData: true });
       }
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken, refreshBalances);
+      this.setState({ loadingPriceData: false });
 
-      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+      if (this.state.fromToken) {
+        this.updateInputs();
+      }
     };
 
     if (identifier === this.state.fromToken) {
@@ -869,7 +883,7 @@ export class SwapTab extends React.Component<
           fromInput: this.state.toInput,
           toInput: this.state.fromInput,
         },
-        setStateCallback,
+        () => setStateCallback(false),
       );
     } else {
       this.setState(
@@ -879,18 +893,23 @@ export class SwapTab extends React.Component<
           isToEstimated: true,
           isFromEstimated: false,
         },
-        setStateCallback,
+        () => setStateCallback(true),
       );
     }
   }
 
   private async setFromToken(identifier: string) {
-    const setStateCallback = async () => {
-      if (this.state.toToken) {
-        await this.updateInputs();
+    const setStateCallback = async (refreshBalances: boolean) => {
+      if (refreshBalances) {
+        this.setState({ loadingPriceData: true });
       }
 
-      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken, refreshBalances);
+      this.setState({ loadingPriceData: false });
+
+      if (this.state.toToken) {
+        this.updateInputs();
+      }
     };
 
     if (identifier === this.state.toToken) {
@@ -904,7 +923,7 @@ export class SwapTab extends React.Component<
           fromInput: this.state.toInput,
           toInput: this.state.fromInput,
         },
-        setStateCallback,
+        () => setStateCallback(false),
       );
     } else {
       this.setState(
@@ -914,7 +933,7 @@ export class SwapTab extends React.Component<
           isFromEstimated: true,
           isToEstimated: false,
         },
-        setStateCallback,
+        () => setStateCallback(true),
       );
     }
   }

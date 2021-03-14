@@ -53,7 +53,7 @@ export const BetaWarning = ({ secretjs }: { secretjs: SigningCosmWasmClient }) =
         </li>
         <li>
           <a href="https://discord.com/channels/360051864110235648/805840792303960155" target="_blank" rel="noreferrer">
-            #🔀amm-support
+            #🔀secret-swap
           </a>{' '}
           on{' '}
           <a href="https://chat.scrt.network" target="_blank" rel="noreferrer">

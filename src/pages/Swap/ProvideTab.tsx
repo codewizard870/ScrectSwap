@@ -411,7 +411,7 @@ export class ProvideTab extends React.Component<
         <SwapAssetRow
           secretjs={this.props.secretjs}
           label="Input"
-          maxButton={this.state.tokenA !== 'uscrt'}
+          maxButton={true}
           balance={balanceA}
           tokens={this.props.tokens}
           token={this.state.tokenA}
@@ -440,7 +440,7 @@ export class ProvideTab extends React.Component<
         <SwapAssetRow
           secretjs={this.props.secretjs}
           label="Input"
-          maxButton={this.state.tokenB !== 'uscrt'}
+          maxButton={true}
           balance={balanceB}
           tokens={this.props.tokens}
           token={this.state.tokenB}

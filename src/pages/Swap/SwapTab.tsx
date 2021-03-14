@@ -439,7 +439,7 @@ export class SwapTab extends React.Component<
             secretjs={this.props.secretjs}
             label="From"
             disabled={this.state.isFromEstimated && this.state.loadingBestRoute}
-            maxButton={this.state.fromToken !== 'uscrt'}
+            maxButton={true}
             balance={fromBalance}
             tokens={this.props.tokens}
             token={this.state.fromToken}

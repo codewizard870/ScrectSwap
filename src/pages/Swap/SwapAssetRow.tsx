@@ -117,7 +117,16 @@ export const SwapAssetRow = ({
             onClick={() => {
               const { decimals } = tokens.get(token);
 
-              setAmount(humanizeBalance(new BigNumber(balance as any), decimals).toFixed(decimals));
+              let leftoverForGas = 0;
+              if (token === 'uscrt') {
+                leftoverForGas = 0.5;
+              }
+
+              setAmount(
+                humanizeBalance(new BigNumber(balance as any), decimals)
+                  .minus(leftoverForGas)
+                  .toFixed(decimals),
+              );
             }}
           >
             MAX

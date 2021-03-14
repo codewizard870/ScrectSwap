@@ -168,12 +168,16 @@ export class SwapTab extends React.Component<
 
             const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
 
-            if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+            const offer_amount = from;
+            if (
+              offer_pool.isEqualTo(0) ||
+              ask_pool.isEqualTo(0) ||
+              offer_amount.isNaN() ||
+              offer_amount.isLessThanOrEqualTo(0)
+            ) {
               to = new BigNumber(0);
               break;
             }
-
-            const offer_amount = from;
 
             const { return_amount, spread_amount, commission_amount } = compute_swap(
               offer_pool,
@@ -181,7 +185,7 @@ export class SwapTab extends React.Component<
               offer_amount,
             );
 
-            if (return_amount.isNaN() || from.isNaN() || from.isZero()) {
+            if (return_amount.isNaN() || return_amount.isLessThanOrEqualTo(0)) {
               to = new BigNumber(0);
               break;
             }
@@ -213,19 +217,25 @@ export class SwapTab extends React.Component<
               this.props.pairs.get(`${fromToken}/${toToken}`) ?? this.props.pairs.get(`${toToken}/${fromToken}`);
             const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
 
-            if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
+            const ask_amount = to;
+            if (
+              offer_pool.isEqualTo(0) ||
+              ask_pool.isEqualTo(0) ||
+              ask_amount.gt(ask_pool) ||
+              ask_amount.isNaN() ||
+              ask_amount.isZero()
+            ) {
               from = new BigNumber(Infinity);
               break;
             }
 
-            const ask_amount = to;
             const { offer_amount, spread_amount, commission_amount } = compute_offer_amount(
               offer_pool,
               ask_pool,
               ask_amount,
             );
 
-            if (offer_amount.isNaN() || to.isNaN() || to.isZero()) {
+            if (offer_amount.isNaN() || offer_amount.isLessThanOrEqualTo(0)) {
               from = new BigNumber(Infinity);
               break;
             }
@@ -265,6 +275,13 @@ export class SwapTab extends React.Component<
             commission: (0.3 / 100) * Number(this.state.toInput), // always denominated in toToken
             priceImpact: bestRoutePriceImpact,
           });
+        }
+      } else {
+        if (this.state.isToEstimated) {
+          this.setState({ toInput: '' });
+        } else {
+          // isFromEstimated
+          this.setState({ fromInput: '' });
         }
       }
     } catch (e) {
@@ -408,15 +425,12 @@ export class SwapTab extends React.Component<
       } else {
         buttonMessage = BUTTON_MSG_SWAP;
       }
-    } else if (
-      !pair &&
-      this.props.selectedPairRoutes?.length > 0 &&
-      this.state.fromInput === '' &&
-      this.state.toInput === ''
-    ) {
-      buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
-    } else if (!pair && this.props.selectedPairRoutes?.length > 0) {
-      buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
+    } else if (this.props.selectedPairRoutes?.length > 0) {
+      if (this.state.fromInput === '' && this.state.toInput === '') {
+        buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
+      } else {
+        buttonMessage = BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
+      }
     } else if (!pair) {
       buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {

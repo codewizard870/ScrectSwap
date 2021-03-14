@@ -586,10 +586,16 @@ export class SwapRouter extends React.Component<
 
     // filter all pairs that aren't known tokens
     pairs = pairs.filter(p => {
-      for (const s of getSymbolsFromPair(p)) {
+      const pairSymbols = getSymbolsFromPair(p);
+      for (const s of pairSymbols) {
         if (!tokens.has(s)) {
           return false;
         }
+      }
+
+      if (pairSymbols.includes('uscrt') && !pairSymbols.includes(process.env.SSCRT_CONTRACT)) {
+        // Unauthuorized SCRT pair
+        return false;
       }
 
       return true;

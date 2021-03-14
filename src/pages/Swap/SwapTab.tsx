@@ -212,7 +212,7 @@ export class SwapTab extends React.Component<
             const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
 
             if (offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
-              from = new BigNumber(0);
+              from = new BigNumber(Infinity);
               break;
             }
 
@@ -224,7 +224,7 @@ export class SwapTab extends React.Component<
             );
 
             if (offer_amount.isNaN() || to.isNaN() || to.isZero()) {
-              from = new BigNumber(0);
+              from = new BigNumber(Infinity);
               break;
             }
 

@@ -414,7 +414,13 @@ export class SwapTab extends React.Component<
       buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
     } else if (new BigNumber(fromBalance as BigNumber).isLessThan(canonFromInput)) {
       buttonMessage = `Insufficient ${this.props.tokens.get(this.state.fromToken)?.symbol} balance`;
-    } else if (offer_pool.isZero() || ask_pool.isZero() || ask_pool.isLessThan(canonToInput)) {
+    } else if (
+      offer_pool.isZero() ||
+      ask_pool.isZero() ||
+      ask_pool.isLessThan(canonToInput) ||
+      Number(this.state.fromInput) <= 0 ||
+      Number(this.state.toInput) <= 0
+    ) {
       buttonMessage = BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
     } else if (this.state.fromInput === '' || this.state.toInput === '') {
       buttonMessage = BUTTON_MSG_LOADING_PRICE;

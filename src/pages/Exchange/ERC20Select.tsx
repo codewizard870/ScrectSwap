@@ -25,6 +25,8 @@ export const ERC20Select = observer((props: {
 
   const { userMetamask, exchange, tokens } = useStores();
 
+  // useEffect(() => {}, [token]);
+
   return (
     <Box direction="column">
       <Box direction="row" align="center" justify="between">

@@ -131,7 +131,7 @@ export const SwapConfirmation = observer(() => {
 
                                         {truncateAddressString(exchange.transaction.scrtAddress)}
                                     </Text>
-                                    <CopyToClipboard text={exchange.transaction.ethAddress} onCopy={() => createNotification('success', 'Copied to Clipboard!', " ")}>
+                                    <CopyToClipboard text={exchange.transaction.ethAddress} onCopy={() => createNotification('success', 'Copied to Clipboard!', 2)}>
                                         <Icon glyph="PrintFormCopy" size="1em" color="#1c2a5e" style={{ marginLeft: 10, width: 20 }} />
                                     </CopyToClipboard>
                                 </Box>
@@ -142,7 +142,7 @@ export const SwapConfirmation = observer(() => {
                                     <Text size="small" style={{ fontFamily: 'monospace' }}>
                                         {truncateAddressString(exchange.transaction.ethAddress)}
                                     </Text>
-                                    <CopyToClipboard text={exchange.transaction.ethAddress} onCopy={() => createNotification('success', 'Copied to Clipboard!', " ")}>
+                                    <CopyToClipboard text={exchange.transaction.ethAddress} onCopy={() => createNotification('success', 'Copied to Clipboard!', 2)}>
                                         <Icon glyph="PrintFormCopy" size="1em" color="#1c2a5e" style={{ marginLeft: 10, width: 20 }} />
                                     </CopyToClipboard>
                                 </Box>

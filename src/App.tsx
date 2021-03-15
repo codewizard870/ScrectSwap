@@ -13,8 +13,7 @@ import { EarnRewards } from './pages/Earn';
 import { FAQPage } from './pages/FAQ';
 import { FinancePage } from './pages/Finance';
 // import { InfoPage } from './pages/Info';
-import ReactNotification from 'react-notifications-component'
-import 'react-notifications-component/dist/theme.css'
+
 export const App: React.FC = () => (
   <Providers>
     <Suspense fallback={<div />}>
@@ -33,7 +32,6 @@ export const App: React.FC = () => (
     </Suspense>
     <ActionModals />
     <InfoModal />
-    <ReactNotification />
     <GlobalStyle theme={...baseTheme as any} />
   </Providers>
 );

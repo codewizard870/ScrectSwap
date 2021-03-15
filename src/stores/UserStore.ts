@@ -96,6 +96,14 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
+  @action public setSnip20Balance(balance: string) {
+    this.snip20Balance = balance;
+  }
+
+  @action public setSnip20BalanceMin(balance: string) {
+    this.snip20BalanceMin = balance;
+  }
+
   @action public async websocketTerminate(waitToBeOpen?: boolean) {
     if (waitToBeOpen) {
       while (!this.ws && this.ws.readyState !== WebSocket.OPEN) {
@@ -426,6 +434,18 @@ export class UserStoreEx extends StoreConstructor {
       this.balanceToken['sSCRT'] = balance;
     } catch (err) {
       this.balanceToken['sSCRT'] = unlockToken;
+    }
+
+    const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT');
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      this.balanceTokenMin['sSCRT'] = token.display_props.min_from_scrt;
+    } catch (e) {
+      console.log(`unknown error: ${e}`);
     }
     return;
   };

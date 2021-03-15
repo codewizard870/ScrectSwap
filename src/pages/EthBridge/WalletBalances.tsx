@@ -20,7 +20,7 @@ const WalletTemplate = observer((props: {
 }) => {
 
   return <Box direction="row" background="white" style={{ borderRadius: 4 }}>
-    <CopyToClipboard text={props.address} onCopy={() => createNotification('success', 'Copied to Clipboard!', " ")}>
+    <CopyToClipboard text={props.address} onCopy={() => createNotification('success', 'Copied to Clipboard!', 2)}>
       <Box pad="xxsmall" align="center" direction="row" >
         <img className={styles.imgToken} src={"/static/wallet.svg"} />
         <Text margin={{ left: 'xxsmall' }} className={styles.onClickAddress}>{truncateAddressString(props.address, 10)}</Text>
@@ -67,10 +67,10 @@ export const WalletBalances = observer(() => {
             <Text bold margin={{ left: 'xsmall' }} color="#00ADE8">Connect Keplr</Text>
           </Box>
         </Button> : <WalletTemplate
-            address={user.address}
-            amount={user.balanceSCRT || ""}
-            symbol="SCRT"
-          />
+          address={user.address}
+          amount={user.balanceSCRT || ""}
+          symbol="SCRT"
+        />
         }
       </Box>
 
@@ -89,10 +89,10 @@ export const WalletBalances = observer(() => {
             <Text bold margin={{ left: 'xsmall' }} color="#00ADE8">Connect Metamask</Text>
           </Box>
         </Button> : <WalletTemplate
-            address={userMetamask.ethAddress}
-            amount={userMetamask.ethBalance}
-            symbol="ETH"
-          />
+          address={userMetamask.ethAddress}
+          amount={userMetamask.ethBalance}
+          symbol="ETH"
+        />
         }
       </Box>
     </Box>

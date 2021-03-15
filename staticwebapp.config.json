@@ -12,9 +12,9 @@
       "exclude": ["/static/*.{png,jpg,gif,svg}", "/css/*"]
     },
     "globalHeaders": {
-        "content-security-policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'"
+        "content-security-policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'; connect-src wss://*; font-src https://* data:;"
     },
     "mimeTypes": {
         ".json": "text/json"
-    },
+    }
 }

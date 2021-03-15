@@ -34,6 +34,8 @@ export const ERC20Select = observer(() => {
     setToken(userMetamask.erc20Address);
   }, [userMetamask.erc20Address]);
 
+  // useEffect(() => {}, [token]);
+
   return (
     <Box direction="column" margin={{ top: 'xlarge' }}>
       <Box direction="row" align="center" justify="between">

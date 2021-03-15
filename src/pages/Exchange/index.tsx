@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import * as styles from './styles.styl';
 import { Form, Input, isRequired, MobxForm, NumberInput } from 'components/Form';
@@ -34,6 +34,8 @@ function getLabel(mode: EXCHANGE_MODE, tokenType: TOKEN, tokenInfo: ITokenInfo) 
 export const Exchange = observer((props: any) => {
   const { routing, user, exchange, actionModals, userMetamask } = useStores();
 
+  const [tokenInfo, setTokenInfo] = useState<ITokenInfo>({ label: '', maxAmount: '', minAmount: '' });
+
   let formRef: MobxForm;
 
   useEffect(() => {
@@ -44,6 +46,8 @@ export const Exchange = observer((props: any) => {
       }
     }
   }, []);
+
+  useEffect(() => {}, [user]);
 
   const onClickHandler = async (needValidate: boolean, callback: () => void) => {
     //const { actionModals, user, userMetamask, exchange } = props;
@@ -83,46 +87,56 @@ export const Exchange = observer((props: any) => {
     }
   };
 
-  const tokenInfo = (): ITokenInfo => {
-    switch (exchange.token) {
-      case TOKEN.ERC20:
-        if (!userMetamask.erc20TokenDetails) {
-          return { label: '', maxAmount: '0', minAmount: '0' };
-        }
+  useEffect(() => {
+    const getTokenInfo = () => {
+      switch (exchange.token) {
+        case TOKEN.ERC20:
+          if (!userMetamask.erc20TokenDetails) {
+            return { label: '', maxAmount: '0', minAmount: '0' };
+          }
 
-        return {
-          label: userMetamask.erc20TokenDetails.symbol,
-          maxAmount:
-            exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH
-              ? !user.snip20Balance || user.snip20Balance.includes(unlockToken)
-                ? '0'
-                : user.snip20Balance
-              : userMetamask.erc20Balance,
-          minAmount:
-            exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH
-              ? user.snip20BalanceMin || '0'
-              : userMetamask.erc20BalanceMin || '0',
-        };
-
-      default:
-        if (exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH) {
           return {
-            label: 'secretETH',
+            label: userMetamask.erc20TokenDetails.symbol,
             maxAmount:
-              !user.balanceToken['Ethereum'] || user.balanceToken['Ethereum'].includes(unlockToken)
-                ? '0'
-                : user.balanceToken['Ethereum'],
-            minAmount: user.balanceTokenMin['Ethereum'] || '0',
+              exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH
+                ? !user.snip20Balance || user.snip20Balance.includes(unlockToken)
+                  ? '0'
+                  : user.snip20Balance
+                : userMetamask.erc20Balance,
+            minAmount:
+              exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH
+                ? user.snip20BalanceMin || '0'
+                : userMetamask.erc20BalanceMin || '0',
           };
-        } else {
-          return {
-            label: 'ETH',
-            maxAmount: userMetamask.ethBalance,
-            minAmount: userMetamask.ethBalanceMin || '0',
-          };
-        }
-    }
-  };
+
+        default:
+          if (exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH) {
+            return {
+              label: 'secretETH',
+              maxAmount:
+                !user.balanceToken['Ethereum'] || user.balanceToken['Ethereum'].includes(unlockToken)
+                  ? '0'
+                  : user.balanceToken['Ethereum'],
+              minAmount: user.balanceTokenMin['Ethereum'] || '0',
+            };
+          } else {
+            return {
+              label: 'ETH',
+              maxAmount: userMetamask.ethBalance,
+              minAmount: userMetamask.ethBalanceMin || '0',
+            };
+          }
+      }
+    };
+    setTokenInfo(getTokenInfo());
+  }, [
+    userMetamask.erc20Address,
+    user.snip20Balance,
+    user.snip20BalanceMin,
+    userMetamask.ethBalance,
+    exchange.mode,
+    exchange.token,
+  ]);
 
   let icon = () => <Icon style={{ width: 50 }} glyph="RightArrow" />;
   let description = 'Approval';
@@ -227,7 +241,7 @@ export const Exchange = observer((props: any) => {
 
             <Box direction="column" gap="2px" fill={true} margin={{ top: 'xlarge', bottom: 'large' }}>
               <NumberInput
-                label={getLabel(exchange.mode, exchange.token, tokenInfo())}
+                label={getLabel(exchange.mode, exchange.token, tokenInfo)}
                 name="amount"
                 type="decimal"
                 precision="6"
@@ -240,9 +254,9 @@ export const Exchange = observer((props: any) => {
                   (_, value, callback) => {
                     const errors = [];
 
-                    if (value && Number(value) > Number(tokenInfo().maxAmount.replace(/,/g, ''))) {
+                    if (value && Number(value) > Number(tokenInfo.maxAmount.replace(/,/g, ''))) {
                       errors.push('Exceeded the maximum amount');
-                    } else if (value && Number(value) < Number(tokenInfo().minAmount.replace(/,/g, ''))) {
+                    } else if (value && Number(value) < Number(tokenInfo.minAmount.replace(/,/g, ''))) {
                       errors.push('Below the minimum amount');
                     }
 
@@ -251,11 +265,11 @@ export const Exchange = observer((props: any) => {
                 ]}
               />
               <Text size="small" style={{ textAlign: 'right' }}>
-                <b>Min / Max</b> = {formatWithSixDecimals(tokenInfo().minAmount.replace(/,/g, ''))}
+                <b>Min / Max</b> = {formatWithSixDecimals(tokenInfo.minAmount.replace(/,/g, ''))}
                 {' / '}
-                {formatWithSixDecimals(tokenInfo().maxAmount.replace(/,/g, ''))}{' '}
+                {formatWithSixDecimals(tokenInfo.maxAmount.replace(/,/g, ''))}{' '}
                 {(exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && exchange.token === TOKEN.ERC20 ? 'secret' : '') +
-                  tokenInfo().label}
+                  tokenInfo.label}
               </Text>
             </Box>
 

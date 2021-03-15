@@ -96,6 +96,10 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
+  @action public setSnip20Balance(balance: string) {
+    this.snip20Balance = balance;
+  }
+
   @action public async websocketTerminate(waitToBeOpen?: boolean) {
     if (waitToBeOpen) {
       while (!this.ws && this.ws.readyState !== WebSocket.OPEN) {

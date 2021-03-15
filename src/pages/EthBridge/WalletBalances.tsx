@@ -119,7 +119,7 @@ export const WalletBalances = observer(() => {
       }
 
       if (user.snip20Address === process.env.SSCRT_CONTRACT) {
-        user.snip20Balance = user.balanceToken['sSCRT'];
+        user.setSnip20Balance(user.balanceToken['sSCRT']);
         user.snip20BalanceMin = user.balanceTokenMin['sSCRT'];
       }
 
@@ -144,9 +144,7 @@ export const WalletBalances = observer(() => {
       const balances = [];
       for (const token of displayedTokens) {
         await user.updateBalanceForSymbol(token.display_props.symbol);
-
-        console.log(`${user.balanceToken[token.src_coin]}`);
-
+        user.setSnip20Balance(user.balanceToken[token.src_coin]);
         balances[token.display_props.symbol] = user.balanceToken[token.src_coin];
       }
 

@@ -11,6 +11,7 @@ const ClaimButton = (props: {
   contract: string;
   available: string;
   symbol: string;
+  notify: Function;
 }) => {
   const { user } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
@@ -29,7 +30,9 @@ const ClaimButton = (props: {
           });
           await user.updateBalanceForSymbol(props.symbol);
           await user.updateBalanceForSymbol('sSCRT');
+          props.notify('success', `Claimed ${props.available} s${props.symbol}`);
         } catch (reason) {
+          props.notify('error', `Failed to claim: ${reason}`);
           console.error(`Failed to claim: ${reason}`);
         }
 

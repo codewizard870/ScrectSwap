@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import * as styles from './styles.styl';
 import { Form, Input, isRequired, MobxForm, NumberInput } from 'components/Form';
-import { observer } from 'mobx-react';
+import { observer, useObserver } from 'mobx-react-lite';
 import { useStores } from 'stores';
 import { Button, Icon, Text } from 'components/Base';
 import { formatWithSixDecimals, moreThanZero, unlockToken } from 'utils';
@@ -15,6 +15,7 @@ import { Steps } from './Steps';
 import { EXCHANGE_MODE, TOKEN } from 'stores/interfaces';
 import cn from 'classnames';
 import { ERC20Select } from './ERC20Select';
+import { secretTokenName } from '../../blockchain-bridge';
 
 export interface ITokenInfo {
   label: string;
@@ -26,13 +27,14 @@ function getLabel(mode: EXCHANGE_MODE, tokenType: TOKEN, tokenInfo: ITokenInfo) 
   if (tokenInfo.label === 'WSCRT') {
     return mode === EXCHANGE_MODE.SCRT_TO_ETH ? `SSCRT Amount` : `WSCRT Amount`;
   } else {
-    return `${(mode === EXCHANGE_MODE.SCRT_TO_ETH && tokenType === TOKEN.ERC20 && tokenInfo.label ? 'secret' : '') +
-      tokenInfo.label} Amount`;
+    return `${secretTokenName(mode, tokenType, tokenInfo.label)} Amount`;
   }
 }
 
 export const Exchange = observer((props: any) => {
   const { routing, user, exchange, actionModals, userMetamask } = useStores();
+
+  const [tokenInfo, setTokenInfo] = useState<ITokenInfo>({ label: '', maxAmount: '', minAmount: '' });
 
   let formRef: MobxForm;
 
@@ -83,7 +85,7 @@ export const Exchange = observer((props: any) => {
     }
   };
 
-  const tokenInfo = (): ITokenInfo => {
+  const getTokenInfo = (): ITokenInfo => {
     switch (exchange.token) {
       case TOKEN.ERC20:
         if (!userMetamask.erc20TokenDetails) {
@@ -123,6 +125,18 @@ export const Exchange = observer((props: any) => {
         }
     }
   };
+
+  useEffect(() => {
+    const result = getTokenInfo();
+    setTokenInfo(result);
+  }, [
+    userMetamask.erc20Address,
+    user.snip20Balance,
+    user.snip20BalanceMin,
+    userMetamask.ethBalance,
+    exchange.mode,
+    exchange.token,
+  ]);
 
   let icon = () => <Icon style={{ width: 50 }} glyph="RightArrow" />;
   let description = 'Approval';
@@ -173,15 +187,6 @@ export const Exchange = observer((props: any) => {
         <Box margin={{ top: 'medium' }} style={{ width: '100%' }}>
           <Steps />
         </Box>
-        {/*{exchange.txHash ? (*/}
-        {/*  <a*/}
-        {/*    style={{ marginTop: 10 }}*/}
-        {/*    href={EXPLORER_URL + `/tx/${exchange.txHash}`}*/}
-        {/*    target="_blank"*/}
-        {/*  >*/}
-        {/*    Tx id: {truncateAddressString(exchange.txHash)}*/}
-        {/*  </a>*/}
-        {/*) : null}*/}
       </Box>
     </Box>
   );
@@ -227,7 +232,7 @@ export const Exchange = observer((props: any) => {
 
             <Box direction="column" gap="2px" fill={true} margin={{ top: 'xlarge', bottom: 'large' }}>
               <NumberInput
-                label={getLabel(exchange.mode, exchange.token, tokenInfo())}
+                label={getLabel(exchange.mode, exchange.token, tokenInfo)}
                 name="amount"
                 type="decimal"
                 precision="6"
@@ -239,10 +244,12 @@ export const Exchange = observer((props: any) => {
                   moreThanZero,
                   (_, value, callback) => {
                     const errors = [];
+                    console.log('hello');
+                    console.log(getTokenInfo());
 
-                    if (value && Number(value) > Number(tokenInfo().maxAmount.replace(/,/g, ''))) {
+                    if (value && Number(value) > Number(getTokenInfo().maxAmount.replace(/,/g, ''))) {
                       errors.push('Exceeded the maximum amount');
-                    } else if (value && Number(value) < Number(tokenInfo().minAmount.replace(/,/g, ''))) {
+                    } else if (value && Number(value) < Number(getTokenInfo().minAmount.replace(/,/g, ''))) {
                       errors.push('Below the minimum amount');
                     }
 
@@ -251,11 +258,10 @@ export const Exchange = observer((props: any) => {
                 ]}
               />
               <Text size="small" style={{ textAlign: 'right' }}>
-                <b>Min / Max</b> = {formatWithSixDecimals(tokenInfo().minAmount.replace(/,/g, ''))}
+                <b>Min / Max</b> = {formatWithSixDecimals(tokenInfo.minAmount.replace(/,/g, ''))}
                 {' / '}
-                {formatWithSixDecimals(tokenInfo().maxAmount.replace(/,/g, ''))}{' '}
-                {(exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && exchange.token === TOKEN.ERC20 ? 'secret' : '') +
-                  tokenInfo().label}
+                {formatWithSixDecimals(tokenInfo.maxAmount.replace(/,/g, ''))}{' '}
+                {secretTokenName(exchange.mode, exchange.token, tokenInfo.label)}
               </Text>
             </Box>
 

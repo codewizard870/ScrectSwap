@@ -1,6 +1,7 @@
 import { decode } from 'bech32';
 import { ExecuteResult } from 'secretjs';
 import { StdFee } from 'secretjs/types/types';
+import { EXCHANGE_MODE, TOKEN } from '../../stores/interfaces';
 
 const HRP = 'secret';
 
@@ -28,3 +29,10 @@ export function getFeeForExecute(gas: number): StdFee {
     gas: String(gas),
   };
 }
+
+export const secretTokenName = (mode: EXCHANGE_MODE, token: TOKEN, label: string): string => {
+  if (label === 'WSCRT') {
+    return mode === EXCHANGE_MODE.SCRT_TO_ETH ? 'SSCRT' : 'WSCRT';
+  }
+  return (mode === EXCHANGE_MODE.SCRT_TO_ETH && token === TOKEN.ERC20 ? 'secret' : '') + label;
+};

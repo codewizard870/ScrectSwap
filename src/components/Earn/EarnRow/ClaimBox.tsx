@@ -13,6 +13,7 @@ const ClaimBox = (props: {
   pulse: boolean;
   pulseInterval: number;
   symbol: string;
+  notify?: Function;
 }) => {
   const [available, setAvailable] = useState<string>(props.available);
   useEffect(() => {
@@ -20,7 +21,7 @@ const ClaimBox = (props: {
   }, [props.available]);
   return (
     <div className={cn(styles.claimBox)}>
-      <div style={{display: "contents"}}>
+      <div style={{ display: "contents" }}>
         <div className={cn(styles.items)}>
           <ScrtTokenBalance
             subtitle={'Available Rewards'}
@@ -34,6 +35,13 @@ const ClaimBox = (props: {
             pulseInterval={props.pulseInterval}
             unlockTitle="View Balance"
             unlockSubtitle="Available Rewards"
+            onUnlock={(value) => {
+              if (value) {
+                props.notify('success', `Created a viewing key for s${props.symbol} rewards`);
+              } else {
+                props.notify('error', `Failed to create viewing key for s${props.symbol} rewards!`);
+              }
+            }}
           />
           {/*<SoftTitleValue title={`${} sSCRT`} subTitle={} />*/}
         </div>
@@ -43,6 +51,7 @@ const ClaimBox = (props: {
             contract={props.rewardsContract}
             available={props.available}
             symbol={props.symbol}
+            notify={props.notify}
           />
         }
       </div>

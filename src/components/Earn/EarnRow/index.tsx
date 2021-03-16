@@ -69,17 +69,18 @@ const apyString = (token: RewardsToken) => {
 
 @observer
 class EarnRow extends Component<
-  {
-    userStore: UserStoreEx;
-    token: RewardsToken;
-  },
-  {
-    activeIndex: Number;
-    depositValue: string;
-    withdrawValue: string;
-    claimButtonPulse: boolean;
-    pulseInterval: number;
-  }
+{
+  userStore: UserStoreEx;
+  token: RewardsToken;
+  notify: Function;
+},
+{
+  activeIndex: Number;
+  depositValue: string;
+  withdrawValue: string;
+  claimButtonPulse: boolean;
+  pulseInterval: number;
+}
 > {
   state = {
     activeIndex: -1,
@@ -164,6 +165,13 @@ class EarnRow extends Component<
               pulseInterval={this.state.pulseInterval}
               unlockTitle={'View Balance'}
               unlockSubtitle={'Available to Deposit'}
+              onUnlock={(value) => {
+                if (value) {
+                  this.props.notify('success', `Created a viewing key for s${this.props.token.display_props.symbol}`);
+                } else {
+                  this.props.notify('error', `Failed to create viewing key for s${this.props.token.display_props.symbol}!`);
+                }
+              }}
             />
 
             {/*/<SoftTitleValue title={`${} ${} `}  />*/}
@@ -240,6 +248,7 @@ class EarnRow extends Component<
               pulse={this.state.claimButtonPulse}
               pulseInterval={this.state.pulseInterval}
               symbol={this.props.token.display_props.symbol}
+              notify={this.props.notify}
             />
           </div>
           <Text

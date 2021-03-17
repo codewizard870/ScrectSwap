@@ -12,7 +12,7 @@ import { EXCHANGE_STEPS } from '../../../stores/Exchange';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { Price } from '../../Explorer/Components';
-import { formatWithSixDecimals, truncateAddressString, unlockToken } from 'utils';
+import { formatWithSixDecimals, truncateAddressString, unlockToken, formatSymbol } from 'utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useStores } from '../../../stores';
 import { TokenLocked } from '../utils';
@@ -76,14 +76,14 @@ export const SwapConfirmation = observer(() => {
     }, [exchange.transaction.amount, exchange.swapFeeToken]);
 
     const NTemplate1: NetworkTemplateInterface = {
-        symbol: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? symbol : `Secret ${symbol}`,
+        symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH, symbol),
         amount,
         image: tokenImage
 
     }
 
     const NTemplate2: NetworkTemplateInterface = {
-        symbol: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? `Secret ${symbol}` : symbol,
+        symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.SCRT_TO_ETH : EXCHANGE_MODE.ETH_TO_SCRT, symbol),
         amount,
         image: tokenImage
 

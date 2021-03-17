@@ -78,7 +78,7 @@ const IconOption = props => (
       {props.data.image ? (
         <img src={props.data.image} style={{ width: 20, marginRight: 20 }} alt={props.data.label} />
       ) : null}
-      <Text>{props.data.label}</Text>
+      <Text bold>{props.data.label}</Text>
     </Box>
   </Option>
 );
@@ -93,8 +93,8 @@ const IconSingleValue = placeholder => props => (
         <Text style={{ marginTop: 2 }}>{props.data.label}</Text>
       </Box>
     ) : (
-        <div style={{ opacity: 0.8 }}>{placeholder}</div>
-      )}
+      <div style={{ opacity: 0.8 }}>{placeholder}</div>
+    )}
   </SingleValue>
 );
 

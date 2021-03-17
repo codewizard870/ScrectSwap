@@ -17,6 +17,7 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import HeadShake from 'react-reveal/HeadShake';
 import ProgressBar from "@ramonak/react-progress-bar";
 import { TokenLocked, NetworkTemplate, NetworkTemplateInterface, ViewingKeyIcon } from '../utils';
+import { formatSymbol } from '../../../utils';
 import { ISignerHealth } from '../../../stores/interfaces';
 import { useStores } from '../../../stores';
 interface Errors {
@@ -184,7 +185,7 @@ export const Base = observer(() => {
         const NTemplate1: NetworkTemplateInterface = {
             name: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? "Ethereum" : "Secret Network",
             wallet: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? "Metamask" : "Keplr",
-            symbol: selectedToken.symbol,
+            symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH, selectedToken.symbol),
             amount: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? balance.eth.maxAmount : balance.scrt.maxAmount,
             image: selectedToken.image,
             health: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? toSecretHealth : fromSecretHealth,
@@ -194,15 +195,10 @@ export const Base = observer(() => {
         const NTemplate2: NetworkTemplateInterface = {
             name: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? "Secret Network" : "Ethereum",
             wallet: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? "Keplr" : "Metamask",
-            symbol: selectedToken.symbol,
+            symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.SCRT_TO_ETH : EXCHANGE_MODE.ETH_TO_SCRT, selectedToken.symbol),
             amount: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? balance.scrt.maxAmount : balance.eth.maxAmount,
             image: selectedToken.image,
             health: exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? fromSecretHealth : toSecretHealth,
-        }
-
-        if (selectedToken.symbol) {
-            NTemplate1.symbol = exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? selectedToken.symbol : `Secret ${selectedToken.symbol}`
-            NTemplate2.symbol = exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? `Secret ${selectedToken.symbol}` : selectedToken.symbol
         }
 
         setNetworkTemplates([NTemplate1, NTemplate2])
@@ -259,7 +255,6 @@ export const Base = observer(() => {
         exchange.transaction.ethAddress,
         exchange.transaction.scrtAddress
     ]);
-
 
     const onSelectedToken = async (value) => {
         const token = tokens.allData.find(t => t.src_address === value)
@@ -391,6 +386,7 @@ export const Base = observer(() => {
                                             placeholder="0"
                                             margin={{ bottom: "none" }}
                                             value={exchange.transaction.amount}
+                                            className={styles.input}
                                             style={{ borderColor: 'transparent', height: 44 }}
                                             onChange={async (value) => {
                                                 exchange.transaction.amount = value
@@ -429,11 +425,7 @@ export const Base = observer(() => {
                                         <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>Minimum:</Text>
                                         {minAmount === 'loading' ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" /> :
                                             <Text size="small" color="#748695">
-                                                {`
-                                                    ${minAmount} 
-                                                    ${exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && exchange.token === TOKEN.ERC20 ? 'secret' : ''} 
-                                                    ${selectedToken.symbol}
-                                                    `}
+                                                {`${minAmount} ${formatSymbol(exchange.mode, selectedToken.symbol)}`}
                                             </Text>
                                         }
                                     </Box>
@@ -484,6 +476,7 @@ export const Base = observer(() => {
                                 label={exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH ? "Destination ETH Address" : "Destination Secret Address"}
                                 name={exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH ? "ethAddress" : "scrtAddress"}
                                 style={{ width: '100%' }}
+                                className={styles.input}
                                 margin={{ bottom: 'none' }}
                                 placeholder="Receiver address"
                                 value={exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH ? exchange.transaction.ethAddress : exchange.transaction.scrtAddress}

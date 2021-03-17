@@ -4,7 +4,7 @@ import { statusFetching, SwapStatus } from '../constants';
 import { ACTION_TYPE, EXCHANGE_MODE, IOperation, ITokenInfo, TOKEN } from './interfaces';
 import * as operationService from 'services';
 import * as contract from '../blockchain-bridge';
-import { balanceNumberFormat, divDecimals, mulDecimals, sleep, uuid } from '../utils';
+import { balanceNumberFormat, divDecimals, mulDecimals, formatSymbol, uuid } from '../utils';
 import { getNetworkFee } from '../blockchain-bridge/eth/helpers';
 import { web3 } from '../blockchain-bridge/eth';
 import { Snip20SendToBridge, Snip20SwapHash } from '../blockchain-bridge';
@@ -228,14 +228,14 @@ export class Exchange extends StoreConstructor {
           const token = this.stores.tokens.allData.find(t => t.dst_address === swap.dst_address);
           if (token) {
             this.operation.image = token.display_props.image
-            this.operation.symbol = token.display_props.symbol
+            this.operation.symbol = formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, token.display_props.symbol)
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           }
         } else {
           const token = this.stores.tokens.allData.find(t => t.dst_address === swap.src_coin);
           if (token) {
             this.operation.image = token.display_props.image
-            this.operation.symbol = `secret ${token.display_props.symbol}`
+            this.operation.symbol = formatSymbol(EXCHANGE_MODE.SCRT_TO_ETH, token.display_props.symbol)
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           }
         }
@@ -480,8 +480,6 @@ export class Exchange extends StoreConstructor {
     const amount = mulDecimals(this.transaction.amount, decimals).toString();
 
     await this.createOperation();
-    this.stores.routing.push('/operations/' + this.operation.id);
-
     let tx_id = '';
     try {
       tx_id = await Snip20SendToBridge({
@@ -491,6 +489,7 @@ export class Exchange extends StoreConstructor {
         amount,
         msg: btoa(this.transaction.ethAddress),
       });
+      this.stores.routing.push('/operations/' + this.operation.id);
       this.transaction.confirmed = true
       this.transaction.loading = false
 
@@ -505,6 +504,7 @@ export class Exchange extends StoreConstructor {
     } catch (e) {
       this.operation.status = SwapStatus.SWAP_FAILED;
       this.transaction.error = e.message
+      this.transaction.loading = false
       //throw e;
     }
 

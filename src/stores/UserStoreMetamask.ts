@@ -227,6 +227,7 @@ export class UserStoreMetamask extends StoreConstructor {
     if (tokens) {
       const token = tokens.allData.find(t => t.src_address === this.erc20Address);
       if (token.dst_address) {
+        await this.stores.user.updateBalanceForSymbol(token.display_props.symbol)
         this.stores.user.snip20Address = token.dst_address;
         this.stores.user.snip20Balance = this.stores.user.balanceToken[token.src_coin];
         this.stores.user.snip20BalanceMin = this.stores.user.balanceTokenMin[token.src_coin];

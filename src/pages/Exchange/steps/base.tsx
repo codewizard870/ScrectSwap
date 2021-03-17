@@ -44,8 +44,8 @@ const validateTokenInput = (token: any) => {
 
 const validateAmountInput = (value: string, minAmount: any, maxAmount: any) => {
     if (!value || !value.trim() || Number(value) <= 0) return 'This field is required.'
-    if (Number(value) > Number(maxAmount) || !Number(maxAmount)) return 'Exceeded the maximum amount.'
     if (Number(value) < Number(minAmount)) return 'Below the minimum amount.'
+    if (Number(value) > Number(maxAmount) || !Number(maxAmount)) return 'Exceeded the maximum amount.'
 
     return ""
 }
@@ -277,33 +277,31 @@ export const Base = observer(() => {
 
         if (token.display_props.symbol !== "ETH") {
             exchange.transaction.erc20Address = value
-            exchange.checkTokenApprove(value)
-
+            await exchange.checkTokenApprove(value)
         }
+
+        const update = () => {
+            const amount = user.balanceToken[token.src_coin]
+            const isLocked = amount === unlockToken
+            const balance = getBalance(exchange, userMetamask, user, isLocked)
+
+            setBalance(balance)
+            setTokenLocked(amount === unlockToken)
+            setErrors(newerrors)
+        }
+
         newerrors.token = ""
         setTokenLocked(false)
 
         try {
             if (token.display_props.symbol !== "ETH") await userMetamask.setToken(value, tokens);
+            await user.updateBalanceForSymbol(token.display_props.symbol);
+            update()
         } catch (e) {
             console.log('Error on selecting token, are you sure you have this token on your metamask?')
+            update()
         }
 
-
-
-        try {
-            await user.updateBalanceForSymbol(token.display_props.symbol);
-
-        } catch (e) {
-            newerrors.token = e.message
-        }
-        const amount = user.balanceToken[token.src_coin]
-        const isLocked = amount === unlockToken
-        const balance = getBalance(exchange, userMetamask, user, isLocked)
-
-        setBalance(balance)
-        setTokenLocked(amount === unlockToken)
-        setErrors(newerrors)
     }
 
     const onClickHandler = async (callback: () => void) => {
@@ -365,7 +363,7 @@ export const Base = observer(() => {
                             <Box width="100%" margin={{ right: 'medium' }} direction="column">
                                 <ERC20Select
                                     value={selectedToken.value}
-                                    onSelectToken={onSelectedToken}
+                                    onSelectToken={(value) => onSelectedToken(value)}
                                 />
                                 <Box style={{ minHeight: 20 }} margin={{ top: 'medium' }} direction="column">
                                     {errors.token && <HeadShake>

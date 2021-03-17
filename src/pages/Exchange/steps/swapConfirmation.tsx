@@ -41,7 +41,7 @@ export const SwapConfirmation = observer(() => {
     const [calculated, setCalculated] = useState<string>(null);
     const [isTokenLocked, setTokenLocked] = useState<boolean>(false);
 
-    const symbol = exchange.transaction.tokenSelected.symbol
+    const symbol = formatSymbol(exchange.mode, exchange.transaction.tokenSelected.symbol)
     const tokenImage = exchange.transaction.tokenSelected.image
     const amount = exchange.transaction.amount
 
@@ -76,14 +76,14 @@ export const SwapConfirmation = observer(() => {
     }, [exchange.transaction.amount, exchange.swapFeeToken]);
 
     const NTemplate1: NetworkTemplateInterface = {
-        symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH, symbol),
+        symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH, exchange.transaction.tokenSelected.symbol),
         amount,
         image: tokenImage
 
     }
 
     const NTemplate2: NetworkTemplateInterface = {
-        symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.SCRT_TO_ETH : EXCHANGE_MODE.ETH_TO_SCRT, symbol),
+        symbol: formatSymbol(exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.SCRT_TO_ETH : EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol),
         amount,
         image: tokenImage
 
@@ -108,9 +108,9 @@ export const SwapConfirmation = observer(() => {
                     </div>
                 </Modal.Header>
                 <Modal.Content>
-                    <Box direction="column" fill={true} pad="large">
+                    <Box direction="column" fill={true} style={{ padding: "0 32" }}>
 
-                        <Box direction="row" fill={true} justify="between" align="center" style={{ marginBottom: 26 }}>
+                        <Box direction="row" fill={true} justify="between" align="center">
                             {renderNetworkTemplate(NTemplate1, "center")}
                             <Box style={{ margin: '0 15' }}>
                                 <Icon size="60" glyph="Right" />
@@ -175,11 +175,7 @@ export const SwapConfirmation = observer(() => {
                             <Box className={styles.warningSign} direction="row" align="center">
                                 <img style={{ marginRight: 6, width: 12 }} src={"/static/eth.svg"} />
                                 <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>Ethereum Fee</Text>
-                                <img src="/static/warning.svg" width="20" className={styles.image_warning} />
-                                <Box pad="xsmall" className={styles.warning_message}>
-                                    <Text size="xsmall">You are about to move your secret tokens back to Ethereum. You will receive approximately <b>{calculated} {symbol}</b> and <b>{formatWithSixDecimals(Number(exchange.swapFeeToken))} {symbol}</b> will be used to pay for Ethereum gas fees
-                                        </Text>
-                                </Box>
+
                             </Box>
                             {exchange.isFeeLoading ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" /> : <Price
                                 value={Number(formatWithSixDecimals(exchange.swapFeeToken))}
@@ -188,7 +184,6 @@ export const SwapConfirmation = observer(() => {
                                 boxProps={{ pad: {} }}
                             />}
                         </Box>}
-
 
                         {exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && <Box style={{ height: 40 }} direction="row" align="start" margin={{ top: 'xsmall' }} justify="between">
                             <Box direction="row">
@@ -224,7 +219,10 @@ export const SwapConfirmation = observer(() => {
                                     Follow Transaction Status
                             </Button></Jump>}
                         </Box>
-
+                        {exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && <Box margin={{ top: 'xsmall' }}>
+                            <Text color="#748695" size="xsmall">You are about to move your secret tokens back to Ethereum. You will receive approximately <b>{calculated} {symbol}</b> and <b>{formatWithSixDecimals(Number(exchange.swapFeeToken))} {symbol}</b> will be used to pay for Ethereum gas fees
+                                        </Text>
+                        </Box>}
 
                     </Box>
 

@@ -1,4 +1,13 @@
-import { IOperation, IRewardPool, ISecretSwapPair, ISignerHealth, ISwap, ITokenInfo } from '../stores/interfaces';
+import {
+  IOperation,
+  IRewardPool,
+  ISecretSwapPair,
+  ISecretToken,
+  ISignerHealth,
+  ISwap,
+  ITokenInfo,
+  tokenFromSecretToken,
+} from '../stores/interfaces';
 import * as agent from 'superagent';
 import { SwapStatus } from '../constants';
 
@@ -63,9 +72,14 @@ export const getOperations = async (params: any): Promise<{ content: ISwap[] }> 
 export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[] }> => {
   const url = backendUrl('/tokens/');
 
-  const res = await agent.get<{ body: { tokens: ITokenInfo[] } }>(url, params);
+  const secretTokenListUrl = backendUrl('/secret_tokens/');
 
-  const content = res.body.tokens
+  const [tokens, secretTokens] = await Promise.all([
+    agent.get<{ body: { tokens: ITokenInfo[] } }>(url, params),
+    agent.get<{ body: { tokens: ISecretToken[] } }>(secretTokenListUrl, params),
+  ]);
+
+  let content = tokens.body.tokens
     .filter(t => (process.env.TEST_COINS ? t : !t.display_props.hidden))
     .map(t => {
       if (t.display_props.proxy) {
@@ -78,7 +92,13 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
       return t;
     });
 
-  return { ...res.body, content };
+  let sTokens = secretTokens.body.tokens.map(t => {
+    return tokenFromSecretToken(t);
+  });
+
+  content.push(...sTokens);
+
+  return { content };
 };
 
 export const getSecretSwapPairs = async (params: any): Promise<{ content: ISecretSwapPair[] }> => {

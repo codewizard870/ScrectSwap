@@ -102,6 +102,49 @@ export interface ITokenInfo {
   };
 }
 
+type TOKEN_USAGE = 'BRIDGE' | 'REWARDS' | 'LPSTAKING';
+
+export interface ISecretToken {
+  name: string;
+  address: string;
+  decimals: number;
+  price: string;
+  usage: TOKEN_USAGE[];
+  id: string;
+  hidden: boolean;
+  display_props: {
+    image: string;
+    label: string;
+    symbol: string;
+  };
+}
+
+export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
+  const { name, price, decimals, display_props } = sToken;
+
+  return {
+    src_coin: sToken.id,
+    name,
+    price,
+    decimals: decimals.toString(),
+    display_props: {
+      ...display_props,
+      hidden: sToken.hidden,
+      min_from_scrt: '',
+      min_to_scrt: '',
+    },
+    dst_address: '',
+    dst_coin: undefined,
+    dst_network: '',
+    src_address: '',
+    src_network: '',
+    symbol: sToken.id,
+    totalLocked: '',
+    totalLockedNormal: '',
+    totalLockedUSD: '',
+  };
+};
+
 export interface IRewardPool {
   pool_address: string;
   inc_token: {

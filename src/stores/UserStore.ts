@@ -371,26 +371,30 @@ export class UserStoreEx extends StoreConstructor {
     return rawBalance;
   };
 
-  @action public getBridgeRewardsBalance = async (snip20Address: string): Promise<string> => {
+  @action public getBridgeRewardsBalance = async (snip20Address: string, noheight): Promise<string> => {
     if (!this.secretjs) {
       return '0';
     }
 
-    const height = await this.secretjs.getHeight();
+    const height = noheight ? undefined : String(await this.secretjs.getHeight());
 
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
       address: snip20Address,
     });
-
-    return await QueryRewards({
-      cosmJS: this.secretjs,
-      contract: snip20Address,
-      address: this.address,
-      key: viewingKey,
-      height: String(height),
-    });
+    try {
+      return await QueryRewards({
+        cosmJS: this.secretjs,
+        contract: snip20Address,
+        address: this.address,
+        key: viewingKey,
+        height: height,
+      });
+    } catch (e) {
+      console.error(`failed to query rewards: ${e}`);
+      throw new Error('failed to query rewards');
+    }
   };
 
   @action public getBridgeDepositBalance = async (snip20Address: string): Promise<string> => {
@@ -495,14 +499,16 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   async refreshRewardsBalances(symbol: string) {
-    const rewardsToken = this.stores.rewards.allData.find(t => t.inc_token.symbol === `s${symbol}`);
+    const rewardsToken = this.stores.rewards.allData.find(t => {
+      return t.inc_token.symbol.toLowerCase().includes(symbol.toLowerCase());
+    });
     if (!rewardsToken) {
       console.log('No rewards token for', symbol);
       return;
     }
 
     try {
-      const balance = await this.getBridgeRewardsBalance(rewardsToken.pool_address);
+      const balance = await this.getBridgeRewardsBalance(rewardsToken.pool_address, true);
 
       if (balance.includes(unlockToken)) {
         this.balanceRewards[rewardsKey(rewardsToken.inc_token.symbol)] = balance;

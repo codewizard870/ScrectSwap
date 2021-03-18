@@ -24,18 +24,25 @@ export const QueryRewards = async (params: {
   cosmJS: SigningCosmWasmClient;
   contract: string;
   address: string;
-  height: string;
+  height?: string;
   key: string;
 }): Promise<JsonObject> => {
   const { cosmJS, contract, address, height, key } = params;
 
-  const result: IQueryRewards = await cosmJS.queryContractSmart(contract, {
+  let queryMsg = {
     rewards: {
       address,
-      height: Number(height),
       key,
     },
-  });
+  };
+
+  if (height) {
+    queryMsg.rewards['height'] = height;
+  } else {
+    queryMsg.rewards['new_rewards'] = '0';
+  }
+
+  const result: IQueryRewards = await cosmJS.queryContractSmart(contract, queryMsg);
 
   return result.rewards.rewards;
 };

@@ -508,7 +508,7 @@ export class UserStoreEx extends StoreConstructor {
     }
 
     try {
-      const balance = await this.getBridgeRewardsBalance(rewardsToken.pool_address, true);
+      const balance = await this.getBridgeRewardsBalance(rewardsToken.pool_address, false);
 
       if (balance.includes(unlockToken)) {
         this.balanceRewards[rewardsKey(rewardsToken.inc_token.symbol)] = balance;

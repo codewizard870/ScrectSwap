@@ -38,8 +38,6 @@ export const QueryRewards = async (params: {
 
   if (height) {
     queryMsg.rewards['height'] = height;
-  } else {
-    queryMsg.rewards['new_rewards'] = '0';
   }
 
   const result: IQueryRewards = await cosmJS.queryContractSmart(contract, queryMsg);

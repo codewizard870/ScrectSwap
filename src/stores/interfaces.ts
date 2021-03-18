@@ -133,7 +133,7 @@ export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
       min_from_scrt: '',
       min_to_scrt: '',
     },
-    dst_address: '',
+    dst_address: sToken.address,
     dst_coin: undefined,
     dst_network: '',
     src_address: '',

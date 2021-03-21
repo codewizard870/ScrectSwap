@@ -587,7 +587,7 @@ export class SwapTab extends React.Component<
                 if (fromToken === 'uscrt') {
                   let result: ExecuteResult;
                   if (bestRoute) {
-                    const hops = await this.getHops(bestRoute, expected_return);
+                    const hops = await this.getHops(bestRoute);
 
                     result = await this.props.secretjs.execute(
                       process.env.AMM_ROUTER_CONTRACT,
@@ -599,6 +599,7 @@ export class SwapTab extends React.Component<
                             JSON.stringify({
                               to: this.props.secretAddress,
                               hops,
+                              expected_return,
                             }),
                           ),
                         },
@@ -656,7 +657,7 @@ export class SwapTab extends React.Component<
                 } else {
                   let result: ExecuteResult;
                   if (bestRoute) {
-                    const hops = await this.getHops(bestRoute, expected_return);
+                    const hops = await this.getHops(bestRoute);
 
                     result = await this.props.secretjs.execute(
                       fromToken,
@@ -668,6 +669,7 @@ export class SwapTab extends React.Component<
                             JSON.stringify({
                               to: this.props.secretAddress,
                               hops,
+                              expected_return,
                             }),
                           ),
                         },
@@ -767,7 +769,7 @@ export class SwapTab extends React.Component<
     );
   }
 
-  async getHops(bestRoute: string[], expected_return: string) {
+  async getHops(bestRoute: string[]) {
     return (
       await Promise.all(
         bestRoute.map(async (fromToken, idx) => {
@@ -777,19 +779,19 @@ export class SwapTab extends React.Component<
           }
 
           const hop: {
-            from_token: {
-              address?: string; // must set only these if a token
-              code_hash?: string; // must set only these if a token
-              native_denom?: string; // must set only this if native coin
-            };
+            from_token:
+              | {
+                  snip20: {
+                    address: string;
+                    code_hash: string;
+                  };
+                }
+              | 'scrt';
             pair_address: string;
             pair_code_hash: string;
             expected_return?: string;
           } = {
-            from_token: {
-              address: null,
-              code_hash: null,
-            },
+            from_token: null,
             pair_address: null,
             pair_code_hash: null,
           };
@@ -798,20 +800,19 @@ export class SwapTab extends React.Component<
           const pair: SwapPair = this.props.pairs.get(`${fromToken}${SwapPair.id_delimiter}${toToken}`);
 
           if (fromToken === 'uscrt') {
-            hop.from_token.native_denom = 'uscrt';
+            hop.from_token = 'scrt';
           } else {
-            hop.from_token.address = fromToken;
-            hop.from_token.code_hash = (pair.asset_infos.find(
-              a => (a.info as Token)?.token?.contract_addr === hop.from_token.address,
-            ).info as Token).token.token_code_hash;
+            hop.from_token = {
+              snip20: {
+                address: fromToken,
+                code_hash: (pair.asset_infos.find(a => (a.info as Token)?.token?.contract_addr === fromToken)
+                  .info as Token).token.token_code_hash,
+              },
+            };
           }
 
           hop.pair_address = pair.contract_addr;
           hop.pair_code_hash = await SwapPair.getPairCodeHash(hop.pair_address, this.props.secretjs);
-          if (idx === bestRoute.length - 2) {
-            // final hop
-            hop.expected_return = expected_return;
-          }
 
           return hop;
         }),

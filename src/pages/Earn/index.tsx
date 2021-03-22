@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import { BaseContainer, PageContainer } from 'components';
 import { observer } from 'mobx-react-lite';
@@ -13,7 +13,7 @@ import { divDecimals, sleep } from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
 import { Icon } from 'components/Base/components/Icons';
 import cogoToast from 'cogo-toast';
-
+import EarnSelectorHeader from '../../components/Earn/EarnSelectorHeader';
 
 const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
@@ -29,10 +29,12 @@ const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 1
     },
   });
   // NotificationManager[type](undefined, msg, closesAfterMs);
-}
+};
 
 export const EarnRewards = observer((props: any) => {
   const { user, tokens, rewards } = useStores();
+
+  const [showLpStaking, setShowLpStaking] = useState<boolean>(true);
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -53,6 +55,8 @@ export const EarnRewards = observer((props: any) => {
     });
     rewards.fetch();
   }, []);
+
+  const filteredTokens = tokens.allData.filter(s => !!s.display_props?.is_secret_only === showLpStaking);
 
   return (
     <BaseContainer>
@@ -130,7 +134,10 @@ export const EarnRewards = observer((props: any) => {
             . 🍣
           </p>
         </div>
-        <Box direction="row" wrap={true} fill={true} justify="between" align="start">
+        <Box direction="row" wrap={true} fill={true} justify="center" align="start">
+          <Box direction="column" align="center" justify="center">
+            <EarnSelectorHeader setValue={setShowLpStaking} />
+          </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData
               .slice()
@@ -147,7 +154,7 @@ export const EarnRewards = observer((props: any) => {
                   return null;
                 }
 
-                let token = tokens.allData.find(element => element.dst_address === rewardToken.inc_token.address);
+                let token = filteredTokens.find(element => element.dst_address === rewardToken.inc_token.address);
                 if (!token) {
                   return null;
                 }
@@ -173,7 +180,9 @@ export const EarnRewards = observer((props: any) => {
                   deadline: Number(rewardToken.deadline),
                 };
 
-                return <EarnRow notify={notify} key={rewardToken.inc_token.symbol} userStore={user} token={rewardsToken} />;
+                return (
+                  <EarnRow notify={notify} key={rewardToken.inc_token.symbol} userStore={user} token={rewardsToken} />
+                );
               })}
           </Box>
         </Box>

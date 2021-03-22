@@ -99,6 +99,7 @@ export interface ITokenInfo {
     proxy?: string;
     proxy_symbol?: string;
     proxy_address?: string;
+    is_secret_only?: boolean;
   };
 }
 
@@ -132,6 +133,7 @@ export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
       hidden: sToken.hidden,
       min_from_scrt: '',
       min_to_scrt: '',
+      is_secret_only: true,
     },
     dst_address: sToken.address,
     dst_coin: undefined,

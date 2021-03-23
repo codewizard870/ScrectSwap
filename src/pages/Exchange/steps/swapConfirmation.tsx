@@ -39,6 +39,7 @@ export const SwapConfirmation = observer(() => {
     const { exchange, user } = useStores();
     const [hash, setHash] = useState<string>(null);
     const [calculated, setCalculated] = useState<string>(null);
+    const [isFeeHighPercentage, setFeeHighPercentage] = useState<boolean>(true);
     const [isTokenLocked, setTokenLocked] = useState<boolean>(false);
 
     const symbol = formatSymbol(exchange.mode, exchange.transaction.tokenSelected.symbol)
@@ -72,6 +73,7 @@ export const SwapConfirmation = observer(() => {
             calculatedAmount = "0"
         }
         setCalculated(calculatedAmount)
+        setFeeHighPercentage(Number(exchange.swapFeeToken) >= Number(exchange.transaction.amount) * 0.9)
 
     }, [exchange.transaction.amount, exchange.swapFeeToken]);
 
@@ -88,7 +90,6 @@ export const SwapConfirmation = observer(() => {
         image: tokenImage
 
     }
-
 
     return (
 
@@ -204,12 +205,23 @@ export const SwapConfirmation = observer(() => {
                         </HeadShake>}
 
                         <Box fill direction="row" align="center" style={{ width: '100%' }} margin={{ top: 'large' }}>
-                            {!exchange.transaction.confirmed ? <Button className={styles.fill} style={{ height: 50, width: '100%', background: "#00ADE8", color: "white" }} onClick={() => {
-                                if (exchange.transaction.loading) return
-                                return exchange.step.onClick()
-                            }}>
+                            {!exchange.transaction.confirmed ? <Button
+                                className={styles.fill}
+                                disabled={isFeeHighPercentage}
+                                style={{
+                                    height: 50,
+                                    width: '100%',
+                                    background: isFeeHighPercentage ? "#f37373" : "#00ADE8",
+                                    color: "white",
+                                }}
+                                onClick={() => {
+                                    if (exchange.transaction.loading || isFeeHighPercentage) return
+                                    return exchange.step.onClick()
+                                }}>
                                 {exchange.transaction.loading ?
-                                    <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" /> : "Confirm"
+                                    <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" /> : isFeeHighPercentage ?
+                                        "Cannot swap less than 90% of estimated fee"
+                                        : "Confirm"
                                 }
 
                             </Button> :

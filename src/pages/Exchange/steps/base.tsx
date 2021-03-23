@@ -20,6 +20,9 @@ import { TokenLocked, NetworkTemplate, NetworkTemplateInterface, ViewingKeyIcon 
 import { formatSymbol } from '../../../utils';
 import { ISignerHealth } from '../../../stores/interfaces';
 import { useStores } from '../../../stores';
+import { getNetworkFee } from '../../../blockchain-bridge/eth/helpers';
+import { toInteger } from 'lodash';
+
 interface Errors {
     amount: string;
     token: any;
@@ -69,9 +72,13 @@ const validateAddressInput = (mode: EXCHANGE_MODE, value: string) => {
     return ""
 }
 
-const getBalance = (exchange, userMetamask, user, isLocked) => {
+const getBalance = async (exchange, userMetamask, user, isLocked, tokenPrice) => {
     const eth = { minAmount: '0', maxAmount: '0' }
     const scrt = { minAmount: '0', maxAmount: '0' }
+
+    const ethSwapFee = await getNetworkFee(process.env.SWAP_FEE);
+    const swapFeeUsd = ethSwapFee * user.ethRate;
+    const swapFeeToken = ((swapFeeUsd / tokenPrice) * 0.9).toFixed(`${toInteger(tokenPrice)}`.length);
 
     const src_coin = exchange.transaction.tokenSelected.src_coin
 
@@ -81,13 +88,13 @@ const getBalance = (exchange, userMetamask, user, isLocked) => {
             eth.minAmount = "0"
         }
         scrt.maxAmount = user.balanceToken[src_coin] ? user.balanceToken[src_coin] : '0'
-        scrt.minAmount = user.snip20BalanceMin || '0'
+        scrt.minAmount = `${swapFeeToken}` || '0'
         eth.maxAmount = userMetamask.erc20Balance
         eth.minAmount = userMetamask.erc20BalanceMin || '0'
     } else {
         scrt.maxAmount =
             (!user.balanceToken['Ethereum'] || user.balanceToken['Ethereum'].includes(unlockToken)) ? '0' : user.balanceToken['Ethereum']
-        scrt.minAmount = user.balanceTokenMin['Ethereum'] || '0'
+        scrt.minAmount = `${swapFeeToken}` || '0'
         eth.maxAmount = exchange.transaction.tokenSelected.symbol === "ETH" ? userMetamask.ethBalance : "0"
         eth.minAmount = exchange.transaction.tokenSelected.symbol === "ETH" ? (userMetamask.ethBalanceMin || "0") : "0"
     }
@@ -280,10 +287,10 @@ export const Base = observer(() => {
             await exchange.checkTokenApprove(value)
         }
 
-        const update = () => {
+        const update = async () => {
             const amount = user.balanceToken[token.src_coin]
             const isLocked = amount === unlockToken
-            const balance = getBalance(exchange, userMetamask, user, isLocked)
+            const balance = await getBalance(exchange, userMetamask, user, isLocked, token.price)
 
             setBalance(balance)
             setTokenLocked(amount === unlockToken)

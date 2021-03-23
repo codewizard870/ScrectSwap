@@ -221,7 +221,7 @@ export const baseTheme: any = {
   },
 
   fonts: {
-    title: 'Nunito',
+    title: 'Hind,sans-serif',
   },
 
   container: {

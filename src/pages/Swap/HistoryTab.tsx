@@ -103,6 +103,7 @@ export class HistoryTab extends React.Component<
                   tokens={this.props.tokens}
                   selectedPair={p}
                   balances={this.props.balances}
+                  user={this.props.user}
                   secretjs={this.props.secretjs}
                   notify={this.props.notify}
                   getBalance={this.props.updateToken}

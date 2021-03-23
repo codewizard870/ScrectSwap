@@ -8,12 +8,29 @@ import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 import { SwapTokenMap } from './types/SwapToken';
 import { SwapPair } from './types/SwapPair';
 import Loader from 'react-loader-spinner';
+import { UserStoreEx } from 'stores/UserStore';
+import { User } from 'components/Base/components/Icons/tsx_svg_icons';
+
+interface HistoryTx {
+  id: number;
+  from: string;
+  sender: string;
+  receiver: string;
+  coins: { denom: string; amount: string };
+}
+
+interface TransferHistory {
+  transfer_history: {
+    txs: HistoryTx[];
+  };
+}
 
 export class HistoryPanel extends React.Component<
   {
     lpTokenSymbol: string;
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
+    user: UserStoreEx;
     secretjs: SigningCosmWasmClient;
     selectedPair: SwapPair;
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
@@ -32,6 +49,23 @@ export class HistoryPanel extends React.Component<
     withdrawPercentage: 0,
     isActive: false,
     isLoadingBalance: false,
+  };
+
+  getSwapsHistoryForToken = async (token: string, pair: SwapPair): Promise<HistoryTx[]> => {
+    const viewingKey = this.props.user.keplrWallet.getSecret20ViewingKey(this.props.user.chainId, token);
+
+    const history: TransferHistory = await this.props.secretjs.queryContractSmart(token, {
+      transfer_history: {
+        key: viewingKey,
+        address: this.props.user.address,
+        page: 0,
+        page_size: 1000,
+      },
+    });
+
+    return history.transfer_history.txs
+      .filter(tx => [tx.from, tx.receiver, tx.sender].includes(pair.contract_addr))
+      .sort((a, b) => a.id - b.id);
   };
 
   render() {
@@ -117,6 +151,15 @@ export class HistoryPanel extends React.Component<
                   this.setState({ isLoadingBalance: true });
                   // get balances and subscribe for events for this pair
                   await this.props.getBalance(selectedPair);
+
+                  if (this.props.balances[tokenA] instanceof BigNumber) {
+                    const history = await this.getSwapsHistoryForToken(tokenA, selectedPair);
+                    console.log(history);
+                  }
+                  if (this.props.balances[tokenB] instanceof BigNumber) {
+                    console.log('here');
+                  }
+
                   this.setState({ isLoadingBalance: false });
                 } else {
                   // unsubscribe

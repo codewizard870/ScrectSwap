@@ -2,7 +2,7 @@ import { SigningCosmWasmClient } from 'secretjs';
 
 export const isClaimedSefiRewardsScrt = async (params: {
   secretjs: SigningCosmWasmClient;
-  index: number;
+  index: Number;
 }): Promise<boolean> => {
   const { secretjs, index } = params;
 

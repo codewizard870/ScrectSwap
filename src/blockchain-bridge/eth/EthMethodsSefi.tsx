@@ -47,7 +47,7 @@ export class EthMethodsSefi {
     });
   };
 
-  checkAvailableToClaim = async (index: number) => {
+  checkAvailableToClaim = async (index: Number) => {
     return await this.distributionContract.methods.isClaimed(new BN(index)).call();
   };
 

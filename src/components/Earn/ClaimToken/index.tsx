@@ -43,15 +43,16 @@ export const ClaimTokenErc = () => {
 
 function ClaimInfoDisplay(props: { address: string, claimed: boolean, claimAmount: BigNumber }) {
   return <div>
-    <>
-      Address: {props.address}
-    </>
-    <>
-      IsClaimed: {props.claimed}
-    </>
-    <>
-      Amount: {props.claimAmount}
-    </>
+    {"Claim Info"}
+    <div>
+      {"Address: "} {props.address}
+    </div>
+    <div>
+      {"IsClaimed: "} {props.claimed ? 'True': 'False'}
+    </div>
+    <div>
+      {"Amount: "} {props.claimAmount.toString()}
+    </div>
   </div>;
 }
 

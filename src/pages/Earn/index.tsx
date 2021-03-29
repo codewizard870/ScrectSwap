@@ -19,7 +19,7 @@ import { ITokenInfo, TOKEN_USAGE } from '../../stores/interfaces';
 import * as services from 'services';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-import { KeplrButton } from '../../components/Secret/KeplrButton';
+import { ClaimInfoErc, ClaimInfoScrt } from '../../components/Earn/ClaimToken';
 
 
 const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
@@ -55,9 +55,6 @@ export const EarnRewards = observer((props: any) => {
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
 
   const [sefiBalance, setSefiBalance] = useState<string | JSX.Element>('');
-
-  const [sefiRewardsErc, setSefiRewardsErc] = useState<number>(0);
-  const [sefiRewardsScrt, setSefiRewardsScrt] = useState<number>(0);
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -201,9 +198,14 @@ export const EarnRewards = observer((props: any) => {
 
           <Box direction="column" align="center" justify="center">
             <SefiBalance sefiBalance={sefiBalance} />
-            <div>
-
-            </div>
+            <>
+              <>
+                <ClaimInfoErc />
+              </>
+              <>
+                {/*<ClaimInfoScrt />*/}
+              </>
+            </>
             <EarnSelectorHeader setValue={setRewardsType} />
             <EarnInfoBox type={rewardsType} />
           </Box>

@@ -17,7 +17,7 @@ export class EthMethodsSefi {
   constructor(params: EthMethodsSefiInitParams) {
     this.web3 = params.web3;
     this.govTokenContract = params.govTokenContract;
-    this.distributionContract = params.govTokenContract;
+    this.distributionContract = params.distributionContract;
   }
 
   claimToken = async (sendTxCallback?) => {
@@ -37,8 +37,8 @@ export class EthMethodsSefi {
     });
   };
 
-  checkAvailableToClaim = async addr => {
-    return await this.distributionContract.methods.balanceOf(addr).call();
+  checkAvailableToClaim = async (index: number) => {
+    return await this.distributionContract.methods.isClaimed(new BN(index)).call();
   };
 
   checkGovBalance = async addr => {

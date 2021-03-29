@@ -19,6 +19,7 @@ import { ITokenInfo, TOKEN_USAGE } from '../../stores/interfaces';
 import * as services from 'services';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
+import { KeplrButton } from '../../components/Secret/KeplrButton';
 
 
 const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
@@ -37,12 +38,26 @@ const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 1
   // NotificationManager[type](undefined, msg, closesAfterMs);
 };
 
+function SefiBalance(props: { sefiBalance: string | JSX.Element }) {
+  return <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <Text>
+      Balance:{'  '}
+    </Text>
+    {props.sefiBalance || <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
+  </div>;
+}
+
 export const EarnRewards = observer((props: any) => {
   const { user, tokens, rewards } = useStores();
   const [sushiAPY, setSushiAPY] = useState<Number>(-1);
 
   const [rewardsType, setRewardsType] = useState<TOKEN_USAGE>('REWARDS');
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
+
+  const [sefiBalance, setSefiBalance] = useState<string | JSX.Element>('');
+
+  const [sefiRewardsErc, setSefiRewardsErc] = useState<number>(0);
+  const [sefiRewardsScrt, setSefiRewardsScrt] = useState<number>(0);
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -60,6 +75,7 @@ export const EarnRewards = observer((props: any) => {
         await sleep(100);
       }
       await Promise.all([...filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
+      setSefiBalance(user.balanceToken['wSEFI']);
     };
     const resolveSushiAPY = async () => {
       while (!user.secretjs || !user.scrtRate) {
@@ -74,6 +90,14 @@ export const EarnRewards = observer((props: any) => {
       } catch (error) {
         setSushiAPY(0)
       }
+    }
+
+    const getSefiRewards = async () => {
+      while (!user.secretjs) {
+        await sleep(100);
+      }
+
+
     }
 
     resolveSushiAPY().then(() => {});
@@ -162,7 +186,8 @@ export const EarnRewards = observer((props: any) => {
             SushiSwap incentives for LPs on the WSCRT/WETH pair are now live with a
             <Box direction="row" margin={{ left: 'xxsmall', right: 'xxsmall' }} align="center">
               <Text bold margin={{ right: 'xxsmall' }}>APY of</Text>
-              {sushiAPY === -1 ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" /> : <Text bold>{`${sushiAPY}%!`}</Text>}
+              {sushiAPY === -1 ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" /> :
+                <Text bold>{`${sushiAPY}%!`}</Text>}
             </Box>
             {' '}
             <a href="https://twitter.com/SecretNetwork/status/1369349930247192582" target="_blank">
@@ -172,9 +197,15 @@ export const EarnRewards = observer((props: any) => {
           </p>
         </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
+
+
           <Box direction="column" align="center" justify="center">
+            <SefiBalance sefiBalance={sefiBalance} />
+            <div>
+
+            </div>
             <EarnSelectorHeader setValue={setRewardsType} />
-            <EarnInfoBox type={rewardsType}/>
+            <EarnInfoBox type={rewardsType} />
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData

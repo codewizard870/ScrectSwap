@@ -13,16 +13,13 @@ import { divDecimals, sleep } from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
 import { Icon } from 'components/Base/components/Icons';
 import cogoToast from 'cogo-toast';
-import EarnSelectorHeader from '../../components/Earn/EarnSelectorHeader';
-import EarnInfoBox from '../../components/Earn/EarnInfoBox';
-import { ITokenInfo, TOKEN_USAGE } from '../../stores/interfaces';
+import { ITokenInfo } from '../../stores/interfaces';
 import * as services from 'services';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-import { ClaimInfoErc, ClaimInfoScrt } from '../../components/Earn/ClaimToken';
 
 
-const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
+export const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
     msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
     msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
@@ -38,33 +35,21 @@ const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 1
   // NotificationManager[type](undefined, msg, closesAfterMs);
 };
 
-function SefiBalance(props: { sefiBalance: string | JSX.Element }) {
-  return <div style={{ display: 'flex', justifyContent: 'center' }}>
-    <Text>
-      Balance:{'  '}
-    </Text>
-    {props.sefiBalance || <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
-  </div>;
-}
-
 export const EarnRewards = observer((props: any) => {
   const { user, tokens, rewards } = useStores();
   const [sushiAPY, setSushiAPY] = useState<Number>(-1);
 
-  const [rewardsType, setRewardsType] = useState<TOKEN_USAGE>('REWARDS');
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
-
-  const [sefiBalance, setSefiBalance] = useState<string | JSX.Element>('');
 
   useEffect(() => {
     const asyncWrapper = async () => {
       while (tokens.isPending) {
         await sleep(100);
       }
-      setFilteredTokens(await tokens.tokensUsage(rewardsType))
+      setFilteredTokens(await tokens.tokensUsage('REWARDS'))
     }
     asyncWrapper().then(() => {})
-  }, [rewardsType, tokens, tokens.data])
+  }, [tokens, tokens.data])
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -72,7 +57,6 @@ export const EarnRewards = observer((props: any) => {
         await sleep(100);
       }
       await Promise.all([...filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
-      setSefiBalance(user.balanceToken['wSEFI']);
     };
     const resolveSushiAPY = async () => {
       while (!user.secretjs || !user.scrtRate) {
@@ -87,14 +71,6 @@ export const EarnRewards = observer((props: any) => {
       } catch (error) {
         setSushiAPY(0)
       }
-    }
-
-    const getSefiRewards = async () => {
-      while (!user.secretjs) {
-        await sleep(100);
-      }
-
-
     }
 
     resolveSushiAPY().then(() => {});
@@ -195,20 +171,6 @@ export const EarnRewards = observer((props: any) => {
         </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
 
-
-          <Box direction="column" align="center" justify="center">
-            <SefiBalance sefiBalance={sefiBalance} />
-            <>
-              <>
-                <ClaimInfoErc />
-              </>
-              <>
-                {/*<ClaimInfoScrt />*/}
-              </>
-            </>
-            <EarnSelectorHeader setValue={setRewardsType} />
-            <EarnInfoBox type={rewardsType} />
-          </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData
               .slice()
@@ -224,7 +186,6 @@ export const EarnRewards = observer((props: any) => {
                 if (Number(rewardToken.deadline) < 2_000_000) {
                   return null;
                 }
-                console.log(rewardToken)
                 let token = filteredTokens.find(element => element.dst_address === rewardToken.inc_token.address);
                 if (!token) {
                   return null;

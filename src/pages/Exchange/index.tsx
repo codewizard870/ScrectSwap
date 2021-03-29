@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import * as styles from './styles.styl';
 import { Form, Input, isRequired, MobxForm, NumberInput } from 'components/Form';
-import { observer, useObserver } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
 import { Button, Icon, Text } from 'components/Base';
 import { formatWithSixDecimals, moreThanZero, unlockToken } from 'utils';
@@ -244,9 +244,6 @@ export const Exchange = observer((props: any) => {
                   moreThanZero,
                   (_, value, callback) => {
                     const errors = [];
-                    console.log('hello');
-                    console.log(getTokenInfo());
-
                     if (value && Number(value) > Number(getTokenInfo().maxAmount.replace(/,/g, ''))) {
                       errors.push('Exceeded the maximum amount');
                     } else if (value && Number(value) < Number(getTokenInfo().minAmount.replace(/,/g, ''))) {

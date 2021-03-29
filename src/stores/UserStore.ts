@@ -488,7 +488,6 @@ export class UserStoreEx extends StoreConstructor {
 
     try {
       const balance = await this.getSnip20Balance(token.dst_address, token.decimals);
-      console.log(token.src_coin)
       this.balanceToken[token.src_coin] = balance;
     } catch (err) {
       this.balanceToken[token.src_coin] = unlockToken;

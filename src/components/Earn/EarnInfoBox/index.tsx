@@ -1,9 +1,8 @@
 import React from 'react';
 import { Message } from 'semantic-ui-react';
+import { TOKEN_USAGE } from '../../../stores/interfaces';
 
-type EarnType = 'LPSTAKING' | 'BRIDGE_MINING';
-
-const EarnInfoBox = ({ type }: { type: EarnType }) => {
+const EarnInfoBox = ({ type }: { type: TOKEN_USAGE }) => {
   if (type === 'LPSTAKING') {
     return (
       <Message info>

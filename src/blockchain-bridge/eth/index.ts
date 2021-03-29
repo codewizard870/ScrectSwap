@@ -25,8 +25,8 @@ export const ethMethodsETH = new EthMethods({
 const sefiTokenCompiledContract = require('../out/MyERC20.json');
 const sefiTokenContract = new web3.eth.Contract(sefiTokenCompiledContract.abi, process.env.ETH_GOV_TOKEN_ADDRESS);
 
-const sefiDistCompiledContract = require('../out/MultiSigSwapWallet.json');
-const sefiDistContract = new web3.eth.Contract(sefiDistCompiledContract.abi, process.env.ETH_GOV_TOKEN_ADDRESS);
+const sefiDistCompiledContract = require('../out/MerkleDistributor.json');
+const sefiDistContract = new web3.eth.Contract(sefiDistCompiledContract.abi, process.env.ETH_DIST_TOKEN_ADDRESS);
 
 export const ethMethodsSefi = new EthMethodsSefi({
   web3: web3,

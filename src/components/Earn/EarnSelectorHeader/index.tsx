@@ -11,7 +11,7 @@ const EarnSelectorHeader = (props: { setValue }) => {
         className={cn(styles.button)}
         onClick={() => {
           setSelected(true);
-          props.setValue(true);
+          props.setValue('LPSTAKING');
         }}
         disabled={selected}
       >
@@ -21,7 +21,7 @@ const EarnSelectorHeader = (props: { setValue }) => {
         className={cn(styles.button)}
         onClick={() => {
           setSelected(false);
-          props.setValue(false);
+          props.setValue('REWARDS');
         }}
         disabled={!selected}
       >

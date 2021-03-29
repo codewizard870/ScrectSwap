@@ -6,14 +6,14 @@ import { useStores } from '../../../stores';
 import { claimErc, claimScrt } from './utils';
 
 // todo: handle properly
-export const ClaimTokenScrt = observer((props: { text: string; onClick: any; disabled: boolean }) => {
+export const ClaimTokenScrt = observer(() => {
   const { user } = useStores();
   return (
     <ClaimToken
-      text={'Claim SeFi'}
-      onClick={() => {
+      text={'Claim SeFi SCRT'}
+      onClick={async () => {
         try {
-          claimScrt(user.secretjs, user.address).then(() => {});
+          await claimScrt(user.secretjs, user.address);
           console.log('success in claim');
         } catch (e) {
           console.error('failed to claim');
@@ -27,10 +27,10 @@ export const ClaimTokenScrt = observer((props: { text: string; onClick: any; dis
 export const ClaimTokenErc = () => {
   return (
     <ClaimToken
-      text={'Claim SeFi'}
-      onClick={() => {
+      text={'Claim SeFi ERC20'}
+      onClick={async () => {
         try {
-          claimErc().then(() => {});
+          await claimErc();
           console.log('success in claim');
         } catch (e) {
           console.error('failed to claim');
@@ -41,5 +41,7 @@ export const ClaimTokenErc = () => {
 };
 
 const ClaimToken = (props: { text: string; onClick: any }) => {
-  return <button className={cn(styles.button)} onClick={props.onClick} />;
+  return <button className={cn(styles.button)} onClick={props.onClick}>
+    {props.text}
+  </button>;
 };

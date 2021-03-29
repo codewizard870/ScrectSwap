@@ -15,6 +15,7 @@ import { Icon } from 'components/Base/components/Icons';
 import cogoToast from 'cogo-toast';
 import EarnSelectorHeader from '../../components/Earn/EarnSelectorHeader';
 import EarnInfoBox from '../../components/Earn/EarnInfoBox';
+import { ITokenInfo, TOKEN_USAGE } from '../../stores/interfaces';
 
 const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
@@ -35,18 +36,29 @@ const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 1
 export const EarnRewards = observer((props: any) => {
   const { user, tokens, rewards } = useStores();
 
-  const [showLpStaking, setShowLpStaking] = useState<boolean>(false);
+  const [rewardsType, setRewardsType] = useState<TOKEN_USAGE>('REWARDS');
+  const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
+
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      while (tokens.isPending) {
+        await sleep(100);
+      }
+      setFilteredTokens(tokens.tokensUsage(rewardsType))
+    }
+    asyncWrapper().then(() => {})
+  }, [rewardsType, tokens, tokens.data])
 
   useEffect(() => {
     const refreshAllTokens = async () => {
       while (!user.secretjs || tokens.isPending) {
         await sleep(100);
       }
-      await Promise.all([...tokens.allData.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
+      await Promise.all([...filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
     };
 
-    refreshAllTokens();
-  }, [user, tokens]);
+    refreshAllTokens().then(() => {});
+  }, [user, filteredTokens]);
 
   useEffect(() => {
     rewards.init({
@@ -56,8 +68,6 @@ export const EarnRewards = observer((props: any) => {
     });
     rewards.fetch();
   }, []);
-
-  const filteredTokens = tokens.allData.filter(s => !!s.display_props?.is_secret_only === showLpStaking);
 
   return (
     <BaseContainer>
@@ -137,8 +147,8 @@ export const EarnRewards = observer((props: any) => {
         </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center">
-            <EarnSelectorHeader setValue={setShowLpStaking} />
-            <EarnInfoBox type={showLpStaking ? 'LPSTAKING' : 'BRIDGE_MINING'}/>
+            <EarnSelectorHeader setValue={setRewardsType} />
+            <EarnInfoBox type={rewardsType}/>
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData
@@ -155,7 +165,6 @@ export const EarnRewards = observer((props: any) => {
                 if (Number(rewardToken.deadline) < 2_000_000) {
                   return null;
                 }
-
                 let token = filteredTokens.find(element => element.dst_address === rewardToken.inc_token.address);
                 if (!token) {
                   return null;

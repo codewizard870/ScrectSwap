@@ -100,8 +100,8 @@ export interface ITokenInfo {
     proxy_symbol?: string;
     proxy_address?: string;
     is_secret_only?: boolean;
+    usage: TOKEN_USAGE[];
   };
-  usage: TOKEN_USAGE[];
 }
 
 export type TOKEN_USAGE = 'BRIDGE' | 'REWARDS' | 'LPSTAKING' | 'SWAP';
@@ -135,6 +135,7 @@ export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
       min_from_scrt: '',
       min_to_scrt: '',
       is_secret_only: true,
+      usage: sToken.usage
     },
     dst_address: sToken.address,
     dst_coin: undefined,
@@ -145,7 +146,6 @@ export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
     totalLocked: '',
     totalLockedNormal: '',
     totalLockedUSD: '',
-    usage: sToken.usage
   };
 };
 

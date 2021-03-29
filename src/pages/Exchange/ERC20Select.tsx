@@ -36,7 +36,7 @@ export const ERC20Select = observer(() => {
 
   // useEffect(() => {}, [token]);
 
-  const bridgeTokens = tokens.tokensUsage('BRIDGE');
+  const bridgeTokens = tokens.tokensUsageSync('BRIDGE');
 
   return (
     <Box direction="column" margin={{ top: 'xlarge' }}>

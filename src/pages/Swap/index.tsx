@@ -37,6 +37,8 @@ export const SwapPageWrapper = observer(() => {
   });
   secretSwapPairs.fetch();
 
+  tokens.init();
+
   return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} />;
 });
 
@@ -504,8 +506,9 @@ export class SwapRouter extends React.Component<
     window.removeEventListener('updatePairsAndTokens', this.updatePairs);
   }
 
-  updateTokens = () => {
-    const tokens: ITokenInfo[] = [...this.props.tokens.tokensUsage('SWAP')];
+  updateTokens = async () => {
+    console.log(...this.props.tokens.allData)
+    const tokens: ITokenInfo[] = [...(await this.props.tokens.tokensUsage('SWAP'))];
 
     // convert to token map for swap
     const swapTokens: SwapTokenMap = TokenMapfromITokenInfo(tokens); // [...TokenMapfromITokenInfo(tokens), ...loadTokensFromList('secret-2')];
@@ -546,7 +549,7 @@ export class SwapRouter extends React.Component<
 
   updatePairs = async () => {
     // gather tokens from our list, and from local storage
-    const tokens = this.updateTokens();
+    const tokens = await this.updateTokens();
 
     let pairs: ISecretSwapPair[] = Array.from(this.props.pairs.allData);
 

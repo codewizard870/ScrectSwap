@@ -90,6 +90,7 @@ function getClientEnvironment(publicUrl) {
         GAS_PRICE: process.env.GAS_PRICE,
 
         BACKEND_URL: process.env.BACKEND_URL,
+        SUSHI_API: process.env.SUSHI_API,
         GET_TOKENS_SERVICE: process.env.GET_TOKENS_SERVICE,
 
         AMM_FACTORY_CONTRACT: process.env.AMM_FACTORY_CONTRACT,

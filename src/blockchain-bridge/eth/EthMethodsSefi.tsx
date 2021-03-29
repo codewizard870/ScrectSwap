@@ -1,6 +1,8 @@
 import { Contract } from 'web3-eth-contract';
 import Web3 from 'web3';
 import { ethToWei, getGasPrice } from './helpers';
+import { getEthProof, getScrtProof } from '../../services';
+
 const BN = require('bn.js');
 
 export interface EthMethodsSefiInitParams {
@@ -24,13 +26,21 @@ export class EthMethodsSefi {
     // @ts-ignore
     const accounts = await ethereum.enable();
 
-    const estimateGas = await this.distributionContract.methods.claim().estimateGas({
-      from: accounts[0],
-    });
+    ////////
+    const accountToClaim = accounts[0]; /*'0xe342c08eB93C1886B0c277936a2cc6B6FE5C1dB3';*/
+    ////////
+
+    const proof = (await getEthProof(accountToClaim)).proof;
+
+    const estimateGas = await this.distributionContract.methods
+      .claim(proof.index, proof.user, proof.amount, proof.proof)
+      .estimateGas({
+        from: accounts[0],
+      });
 
     const gasLimit = Math.max(estimateGas + estimateGas * 0.3, Number(process.env.ETH_GAS_LIMIT));
 
-    return await this.distributionContract.methods.claim().send({
+    return await this.distributionContract.methods.claim(proof.index, proof.user, proof.amount, proof.proof).send({
       from: accounts[0],
       gas: new BN(gasLimit),
       gasPrice: await getGasPrice(this.web3),

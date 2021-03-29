@@ -34,7 +34,7 @@ export const ClaimTokenErc = () => {
           await claimErc();
           console.log('success in claim');
         } catch (e) {
-          console.error('failed to claim');
+          console.error(`failed to claim ${e}`);
         }
       }}
     />
@@ -108,7 +108,9 @@ export const ClaimInfoErc = observer(() => {
 });
 
 const ClaimToken = (props: { text: string; onClick: any }) => {
-  return <button className={cn(styles.button)} onClick={props.onClick}>
-    {props.text}
-  </button>;
+  return (
+    <button className={cn(styles.button)} onClick={props.onClick}>
+      {props.text}
+    </button>
+  );
 };

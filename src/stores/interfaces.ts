@@ -187,3 +187,10 @@ export interface ISignerHealth {
   to_scrt: boolean;
   from_scrt: boolean;
 }
+
+export interface IClaimProofDocument {
+  user: string;
+  index: Number;
+  amount: string;
+  proof: [String];
+}

@@ -1,4 +1,5 @@
 import {
+  IClaimProofDocument,
   IOperation,
   IRewardPool,
   ISecretSwapPair,
@@ -140,4 +141,20 @@ export const getRewardsInfo = async (params: any): Promise<{ content: IRewardPoo
   const content = res.body.pools;
 
   return { ...res.body, content };
+};
+
+export const getEthProof = async (addr): Promise<{ proof: IClaimProofDocument }> => {
+  const url = backendUrl(`/proof/eth/${addr}`);
+
+  const res = await agent.get<{ body: IClaimProofDocument }>(url);
+
+  return res.body;
+};
+
+export const getScrtProof = async (addr): Promise<{ content: IClaimProofDocument }> => {
+  const url = backendUrl(`/proof/scrt/${addr}`);
+
+  const res = await agent.get<{ body: IClaimProofDocument }>(url);
+
+  return res.body;
 };

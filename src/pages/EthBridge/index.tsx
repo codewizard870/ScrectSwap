@@ -93,8 +93,6 @@ export const EthBridge = observer((props: any) => {
             <Message.Header>SEFI IS LIVE</Message.Header>
             <p>Links to claim sefi and instructions</p>
           </Message>
-          <ClaimTokenErc />
-          <ClaimTokenScrt />
         </Box>
         <Box direction="row" wrap={true} fill={true} justify="between" align="start">
           <Box direction="column" align="center" justify="center" className={styles.base}>

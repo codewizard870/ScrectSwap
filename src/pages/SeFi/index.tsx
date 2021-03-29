@@ -16,7 +16,7 @@ import EarnInfoBox from '../../components/Earn/EarnInfoBox';
 import { IRewardPool, ITokenInfo } from '../../stores/interfaces';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-import { ClaimInfoErc, ClaimInfoScrt } from '../../components/Earn/ClaimToken';
+import { ClaimInfoErc, ClaimInfoScrt, ClaimTokenErc, ClaimTokenScrt } from '../../components/Earn/ClaimToken';
 import { notify } from '../Earn';
 
 
@@ -184,6 +184,8 @@ export const SeFiPage = observer(() => {
               </>
             </>
             <EarnInfoBox type={'LPSTAKING'} />
+            <ClaimTokenErc />
+            <ClaimTokenScrt />
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData

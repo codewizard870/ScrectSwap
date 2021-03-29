@@ -143,16 +143,15 @@ export const getRewardsInfo = async (params: any): Promise<{ content: IRewardPoo
   return { ...res.body, content };
 };
 
-export const getEthProof = async (addr): Promise<{ proof: IClaimProofDocument }> => {
-  const url = backendUrl(`/proof/eth/${addr}`);
-
+export const getEthProof = async (addr: string): Promise<{ proof: IClaimProofDocument }> => {
+  const url = backendUrl(`/proof/eth/${addr.toLowerCase()}`);
   const res = await agent.get<{ body: IClaimProofDocument }>(url);
 
   return res.body;
 };
 
 export const getScrtProof = async (addr): Promise<{ proof: IClaimProofDocument }> => {
-  const url = backendUrl(`/proof/scrt/${addr}`);
+  const url = backendUrl(`/proof/scrt/${addr.toLowerCase()}`);
 
   const res = await agent.get<{ body: IClaimProofDocument }>(url);
 

@@ -31,7 +31,6 @@ export class EthMethodsSefi {
     ////////
 
     const proof = (await getEthProof(accountToClaim)).proof;
-
     const estimateGas = await this.distributionContract.methods
       .claim(proof.index, proof.user, proof.amount, proof.proof)
       .estimateGas({

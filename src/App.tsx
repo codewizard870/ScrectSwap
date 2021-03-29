@@ -30,7 +30,7 @@ export const App: React.FC = () => (
         <Route exact path="/earn" component={EarnRewards} />
         <Route exact path="/:token" component={EthBridge} />
         <Route exact path="/:token/operations/:operationId" component={EthBridge} />
-        {/*<Redirect to="/eth" />*/}
+        <Redirect to="/eth" />
       </Switch>
     </Suspense>
     <ActionModals />

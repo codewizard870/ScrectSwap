@@ -24,6 +24,9 @@ export class Tokens extends ListStoreConstructor<ITokenInfo> {
   }
 
   tokensUsage(usage: TOKEN_USAGE) {
-    return this.data.filter(token => token.usage.includes(usage));
+    return this.data.filter(token => {
+//      console.log(token.display_props.usage.includes(usage))
+      return token.display_props.usage.includes(usage);
+    });
   }
 }

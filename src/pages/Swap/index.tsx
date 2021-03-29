@@ -505,6 +505,7 @@ export class SwapRouter extends React.Component<
   }
 
   updateTokens = () => {
+    console.log(...this.props.tokens.allData)
     const tokens: ITokenInfo[] = [...this.props.tokens.tokensUsage('SWAP')];
 
     // convert to token map for swap

@@ -7,7 +7,7 @@ const backendUrl = url => {
 };
 
 export const getSushiPool = async (address: String) => {
-  const res = await agent.get<any>('https://external-services.azurewebsites.net/api/sushi').query({ address });
+  const res = await agent.get<any>(process.env.SUSHI_API).query({ address });
   return res.body;
 };
 

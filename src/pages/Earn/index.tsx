@@ -49,7 +49,7 @@ export const EarnRewards = observer((props: any) => {
       while (tokens.isPending) {
         await sleep(100);
       }
-      setFilteredTokens(tokens.tokensUsage(rewardsType))
+      setFilteredTokens(await tokens.tokensUsage(rewardsType))
     }
     asyncWrapper().then(() => {})
   }, [rewardsType, tokens, tokens.data])
@@ -76,7 +76,7 @@ export const EarnRewards = observer((props: any) => {
       }
     }
 
-    resolveSushiAPY()
+    resolveSushiAPY().then(() => {});
     refreshAllTokens().then(() => {});
   }, [user, filteredTokens]);
 

@@ -125,7 +125,7 @@ export const WalletBalances = observer(() => {
 
       exchange.token === TOKEN.ERC20
         ? setDisplayedTokens(
-            tokens.tokensUsage('BRIDGE').filter(
+        (await tokens.tokensUsage('BRIDGE')).filter(
               token =>
                 token.display_props &&
                 exchange.token === TOKEN.ERC20 &&
@@ -133,7 +133,7 @@ export const WalletBalances = observer(() => {
                 token.name !== 'WSCRT',
             ),
           )
-        : setDisplayedTokens(tokens.tokensUsage('BRIDGE').filter(token => token.src_coin === 'Ethereum'));
+        : setDisplayedTokens((await tokens.tokensUsage('BRIDGE')).filter(token => token.src_coin === 'Ethereum'));
     };
 
     refreshSelectedToken();
@@ -199,7 +199,7 @@ export const WalletBalances = observer(() => {
                 selected={exchange.token === TOKEN.ETH && exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT}
               />
 
-              {tokens.tokensUsage('BRIDGE')
+              {tokens.tokensUsageSync('BRIDGE')
                 .filter(
                   token =>
                     token.display_props &&

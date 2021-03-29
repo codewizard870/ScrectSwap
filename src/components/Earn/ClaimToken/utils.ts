@@ -1,5 +1,5 @@
 import { SigningCosmWasmClient } from 'secretjs';
-import { Claim, ethMethodsSefi, isClaimedSefiRewardsScrt } from '../../../blockchain-bridge';
+import { ClaimAirdrop, ethMethodsSefi, isClaimedSefiRewardsScrt } from '../../../blockchain-bridge';
 import BigNumber from 'bignumber.js';
 import * as services from 'services';
 
@@ -10,7 +10,7 @@ interface ClaimInfo {
 }
 
 export const claimScrt = async (secretjs: SigningCosmWasmClient, address: string) => {
-  const result = await Claim({ secretjs, address });
+  const result = await ClaimAirdrop({ secretjs, address });
 
   return result;
 };
@@ -30,7 +30,7 @@ export const claimInfoErc = async (address) => {
 }
 
 export const claimInfoScrt = async (secretjs, address) => {
-  const info = (await services.getScrtProof(address)).content // getIndexFromDB
+  const info = (await services.getScrtProof(address)).proof // getIndexFromDB
 
   const isClaimed = await isClaimedSefiRewardsScrt({ secretjs, index: info.index });
 

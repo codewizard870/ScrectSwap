@@ -1,4 +1,4 @@
-import { ITokenInfo } from './interfaces';
+import { ITokenInfo, TOKEN_USAGE } from './interfaces';
 import { IStores } from './index';
 import * as services from 'services';
 import { ListStoreConstructor } from './core/ListStoreConstructor';
@@ -21,5 +21,9 @@ export class Tokens extends ListStoreConstructor<ITokenInfo> {
   //
   @computed get totalLockedUSD() {
     return this.data.reduce((acc, v) => acc + Number(v.totalLockedUSD), 0);
+  }
+
+  tokensUsage(usage: TOKEN_USAGE) {
+    return this.data.filter(token => token.usage.includes(usage));
   }
 }

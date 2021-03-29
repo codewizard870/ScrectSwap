@@ -101,9 +101,10 @@ export interface ITokenInfo {
     proxy_address?: string;
     is_secret_only?: boolean;
   };
+  usage: TOKEN_USAGE[];
 }
 
-type TOKEN_USAGE = 'BRIDGE' | 'REWARDS' | 'LPSTAKING';
+export type TOKEN_USAGE = 'BRIDGE' | 'REWARDS' | 'LPSTAKING' | 'SWAP';
 
 export interface ISecretToken {
   name: string;
@@ -144,6 +145,7 @@ export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
     totalLocked: '',
     totalLockedNormal: '',
     totalLockedUSD: '',
+    usage: sToken.usage
   };
 };
 

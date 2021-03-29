@@ -36,6 +36,8 @@ export const ERC20Select = observer(() => {
 
   // useEffect(() => {}, [token]);
 
+  const bridgeTokens = tokens.tokensUsage('BRIDGE');
+
   return (
     <Box direction="column" margin={{ top: 'xlarge' }}>
       <Box direction="row" align="center" justify="between">
@@ -47,7 +49,7 @@ export const ERC20Select = observer(() => {
       {!custom ? (
         <Box margin={{ top: 'small', bottom: 'medium' }}>
           <Select
-            options={tokens.allData
+            options={bridgeTokens
               .filter(token => token.display_props && token.src_coin !== 'Ethereum')
               .sort((a, b) =>
                 /* SCRT first */

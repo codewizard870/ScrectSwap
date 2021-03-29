@@ -14,6 +14,7 @@ import { InfoModalEarn } from '../../components/InfoModalEarn';
 import { Icon } from 'components/Base/components/Icons';
 import cogoToast from 'cogo-toast';
 import EarnSelectorHeader from '../../components/Earn/EarnSelectorHeader';
+import EarnInfoBox from '../../components/Earn/EarnInfoBox';
 
 const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
@@ -34,7 +35,7 @@ const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 1
 export const EarnRewards = observer((props: any) => {
   const { user, tokens, rewards } = useStores();
 
-  const [showLpStaking, setShowLpStaking] = useState<boolean>(true);
+  const [showLpStaking, setShowLpStaking] = useState<boolean>(false);
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -137,6 +138,7 @@ export const EarnRewards = observer((props: any) => {
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center">
             <EarnSelectorHeader setValue={setShowLpStaking} />
+            <EarnInfoBox type={showLpStaking ? 'LPSTAKING' : 'BRIDGE_MINING'}/>
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData

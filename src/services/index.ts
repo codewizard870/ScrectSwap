@@ -90,6 +90,12 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
       }
 
       return t;
+    })
+    .map(t => {
+      if (t?.usage === undefined) {
+        t.usage = ['BRIDGE', 'REWARDS', 'SWAP']
+      }
+      return t;
     });
 
   let sTokens = secretTokens.body.tokens.map(t => {

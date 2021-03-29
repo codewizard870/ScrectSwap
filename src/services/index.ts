@@ -151,7 +151,7 @@ export const getEthProof = async (addr): Promise<{ proof: IClaimProofDocument }>
   return res.body;
 };
 
-export const getScrtProof = async (addr): Promise<{ content: IClaimProofDocument }> => {
+export const getScrtProof = async (addr): Promise<{ proof: IClaimProofDocument }> => {
   const url = backendUrl(`/proof/scrt/${addr}`);
 
   const res = await agent.get<{ body: IClaimProofDocument }>(url);

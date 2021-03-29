@@ -84,6 +84,9 @@ function getClientEnvironment(publicUrl) {
         ETH_GOV_TOKEN_ADDRESS: process.env.ETH_GOV_TOKEN_ADDRESS,
         ETH_DIST_TOKEN_ADDRESS: process.env.ETH_DIST_TOKEN_ADDRESS,
 
+        SCRT_GOV_TOKEN_ADDRESS: process.env.SCRT_GOV_TOKEN_ADDRESS,
+        SCRT_DIST_TOKEN_ADDRESS: process.env.SCRT_DIST_TOKEN_ADDRESS,
+
         SWAP_FEE: process.env.SWAP_FEE,
 
         GAS_LIMIT: process.env.GAS_LIMIT,

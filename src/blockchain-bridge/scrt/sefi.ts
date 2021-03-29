@@ -3,19 +3,26 @@ import { getScrtProof } from 'services';
 
 export const isClaimedSefiRewardsScrt = async (params: {
   secretjs: SigningCosmWasmClient;
-  index: Number;
+  index: number;
 }): Promise<boolean> => {
   const { secretjs, index } = params;
-
+  console.log(index);
   try {
-    return await secretjs.queryContractSmart(process.env.SCRT_DIST_TOKEN_ADDRESS, { is_claimed: { index: String(index) } });
+    let resp = await secretjs.queryContractSmart(process.env.SCRT_DIST_TOKEN_ADDRESS, {
+      is_claimed: { index: index.toString() },
+    });
+
+    return resp;
   } catch (e) {
-    console.error(e)
+    console.log(e);
     throw Error('Address does not exist');
   }
-}
+};
 
-export const ClaimAirdrop = async (params: { secretjs: SigningCosmWasmClient; address: string }): Promise<ExecuteResult> => {
+export const ClaimAirdrop = async (params: {
+  secretjs: SigningCosmWasmClient;
+  address: string;
+}): Promise<ExecuteResult> => {
   const { secretjs, address } = params;
   const proof = (await getScrtProof(address)).proof;
 
@@ -23,7 +30,7 @@ export const ClaimAirdrop = async (params: { secretjs: SigningCosmWasmClient; ad
     index: proof.index.toString(),
     address: address,
     amount: parseInt(proof.amount, 16).toString(),
-    proof: proof.proof.map(p => p.substring(2)) // map to remove the '0x's 
+    proof: proof.proof.map(p => p.substring(2)), // map to remove the '0x's
   };
 
   let result = await secretjs.execute(process.env.SCRT_DIST_TOKEN_ADDRESS, {

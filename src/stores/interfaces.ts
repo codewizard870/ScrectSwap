@@ -135,7 +135,7 @@ export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
       min_from_scrt: '',
       min_to_scrt: '',
       is_secret_only: true,
-      usage: sToken.usage
+      usage: sToken.usage,
     },
     dst_address: sToken.address,
     dst_coin: undefined,
@@ -190,7 +190,7 @@ export interface ISignerHealth {
 
 export interface IClaimProofDocument {
   user: string;
-  index: Number;
+  index: number;
   amount: string;
   proof: [String];
 }

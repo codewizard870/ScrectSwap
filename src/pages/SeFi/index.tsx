@@ -19,23 +19,22 @@ import { Text } from 'components/Base';
 import { ClaimInfoErc, ClaimInfoScrt, ClaimTokenErc, ClaimTokenScrt } from '../../components/Earn/ClaimToken';
 import { notify } from '../Earn';
 
-
 function SefiBalance(props: { sefiBalance: string | JSX.Element }) {
-  return <div style={{ display: 'flex', justifyContent: 'center' }}>
-    <Text>
-      Balance:{'  '}
-    </Text>
-    {props.sefiBalance || <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
-  </div>;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Text>Balance:{'  '}</Text>
+      {props.sefiBalance || <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
+    </div>
+  );
 }
 
 interface RewardData {
-  reward: IRewardPool,
-  token: ITokenInfo
+  reward: IRewardPool;
+  token: ITokenInfo;
 }
 
 export const SeFiPage = observer(() => {
-  const { user, tokens, rewards } = useStores();
+  const { user, tokens, rewards, userMetamask } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
 
@@ -50,29 +49,28 @@ export const SeFiPage = observer(() => {
       }
       const mappedRewards = rewards.allData
         .filter(rewards => filteredTokens.find(element => element.dst_address === rewards.inc_token.address))
-        .map((reward) => {
-          return {reward, token: filteredTokens.find(element => element.dst_address === reward.inc_token.address)}
-        })
+        .map(reward => {
+          return { reward, token: filteredTokens.find(element => element.dst_address === reward.inc_token.address) };
+        });
 
-      setRewardsData(mappedRewards)
-    }
-    asyncWrapper().then(() => {})
-  }, [filteredTokens, rewards, rewards.data])
+      setRewardsData(mappedRewards);
+    };
+    asyncWrapper().then(() => {});
+  }, [filteredTokens, rewards, rewards.data]);
 
   const testSetTokens = useCallback(() => {
     const asyncWrapper = async () => {
-
       if (tokens.allData.length > 0) {
         await sleep(500);
-        setFilteredTokens(tokens.tokensUsageSync('LPSTAKING'))
+        setFilteredTokens(tokens.tokensUsageSync('LPSTAKING'));
       }
-    }
+    };
     asyncWrapper();
   }, [tokens, tokens.allData]);
 
   useEffect(() => {
     testSetTokens();
-  }, [testSetTokens])
+  }, [testSetTokens]);
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -93,7 +91,6 @@ export const SeFiPage = observer(() => {
     //
     //
     // }
-
 
     refreshAllTokens().then(() => {});
   }, [filteredTokens]);
@@ -172,7 +169,6 @@ export const SeFiPage = observer(() => {
           />
         </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
-
           <Box direction="column" align="center" justify="center">
             <SefiBalance sefiBalance={sefiBalance} />
             <>
@@ -225,7 +221,12 @@ export const SeFiPage = observer(() => {
                 };
 
                 return (
-                  <EarnRow notify={notify} key={rewardToken.reward.inc_token.symbol} userStore={user} token={rewardsToken} />
+                  <EarnRow
+                    notify={notify}
+                    key={rewardToken.reward.inc_token.symbol}
+                    userStore={user}
+                    token={rewardsToken}
+                  />
                 );
               })}
           </Box>

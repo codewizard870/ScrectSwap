@@ -1,7 +1,7 @@
 import { Contract } from 'web3-eth-contract';
 import Web3 from 'web3';
-import { ethToWei, getGasPrice } from './helpers';
-import { getEthProof, getScrtProof } from '../../services';
+import { getGasPrice } from './helpers';
+import { getEthProof } from '../../services';
 
 const BN = require('bn.js');
 
@@ -47,7 +47,7 @@ export class EthMethodsSefi {
   };
 
   checkAvailableToClaim = async (index: Number) => {
-    return await this.distributionContract.methods.isClaimed(new BN(index)).call();
+    return await this.distributionContract.methods.isClaimed(index).call();
   };
 
   checkGovBalance = async addr => {

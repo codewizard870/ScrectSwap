@@ -99,7 +99,7 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
     })
     .map(t => {
       if (t?.display_props?.usage === undefined) {
-        t.display_props.usage = ['BRIDGE', 'REWARDS', 'SWAP']
+        t.display_props.usage = ['BRIDGE', 'REWARDS', 'SWAP'];
       }
       return t;
     });

@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { useStores } from '../../../stores';
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils';
 import BigNumber from 'bignumber.js';
-import { divDecimals, formatWithSixDecimals } from '../../../utils';
+import { divDecimals, formatWithSixDecimals, sleep } from '../../../utils';
 import Loader from 'react-loader-spinner';
 
 // todo: handle properly
@@ -43,69 +43,89 @@ export const ClaimTokenErc = () => {
   );
 };
 
-function ClaimInfoDisplay(props: { failed?: boolean, address: string, claimed: boolean, claimAmount: BigNumber }) {
-  return props.address ? <>{props?.failed ? <>failed</> : <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}</> : <div>
-    {"Claim Info"}
+function ClaimInfoDisplay(props: { failed?: boolean; address: string; claimed: boolean; claimAmount: BigNumber }) {
+  return !props.address ? (
+    <>{props?.failed ? <>failed</> : <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}</>
+  ) : (
     <div>
-      {"Address: "} {props.address}
+      {'Claim Info'}
+      <div>
+        {'Address: '} {props.address}
+      </div>
+      <div>
+        {'IsClaimed: '} {props.claimed ? 'True' : 'False'}
+      </div>
+      <div>
+        {'Amount: '} {divDecimals(props.claimAmount.toString(), 6)}
+      </div>
     </div>
-    <div>
-      {"IsClaimed: "} {props.claimed ? 'True': 'False'}
-    </div>
-    <div>
-      {"Amount: "} {divDecimals(props.claimAmount.toString(), 6)}
-    </div>
-  </div>;
+  );
 }
 
 export const ClaimInfoScrt = observer(() => {
   const { user } = useStores();
 
-  const [claimAmount, setClaimAmount] = useState<BigNumber>(new BigNumber(0))
-  const [isClaimed, setIsClaimed] = useState<boolean>(false)
-  const [address, setClaimAddress] = useState<string>(undefined)
+  const [claimAmount, setClaimAmount] = useState<BigNumber>(new BigNumber(0));
+  const [isClaimed, setIsClaimed] = useState<boolean>(false);
+  const [address, setClaimAddress] = useState<string>(undefined);
+  let [claimInfo, setClaimInfo] = useState<ClaimInfoResponse>(undefined);
+  let [failed, setFailed] = useState<boolean>(false);
 
   useEffect(() => {
     const stuff = async () => {
-      if (user.address) {
-        const claimInfo = await claimInfoScrt(user.secretjs, user.address);
-
-        setClaimAddress(user.address);
-        setIsClaimed(claimInfo.isClaimed);
-        setClaimAmount(claimInfo.amount);
+      while (!user.secretjs) {
+        await sleep(100);
       }
-    }
+      if (user.address) {
+        const info = await claimInfoScrt(user.secretjs, user.address).catch(() => {
+          setFailed(true);
+          return undefined;
+        });
+        console.log(info);
+
+        setClaimInfo(info);
+      }
+    };
 
     stuff();
-  }, [])
+  }, [user.address]);
 
-  return <ClaimInfoDisplay address={address} claimed={isClaimed} claimAmount={claimAmount} />;
+  return (
+    <ClaimInfoDisplay
+      failed={failed}
+      address={claimInfo?.address}
+      claimed={claimInfo?.isClaimed}
+      claimAmount={claimInfo?.amount}
+    />
+  );
 });
 
 export const ClaimInfoErc = () => {
   const { userMetamask } = useStores();
 
-  let [claimAmount, setClaimAmount] = useState<BigNumber>(new BigNumber(0))
-  let [isClaimed, setIsClaimed] = useState<boolean>(false)
-  let [address, setClaimAddress] = useState<string>(undefined)
-  let [failed, setFailed] = useState<boolean>(false)
-  let [claimInfo, setClaimInfo] = useState<object>({})
-  const refContainer = useRef<ClaimInfoResponse>(undefined);
+  let [failed, setFailed] = useState<boolean>(false);
+  let [claimInfo, setClaimInfo] = useState<ClaimInfoResponse>(undefined);
 
   useEffect(() => {
     const stuff = async () => {
-      console.log(`hello ${userMetamask.ethAddress}`)
+      console.log(`hello ${userMetamask.ethAddress}`);
       if (userMetamask.ethAddress) {
-        refContainer.current = await claimInfoErc(userMetamask.ethAddress);
-      }
-    }
-    stuff();
+        const info = await claimInfoErc(userMetamask.ethAddress);
 
-  }, [userMetamask.ethAddress])
+        setClaimInfo(info);
+      }
+    };
+    stuff();
+  }, [userMetamask.ethAddress]);
 
   return (
-    <ClaimInfoDisplay failed={failed} address={refContainer?.current?.address} claimed={refContainer?.current?.isClaimed} claimAmount={refContainer?.current?.amount} />
-  )
+    <ClaimInfoDisplay
+      failed={failed}
+      address={claimInfo?.address}
+      claimed={claimInfo?.isClaimed}
+      claimAmount={claimInfo?.amount}
+    />
+  );
 };
 
 const ClaimToken = (props: { text: string; onClick: any }) => {

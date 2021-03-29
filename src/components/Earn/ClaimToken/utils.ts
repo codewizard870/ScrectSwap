@@ -6,7 +6,7 @@ import * as services from 'services';
 export interface ClaimInfoResponse {
   address: string;
   amount: BigNumber;
-  isClaimed: false
+  isClaimed: boolean;
 }
 
 export const claimScrt = async (secretjs: SigningCosmWasmClient, address: string) => {
@@ -18,25 +18,49 @@ export const claimScrt = async (secretjs: SigningCosmWasmClient, address: string
 export const claimErc = async () => await ethMethodsSefi.claimToken();
 
 export const claimInfoErc = async (address): Promise<ClaimInfoResponse> => {
-  const info = (await services.getEthProof(address)).proof // getIndexFromDB
+  const info = (await services.getEthProof(address)).proof; // getIndexFromDB
 
-  const isClaimed = await ethMethodsSefi.checkAvailableToClaim(info.index);
-
-  return {
-    address,
-    amount: new BigNumber(info.amount),
-    isClaimed
+  if (!info?.index) {
+    return {
+      address,
+      amount: new BigNumber(0),
+      isClaimed: false,
+    };
   }
-}
 
-export const claimInfoScrt = async (secretjs, address) => {
-  const info = (await services.getScrtProof(address)).proof // getIndexFromDB
-
-  const isClaimed = await isClaimedSefiRewardsScrt({ secretjs, index: info.index });
-
-  return {
-    address,
-    amount: new BigNumber(info.amount),
-    isClaimed
+  try {
+    const isClaimed = await ethMethodsSefi.checkAvailableToClaim(info.index);
+    return {
+      address,
+      amount: new BigNumber(info.amount),
+      isClaimed,
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error('aww');
   }
-}
+};
+
+export const claimInfoScrt = async (secretjs, address): Promise<ClaimInfoResponse> => {
+  const info = (await services.getScrtProof(address)).proof; // getIndexFromDB
+
+  if (!info?.index) {
+    return {
+      address,
+      amount: new BigNumber(0),
+      isClaimed: false,
+    };
+  }
+  try {
+    const isClaimed = await isClaimedSefiRewardsScrt({ secretjs, index: info.index });
+
+    return {
+      address,
+      amount: new BigNumber(info.amount),
+      isClaimed,
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error('aww');
+  }
+};

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import { BaseContainer, PageContainer } from 'components';
 import { observer } from 'mobx-react-lite';
@@ -13,6 +13,9 @@ import { divDecimals, sleep } from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
 import { Icon } from 'components/Base/components/Icons';
 import cogoToast from 'cogo-toast';
+import * as services from 'services';
+import Loader from 'react-loader-spinner';
+import { Text } from 'components/Base';
 
 
 const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
@@ -33,6 +36,7 @@ const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 1
 
 export const EarnRewards = observer((props: any) => {
   const { user, tokens, rewards } = useStores();
+  const [sushiAPY, setSushiAPY] = useState<Number>(-1);
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -41,7 +45,22 @@ export const EarnRewards = observer((props: any) => {
       }
       await Promise.all([...tokens.allData.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
     };
+    const resolveSushiAPY = async () => {
+      while (!user.secretjs || !user.scrtRate) {
+        await sleep(100);
+      }
 
+      try {
+        const sushipool = await services.getSushiPool("0x9c86bc3c72ab97c2234cba8c6c7069009465ae86")
+        const liquidity = sushipool.entryUSD - sushipool.exitUSD
+        const apy = ((10000 * user.scrtRate) / liquidity) * 52
+        setSushiAPY(Number((apy * 100).toFixed(2)))
+      } catch (error) {
+        setSushiAPY(0)
+      }
+    }
+
+    resolveSushiAPY()
     refreshAllTokens();
   }, [user, tokens]);
 
@@ -120,10 +139,16 @@ export const EarnRewards = observer((props: any) => {
             style={{
               minWidth: '550px',
               maxWidth: '1047px',
-              display: 'inline-block',
+              display: 'flex',
+              flexDirection: 'row'
             }}
           >
-            SushiSwap incentives for LPs on the WSCRT/WETH pair are now live!{' '}
+            SushiSwap incentives for LPs on the WSCRT/WETH pair are now live with a
+            <Box direction="row" margin={{ left: 'xxsmall', right: 'xxsmall' }} align="center">
+              <Text bold margin={{ right: 'xxsmall' }}>APY of</Text>
+              {sushiAPY === -1 ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" /> : <Text bold>{`${sushiAPY}%!`}</Text>}
+            </Box>
+            {' '}
             <a href="https://twitter.com/SecretNetwork/status/1369349930247192582" target="_blank">
               Earn more on SushiSwap Onsen
             </a>

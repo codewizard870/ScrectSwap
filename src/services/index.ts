@@ -6,6 +6,11 @@ const backendUrl = url => {
   return `${process.env.BACKEND_URL}${url}`;
 };
 
+export const getSushiPool = async (address: String) => {
+  const res = await agent.get<any>(process.env.SUSHI_API).query({ address });
+  return res.body;
+};
+
 export const createOperation = async params => {
   const url = backendUrl(`/operations`);
 

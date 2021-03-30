@@ -15,12 +15,15 @@ import { Text } from 'components/Base';
 import { CopyWithFeedback } from 'components/Swap/CopyWithFeedback';
 import { Spinner2 } from '../../../ui/Spinner2';
 
-
-export const CheckClaim = (props: {isEth?: boolean, onClick?: any, loading?: boolean}) => {
+export const CheckClaim = (props: { isEth?: boolean; onClick?: any; loading?: boolean }) => {
   // const { user } = useStores();
   return (
     <button className={cn(styles.checkBalance)} onClick={props.onClick} disabled={props.loading}>
-      {props.loading ? <Spinner2 height="20px" width="20px" color="white" style={{ marginRight: 5 }} /> : "Claim Genesis" }
+      {props.loading ? (
+        <Spinner2 height="20px" width="20px" color="white" style={{ marginRight: 5 }} />
+      ) : (
+        'Claim Genesis'
+      )}
     </button>
   );
 };
@@ -80,7 +83,7 @@ export const CheckClaimModal = (props: {
         }
       }}
       open={open}
-      trigger={<CheckClaim loading={sending || props?.loadingBalance}/>}
+      trigger={<CheckClaim loading={sending || props?.loadingBalance} />}
       dimmer={'blurring'}
       style={{ width: '700px', display: 'flex' }}
     >
@@ -109,12 +112,12 @@ export const CheckClaimModal = (props: {
           labelPosition="right"
           icon="checkmark"
           onClick={async () => {
-            setSending(true)
-            setOpen(false)
+            setSending(true);
+            setOpen(false);
             try {
               await props.onClick(claimInfo?.address);
             } finally {
-              console.log('aww')
+              console.log('aww');
               setSending(false);
             }
           }}

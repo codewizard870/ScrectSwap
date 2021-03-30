@@ -50,7 +50,11 @@ export class EthMethodsSefi {
     return await this.distributionContract.methods.isClaimed(index).call();
   };
 
-  checkGovBalance = async addr => {
-    return await this.govTokenContract.methods.balanceOf(addr).call();
+  checkGovBalance = async (addr: string): Promise<string> => {
+    try {
+      return await this.govTokenContract.methods.balanceOf(addr).call();
+    } catch (e) {
+      return 'Wrong Network?';
+    }
   };
 }

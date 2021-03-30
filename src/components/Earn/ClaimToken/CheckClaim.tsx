@@ -14,15 +14,16 @@ import { FlexRowSpace } from '../../Swap/FlexRowSpace';
 import { Text } from 'components/Base';
 import { CopyWithFeedback } from 'components/Swap/CopyWithFeedback';
 import { Spinner2 } from '../../../ui/Spinner2';
+import { useStores } from 'stores';
 
-export const CheckClaim = (props: { isEth?: boolean; onClick?: any; loading?: boolean }) => {
+export const CheckClaim = (props: { isEth?: boolean; onClick?: any; loading?: boolean; title?: string }) => {
   // const { user } = useStores();
   return (
     <button className={cn(styles.checkBalance)} onClick={props.onClick} disabled={props.loading}>
       {props.loading ? (
         <Spinner2 height="20px" width="20px" color="white" style={{ marginRight: 5 }} />
       ) : (
-        'Claim Genesis'
+        props.title ?? 'Claim Genesis'
       )}
     </button>
   );
@@ -35,6 +36,8 @@ export const CheckClaimModal = (props: {
   isEth?: boolean;
   onClick?: any;
 }) => {
+  const { user, userMetamask } = useStores();
+
   const [open, setOpen] = React.useState<boolean>(false);
 
   let [claimInfo, setClaimInfo] = useState<ClaimInfoResponse>(undefined);
@@ -69,6 +72,22 @@ export const CheckClaimModal = (props: {
     }
   };
 
+  if (!props.address) {
+    return (
+      <CheckClaim
+        title="Connect Wallet"
+        onClick={() => {
+          if (props.isEth) {
+            userMetamask.signIn();
+          } else {
+            user.signIn();
+          }
+        }}
+        isEth={props.isEth}
+      />
+    );
+  }
+
   return (
     <Modal
       onClose={() => setOpen(false)}
@@ -83,7 +102,7 @@ export const CheckClaimModal = (props: {
         }
       }}
       open={open}
-      trigger={<CheckClaim loading={sending || props?.loadingBalance} />}
+      trigger={<CheckClaim loading={sending} />}
       dimmer={'blurring'}
       style={{ width: '700px', display: 'flex' }}
     >

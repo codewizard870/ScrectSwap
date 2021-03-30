@@ -9,7 +9,15 @@ import * as styles from '../EthBridge/styles.styl';
 // import { ERC20Select } from '../Exchange/ERC20Select';
 import EarnRow from '../../components/Earn/EarnRow';
 import { rewardsDepositKey, rewardsKey } from '../../stores/UserStore';
-import { divDecimals, fixUnlockToken, sleep, truncateAddressString, unlockToken } from '../../utils';
+import {
+  displayHumanizedBalance,
+  divDecimals,
+  fixUnlockToken,
+  humanizeBalance,
+  sleep,
+  truncateAddressString,
+  unlockToken,
+} from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
 import EarnInfoBox from '../../components/Earn/EarnInfoBox';
 import { IRewardPool, ITokenInfo } from '../../stores/interfaces';
@@ -22,6 +30,7 @@ import { ethMethodsSefi } from '../../blockchain-bridge/eth';
 import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
 import { claimErc, claimScrt } from '../../components/Earn/ClaimToken/utils';
 import { unlockJsx, wrongViewingKey } from 'pages/Swap/utils';
+import BigNumber from 'bignumber.js';
 
 function SefiBalance(props: { address: string; sefiBalance: string | JSX.Element; isEth?: boolean }) {
   const src_img = props.isEth ? '/static/eth.png' : '/static/scrt.svg';
@@ -108,14 +117,19 @@ export const SeFiPage = observer(() => {
   }, [testSetTokens]);
 
   useEffect(() => {
-    const asyncWrapper = async () => {
+    (async () => {
       if (userMetamask.ethAddress) {
-        setSefiBalanceErc(await ethMethodsSefi.checkGovBalance(userMetamask.ethAddress));
-      }
-    };
+        const balanceResult = await ethMethodsSefi.checkGovBalance(userMetamask.ethAddress);
 
-    asyncWrapper();
-  }, [userMetamask.ethAddress]);
+        const asBigNumber = new BigNumber(balanceResult);
+        if (asBigNumber.isNaN()) {
+          setSefiBalanceErc(balanceResult);
+        } else {
+          setSefiBalanceErc(displayHumanizedBalance(humanizeBalance(asBigNumber, 6), null, 6));
+        }
+      }
+    })();
+  }, [userMetamask, userMetamask?.ethAddress]);
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -180,7 +194,7 @@ export const SeFiPage = observer(() => {
                   secretjs={user.secretjs}
                   address={user.address}
                   isEth={false}
-                  loadingBalance={false}
+                  loadingBalance={!user.address}
                   onClick={async () => {
                     try {
                       await claimScrt(user.secretjs, user.address);
@@ -211,7 +225,7 @@ export const SeFiPage = observer(() => {
                 <CheckClaimModal
                   address={userMetamask.ethAddress}
                   isEth={true}
-                  loadingBalance={!sefiBalanceErc}
+                  loadingBalance={!userMetamask.ethAddress}
                   onClick={async () => {
                     try {
                       await claimErc();

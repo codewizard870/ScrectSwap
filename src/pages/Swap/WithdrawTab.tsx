@@ -31,7 +31,7 @@ export class WithdrawTab extends React.Component<
   state = { searchText: '' };
 
   render() {
-    const pairs = Array.from(this.props.pairs.values());
+    const pairs = Array.from(new Set(this.props.pairs.values()));
 
     if (pairs.length === 0) {
       return (

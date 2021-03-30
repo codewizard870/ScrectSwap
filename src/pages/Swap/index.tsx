@@ -708,16 +708,20 @@ export class SwapRouter extends React.Component<
     const newPairs: PairMap = new Map<string, SwapPair>();
 
     for (const p of pairs) {
-      const newPair = SwapPair.fromPair(p, tokens);
-      newPairs.set(newPair.identifier(), newPair);
-      newPairs.set(
-        newPair
-          .identifier()
-          .split(SwapPair.id_delimiter)
-          .reverse()
-          .join(SwapPair.id_delimiter),
-        newPair,
-      );
+      try {
+        const newPair = SwapPair.fromPair(p, tokens);
+        newPairs.set(newPair.identifier(), newPair);
+        newPairs.set(
+          newPair
+            .identifier()
+            .split(SwapPair.id_delimiter)
+            .reverse()
+            .join(SwapPair.id_delimiter),
+          newPair,
+        );
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     this.setState({ pairs: newPairs }, this.updateRoutingGraph);
@@ -727,7 +731,7 @@ export class SwapRouter extends React.Component<
     const { pairs, routerSupportedTokens } = this.state;
 
     const graph = {};
-    for (const pair of pairs.values()) {
+    for (const pair of new Set(pairs.values())) {
       const [token0, token1] = pair.assetIds();
       if (!routerSupportedTokens.has(token0) || !routerSupportedTokens.has(token1)) {
         continue;

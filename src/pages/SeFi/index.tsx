@@ -155,7 +155,7 @@ export const SeFiPage = observer(() => {
                       await claimScrt(user.secretjs, user.address);
                       notify("success", "Claimed SeFi successfully!");
                       await user.updateBalanceForSymbol('SEFI')
-                      //setSefiBalance(user.balanceToken['wSEFI']);
+                      setSefiBalance(user.balanceToken['wSEFI']);
                     } catch (e) {
                       console.error(`failed to claim ${e}`);
                       notify("error", "Failed to claim SeFi!");

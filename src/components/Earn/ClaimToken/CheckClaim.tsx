@@ -12,13 +12,14 @@ import Loader from 'react-loader-spinner';
 import * as styles from './styles.styl';
 import { FlexRowSpace } from '../../Swap/FlexRowSpace';
 import { Text } from 'components/Base';
+import { Spinner2 } from '../../../ui/Spinner2';
 
 
-export const CheckClaim = observer((props: {isEth?: boolean, onClick?: any}) => {
+export const CheckClaim = observer((props: {isEth?: boolean, onClick?: any, loading?: boolean}) => {
   // const { user } = useStores();
   return (
-    <button className={cn(styles.checkBalance)} onClick={props.onClick}>
-      Claim
+    <button className={cn(styles.checkBalance)} onClick={props.onClick} disabled={props.loading}>
+      {props.loading ? <Spinner2 height="20px" width="20px" color="white" style={{ marginRight: 5 }} /> : "Claim" }
     </button>
   );
 });
@@ -28,6 +29,7 @@ export const CheckClaimModal = (props: { secretjs?: SigningCosmWasmClient, addre
 
   let [claimInfo, setClaimInfo] = useState<ClaimInfoResponse>(undefined);
   let [loading, setLoading] = useState<boolean>(false);
+  let [sending, setSending] = useState<boolean>(false);
   let [failed, setFailed] = useState<boolean>(false);
 
   // useEffect(() => {
@@ -73,7 +75,7 @@ export const CheckClaimModal = (props: { secretjs?: SigningCosmWasmClient, addre
         }
       }}
       open={open}
-      trigger={<CheckClaim />}
+      trigger={<CheckClaim loading={sending}/>}
       dimmer={'blurring'}
       style={{ width: '700px', display: 'flex' }}
     >
@@ -96,9 +98,15 @@ export const CheckClaimModal = (props: { secretjs?: SigningCosmWasmClient, addre
           }
           labelPosition="right"
           icon="checkmark"
-          onClick={() => {
-            props.onClick(claimInfo?.address);
-            setOpen(false);
+          onClick={async () => {
+            setSending(true)
+            setOpen(false)
+            try {
+              await props.onClick(claimInfo?.address);
+            } finally {
+              console.log('aww')
+              setLoading(false);
+            }
           }}
           positive
           disabled={(claimInfo === undefined || claimInfo.isClaimed)}

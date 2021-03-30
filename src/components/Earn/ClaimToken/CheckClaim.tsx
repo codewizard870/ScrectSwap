@@ -101,7 +101,7 @@ export const CheckClaimModal = (props: {
         ) : (
           <ClaimBoxInfo
             amount={claimInfo?.amount.toString()}
-            address={claimInfo?.address}
+            address={props.address}
             isClaimed={claimInfo?.isClaimed}
           />
         )}

@@ -11,7 +11,6 @@ import EarnRow from '../../components/Earn/EarnRow';
 import { rewardsDepositKey, rewardsKey } from '../../stores/UserStore';
 import { divDecimals, sleep, truncateAddressString } from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
-import { Icon } from 'components/Base/components/Icons';
 import EarnInfoBox from '../../components/Earn/EarnInfoBox';
 import { IRewardPool, ITokenInfo } from '../../stores/interfaces';
 import Loader from 'react-loader-spinner';
@@ -21,8 +20,7 @@ import * as thisStyles from './styles.styl';
 import cn from 'classnames';
 import { ethMethodsSefi } from '../../blockchain-bridge/eth';
 import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
-import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
-import { Divider } from 'semantic-ui-react';
+import { claimErc, claimScrt } from '../../components/Earn/ClaimToken/utils';
 
 function SefiBalance(props: { address: string, sefiBalance: string | JSX.Element, isEth?: boolean }) {
 
@@ -151,14 +149,36 @@ export const SeFiPage = observer(() => {
               <div style={{borderRadius: "10px", width: '45%', display: "flex", justifyContent: "center", padding: '5px'}}>
 
                 <SefiBalance address={user.address} sefiBalance={sefiBalance} />
-                <CheckClaimModal secretjs={user.secretjs} address={user.address} isEth={false}/>
+                <CheckClaimModal secretjs={user.secretjs} address={user.address} isEth={false} onClick={
+                  async () => {
+                    try {
+                      await claimScrt(user.secretjs, user.address);
+                      notify("success", "Claimed SeFi successfully!");
+                      await user.updateBalanceForSymbol('SEFI')
+                      //setSefiBalance(user.balanceToken['wSEFI']);
+                    } catch (e) {
+                      console.error(`failed to claim ${e}`);
+                      notify("error", "Failed to claim SeFi!");
+                    }
+                  }
+                }/>
                 {/*<ClaimTokenErc />*/}
                 {/*<ClaimTokenScrt />*/}
               </div>
 
               <div style={{borderRadius: "10px", marginLeft: "200px", width: '45%', display: "flex", justifyContent: "center", padding: '5px'}}>
                 <SefiBalance address={userMetamask.ethAddress} sefiBalance={sefiBalanceErc} isEth={true}/>
-                <CheckClaimModal address={userMetamask.ethAddress} isEth={true}/>
+                <CheckClaimModal address={userMetamask.ethAddress} isEth={true} onClick={
+                  async () => {
+                    try {
+                      await claimErc();
+                      notify("success", "Claimed SeFi successfully!");
+                    } catch (e) {
+                      console.error(`failed to claim ${e}`);
+                      notify("error", "Failed to claim SeFi!");
+                    }
+                  }
+                }/>
                 {/*<ClaimTokenErc />*/}
                 {/*<ClaimTokenScrt />*/}
               </div>

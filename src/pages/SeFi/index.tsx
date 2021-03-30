@@ -22,7 +22,7 @@ import cn from 'classnames';
 import { ethMethodsSefi } from '../../blockchain-bridge/eth';
 import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
 
-function SefiBalance(props: { address: string, sefiBalance: string | JSX.Element }) {
+function SefiBalance(props: { address: string; sefiBalance: string | JSX.Element }) {
   return (
     // <div style={{ display: 'flex', justifyContent: 'center' }}>
     //   <Text>Balance:{'  '}</Text>
@@ -30,15 +30,17 @@ function SefiBalance(props: { address: string, sefiBalance: string | JSX.Element
     // </div>
     //style={{display: "flex", justifyContent: "center"}}>
     <div className={cn(thisStyles.balanceContainer)}>
-
-      <button className={cn(thisStyles.balanceButton)} >
-        <Text>
-          {truncateAddressString(props.address, 10)}
-        </Text>
+      <button className={cn(thisStyles.balanceButton)}>
+        <Text>{truncateAddressString(props.address, 10)}</Text>
       </button>
       <div className={cn(thisStyles.balanceAmount)}>
-        {props.sefiBalance ? (<Text>{props.sefiBalance} {' '} {"SEFI"}</Text>) :
-          <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
+        {props.sefiBalance ? (
+          <Text>
+            {props.sefiBalance} {'SEFI'}
+          </Text>
+        ) : (
+          <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
+        )}
       </div>
     </div>
   );
@@ -93,9 +95,9 @@ export const SeFiPage = observer(() => {
   useEffect(() => {
     const asyncWrapper = async () => {
       if (userMetamask.ethAddress) {
-        setSefiBalanceErc(await ethMethodsSefi.checkGovBalance(userMetamask.ethAddress))
+        setSefiBalanceErc(await ethMethodsSefi.checkGovBalance(userMetamask.ethAddress));
       }
-    }
+    };
 
     asyncWrapper();
   }, [userMetamask.ethAddress]);
@@ -136,78 +138,18 @@ export const SeFiPage = observer(() => {
   return (
     <BaseContainer>
       <PageContainer>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100px',
-            padding: '16px',
-            position: 'absolute',
-            left: '0',
-            top: '100px',
-            backgroundColor: '#F5F8FE',
-            zIndex: -1,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            minWidth: '550px',
-            maxWidth: '1100px',
-            backgroundColor: '#F5F8FE',
-          }}
-        >
-          <Icon
-            glyph="InfoIcon"
-            size="medium"
-            color={'black'}
-            style={{
-              display: 'inline-block',
-              marginRight: '16px',
-            }}
-          />
-          <p
-            style={{
-              minWidth: '550px',
-              maxWidth: '1047px',
-              display: 'inline-block',
-            }}
-          >
-            If you have created viewing keys for secretTokens and secretSCRT, you should be able to see secretTokens
-            locked in the rewards contract and your rewards. If you can't see these figures please refresh your browser.
-          </p>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            minWidth: '550px',
-            maxWidth: '1100px',
-            backgroundColor: '#F5F8FE',
-            marginTop: '0.3em',
-          }}
-        >
-          <Icon
-            glyph="InfoIcon"
-            size="medium"
-            color={'black'}
-            style={{
-              display: 'inline-block',
-              marginRight: '16px',
-            }}
-          />
-        </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center">
             <EarnInfoBox type={'LPSTAKING'} />
-            <div style={{display: "flex", justifyContent: "center"}}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <SefiBalance address={user.address} sefiBalance={sefiBalance} />
-              <CheckClaimModal secretjs={user.secretjs} address={user.address} isEth={false}/>
+              <CheckClaimModal secretjs={user.secretjs} address={user.address} isEth={false} />
               {/*<ClaimTokenErc />*/}
               {/*<ClaimTokenScrt />*/}
             </div>
-            <div style={{display: "flex", justifyContent: "center"}}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <SefiBalance address={userMetamask.ethAddress} sefiBalance={sefiBalanceErc} />
-              <CheckClaimModal address={userMetamask.ethAddress} isEth={true}/>
+              <CheckClaimModal address={userMetamask.ethAddress} isEth={true} />
               {/*<ClaimTokenErc />*/}
               {/*<ClaimTokenScrt />*/}
             </div>

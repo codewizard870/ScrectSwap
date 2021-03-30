@@ -119,8 +119,8 @@ export const WalletBalances = observer(() => {
       }
 
       if (user.snip20Address === process.env.SSCRT_CONTRACT) {
-        user.snip20Balance = user.balanceToken['sSCRT'];
-        user.snip20BalanceMin = user.balanceTokenMin['sSCRT'];
+        user.setSnip20BalanceMin(user.balanceTokenMin['sSCRT']);
+        user.setSnip20Balance(user.balanceToken['sSCRT']);
       }
 
       exchange.token === TOKEN.ERC20
@@ -142,10 +142,19 @@ export const WalletBalances = observer(() => {
   useEffect(() => {
     const updateBalanceForAddress = async () => {
       const balances = [];
+
+      if (user.snip20Address === process.env.SSCRT_CONTRACT) {
+        await user.updateBalanceForSymbol('SSCRT');
+
+        user.setSnip20Balance(user.balanceToken['sSCRT']);
+        user.setSnip20BalanceMin(user.balanceTokenMin['sSCRT']);
+      }
+
       for (const token of displayedTokens) {
         await user.updateBalanceForSymbol(token.display_props.symbol);
 
-        console.log(`${user.balanceToken[token.src_coin]}`);
+        user.setSnip20Balance(user.balanceToken[token.src_coin]);
+        user.setSnip20BalanceMin(user.balanceTokenMin[token.src_coin]);
 
         balances[token.display_props.symbol] = user.balanceToken[token.src_coin];
       }
@@ -154,7 +163,7 @@ export const WalletBalances = observer(() => {
     };
 
     updateBalanceForAddress();
-  }, [user, displayedTokens]);
+  }, [user, displayedTokens, user.snip20Address]);
 
   return (
     <Box direction="column" className={styles.walletBalances} margin={{ vertical: 'large' }}>
@@ -253,22 +262,6 @@ export const WalletBalances = observer(() => {
                 link={`${process.env.SCRT_EXPLORER_URL}/contracts/${process.env.SSCRT_CONTRACT}`}
                 selected={user.snip20Address === process.env.SSCRT_CONTRACT}
               />
-              {/*{exchange.token === TOKEN.ETH ? (*/}
-              {/*  <AssetRow*/}
-              {/*    asset="secretETH"*/}
-              {/*    value={displayedBalances['ETH']}*/}
-              {/*    token={tokens.allData.find(token => token.src_coin === 'Ethereum')}*/}
-              {/*    userStore={user}*/}
-              {/*    link={(() => {*/}
-              {/*      const eth = tokens.allData.find(token => token.src_coin === 'Ethereum');*/}
-              {/*      if (!eth) {*/}
-              {/*        return undefined;*/}
-              {/*      }*/}
-              {/*      return `${process.env.SCRT_EXPLORER_URL}/contracts/${eth.dst_address}`;*/}
-              {/*    })()}*/}
-              {/*    selected={true}*/}
-              {/*  />*/}
-              {/*) : null}*/}
               {displayedTokens.map((token, idx) => {
                 return (
                   <AssetRow

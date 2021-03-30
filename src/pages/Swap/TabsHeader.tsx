@@ -40,6 +40,7 @@ export class TabsHeader extends React.Component {
         <Tab name="Swap" />
         <Tab name="Provide" />
         <Tab name="Withdraw" />
+        <Tab name="History" />
       </div>
     );
   }

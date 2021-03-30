@@ -27,6 +27,7 @@ import { KeplrButton } from '../../components/Secret/KeplrButton';
 import { NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
+import { HistoryTab } from './HistoryTab';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
@@ -109,7 +110,7 @@ export class SwapRouter extends React.Component<
     }
 
     if (tokensToRefresh.length > 0) {
-      await this.refreshBalances({ tokenSymbols: tokensToRefresh });
+      await this.refreshBalances({ tokens: tokensToRefresh });
     }
 
     if (
@@ -186,16 +187,13 @@ export class SwapRouter extends React.Component<
     this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
   }
 
-  refreshBalances = async (params: { tokenSymbols: string[]; pair?: SwapPair; height?: number }) => {
-    const { pair, tokenSymbols } = params;
-    let { height } = params;
-
+  private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
     if (!height) {
       height = await this.props.user.secretjs.getHeight();
     }
 
     //console.log(`Hello from refreshBalances for height: ${height}`);
-    const balanceTasks = tokenSymbols.map(s => {
+    const balanceTasks = tokens.map(s => {
       return this.refreshTokenBalance(height, s);
     });
 
@@ -221,7 +219,7 @@ export class SwapRouter extends React.Component<
     }));
 
     return newObject;
-  };
+  }
 
   refreshPools = async ({ pair, height }: { pair: SwapPair; height?: number }) => {
     if (!height) {
@@ -271,27 +269,27 @@ export class SwapRouter extends React.Component<
         return;
       }
 
-      const symbols: Array<string> = dataId.split('/');
+      let tokens: Array<string> = data.id.split('/');
 
-      // refresh selected token balances as well (because why not?)
+      // refresh selected token balances as well
       if (this.state.selectedToken0) {
-        symbols.push(this.state.allTokens.get(this.state.selectedToken0)?.identifier);
+        tokens.push(this.state.allTokens.get(this.state.selectedToken0)?.identifier);
       }
       if (this.state.selectedToken1) {
-        symbols.push(this.state.allTokens.get(this.state.selectedToken1)?.identifier);
+        tokens.push(this.state.allTokens.get(this.state.selectedToken1)?.identifier);
       }
 
-      const filteredSymbols = [...new Set(symbols)];
+      tokens = [...new Set(tokens)];
 
       // todo: move this to another function
       const height = SwapRouter.getHeightFromEvent(data);
 
-      console.log(`Refreshing ${filteredSymbols.join(' and ')} for height ${height}`);
+      console.log(`Refreshing ${tokens.join(' and ')} for height ${height}`);
 
       const pairSymbol: string = dataId;
       const pair = this.state.pairs.get(pairSymbol);
 
-      await this.refreshBalances({ height, tokenSymbols: filteredSymbols, pair });
+      await this.refreshBalances({ height, tokens, pair });
     } catch (error) {
       console.log(`Failed to refresh balances: ${error}`);
     }
@@ -680,10 +678,8 @@ export class SwapRouter extends React.Component<
       selectedPairRoutes: routes,
     });
 
-    if (refreshBalances) {
-      const height = await this.props.user.secretjs.getHeight();
-      await this.refreshBalances({ height, tokenSymbols: [token0, token1], pair: selectedPair });
-    }
+    const height = await this.props.user.secretjs.getHeight();
+    await this.refreshBalances({ height, tokens: [token0, token1], pair: selectedPair });
   };
 
   updatePairs = async () => {
@@ -772,8 +768,9 @@ export class SwapRouter extends React.Component<
     const isProvide = window.location.hash === '#Provide';
     const isWithdraw = window.location.hash === '#Withdraw';
     const isPools = window.location.hash === '#Pool';
+    const isHistory = window.location.hash === '#History';
 
-    if (!isSwap && !isProvide && !isWithdraw && !isPools) {
+    if (!isSwap && !isProvide && !isWithdraw && !isPools && !isHistory) {
       window.location.hash = 'Swap';
       return <></>;
     }
@@ -841,7 +838,27 @@ export class SwapRouter extends React.Component<
                     this.registerPairQueries(pair);
                     await this.refreshBalances({
                       pair,
-                      tokenSymbols: [pair.asset_infos[0].symbol, pair.asset_infos[1].symbol],
+                      tokens: pair.assetIds(),
+                    });
+                  }}
+                  onCloseTab={pair => {
+                    this.unSubscribePair(pair);
+                  }}
+                />
+              )}
+              {isHistory && (
+                <HistoryTab
+                  user={this.props.user}
+                  secretjs={this.props.user.secretjs}
+                  tokens={this.state.allTokens}
+                  balances={this.state.balances}
+                  pairs={this.state.pairs}
+                  notify={this.notify}
+                  updateToken={async (pair: SwapPair) => {
+                    this.registerPairQueries(pair);
+                    await this.refreshBalances({
+                      pair,
+                      tokens: pair.assetIds(),
                     });
                   }}
                   onCloseTab={pair => {

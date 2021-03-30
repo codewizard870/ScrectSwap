@@ -17,6 +17,7 @@ const EarnInfoBox = ({ type }: { type: TOKEN_USAGE }) => {
           <a href="https://scrt.network/blog/sefi-governance-token-for-secret-defi" target="_blank">
             introductory blog post
           </a>
+          .
         </p>
       </Message>
     );

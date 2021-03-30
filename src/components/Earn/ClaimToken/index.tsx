@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as styles from './styles.styl';
 import cn from 'classnames';
 import { observer } from 'mobx-react';
 import { useStores } from '../../../stores';
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils';
 import BigNumber from 'bignumber.js';
-import { divDecimals, formatWithSixDecimals, sleep } from '../../../utils';
+import { divDecimals, sleep } from '../../../utils';
 import Loader from 'react-loader-spinner';
 
 // todo: handle properly

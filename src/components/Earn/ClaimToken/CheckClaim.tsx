@@ -1,27 +1,24 @@
 // todo: handle properly
 import { observer } from 'mobx-react';
 import { claimInfoErc, ClaimInfoResponse, claimInfoScrt } from './utils';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
-import * as thisStyles from '../../../pages/SeFi/styles.styl';
-import { Button, Image, Modal } from 'semantic-ui-react';
+import { Button, Modal } from 'semantic-ui-react';
 import { ExitIcon } from '../../../ui/Icons/ExitIcon';
 import { IsValid } from '../../../pages/Swap/TokenSelector/IsValid';
-import { divDecimals, sleep, truncateAddressString } from '../../../utils';
+import { divDecimals, sleep } from '../../../utils';
 import { SigningCosmWasmClient } from 'secretjs';
-import { Text } from 'components/Base';
 import Loader from 'react-loader-spinner';
-import { SwapToken } from '../../../pages/Swap/types/SwapToken';
 import * as styles from './styles.styl';
-import SoftTitleValue from '../SoftTitleValue';
 import { FlexRowSpace } from '../../Swap/FlexRowSpace';
-import { CopyWithFeedback } from '../../Swap/CopyWithFeedback';
+import { Text } from 'components/Base';
+
 
 export const CheckClaim = observer((props: {isEth?: boolean, onClick?: any}) => {
   // const { user } = useStores();
   return (
-    <button className={cn(thisStyles.balanceButton)} onClick={props.onClick}>
-      Check Claim
+    <button className={cn(styles.checkBalance)} onClick={props.onClick}>
+      Claim
     </button>
   );
 });
@@ -94,7 +91,9 @@ export const CheckClaimModal = (props: { secretjs?: SigningCosmWasmClient, addre
       </Modal.Content>
       <Modal.Actions>
         <Button
-          content="Claim"
+          content={
+            !!claimInfo ? (claimInfo?.isClaimed ? 'Already Claimed' : 'Claim') : 'Loading...'
+          }
           labelPosition="right"
           icon="checkmark"
           onClick={() => {
@@ -102,7 +101,7 @@ export const CheckClaimModal = (props: { secretjs?: SigningCosmWasmClient, addre
             setOpen(false);
           }}
           positive
-          disabled={claimInfo?.isClaimed}
+          disabled={(claimInfo === undefined || claimInfo.isClaimed)}
         />
       </Modal.Actions>
     </Modal>
@@ -117,15 +116,21 @@ export const ClaimBoxInfo = (props: { address: string; amount?: string; isClaime
         <h3 className={cn(styles.tokenInfoItemsLeft)}>{props.address}</h3>
       </div>
       <div className={cn(styles.tokenInfoRow)} onClick={props.onClick}>
-        <h3 className={cn(styles.tokenInfoItemsLeft)}>{"Amount"}</h3>
-        <FlexRowSpace />
+        <div className={cn(styles.tokenInfoItemsLeft)} >
+          <h3>
+            {"Amount"}
+          </h3>
+        </div>
         <div className={cn(styles.tokenInfoItemsRight)}>
           <h3>{divDecimals(props.amount, 6)} {"SEFI"}</h3>
         </div>
       </div>
       <div className={cn(styles.tokenInfoRow)} onClick={props.onClick}>
-        <h3 className={cn(styles.tokenInfoItemsLeft)}>{"Available for claim?"}</h3>
-        <FlexRowSpace />
+        <div className={cn(styles.tokenInfoItemsLeft)} >
+          <h3>
+            Available for claim?
+          </h3>
+        </div>
         <div className={cn(styles.tokenInfoItemsRight)}>
           <IsValid isValid={!props.isClaimed} />
         </div>

@@ -69,6 +69,7 @@
   display: flex;
 
   * {
+    align-items: center;
     margin-left: 5px;
   }
 }
@@ -77,4 +78,34 @@
   padding-right: 10px;
   align-items: center;
   margin: revert;
+}
+
+.checkBalance {
+  text-align: center;
+  outline: none;
+  text-decoration: none;
+  -webkit-box-pack: center;
+  justify-content: center;
+  position: relative;
+  margin-left: 5px;
+  z-index: 1;
+  font-size: 16px;
+  display: flex;
+  flex-flow: row nowrap;
+  width: 100%;
+  -webkit-box-align: center;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  background-color: rgba(33, 45, 94, 0.9);
+  border: 1px solid transparent;
+  color: rgb(255, 255, 255);
+  font-weight: 700;
+
+  &:hover {
+    //border: 1px solid rgb(255, 255, 255);
+    background-color: rgba(33, 45, 94, 1);
+  }
 }

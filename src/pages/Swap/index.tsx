@@ -846,7 +846,7 @@ export class SwapRouter extends React.Component<
                   }}
                 />
               )}
-              {isHistory && (
+              {/* {isHistory && (
                 <HistoryTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
@@ -865,7 +865,7 @@ export class SwapRouter extends React.Component<
                     this.unSubscribePair(pair);
                   }}
                 />
-              )}
+              )} */}
             </Box>
             <SwapFooter />
             <BetaWarning secretjs={this.props.user.secretjs} />

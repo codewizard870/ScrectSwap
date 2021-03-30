@@ -262,7 +262,7 @@ export const SeFiPage = observer(() => {
                   lockedAsset: rewardToken.reward.inc_token.symbol,
                   lockedAssetAddress: rewardToken.token.dst_address,
                   totalLockedRewards: divDecimals(
-                    Number(rewardToken.reward.total_locked) * Number(rewardToken.token.price),
+                    Number(rewardToken.reward.total_locked) * Number(rewardToken.reward.inc_token.price),
                     rewardToken.reward.inc_token.decimals,
                   ),
                   rewardsDecimals: String(rewardToken.reward.rewards_token.decimals),
@@ -276,6 +276,7 @@ export const SeFiPage = observer(() => {
                   display_props: rewardToken.token.display_props,
                   remainingLockedRewards: rewardToken.reward.pending_rewards,
                   deadline: Number(rewardToken.reward.deadline),
+                  rewardsSymbol: "SEFI"
                 };
 
                 return (

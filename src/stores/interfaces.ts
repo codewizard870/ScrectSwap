@@ -155,6 +155,7 @@ export interface IRewardPool {
     symbol: string;
     address: string;
     decimals: number;
+    price: number;
   };
   rewards_token: {
     symbol: string;

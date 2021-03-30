@@ -34,8 +34,8 @@ interface RewardsToken {
   totalLockedRewards: string;
   remainingLockedRewards: string;
   deadline: number;
+  rewardsSymbol?: string;
 }
-// 1610446108 <-> 1722275
 
 const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))
@@ -249,6 +249,7 @@ class EarnRow extends Component<
               pulseInterval={this.state.pulseInterval}
               symbol={this.props.token.display_props.symbol}
               notify={this.props.notify}
+              rewardsCurrency={this.props.token.rewardsSymbol}
             />
           </div>
           <Text

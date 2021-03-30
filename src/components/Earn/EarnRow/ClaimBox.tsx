@@ -14,6 +14,7 @@ const ClaimBox = (props: {
   pulseInterval: number;
   symbol: string;
   notify?: Function;
+  rewardsCurrency?: string;
 }) => {
   const [available, setAvailable] = useState<string>(props.available);
   useEffect(() => {
@@ -28,7 +29,7 @@ const ClaimBox = (props: {
             tokenAddress={props.rewardsContract}
             decimals={props.decimals || 0}
             userStore={props.userStore}
-            currency={'sSCRT'}
+            currency={props.rewardsCurrency || 'sSCRT'}
             selected={false}
             value={available}
             pulse={props.pulse}

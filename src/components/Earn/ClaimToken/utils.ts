@@ -10,6 +10,7 @@ export interface ClaimInfoResponse {
 }
 
 export const claimScrt = async (secretjs: SigningCosmWasmClient, address: string) => {
+
   const result = await ClaimAirdrop({ secretjs, address });
 
   return result;

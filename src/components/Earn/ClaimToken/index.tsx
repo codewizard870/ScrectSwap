@@ -12,7 +12,7 @@ import Loader from 'react-loader-spinner';
 export const ClaimTokenScrt = observer(() => {
   const { user } = useStores();
   return (
-    <ClaimToken
+    <ClaimTokenButton
       text={'Claim SeFi SCRT'}
       onClick={async () => {
         try {
@@ -29,8 +29,8 @@ export const ClaimTokenScrt = observer(() => {
 // todo: handle properly
 export const ClaimTokenErc = () => {
   return (
-    <ClaimToken
-      text={'Claim SeFi ERC20'}
+    <ClaimTokenButton
+      text={'Claim My SeFi on ETH!'}
       onClick={async () => {
         try {
           await claimErc();
@@ -65,9 +65,6 @@ function ClaimInfoDisplay(props: { failed?: boolean; address: string; claimed: b
 export const ClaimInfoScrt = observer(() => {
   const { user } = useStores();
 
-  const [claimAmount, setClaimAmount] = useState<BigNumber>(new BigNumber(0));
-  const [isClaimed, setIsClaimed] = useState<boolean>(false);
-  const [address, setClaimAddress] = useState<string>(undefined);
   let [claimInfo, setClaimInfo] = useState<ClaimInfoResponse>(undefined);
   let [failed, setFailed] = useState<boolean>(false);
 
@@ -128,7 +125,7 @@ export const ClaimInfoErc = () => {
   );
 };
 
-const ClaimToken = (props: { text: string; onClick: any }) => {
+const ClaimTokenButton = (props: { text: string; onClick: any }) => {
   return (
     <button className={cn(styles.button)} onClick={props.onClick}>
       {props.text}

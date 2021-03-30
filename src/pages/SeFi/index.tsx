@@ -9,21 +9,37 @@ import * as styles from '../EthBridge/styles.styl';
 // import { ERC20Select } from '../Exchange/ERC20Select';
 import EarnRow from '../../components/Earn/EarnRow';
 import { rewardsDepositKey, rewardsKey } from '../../stores/UserStore';
-import { divDecimals, sleep } from '../../utils';
+import { divDecimals, sleep, truncateAddressString } from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
 import { Icon } from 'components/Base/components/Icons';
 import EarnInfoBox from '../../components/Earn/EarnInfoBox';
 import { IRewardPool, ITokenInfo } from '../../stores/interfaces';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-import { ClaimInfoErc, ClaimInfoScrt, ClaimTokenErc, ClaimTokenScrt } from '../../components/Earn/ClaimToken';
 import { notify } from '../Earn';
+import * as thisStyles from './styles.styl';
+import cn from 'classnames';
+import { ethMethodsSefi } from '../../blockchain-bridge/eth';
+import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
 
-function SefiBalance(props: { sefiBalance: string | JSX.Element }) {
+function SefiBalance(props: { address: string, sefiBalance: string | JSX.Element }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Text>Balance:{'  '}</Text>
-      {props.sefiBalance || <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
+    // <div style={{ display: 'flex', justifyContent: 'center' }}>
+    //   <Text>Balance:{'  '}</Text>
+    //   {props.sefiBalance || <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
+    // </div>
+    //style={{display: "flex", justifyContent: "center"}}>
+    <div className={cn(thisStyles.balanceContainer)}>
+
+      <button className={cn(thisStyles.balanceButton)} >
+        <Text>
+          {truncateAddressString(props.address, 10)}
+        </Text>
+      </button>
+      <div className={cn(thisStyles.balanceAmount)}>
+        {props.sefiBalance ? (<Text>{props.sefiBalance} {' '} {"SEFI"}</Text>) :
+          <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
+      </div>
     </div>
   );
 }
@@ -39,6 +55,8 @@ export const SeFiPage = observer(() => {
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
 
   const [sefiBalance, setSefiBalance] = useState<string | JSX.Element>('');
+
+  const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);
 
   const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
 
@@ -71,6 +89,16 @@ export const SeFiPage = observer(() => {
   useEffect(() => {
     testSetTokens();
   }, [testSetTokens]);
+
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      if (userMetamask.ethAddress) {
+        setSefiBalanceErc(await ethMethodsSefi.checkGovBalance(userMetamask.ethAddress))
+      }
+    }
+
+    asyncWrapper();
+  }, [userMetamask.ethAddress]);
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -170,18 +198,19 @@ export const SeFiPage = observer(() => {
         </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center">
-            <SefiBalance sefiBalance={sefiBalance} />
-            <>
-              <>
-                <ClaimInfoErc />
-              </>
-              <>
-                <ClaimInfoScrt />
-              </>
-            </>
             <EarnInfoBox type={'LPSTAKING'} />
-            <ClaimTokenErc />
-            <ClaimTokenScrt />
+            <div style={{display: "flex", justifyContent: "center"}}>
+              <SefiBalance address={user.address} sefiBalance={sefiBalance} />
+              <CheckClaimModal secretjs={user.secretjs} address={user.address} isEth={false}/>
+              {/*<ClaimTokenErc />*/}
+              {/*<ClaimTokenScrt />*/}
+            </div>
+            <div style={{display: "flex", justifyContent: "center"}}>
+              <SefiBalance address={userMetamask.ethAddress} sefiBalance={sefiBalanceErc} />
+              <CheckClaimModal address={userMetamask.ethAddress} isEth={true}/>
+              {/*<ClaimTokenErc />*/}
+              {/*<ClaimTokenScrt />*/}
+            </div>
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData

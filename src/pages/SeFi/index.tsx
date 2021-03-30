@@ -149,7 +149,9 @@ export const SeFiPage = observer(() => {
               <div style={{borderRadius: "10px", width: '45%', display: "flex", justifyContent: "center", padding: '5px'}}>
 
                 <SefiBalance address={user.address} sefiBalance={sefiBalance} />
-                <CheckClaimModal secretjs={user.secretjs} address={user.address} isEth={false} onClick={
+                <CheckClaimModal secretjs={user.secretjs} address={user.address} isEth={false}
+                                 loadingBalance={!(typeof sefiBalance === 'string') }
+                                 onClick={
                   async () => {
                     try {
                       await claimScrt(user.secretjs, user.address);
@@ -167,17 +169,25 @@ export const SeFiPage = observer(() => {
               </div>
 
               <div style={{borderRadius: "10px", marginLeft: "200px", width: '45%', display: "flex", justifyContent: "center", padding: '5px'}}>
-                <SefiBalance address={userMetamask.ethAddress} sefiBalance={sefiBalanceErc} isEth={true}/>
-                <CheckClaimModal address={userMetamask.ethAddress} isEth={true} onClick={
-                  async () => {
-                    try {
-                      await claimErc();
-                      notify("success", "Claimed SeFi successfully!");
-                    } catch (e) {
-                      console.error(`failed to claim ${e}`);
-                      notify("error", "Failed to claim SeFi!");
+                <SefiBalance
+                  address={userMetamask.ethAddress}
+                  sefiBalance={sefiBalanceErc}
+                  isEth={true}
+                />
+                <CheckClaimModal
+                  address={userMetamask.ethAddress}
+                  isEth={true}
+                  loadingBalance={!sefiBalanceErc}
+                  onClick={
+                    async () => {
+                      try {
+                        await claimErc();
+                        notify("success", "Claimed SeFi successfully!");
+                      } catch (e) {
+                        console.error(`failed to claim ${e}`);
+                        notify("error", "Failed to claim SeFi!");
+                      }
                     }
-                  }
                 }/>
                 {/*<ClaimTokenErc />*/}
                 {/*<ClaimTokenScrt />*/}

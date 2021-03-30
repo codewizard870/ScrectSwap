@@ -16,18 +16,19 @@ import { CopyWithFeedback } from 'components/Swap/CopyWithFeedback';
 import { Spinner2 } from '../../../ui/Spinner2';
 
 
-export const CheckClaim = observer((props: {isEth?: boolean, onClick?: any, loading?: boolean}) => {
+export const CheckClaim = (props: {isEth?: boolean, onClick?: any, loading?: boolean}) => {
   // const { user } = useStores();
   return (
     <button className={cn(styles.checkBalance)} onClick={props.onClick} disabled={props.loading}>
       {props.loading ? <Spinner2 height="20px" width="20px" color="white" style={{ marginRight: 5 }} /> : "Claim Genesis" }
     </button>
   );
-});
+};
 
 export const CheckClaimModal = (props: {
   secretjs?: SigningCosmWasmClient;
   address: string;
+  loadingBalance?: boolean;
   isEth?: boolean;
   onClick?: any;
 }) => {
@@ -79,7 +80,7 @@ export const CheckClaimModal = (props: {
         }
       }}
       open={open}
-      trigger={<CheckClaim loading={sending}/>}
+      trigger={<CheckClaim loading={sending || props?.loadingBalance}/>}
       dimmer={'blurring'}
       style={{ width: '700px', display: 'flex' }}
     >
@@ -114,7 +115,7 @@ export const CheckClaimModal = (props: {
               await props.onClick(claimInfo?.address);
             } finally {
               console.log('aww')
-              setLoading(false);
+              setSending(false);
             }
           }}
           positive

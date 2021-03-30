@@ -55,6 +55,7 @@ export class SwapTab extends React.Component<
     buttonMessage: string;
     loadingSwap: boolean;
     loadingBestRoute: boolean;
+    loadingBestRouteCount: number;
     bestRoute: string[];
     loadingPriceData: boolean;
   }
@@ -76,6 +77,7 @@ export class SwapTab extends React.Component<
       buttonMessage: BUTTON_MSG_ENTER_AMOUNT,
       loadingSwap: false,
       loadingBestRoute: false,
+      loadingBestRouteCount: 0,
       bestRoute: null,
       loadingPriceData: false,
     };
@@ -137,7 +139,7 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    this.setState({ loadingBestRoute: true, bestRoute: null });
+    this.setState({ loadingBestRoute: true, loadingBestRouteCount: 0, bestRoute: null });
     try {
       let { fromToken, toToken, fromInput, toInput } = this.state;
 
@@ -152,7 +154,10 @@ export class SwapTab extends React.Component<
       let bestRouteToInput = new BigNumber(0);
       let bestRouteFromInput = new BigNumber(Infinity);
       let bestRoutePriceImpact = 0;
-      for (const route of routes) {
+      for (let i = 0; i < routes.length; i++) {
+        const route = routes[i];
+        this.setState({ loadingBestRouteCount: i });
+
         if (this.state.isToEstimated /* top input is filled */) {
           let from = new BigNumber(fromInput);
           let to = new BigNumber(0);
@@ -283,7 +288,7 @@ export class SwapTab extends React.Component<
       console.error('Error finding best route:', e.message);
     }
 
-    this.setState({ loadingBestRoute: false });
+    this.setState({ loadingBestRoute: false, loadingBestRouteCount: 0 });
   }
 
   async updateInputs() {
@@ -535,7 +540,12 @@ export class SwapTab extends React.Component<
             />
           )}
           {(this.state.bestRoute || this.state.loadingBestRoute) && (
-            <RouteRow tokens={this.props.tokens} isLoading={this.state.loadingBestRoute} route={this.state.bestRoute} />
+            <RouteRow
+              tokens={this.props.tokens}
+              isLoading={this.state.loadingBestRoute}
+              loadingCount={`${this.state.loadingBestRouteCount}/${this.props.selectedPairRoutes.length}`}
+              route={this.state.bestRoute}
+            />
           )}
           <Button
             disabled={buttonMessage !== BUTTON_MSG_SWAP || this.state.loadingSwap}
@@ -837,6 +847,7 @@ export class SwapTab extends React.Component<
     this.setState(
       {
         toInput: value,
+        fromInput: '',
         isToEstimated: false,
         isFromEstimated: true,
       },
@@ -861,6 +872,7 @@ export class SwapTab extends React.Component<
     this.setState(
       {
         fromInput: value,
+        toInput: '',
         isFromEstimated: false,
         isToEstimated: true,
       },

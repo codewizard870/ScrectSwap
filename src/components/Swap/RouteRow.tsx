@@ -1,5 +1,5 @@
 import { SwapTokenMap } from 'pages/Swap/types/SwapToken';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon, Image, Popup } from 'semantic-ui-react';
 import { FlexRowSpace } from './FlexRowSpace';
 import Loader from 'react-loader-spinner';
@@ -24,15 +24,38 @@ export const RouteRow = ({
   isLoading,
   tokens,
   route,
+  loadingCount,
 }: {
   isLoading: boolean;
+  loadingCount: string;
   tokens: SwapTokenMap;
   route: string[];
 }) => {
   const [iconBackground, setIconBackground] = useState<string>('whitesmoke');
+  const [loadingProgress, setLoadingProgress] = useState<string>(null);
+
+  useEffect(() => {
+    setLoadingProgress(loadingCount);
+  }, [loadingCount]);
 
   if ((!route || route.length === 0) && !isLoading) {
     return null;
+  }
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          paddingTop: isLoading ? '1em' : '0.5em',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        Finding best route ({loadingProgress})
+        <FlexRowSpace />
+        <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
+      </div>
+    );
   }
 
   return (

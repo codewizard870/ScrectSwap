@@ -81,7 +81,7 @@ export const DepositRewards = async (params: {
   amount: string;
 }): Promise<string> => {
   const tx = await Snip20Send({
-    msg: 'eyJkZXBvc2l0Ijp7fX0K', // '{"lock_tokens":{}}' -> base64
+    msg: 'eyJkZXBvc2l0Ijp7fX0K', // '{"deposit":{}}' -> base64
     ...params,
   });
 

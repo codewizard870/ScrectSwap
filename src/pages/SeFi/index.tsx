@@ -38,8 +38,13 @@ function SefiBalance(props: { address: string, sefiBalance: string | JSX.Element
         </Text>
       </button>
       <div className={cn(thisStyles.balanceAmount)}>
-        {props.sefiBalance ? (<Text>{props.sefiBalance} {' '} {"SEFI"}</Text>) :
-          <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}
+        {props.sefiBalance ? (
+          <Text>
+            {props.sefiBalance} {'SEFI'}
+          </Text>
+        ) : (
+          <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
+        )}
       </div>
     </div>
   );
@@ -94,9 +99,9 @@ export const SeFiPage = observer(() => {
   useEffect(() => {
     const asyncWrapper = async () => {
       if (userMetamask.ethAddress) {
-        setSefiBalanceErc(await ethMethodsSefi.checkGovBalance(userMetamask.ethAddress))
+        setSefiBalanceErc(await ethMethodsSefi.checkGovBalance(userMetamask.ethAddress));
       }
-    }
+    };
 
     asyncWrapper();
   }, [userMetamask.ethAddress]);
@@ -137,66 +142,6 @@ export const SeFiPage = observer(() => {
   return (
     <BaseContainer>
       <PageContainer>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100px',
-            padding: '16px',
-            position: 'absolute',
-            left: '0',
-            top: '100px',
-            backgroundColor: '#F5F8FE',
-            zIndex: -1,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            minWidth: '550px',
-            maxWidth: '1100px',
-            backgroundColor: '#F5F8FE',
-          }}
-        >
-          <Icon
-            glyph="InfoIcon"
-            size="medium"
-            color={'black'}
-            style={{
-              display: 'inline-block',
-              marginRight: '16px',
-            }}
-          />
-          <p
-            style={{
-              minWidth: '550px',
-              maxWidth: '1047px',
-              display: 'inline-block',
-            }}
-          >
-            If you have created viewing keys for secretTokens and secretSCRT, you should be able to see secretTokens
-            locked in the rewards contract and your rewards. If you can't see these figures please refresh your browser.
-          </p>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            minWidth: '550px',
-            maxWidth: '1100px',
-            backgroundColor: '#F5F8FE',
-            marginTop: '0.3em',
-          }}
-        >
-          <Icon
-            glyph="InfoIcon"
-            size="medium"
-            color={'black'}
-            style={{
-              display: 'inline-block',
-              marginRight: '16px',
-            }}
-          />
-        </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center" style={{marginTop: "10px"}}>
             <EarnInfoBox type={'LPSTAKING'} />

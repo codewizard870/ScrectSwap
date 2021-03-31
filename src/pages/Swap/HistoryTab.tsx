@@ -3,15 +3,15 @@ import React from 'react';
 import { SigningCosmWasmClient } from 'secretjs';
 import { Container } from 'semantic-ui-react';
 import { UserStoreEx } from 'stores/UserStore';
-import { WithdrawLiquidityPanel } from './WithdrawLiqudityPanel';
 import { TabsHeader } from './TabsHeader';
 import { SwapTokenMap } from './types/SwapToken';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { PairMap } from './types/SwapPair';
 import Loader from 'react-loader-spinner';
+import { HistoryPanel } from './HistoryPanel';
 
-export class WithdrawTab extends React.Component<
+export class HistoryTab extends React.Component<
   {
     user: UserStoreEx;
     secretjs: SigningCosmWasmClient;
@@ -98,11 +98,12 @@ export class WithdrawTab extends React.Component<
           .map(p => {
             return (
               <span key={p.lpTokenSymbol()}>
-                <WithdrawLiquidityPanel
+                <HistoryPanel
                   lpTokenSymbol={p.lpTokenSymbol()}
                   tokens={this.props.tokens}
                   selectedPair={p}
                   balances={this.props.balances}
+                  user={this.props.user}
                   secretjs={this.props.secretjs}
                   notify={this.props.notify}
                   getBalance={this.props.updateToken}

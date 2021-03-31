@@ -90,9 +90,13 @@ export const EthBridge = observer((props: any) => {
       <PageContainer>
         <Box>
           <Message info>
-            <Message.Header>SEFI IS LIVE</Message.Header>
-            <a href="/sefi" style={{ textDecoration: 'none' }} rel="noreferrer">
-              Click HERE to start claiming</a>
+            <Message.Header>The
+              <a href="https://scrt.network/blog/sefi-is-live-on-mainnet" style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer"> SEFI governance token </a>
+                is now LIVE!</Message.Header>
+            <p>{'Click '}
+            <a href="/sefi" style={{ textDecoration: 'underline' }} rel="noreferrer">HERE</a>
+              {' '} to claim your genesis tokens (if eligible) and to stake your SEFI and LP tokens.
+            </p>
           </Message>
         </Box>
         <Box direction="row" wrap={true} fill={true} justify="between" align="start">

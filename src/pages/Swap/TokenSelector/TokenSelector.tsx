@@ -99,6 +99,14 @@ export const TokenSelector = (props: {
                   return 1;
                 }
 
+                /* then SCRT */
+                if (a.symbol === 'SEFI') {
+                  return -1;
+                }
+                if (b.symbol === 'SEFI') {
+                  return 1;
+                }
+
                 const aSymbol = a.symbol.replace(/^s/, '');
                 const bSymbol = b.symbol.replace(/^s/, '');
 

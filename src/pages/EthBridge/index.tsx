@@ -91,7 +91,8 @@ export const EthBridge = observer((props: any) => {
         <Box>
           <Message info>
             <Message.Header>SEFI IS LIVE</Message.Header>
-            <p>Links to claim sefi and instructions</p>
+            <a href="/sefi" style={{ textDecoration: 'none' }} rel="noreferrer">
+              Click HERE to start claiming</a>
           </Message>
         </Box>
         <Box direction="row" wrap={true} fill={true} justify="between" align="start">

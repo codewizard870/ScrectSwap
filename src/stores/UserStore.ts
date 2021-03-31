@@ -472,7 +472,7 @@ export class UserStoreEx extends StoreConstructor {
       await this.updateSScrtBalance();
     }
 
-    console.log(symbol)
+    //console.log(symbol)
 
     await this.refreshTokenBalance(symbol);
 

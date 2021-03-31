@@ -57,6 +57,11 @@ export const ERC20Select = observer(() => {
               .sort((a, b) =>
                 /* SCRT first */
                 a.display_props.symbol.toLowerCase().includes('scrt') ? -1 : 1,
+
+              ).sort((a, b) =>
+                /* SEFI first */
+                a.display_props.symbol.toLowerCase().includes('sefi') ? -1 : 1,
+
               )
               .map(token => ({
                 ...token,

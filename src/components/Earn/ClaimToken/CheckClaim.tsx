@@ -136,7 +136,6 @@ export const CheckClaimModal = (props: {
             try {
               await props.onClick(claimInfo?.address);
             } finally {
-              console.log('aww');
               setSending(false);
             }
           }}

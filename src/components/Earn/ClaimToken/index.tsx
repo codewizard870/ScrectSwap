@@ -78,7 +78,6 @@ export const ClaimInfoScrt = observer(() => {
           setFailed(true);
           return undefined;
         });
-        console.log(info);
 
         setClaimInfo(info);
       }
@@ -105,7 +104,6 @@ export const ClaimInfoErc = () => {
 
   useEffect(() => {
     const stuff = async () => {
-      console.log(`hello ${userMetamask.ethAddress}`);
       if (userMetamask.ethAddress) {
         const info = await claimInfoErc(userMetamask.ethAddress);
 

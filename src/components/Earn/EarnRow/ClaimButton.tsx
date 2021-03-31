@@ -11,13 +11,14 @@ const ClaimButton = (props: {
   contract: string;
   available: string;
   symbol: string;
+  notify: Function;
 }) => {
   const { user } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
   return (
     <Button
       loading={loading}
-      className={cn(styles.button, 'ui', 'blue', 'basic', 'button', 'circular')}
+      className={cn(styles.button, 'blue', 'basic', 'circular')}
       disabled={typeof props.available === 'undefined' || props.available === '0'}
       onClick={async () => {
         setLoading(true);
@@ -29,14 +30,16 @@ const ClaimButton = (props: {
           });
           await user.updateBalanceForSymbol(props.symbol);
           await user.updateBalanceForSymbol('sSCRT');
+          props.notify('success', `Claimed ${props.available} s${props.symbol}`);
         } catch (reason) {
+          props.notify('error', `Failed to claim: ${reason}`);
           console.error(`Failed to claim: ${reason}`);
         }
 
         setLoading(false);
       }}
     >
-      Claim
+      Claim Rewards
     </Button>
   );
 };

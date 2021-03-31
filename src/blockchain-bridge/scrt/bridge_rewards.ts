@@ -24,18 +24,23 @@ export const QueryRewards = async (params: {
   cosmJS: SigningCosmWasmClient;
   contract: string;
   address: string;
-  height: string;
+  height?: string;
   key: string;
 }): Promise<JsonObject> => {
   const { cosmJS, contract, address, height, key } = params;
 
-  const result: IQueryRewards = await cosmJS.queryContractSmart(contract, {
+  let queryMsg = {
     rewards: {
       address,
-      height: Number(height),
       key,
     },
-  });
+  };
+
+  if (height) {
+    queryMsg.rewards['height'] = Number(height);
+  }
+
+  const result: IQueryRewards = await cosmJS.queryContractSmart(contract, queryMsg);
 
   return result.rewards.rewards;
 };
@@ -76,7 +81,7 @@ export const DepositRewards = async (params: {
   amount: string;
 }): Promise<string> => {
   const tx = await Snip20Send({
-    msg: 'eyJkZXBvc2l0Ijp7fX0K', // '{"lock_tokens":{}}' -> base64
+    msg: 'eyJkZXBvc2l0Ijp7fX0K', // '{"deposit":{}}' -> base64
     ...params,
   });
 

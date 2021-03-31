@@ -11,57 +11,49 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
-const AssetRow = observer((
-  props: {
-    label?: string,
-    link?: string,
-    address?: boolean,
-    value?: string,
-    children?: any,
-    after?: any,
-
-  }) => {
-
-  return (
-    <Box direction="row" justify="between" margin={{ bottom: 'medium' }} align="start">
-      <Box>
-        <Text size="small" bold={true}>
-          {props.label}
-        </Text>
-      </Box>
-      <Box direction="row" align="center">
-        {props.address ? (
-          <a href={props.link}>
-            <Text
-              size="small"
-              style={{
-                fontFamily: 'monospace',
-              }}
-            >
-              {props.address ? truncateAddressString(props.value) : props.value}
-            </Text>
-          </a>
-        ) : (
-          <>
-            {props.value ? <Text size="small">{props.value}</Text> : null}
-            {props.children}
-          </>
-        )}
-
-        {props.after && (
-          <Text style={{ marginLeft: 5 }} color="Basic500">
-            {props.after}
+const AssetRow = observer(
+  (props: { label?: string; link?: string; address?: boolean; value?: string; children?: any; after?: any }) => {
+    return (
+      <Box direction="row" justify="between" margin={{ bottom: 'medium' }} align="start">
+        <Box>
+          <Text size="small" bold={true}>
+            {props.label}
           </Text>
-        )}
-        {props.address && (
-          <CopyToClipboard text={props.value}>
-            <Icon glyph="PrintFormCopy" size="1em" color="#1c2a5e" style={{ marginLeft: 10, width: 20 }} />
-          </CopyToClipboard>
-        )}
+        </Box>
+        <Box direction="row" align="center">
+          {props.address ? (
+            <a href={props.link}>
+              <Text
+                size="small"
+                style={{
+                  fontFamily: 'monospace',
+                }}
+              >
+                {props.address ? truncateAddressString(props.value) : props.value}
+              </Text>
+            </a>
+          ) : (
+            <>
+              {props.value ? <Text size="small">{props.value}</Text> : null}
+              {props.children}
+            </>
+          )}
+
+          {props.after && (
+            <Text style={{ marginLeft: 5 }} color="Basic500">
+              {props.after}
+            </Text>
+          )}
+          {props.address && (
+            <CopyToClipboard text={props.value}>
+              <Icon glyph="PrintFormCopy" size="1em" color="#1c2a5e" style={{ marginLeft: 10, width: 20 }} />
+            </CopyToClipboard>
+          )}
+        </Box>
       </Box>
-    </Box>
-  );
-});
+    );
+  },
+);
 
 export const Details = observer<{ showTotal?: boolean; children?: any }>(({ showTotal, children }) => {
   const { exchange, userMetamask } = useStores();
@@ -121,7 +113,13 @@ export const Details = observer<{ showTotal?: boolean; children?: any }>(({ show
                 <Price
                   value={exchange.swapFee}
                   valueUsd={exchange.swapFeeUSD}
-                  token={userMetamask.erc20TokenDetails?.symbol || 'ETH'}
+                  token={
+                    exchange.token === TOKEN.ERC20
+                      ? userMetamask.erc20TokenDetails?.symbol === 'WSCRT'
+                        ? 'SSCRT'
+                        : userMetamask.erc20TokenDetails?.symbol
+                      : 'ETH'
+                  }
                   boxProps={{ pad: {} }}
                 />
               ) : (

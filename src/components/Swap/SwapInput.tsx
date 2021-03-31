@@ -1,9 +1,16 @@
 import { Input } from 'semantic-ui-react';
 import React from 'react';
 
-export const SwapInput = (props: { value: string; setValue: any; placeholder?: string; width?: string }) => {
+export const SwapInput = (props: {
+  value: string;
+  setValue: any;
+  placeholder?: string;
+  width?: string;
+  disabled?: boolean;
+}) => {
   return (
     <Input
+      disabled={props.disabled === true}
       style={{
         padding: 0,
         width: props.width || '180px',

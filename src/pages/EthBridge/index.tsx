@@ -10,6 +10,9 @@ import cn from 'classnames';
 import { Text } from 'components/Base';
 import { WalletBalances } from './WalletBalances';
 import { useEffect } from 'react';
+import { BridgeHealth } from '../../components/Secret/BridgeHealthIndicator';
+import { Message } from 'semantic-ui-react';
+import { ClaimTokenErc, ClaimTokenScrt } from '../../components/Earn/ClaimToken';
 
 const LargeButton = (props: {
   title: string;
@@ -27,6 +30,7 @@ const LargeButton = (props: {
       onClick={props.onClick}
       gap="10px"
     >
+      <BridgeHealth from_scrt={props.reverse} />
       <Box direction={props.reverse ? 'row-reverse' : 'row'} align="center">
         <Box direction="row" align="center">
           <img className={styles.imgToken} src="/static/eth.svg" />
@@ -52,7 +56,7 @@ const LargeButton = (props: {
 };
 
 export const EthBridge = observer((props: any) => {
-  const { user, exchange, routing, rewards } = useStores();
+  const { exchange, routing, rewards, signerHealth, tokens } = useStores();
 
   useEffect(() => {
     rewards.init({
@@ -61,6 +65,11 @@ export const EthBridge = observer((props: any) => {
       pollingInterval: 20000,
     });
     rewards.fetch();
+
+    tokens.init();
+
+    signerHealth.init({});
+    signerHealth.fetch();
 
     if (props.match.params.token) {
       if ([TOKEN.ETH, TOKEN.ERC20].includes(props.match.params.token)) {
@@ -79,6 +88,12 @@ export const EthBridge = observer((props: any) => {
   return (
     <BaseContainer>
       <PageContainer>
+        <Box>
+          <Message info>
+            <Message.Header>SEFI IS LIVE</Message.Header>
+            <p>Links to claim sefi and instructions</p>
+          </Message>
+        </Box>
         <Box direction="row" wrap={true} fill={true} justify="between" align="start">
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {/*<Box*/}

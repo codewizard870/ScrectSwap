@@ -4,9 +4,9 @@ import { statusFetching } from '../constants';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as agent from 'superagent';
 import { IOperation } from './interfaces';
-import { divDecimals, formatWithSixDecimals, sleep, toFixedTrunc, unlockToken } from '../utils';
+import { divDecimals, fixUnlockToken, formatWithSixDecimals, sleep, unlockToken } from '../utils';
 import { SigningCosmWasmClient } from 'secretjs';
-import { getViewingKey, QueryDeposit, QueryRewards, Snip20GetBalance } from '../blockchain-bridge/scrt';
+import { getViewingKey, QueryDeposit, QueryRewards, Snip20GetBalance } from '../blockchain-bridge';
 
 export const rewardsDepositKey = key => `${key}RewardsDeposit`;
 
@@ -94,6 +94,14 @@ export class UserStoreEx extends StoreConstructor {
         this.websocketInit();
       });
     }
+  }
+
+  @action public setSnip20Balance(balance: string) {
+    this.snip20Balance = balance;
+  }
+
+  @action public setSnip20BalanceMin(balance: string) {
+    this.snip20BalanceMin = balance;
   }
 
   @action public async websocketTerminate(waitToBeOpen?: boolean) {
@@ -315,8 +323,8 @@ export class UserStoreEx extends StoreConstructor {
             gas: '300000',
           },
           exec: {
-            amount: [{ amount: '350000', denom: 'uscrt' }],
-            gas: '350000',
+            amount: [{ amount: '500000', denom: 'uscrt' }],
+            gas: '500000',
           },
         },
       );
@@ -341,7 +349,7 @@ export class UserStoreEx extends StoreConstructor {
     });
 
     if (!viewingKey) {
-      return 'Unlock';
+      return unlockToken;
     }
 
     const rawBalance = await Snip20GetBalance({
@@ -352,7 +360,7 @@ export class UserStoreEx extends StoreConstructor {
     });
 
     if (isNaN(Number(rawBalance))) {
-      return 'Fix Unlock';
+      return fixUnlockToken;
     }
 
     if (decimals) {
@@ -363,26 +371,30 @@ export class UserStoreEx extends StoreConstructor {
     return rawBalance;
   };
 
-  @action public getBridgeRewardsBalance = async (snip20Address: string): Promise<string> => {
+  @action public getBridgeRewardsBalance = async (snip20Address: string, noheight): Promise<string> => {
     if (!this.secretjs) {
       return '0';
     }
 
-    const height = await this.secretjs.getHeight();
+    const height = noheight ? undefined : String(await this.secretjs.getHeight());
 
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
       address: snip20Address,
     });
-
-    return await QueryRewards({
-      cosmJS: this.secretjs,
-      contract: snip20Address,
-      address: this.address,
-      key: viewingKey,
-      height: String(height),
-    });
+    try {
+      return await QueryRewards({
+        cosmJS: this.secretjs,
+        contract: snip20Address,
+        address: this.address,
+        key: viewingKey,
+        height: height,
+      });
+    } catch (e) {
+      console.error(`failed to query rewards: ${e}`);
+      throw new Error('failed to query rewards');
+    }
   };
 
   @action public getBridgeDepositBalance = async (snip20Address: string): Promise<string> => {
@@ -422,13 +434,21 @@ export class UserStoreEx extends StoreConstructor {
   @action public updateSScrtBalance = async () => {
     try {
       const balance = await this.getSnip20Balance(process.env.SSCRT_CONTRACT, 6);
-      if (balance.includes(unlockToken)) {
-        this.balanceToken['sSCRT'] = balance;
-      } else {
-        this.balanceToken['sSCRT'] = formatWithSixDecimals(toFixedTrunc(balance, 6));
-      }
+      this.balanceToken['sSCRT'] = balance;
     } catch (err) {
       this.balanceToken['sSCRT'] = unlockToken;
+    }
+
+    const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT');
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      this.balanceTokenMin['sSCRT'] = token.display_props.min_from_scrt;
+    } catch (e) {
+      console.log(`unknown error: ${e}`);
     }
     return;
   };
@@ -452,6 +472,8 @@ export class UserStoreEx extends StoreConstructor {
       await this.updateSScrtBalance();
     }
 
+    console.log(symbol)
+
     await this.refreshTokenBalance(symbol);
 
     //await this.refreshRewardsBalances(symbol);
@@ -466,11 +488,7 @@ export class UserStoreEx extends StoreConstructor {
 
     try {
       const balance = await this.getSnip20Balance(token.dst_address, token.decimals);
-      if (balance.includes(unlockToken)) {
-        this.balanceToken[token.src_coin] = balance;
-      } else {
-        this.balanceToken[token.src_coin] = formatWithSixDecimals(toFixedTrunc(balance, 6));
-      }
+      this.balanceToken[token.src_coin] = balance;
     } catch (err) {
       this.balanceToken[token.src_coin] = unlockToken;
     }
@@ -483,14 +501,16 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   async refreshRewardsBalances(symbol: string) {
-    const rewardsToken = this.stores.rewards.allData.find(t => t.inc_token.symbol === `s${symbol}`);
+    const rewardsToken = this.stores.rewards.allData.find(t => {
+      return t.inc_token.symbol.toLowerCase().includes(symbol.toLowerCase());
+    });
     if (!rewardsToken) {
       console.log('No rewards token for', symbol);
       return;
     }
 
     try {
-      const balance = await this.getBridgeRewardsBalance(rewardsToken.pool_address);
+      const balance = await this.getBridgeRewardsBalance(rewardsToken.pool_address, false);
 
       if (balance.includes(unlockToken)) {
         this.balanceRewards[rewardsKey(rewardsToken.inc_token.symbol)] = balance;

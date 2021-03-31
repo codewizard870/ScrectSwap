@@ -462,7 +462,11 @@ export class Exchange extends StoreConstructor {
     console.log(swappedAmountUSD);
     console.log(swapFeeUSD);
 
-    if (swapFeeUSD > swappedAmountUSD * 0.4) {
+    if (swapFeeUSD > swappedAmountUSD * 0.9) {
+      this.operation.status = SwapStatus.SWAP_FAILED;
+      this.setStatus();
+      throw Error('Cannot swap less than 90% of estimated fee');
+    } else if (swapFeeUSD > swappedAmountUSD * 0.4) {
       if (
         // eslint-disable-next-line no-restricted-globals
         !confirm(

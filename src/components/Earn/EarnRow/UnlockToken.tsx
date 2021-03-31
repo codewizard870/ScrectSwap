@@ -15,9 +15,9 @@ const UnlockToken = (props: {
   pulseInterval: number;
   title: string;
   subtitle: string;
+  onUnlock?: Function;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
-
   return (
     <Box direction="row">
       <Button
@@ -27,7 +27,9 @@ const UnlockToken = (props: {
           try {
             await props.userStore.keplrWallet.suggestToken(props.userStore.chainId, props.tokenAddress);
             //await props.userStore.updateBalanceForSymbol(null, props.tokenAddress);
+            props.onUnlock(true)
           } catch (error) {
+            props.onUnlock(false)
             console.error(error);
           }
           setLoading(false);

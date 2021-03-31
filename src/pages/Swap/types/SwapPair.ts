@@ -1,21 +1,23 @@
 import { Asset, NativeToken, Token } from './trade';
 import { getSymbolsFromPair, Pair } from '../../../blockchain-bridge/scrt/swap';
 import { SwapTokenMap } from './SwapToken';
+import { CosmWasmClient } from 'secretjs';
 
 export class SwapPair {
   pair_identifier: string;
   asset_infos: Asset[];
   contract_addr: string;
   liquidity_token: string;
+  static id_delimiter = '/';
 
   constructor(
     symbol0: string,
     asset0: NativeToken | Token,
     symbol1: string,
     asset1: NativeToken | Token,
-    contract_addr,
-    liquidity_token,
-    pair_identifier,
+    contract_addr: string,
+    liquidity_token: string,
+    pair_identifier: string,
   ) {
     this.asset_infos = [];
     this.asset_infos.push(new Asset(symbol0, asset0));
@@ -34,17 +36,21 @@ export class SwapPair {
   }
 
   assetIds(): string[] {
-    return this.pair_identifier.split('/');
+    return this.pair_identifier.split(SwapPair.id_delimiter);
   }
 
   isSymbolInPair(symbol: string): boolean {
     return symbol.toUpperCase() === this.asset_infos[0].symbol || symbol.toUpperCase() === this.asset_infos[1].symbol;
   }
 
-  isIdInPair(id: string): boolean {
-    const pairIdentifiers = this.pair_identifier.split('/');
+  humanizedSymbol(): string {
+    return `${this.asset_infos[0].symbol}-${this.asset_infos[1].symbol}`;
+  }
 
-    for (const pId in pairIdentifiers) {
+  isIdInPair(id: string): boolean {
+    const pairIdentifiers = this.pair_identifier.split(SwapPair.id_delimiter);
+
+    for (const pId of pairIdentifiers) {
       if (pId.toLowerCase() === id) {
         return true;
       }
@@ -72,9 +78,27 @@ export class SwapPair {
       pair_identifier,
     );
   }
+
+  private static code_hash: string;
+  static getPairCodeHash(pair_address: string, secretjs: CosmWasmClient): Promise<string> {
+    // TODO fix this if we ever have a factory with multiple pair_code_id
+    // For now this is the best way to avoid a lot of secretjs requests
+    return new Promise(async (accept, reject) => {
+      try {
+        if (!SwapPair.code_hash) {
+          SwapPair.code_hash = await secretjs.getCodeHashByContractAddr(pair_address);
+        }
+        accept(SwapPair.code_hash);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 }
 
 export const pairIdFromTokenIds = (id0: string, id1: string): string => {
-  return id0.localeCompare(id1) === -1 ? `${id0}/${id1}` : `${id1}/${id0}`;
+  return id0.localeCompare(id1) === -1
+    ? `${id0}${SwapPair.id_delimiter}${id1}`
+    : `${id1}${SwapPair.id_delimiter}${id0}`;
 };
 export type PairMap = Map<string, SwapPair>;

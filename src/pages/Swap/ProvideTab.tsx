@@ -9,7 +9,7 @@ import { PriceRow } from '../../components/Swap/PriceRow';
 import { UserStoreEx } from 'stores/UserStore';
 import { Coin } from 'secretjs/types/types';
 import BigNumber from 'bignumber.js';
-import { compareNormalize, storeTxResultLocally } from './utils';
+import { compareNormalize, shareOfPoolNumberFormat, storeTxResultLocally } from './utils';
 import { GetContractCodeHash, getFeeForExecute } from '../../blockchain-bridge';
 import { CreateNewPair } from '../../blockchain-bridge/scrt/swap';
 import { Asset } from './types/trade';
@@ -49,6 +49,7 @@ enum ProvideState {
   PAIR_LIQUIDITY_ZERO,
   UNLOCK_TOKENS,
   CREATE_NEW_PAIR,
+  CANNOT_CREAT_SCRT_PAIR,
 }
 
 const ButtonMessage = (state: ProvideState): string => {
@@ -71,6 +72,8 @@ const ButtonMessage = (state: ProvideState): string => {
       return 'Unlock Tokens';
     case ProvideState.CREATE_NEW_PAIR:
       return 'Create New Pair';
+    case ProvideState.CANNOT_CREAT_SCRT_PAIR:
+      return 'Cannot Create New SCRT Pairs';
     default:
       return 'Provide';
   }
@@ -295,14 +298,14 @@ export class ProvideTab extends React.Component<
     }
   }
 
-  async approveOnClick(pair: SwapPair, symbol: string) {
+  async approveOnClick(pair: SwapPair, tokenAddress: string) {
     let stateFieldSuffix: string;
-    if (this.state.tokenA === symbol) {
+    if (this.state.tokenA === tokenAddress) {
       stateFieldSuffix = 'A';
-    } else if (this.state.tokenB === symbol) {
+    } else if (this.state.tokenB === tokenAddress) {
       stateFieldSuffix = 'B';
     } else {
-      console.error('approveOnClick for non-selected token', symbol);
+      console.error('approveOnClick for non-selected token', tokenAddress);
       return;
     }
 
@@ -312,7 +315,7 @@ export class ProvideTab extends React.Component<
 
     try {
       const tx = await this.props.secretjs.execute(
-        this.props.tokens.get(symbol).address,
+        tokenAddress,
         {
           increase_allowance: {
             spender: pair.contract_addr,
@@ -328,10 +331,14 @@ export class ProvideTab extends React.Component<
       this.setState<never>({
         [`allowance${stateFieldSuffix}`]: new BigNumber(Infinity),
       });
-      this.props.notify('success', `${symbol} approved for ${this.props.selectedPair.identifier()}`);
+
+      this.props.notify(
+        'success',
+        `${this.props.tokens.get(tokenAddress).symbol} approved for ${this.props.selectedPair.humanizedSymbol()}`,
+      );
     } catch (error) {
-      console.error('Error while trying to approve', symbol, error);
-      this.props.notify('error', `Error approving ${symbol}: ${error.message}`);
+      console.error('Error while trying to approve', tokenAddress, error);
+      this.props.notify('error', `Error approving ${tokenAddress}: ${error.message}`);
     }
 
     this.setState<never>({
@@ -348,7 +355,9 @@ export class ProvideTab extends React.Component<
       return ProvideState.LOADING;
     }
 
-    if (!pair) {
+    if (!pair && (this.state.tokenB === 'uscrt' || this.state.tokenA === 'uscrt')) {
+      return ProvideState.CANNOT_CREAT_SCRT_PAIR;
+    } else if (!pair) {
       return ProvideState.CREATE_NEW_PAIR;
     } else if (this.getPoolA().isNaN() || this.getPoolB().isNaN()) {
       return ProvideState.LOADING;
@@ -424,7 +433,7 @@ export class ProvideTab extends React.Component<
           style={{
             padding: '1em',
             display: 'flex',
-            alignContent: 'center',
+            alignItems: 'center',
           }}
         >
           <FlexRowSpace />
@@ -469,7 +478,7 @@ export class ProvideTab extends React.Component<
               if (JSON.stringify(lpTokenBalance).includes('View')) {
                 return lpTokenBalance;
               } else {
-                return `${currentShareOfPool.multipliedBy(100).toFixed(6)}%`;
+                return `${shareOfPoolNumberFormat.format(currentShareOfPool.multipliedBy(100).toNumber())}%`;
               }
             })()}
           </div>
@@ -483,7 +492,7 @@ export class ProvideTab extends React.Component<
           >
             Expected Gain in Your Share of Pool
             <FlexRowSpace />
-            {`~${gainedShareOfPool.multipliedBy(100).toFixed(6)}%`}
+            {`~${shareOfPoolNumberFormat.format(gainedShareOfPool.multipliedBy(100).toNumber())}%`}
           </div>
         )}
         <PairAnalyticsLink pairAddress={this.props.selectedPair?.contract_addr} />

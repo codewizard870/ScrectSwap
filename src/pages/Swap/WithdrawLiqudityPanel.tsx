@@ -12,15 +12,13 @@ import { SwapPair } from './types/SwapPair';
 import { DownArrow } from '../../ui/Icons/DownArrow';
 import { PairAnalyticsLink } from '../../components/Swap/PairAnalyticsLink';
 import Loader from 'react-loader-spinner';
-import { storeTxResultLocally } from './utils';
+import { shareOfPoolNumberFormat, storeTxResultLocally } from './utils';
 
 export class WithdrawLiquidityPanel extends React.Component<
   {
     lpTokenSymbol: string;
     tokens: SwapTokenMap;
-    balances: {
-      [symbol: string]: BigNumber | JSX.Element;
-    };
+    balances: { [symbol: string]: BigNumber | JSX.Element };
     secretjs: SigningCosmWasmClient;
     selectedPair: SwapPair;
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
@@ -44,7 +42,36 @@ export class WithdrawLiquidityPanel extends React.Component<
   render() {
     const pairSymbol = this.props.lpTokenSymbol.replace('LP-', '');
 
-    const [tokenA, tokenB] = this.props.selectedPair.assetIds();
+    let [symbolA, symbolB] = [
+      this.props.selectedPair.asset_infos[0].symbol,
+      this.props.selectedPair.asset_infos[1].symbol,
+    ];
+
+    if (symbolA === symbolB) {
+      return null;
+    }
+
+    let selectedPair = this.props.selectedPair;
+    if (symbolB === 'sSCRT') {
+      selectedPair = new SwapPair(
+        symbolB,
+        selectedPair.asset_infos[1].info,
+        symbolA,
+        selectedPair.asset_infos[0].info,
+        selectedPair.contract_addr,
+        selectedPair.liquidity_token,
+        selectedPair.pair_identifier,
+      );
+
+      symbolB = symbolA;
+      symbolA = 'sSCRT';
+    }
+    if (selectedPair.pair_identifier.includes(process.env.SSCRT_CONTRACT)) {
+      const tokenB = selectedPair.pair_identifier.split('/').filter(a => a !== process.env.SSCRT_CONTRACT);
+      selectedPair.pair_identifier = `${process.env.SSCRT_CONTRACT}${SwapPair.id_delimiter}${tokenB}`;
+    }
+
+    const [tokenA, tokenB] = selectedPair.assetIds();
 
     const decimalsA = this.props.tokens.get(tokenA)?.decimals;
     const decimalsB = this.props.tokens.get(tokenB)?.decimals;
@@ -71,10 +98,12 @@ export class WithdrawLiquidityPanel extends React.Component<
         );
 
         lpShareJsxElement = (
-          <span>{`${lpTokenBalanceNum
-            .multipliedBy(100)
-            .dividedBy(lpTokenTotalSupply)
-            .toFormat(2)}%`}</span>
+          <span>{`${shareOfPoolNumberFormat.format(
+            lpTokenBalanceNum
+              .multipliedBy(100)
+              .dividedBy(lpTokenTotalSupply)
+              .toNumber(),
+          )}%`}</span>
         );
       } else {
         pooledTokenA = '0';
@@ -83,9 +112,9 @@ export class WithdrawLiquidityPanel extends React.Component<
       }
     }
 
-    const getLogo = (symbol: string) => (
+    const getLogo = (address: string) => (
       <Image
-        src={this.props.tokens.get(symbol)?.logo}
+        src={this.props.tokens.get(address)?.logo}
         avatar
         style={{
           boxShadow: 'rgba(0, 0, 0, 0.075) 0px 6px 10px',
@@ -126,16 +155,17 @@ export class WithdrawLiquidityPanel extends React.Component<
           <Accordion.Title
             active={this.state.isActive}
             onClick={async () => {
-              this.setState({ isActive: !this.state.isActive });
-              if (!this.state.isActive) {
-                await this.setState({ isLoadingBalance: true });
-                // get balances and subscribe for events for this pair
-                await this.props.getBalance(this.props.selectedPair);
-                await this.setState({ isLoadingBalance: false });
-              } else {
-                // unsubscribe
-                this.props.onCloseTab(this.props.selectedPair);
-              }
+              this.setState({ isActive: !this.state.isActive }, async () => {
+                if (this.state.isActive) {
+                  this.setState({ isLoadingBalance: true });
+                  // get balances and subscribe for events for this pair
+                  await this.props.getBalance(selectedPair);
+                  this.setState({ isLoadingBalance: false });
+                } else {
+                  // unsubscribe
+                  this.props.onCloseTab(selectedPair);
+                }
+              });
             }}
           >
             <div
@@ -150,7 +180,7 @@ export class WithdrawLiquidityPanel extends React.Component<
                   margin: 'auto',
                 }}
               >
-                {this.props.selectedPair.asset_infos[0].symbol}-{this.props.selectedPair.asset_infos[1].symbol}
+                {selectedPair.humanizedSymbol()}
               </strong>
               <FlexRowSpace />
             </div>
@@ -190,7 +220,7 @@ export class WithdrawLiquidityPanel extends React.Component<
                   </div>
                 </>
               )}
-              <PairAnalyticsLink pairAddress={this.props.selectedPair?.contract_addr} />
+              <PairAnalyticsLink pairAddress={selectedPair?.contract_addr} />
               {lpTokenBalanceNum.isNaN() || lpTokenBalanceString === '0' ? null : (
                 <>
                   <Divider horizontal>
@@ -339,10 +369,10 @@ export class WithdrawLiquidityPanel extends React.Component<
 
                         try {
                           const result = await this.props.secretjs.execute(
-                            this.props.selectedPair.liquidity_token,
+                            selectedPair.liquidity_token,
                             {
                               send: {
-                                recipient: this.props.selectedPair.contract_addr,
+                                recipient: selectedPair.contract_addr,
                                 amount: amountInTokenDenom,
                                 msg: btoa(
                                   JSON.stringify({
@@ -359,7 +389,7 @@ export class WithdrawLiquidityPanel extends React.Component<
 
                           this.props.notify(
                             'success',
-                            `Withdrawn ${100 * withdrawPercentage}% from your pooled ${pairSymbol}`,
+                            `Withdrawn ${100 * withdrawPercentage}% from your pooled ${selectedPair.humanizedSymbol()}`,
                           );
 
                           this.setState({
@@ -368,7 +398,8 @@ export class WithdrawLiquidityPanel extends React.Component<
                         } catch (error) {
                           this.props.notify(
                             'error',
-                            `Error withdrawing ${100 * withdrawPercentage}% from your pooled ${pairSymbol}: ${
+                            `Error withdrawing ${100 *
+                              withdrawPercentage}% from your pooled ${selectedPair.humanizedSymbol()}: ${
                               error.message
                             }`,
                           );

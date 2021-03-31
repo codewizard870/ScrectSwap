@@ -270,14 +270,14 @@ export const SeFiPage = observer(() => {
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData
               .slice()
-              // .sort((a, b) => {
-              //   /* ETH first */
-              //   if (a.inc_token.symbol === 'sETH') {
-              //     return -1;
-              //   }
-              //
-              //   return 0;
-              // })
+              .sort((a, b) => {
+                /* ETH first */
+                if (a.reward.inc_token.symbol === 'SEFI') {
+                  return -1;
+                }
+
+                return 0;
+              })
               .map(rewardToken => {
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;

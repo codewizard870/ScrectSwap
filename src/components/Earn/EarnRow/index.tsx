@@ -10,10 +10,9 @@ import ClaimBox from './ClaimBox';
 import { UserStoreEx } from '../../../stores/UserStore';
 import { observer } from 'mobx-react';
 import WithdrawButton from './WithdrawButton';
-import { divDecimals, formatWithSixDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
+import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
 import { Text } from '../../Base/components/Text';
 import ScrtTokenBalance from '../ScrtTokenBalance';
-import { FlexRowSpace } from 'components/Swap/FlexRowSpace';
 
 interface RewardsToken {
   name: string;
@@ -140,7 +139,7 @@ class EarnRow extends Component<
           </div>
           <div className={cn(styles.assetName)}>
             <SoftTitleValue
-              title={this.props.token.display_props.label}
+              title={this.props.token.display_props.label === "SEFI" ? "SEFI STAKING" : this.props.token.display_props.label}
               subTitle={this.props.token.display_props.symbol}
             />
           </div>

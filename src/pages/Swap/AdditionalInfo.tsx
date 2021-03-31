@@ -148,7 +148,7 @@ export const AdditionalInfo = ({
           </span>
           <strong>
             {new Intl.NumberFormat('en-US', {
-              maximumFractionDigits: 6,
+              maximumFractionDigits: 10,
               useGrouping: true,
             }).format(liquidityProviderFee)}{' '}
             {fromToken}

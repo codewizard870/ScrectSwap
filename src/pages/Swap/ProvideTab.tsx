@@ -49,6 +49,7 @@ enum ProvideState {
   PAIR_LIQUIDITY_ZERO,
   UNLOCK_TOKENS,
   CREATE_NEW_PAIR,
+  CANNOT_CREAT_SCRT_PAIR,
 }
 
 const ButtonMessage = (state: ProvideState): string => {
@@ -71,6 +72,8 @@ const ButtonMessage = (state: ProvideState): string => {
       return 'Unlock Tokens';
     case ProvideState.CREATE_NEW_PAIR:
       return 'Create New Pair';
+    case ProvideState.CANNOT_CREAT_SCRT_PAIR:
+      return 'Cannot Create New SCRT Pairs';
     default:
       return 'Provide';
   }
@@ -352,7 +355,9 @@ export class ProvideTab extends React.Component<
       return ProvideState.LOADING;
     }
 
-    if (!pair) {
+    if (!pair && (this.state.tokenB === 'uscrt' || this.state.tokenA === 'uscrt')) {
+      return ProvideState.CANNOT_CREAT_SCRT_PAIR;
+    } else if (!pair) {
       return ProvideState.CREATE_NEW_PAIR;
     } else if (this.getPoolA().isNaN() || this.getPoolB().isNaN()) {
       return ProvideState.LOADING;
@@ -428,7 +433,7 @@ export class ProvideTab extends React.Component<
           style={{
             padding: '1em',
             display: 'flex',
-            alignContent: 'center',
+            alignItems: 'center',
           }}
         >
           <FlexRowSpace />

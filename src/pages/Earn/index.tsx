@@ -18,7 +18,6 @@ import * as services from 'services';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
 
-
 export const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
     msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
@@ -46,10 +45,10 @@ export const EarnRewards = observer((props: any) => {
       while (tokens.isPending) {
         await sleep(100);
       }
-      setFilteredTokens(await tokens.tokensUsage('REWARDS'))
-    }
-    asyncWrapper().then(() => {})
-  }, [tokens, tokens.data])
+      setFilteredTokens(await tokens.tokensUsage('REWARDS'));
+    };
+    asyncWrapper().then(() => {});
+  }, [tokens, tokens.data]);
 
   useEffect(() => {
     const refreshAllTokens = async () => {
@@ -64,14 +63,14 @@ export const EarnRewards = observer((props: any) => {
       }
 
       try {
-        const sushipool = await services.getSushiPool("0x9c86bc3c72ab97c2234cba8c6c7069009465ae86")
-        const liquidity = sushipool.entryUSD - sushipool.exitUSD
-        const apy = ((10000 * user.scrtRate) / liquidity) * 52
-        setSushiAPY(Number((apy * 100).toFixed(2)))
+        const sushipool = await services.getSushiPool('0x9c86bc3c72ab97c2234cba8c6c7069009465ae86');
+        const liquidity = sushipool.entryUSD - sushipool.exitUSD;
+        const apy = ((10000 * user.scrtRate) / liquidity) * 52;
+        setSushiAPY(Number((apy * 100).toFixed(2)));
       } catch (error) {
-        setSushiAPY(0)
+        setSushiAPY(0);
       }
-    }
+    };
 
     resolveSushiAPY().then(() => {});
     refreshAllTokens().then(() => {});
@@ -153,16 +152,20 @@ export const EarnRewards = observer((props: any) => {
               minWidth: '550px',
               maxWidth: '1047px',
               display: 'flex',
-              flexDirection: 'row'
+              flexDirection: 'row',
             }}
           >
             SushiSwap incentives for LPs on the WSCRT/WETH pair are now live with a
             <Box direction="row" margin={{ left: 'xxsmall', right: 'xxsmall' }} align="center">
-              <Text bold margin={{ right: 'xxsmall' }}>APY of</Text>
-              {sushiAPY === -1 ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" /> :
-                <Text bold>{`${sushiAPY}%!`}</Text>}
-            </Box>
-            {' '}
+              <Text bold margin={{ right: 'xxsmall' }}>
+                APY of
+              </Text>
+              {sushiAPY === -1 ? (
+                <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
+              ) : (
+                <Text bold>{`${sushiAPY}%!`}</Text>
+              )}
+            </Box>{' '}
             <a href="https://twitter.com/SecretNetwork/status/1369349930247192582" target="_blank">
               Earn more on SushiSwap Onsen
             </a>
@@ -170,7 +173,6 @@ export const EarnRewards = observer((props: any) => {
           </p>
         </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
-
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData
               .slice()
@@ -213,7 +215,13 @@ export const EarnRewards = observer((props: any) => {
                 };
 
                 return (
-                  <EarnRow notify={notify} key={rewardToken.inc_token.symbol} userStore={user} token={rewardsToken} />
+                  <EarnRow
+                    notify={notify}
+                    key={rewardToken.inc_token.symbol}
+                    userStore={user}
+                    token={rewardsToken}
+                    callToAction="Earn sSCRT"
+                  />
                 );
               })}
           </Box>

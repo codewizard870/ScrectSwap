@@ -276,7 +276,7 @@ export const SeFiPage = observer(() => {
                   display_props: rewardToken.token.display_props,
                   remainingLockedRewards: rewardToken.reward.pending_rewards,
                   deadline: Number(rewardToken.reward.deadline),
-                  rewardsSymbol: "SEFI"
+                  rewardsSymbol: 'SEFI',
                 };
 
                 return (
@@ -285,6 +285,7 @@ export const SeFiPage = observer(() => {
                     key={rewardToken.reward.inc_token.symbol}
                     userStore={user}
                     token={rewardsToken}
+                    callToAction="Earn SeFi"
                   />
                 );
               })}

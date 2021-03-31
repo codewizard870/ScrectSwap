@@ -12,10 +12,8 @@ export const GlobalStyle = createGlobalStyle<any>`
     overflow-x: hidden;
     background-position: 0 100%;
     background-repeat: no-repeat;
-    background-image: ${props =>
-      `radial-gradient(50% 50% at 50% 50%, ${transparentize(0.4, props.theme.colorSecondary)} 0%, ${transparentize(
-        0.9,
-        props.theme.palette.Basic700,
-      )} 100%)`};
+    background: rgb(248,236,153);
+    background: linear-gradient(0deg, rgba(248,236,153,1) 0%, rgba(255,255,255,1) 100%);
+    paddingBottom: 60px;
   }
 `;

@@ -8,7 +8,7 @@ export const DownArrow = (props: any) => {
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#00ADE8"
+      stroke="#FF726E"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

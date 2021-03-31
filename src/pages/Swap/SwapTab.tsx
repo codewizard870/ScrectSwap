@@ -6,7 +6,7 @@ import { AdditionalInfo } from './AdditionalInfo';
 import { PriceRow } from '../../components/Swap/PriceRow';
 import { compute_offer_amount, compute_swap } from '../../blockchain-bridge/scrt/swap';
 import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
-import { TabsHeader } from './TabsHeader';
+//import { TabsHeader } from './TabsHeader';
 import { BigNumber } from 'bignumber.js';
 import { extractValueFromLogs, getFeeForExecute } from '../../blockchain-bridge';
 import { SwapTokenMap } from './types/SwapToken';
@@ -463,7 +463,7 @@ export class SwapTab extends React.Component<
     return (
       <>
         <Container className={cn(styles.swapContainerStyle)}>
-          <TabsHeader />
+          {/* <TabsHeader /> */}
           <SwapAssetRow
             secretjs={this.props.secretjs}
             label="From"

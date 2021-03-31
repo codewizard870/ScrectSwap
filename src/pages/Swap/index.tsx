@@ -771,16 +771,16 @@ export class SwapRouter extends React.Component<
   }
 
   render() {
-    const isSwap = window.location.hash === '#Swap';
-    const isProvide = window.location.hash === '#Provide';
-    const isWithdraw = window.location.hash === '#Withdraw';
-    const isPools = window.location.hash === '#Pool';
-    const isHistory = window.location.hash === '#History';
+    // const isSwap = window.location.hash === '#Swap';
+    // const isProvide = window.location.hash === '#Provide';
+    // const isWithdraw = window.location.hash === '#Withdraw';
+    // const isPools = window.location.hash === '#Pool';
+    // const isHistory = window.location.hash === '#History';
 
-    if (!isSwap && !isProvide && !isWithdraw && !isPools && !isHistory) {
-      window.location.hash = 'Swap';
-      return <></>;
-    }
+    // if (!isSwap && !isProvide && !isWithdraw && !isPools && !isHistory) {
+    //   window.location.hash = 'Swap';
+    //   return <></>;
+    // }
 
     return (
       <BaseContainer>
@@ -800,8 +800,7 @@ export class SwapRouter extends React.Component<
               }}
               pad={{ bottom: 'medium' }}
             >
-              <KeplrButton />
-              {isSwap && (
+              {/* <KeplrButton /> */}
                 <SwapTab
                   secretjs={this.props.user.secretjs}
                   tokens={this.state.allTokens}
@@ -818,8 +817,7 @@ export class SwapRouter extends React.Component<
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
                 />
-              )}
-              {isProvide && (
+              {/* {isProvide && (
                 <ProvideTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
@@ -874,8 +872,8 @@ export class SwapRouter extends React.Component<
                 />
               )} */}
             </Box>
-            <SwapFooter />
-            <BetaWarning secretjs={this.props.user.secretjs} />
+            {/* <SwapFooter />
+            <BetaWarning secretjs={this.props.user.secretjs} /> */}
           </Box>
         </PageContainer>
       </BaseContainer>

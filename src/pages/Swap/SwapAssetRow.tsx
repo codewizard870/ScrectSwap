@@ -104,15 +104,16 @@ export const SwapAssetRow = ({
         {maxButton && token && (
           <Button
             basic
-            color="blue"
             disabled={new BigNumber(balance as any).isNaN()}
             style={{
-              margin: 'auto',
+              marginRight:'.5rem',
+              color:'#5F5F6B' ,
+              border:'1px solid #5F5F6B' ,
               borderRadius: '15px',
-              fontSize: '1rem',
-              fontWeight: 500,
+              fontSize: '12px',
+              fontWeight: 700,
               height: '24px',
-              padding: '0rem 0.4rem',
+              padding: '0.2rem .8rem',
             }}
             onClick={() => {
               const { decimals } = tokens.get(token);

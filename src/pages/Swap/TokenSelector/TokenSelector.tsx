@@ -91,13 +91,13 @@ export const TokenSelector = (props: {
                 if (b.symbol === 'sSCRT') {
                   return 1;
                 }
-                /* then sUNILP-WSCRT-ETH ? */
-                // if (a.symbol === 'sUNILP-WSCRT-ETH') {
-                //   return -1;
-                // }
-                // if (b.symbol === 'sUNILP-WSCRT-ETH') {
-                //   return 1;
-                // }
+                /* then SCRT */
+                if (a.symbol === 'SCRT') {
+                  return -1;
+                }
+                if (b.symbol === 'SCRT') {
+                  return 1;
+                }
 
                 const aSymbol = a.symbol.replace(/^s/, '');
                 const bSymbol = b.symbol.replace(/^s/, '');

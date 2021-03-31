@@ -661,7 +661,7 @@ export class SwapRouter extends React.Component<
       try {
         while (true) {
           const dijkstra = new Graph(graph);
-          let route: string[] = dijkstra.path(token0, token1);
+          const route: string[] = dijkstra.path(token0, token1) ?? [];
 
           if (route.length <= 2) {
             break;

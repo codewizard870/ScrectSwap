@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import { observer } from 'mobx-react-lite';
 import { Button, Icon, Text, Title } from 'components/Base';
@@ -13,7 +14,7 @@ import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import UnlockToken from 'components/Earn/EarnRow/UnlockToken';
-import { useEffect, useState } from 'react';
+import { secretTokenName } from '../../blockchain-bridge/scrt';
 
 const getTokenName = (tokenType: TOKEN, token: ITokenInfo) => {
   switch (tokenType) {
@@ -125,7 +126,7 @@ export const WalletBalances = observer(() => {
 
       exchange.token === TOKEN.ERC20
         ? setDisplayedTokens(
-            tokens.allData.filter(
+        (await tokens.tokensUsage('BRIDGE')).filter(
               token =>
                 token.display_props &&
                 exchange.token === TOKEN.ERC20 &&
@@ -133,7 +134,7 @@ export const WalletBalances = observer(() => {
                 token.name !== 'WSCRT',
             ),
           )
-        : setDisplayedTokens(tokens.allData.filter(token => token.src_coin === 'Ethereum'));
+        : setDisplayedTokens((await tokens.tokensUsage('BRIDGE')).filter(token => token.src_coin === 'Ethereum'));
     };
 
     refreshSelectedToken();
@@ -199,7 +200,7 @@ export const WalletBalances = observer(() => {
                 selected={exchange.token === TOKEN.ETH && exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT}
               />
 
-              {tokens.allData
+              {tokens.tokensUsageSync('BRIDGE')
                 .filter(
                   token =>
                     token.display_props &&
@@ -266,14 +267,13 @@ export const WalletBalances = observer(() => {
                 return (
                   <AssetRow
                     key={idx}
-                    asset={getTokenName(TOKEN.S20, token)}
+                    asset={secretTokenName(EXCHANGE_MODE.SCRT_TO_ETH, exchange.token, token.display_props.label)}
                     value={displayedBalances[token.display_props.symbol]}
                     token={token}
                     userStore={user}
                     link={`${process.env.SCRT_EXPLORER_URL}/contracts/${token.dst_address}`}
                     selected={
                       exchange.token === TOKEN.ERC20 &&
-                      exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH &&
                       user.snip20Address === token.dst_address
                     }
                   />

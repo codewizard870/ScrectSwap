@@ -269,7 +269,7 @@ export const CreateNewPair = async ({
     },
     '',
     [],
-    getFeeForExecute(1_000_000),
+    getFeeForExecute(1_500_000),
   );
   storeTxResultLocally(response);
 

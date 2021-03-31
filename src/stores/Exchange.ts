@@ -459,8 +459,8 @@ export class Exchange extends StoreConstructor {
     const swappedAmountUSD = Number(this.transaction.amount) * Number(price);
     const swapFeeUSD = this.swapFeeUSD;
 
-    console.log(swappedAmountUSD);
-    console.log(swapFeeUSD);
+    //console.log(swappedAmountUSD);
+    //console.log(swapFeeUSD);
 
     if (swapFeeUSD > swappedAmountUSD * 0.9) {
       this.operation.status = SwapStatus.SWAP_FAILED;

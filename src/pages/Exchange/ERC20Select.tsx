@@ -10,6 +10,9 @@ import { truncateAddressString } from '../../utils';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
 
 const selectTokenText = (mode: string, token: ITokenInfo) => {
+  if (token.display_props.symbol === 'SEFI') {
+    return `Secret Finance Token (SeFi)`
+  }
   if (mode === EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {
     return `Secret ${token.name} (secret${token.display_props.symbol})`;
   } else if (mode !== EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {
@@ -36,6 +39,8 @@ export const ERC20Select = observer(() => {
 
   // useEffect(() => {}, [token]);
 
+  const bridgeTokens = tokens.tokensUsageSync('BRIDGE');
+
   return (
     <Box direction="column" margin={{ top: 'xlarge' }}>
       <Box direction="row" align="center" justify="between">
@@ -47,11 +52,16 @@ export const ERC20Select = observer(() => {
       {!custom ? (
         <Box margin={{ top: 'small', bottom: 'medium' }}>
           <Select
-            options={tokens.allData
+            options={bridgeTokens
               .filter(token => token.display_props && token.src_coin !== 'Ethereum')
               .sort((a, b) =>
                 /* SCRT first */
                 a.display_props.symbol.toLowerCase().includes('scrt') ? -1 : 1,
+
+              ).sort((a, b) =>
+                /* SEFI first */
+                a.display_props.symbol.toLowerCase().includes('sefi') ? -1 : 1,
+
               )
               .map(token => ({
                 ...token,

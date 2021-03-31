@@ -167,7 +167,8 @@ export class UserStoreMetamask extends StoreConstructor {
           continue;
         }
         getErc20Balance(this.ethAddress, token.src_address).then(b => {
-          this.balanceToken[token.src_coin] = formatWithSixDecimals(divDecimals(b, token.decimals));
+          this.balanceToken[token.src_coin] = divDecimals(b, token.decimals);
+          // console.log(`hello from ${token.display_props.symbol} - ${JSON.stringify(this.balanceToken[token.src_coin])}`)
         });
         this.balanceTokenMin[token.src_coin] = token.display_props.min_to_scrt;
       }

@@ -70,8 +70,8 @@ export const SeFiPage = observer(() => {
       balance = unlockJsx({
         onClick: async () => {
           await user.keplrWallet.suggestToken(user.chainId, process.env.SCRT_GOV_TOKEN_ADDRESS);
-          await user.updateBalanceForSymbol('wSEFI');
-          setSefiBalance(user.balanceToken['wSEFI']);
+          await user.updateBalanceForSymbol('SEFI');
+          setSefiBalance(user.balanceToken['SEFI']);
         },
       });
       _setSefiBalance(balance);
@@ -165,7 +165,7 @@ export const SeFiPage = observer(() => {
         await sleep(100);
       }
       await Promise.all([...filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
-      setSefiBalance(user.balanceToken['wSEFI']);
+      setSefiBalance(user.balanceToken['SEFI']);
     };
 
     // const getSefiRewards = async () => {

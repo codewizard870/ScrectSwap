@@ -21,11 +21,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
             position: 'absolute',
             top: 0,
             width: '100vw',
-            // backgroundColor: '#000000', // palette.Basic100,
-            // // backgroundImage: "url('logo_background.svg')",
-            // // backgroundImage: "url('/harmony_logo_background.svg')",
-            // backgroundPosition: '0 100%',
-            // backgroundRepeat: 'no-repeat',
+            background: 'linear-gradient(0deg, rgba(248,236,153,1) 0%, rgba(255,255,255,1) 100%)'
           }}
         >
           <Head />

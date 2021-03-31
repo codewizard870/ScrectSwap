@@ -12,8 +12,5 @@ export const GlobalStyle = createGlobalStyle<any>`
     overflow-x: hidden;
     background-position: 0 100%;
     background-repeat: no-repeat;
-    background: rgb(248,236,153);
-    background: linear-gradient(0deg, rgba(248,236,153,1) 0%, rgba(255,255,255,1) 100%);
-    paddingBottom: 60px;
   }
 `;

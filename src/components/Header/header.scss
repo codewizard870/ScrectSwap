@@ -1,0 +1,109 @@
+nav{
+    background-color: #FFFFFF;
+
+    ul{
+        list-style:none;
+        margin:0;
+        padding:0;
+    }
+
+    li{
+        padding: 20px;
+        text-align: center;
+        margin-bottom: .5rem;
+        // border-right: .1rem solid black;
+    }
+
+    a{
+        color: black;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: bold;
+
+        &:hover{
+            color: #FF726E;
+        }
+    }
+}
+
+.menu{
+
+    display:flex;
+    justify-content: space-around;
+
+    ul{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    @media screen and (min-width:768px){
+        ul{
+            flex-direction: row;
+        }
+   
+        li{
+            margin-bottom: 0;
+        }
+    }
+
+    .menu-left{
+        display: flex;
+        flex-direction: column;
+        
+        @media screen and (min-width:768px){
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+        }
+    }
+
+    .menu-right{
+        display: flex;
+        flex-direction: column;
+        
+        @media screen and (min-width:768px){
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .btn-main{
+            background-color:#FCF9F3;
+            color: #000000;
+            border: none;
+            padding: 11px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1rem;
+            border-radius: 5px;
+            margin-right: 1rem;
+
+            a{
+                &:hover{
+                    color: #000000;
+                }
+            }
+        }
+
+        .btn-secondary{
+            background-color:#FF726E;
+            border: none;
+            padding: 11px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1rem;
+            border-radius: 5px;
+            margin-right: 1rem;
+
+            a{
+                color: #ffffff;
+            }
+        }
+        
+    }
+
+
+
+}

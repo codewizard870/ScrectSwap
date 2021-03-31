@@ -5,6 +5,7 @@ import { MainFooter } from 'components';
 import { withTheme } from 'styled-components';
 import { IStyledChildrenProps } from 'interfaces';
 //import * as styles from './styles.styl';
+import Header from '../Header/Header';
 
 export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
   ({ theme, children, ...props }: IStyledChildrenProps<BoxProps>) => {
@@ -24,7 +25,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
             background: 'linear-gradient(0deg, rgba(248,236,153,1) 0%, rgba(255,255,255,1) 100%)'
           }}
         >
-          <Head />
+          <Header />
           <Box
             style={{
               minWidth,
@@ -37,7 +38,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
           >
             {children}
           </Box>
-          <MainFooter />
+          {/* <MainFooter /> */}
         </div>
       </>
     );

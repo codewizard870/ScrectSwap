@@ -26,7 +26,7 @@ import { Text } from 'components/Base';
 import { notify } from '../Earn';
 import * as thisStyles from './styles.styl';
 import cn from 'classnames';
-import { ethMethodsSefi } from '../../blockchain-bridge/eth';
+import { ethMethodsSefi, web3 } from '../../blockchain-bridge/eth';
 import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
 import { claimErc, claimScrt } from '../../components/Earn/ClaimToken/utils';
 import { unlockJsx, wrongViewingKey } from 'pages/Swap/utils';
@@ -79,6 +79,31 @@ export const SeFiPage = observer(() => {
       _setSefiBalance(wrongViewingKey);
     } else {
       _setSefiBalance(balance);
+    }
+  }
+
+  async function addSefiToWatchlist() {
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await web3.currentProvider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: process.env.ETH_GOV_TOKEN_ADDRESS, // The address that the token is at.
+            symbol: 'SEFI', // A ticker symbol or shorthand, up to 5 chars.
+            decimals: 6, // The number of decimals in the token
+            image: 'https://pbs.twimg.com/profile_images/1361712479546474498/1a3370iV_400x400.jpg', // A string url of the token logo
+          },
+        },
+      });
+    
+      if (wasAdded) {
+        notify('success', 'SeFi in on your watchlist on Metamask');
+      }
+    } catch (error) {
+      notify('error', `Failed to add SeFi to the watchlist on Metamask: ${error}`)
+      console.log(`Failed to add SeFi to the watchlist on Metamask: ${error}`);
     }
   }
 
@@ -200,7 +225,7 @@ export const SeFiPage = observer(() => {
                       await claimScrt(user.secretjs, user.address);
                       notify('success', 'Claimed SeFi successfully!');
                       await user.updateBalanceForSymbol('SEFI');
-                      setSefiBalance(user.balanceToken['wSEFI']);
+                      setSefiBalance(user.balanceToken['SEFI']);
                     } catch (e) {
                       console.error(`failed to claim ${e}`);
                       notify('error', 'Failed to claim SeFi!');
@@ -228,6 +253,7 @@ export const SeFiPage = observer(() => {
                   loadingBalance={!userMetamask.ethAddress}
                   onClick={async () => {
                     try {
+                      await addSefiToWatchlist();
                       await claimErc();
                       notify('success', 'Claimed SeFi successfully!');
                     } catch (e) {
@@ -276,7 +302,7 @@ export const SeFiPage = observer(() => {
                   display_props: rewardToken.token.display_props,
                   remainingLockedRewards: rewardToken.reward.pending_rewards,
                   deadline: Number(rewardToken.reward.deadline),
-                  rewardsSymbol: "SEFI"
+                  rewardsSymbol: 'SEFI',
                 };
 
                 return (
@@ -285,6 +311,7 @@ export const SeFiPage = observer(() => {
                     key={rewardToken.reward.inc_token.symbol}
                     userStore={user}
                     token={rewardsToken}
+                    callToAction="Earn SeFi"
                   />
                 );
               })}

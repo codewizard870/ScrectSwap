@@ -13,6 +13,7 @@ import WithdrawButton from './WithdrawButton';
 import { divDecimals, formatWithSixDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
 import { Text } from '../../Base/components/Text';
 import ScrtTokenBalance from '../ScrtTokenBalance';
+import { FlexRowSpace } from 'components/Swap/FlexRowSpace';
 
 interface RewardsToken {
   name: string;
@@ -69,18 +70,19 @@ const apyString = (token: RewardsToken) => {
 
 @observer
 class EarnRow extends Component<
-{
-  userStore: UserStoreEx;
-  token: RewardsToken;
-  notify: Function;
-},
-{
-  activeIndex: Number;
-  depositValue: string;
-  withdrawValue: string;
-  claimButtonPulse: boolean;
-  pulseInterval: number;
-}
+  {
+    userStore: UserStoreEx;
+    token: RewardsToken;
+    notify: Function;
+    callToAction: string;
+  },
+  {
+    activeIndex: Number;
+    depositValue: string;
+    withdrawValue: string;
+    claimButtonPulse: boolean;
+    pulseInterval: number;
+  }
 > {
   state = {
     activeIndex: -1,
@@ -151,7 +153,19 @@ class EarnRow extends Component<
               subTitle={'Total Value Locked'}
             />
           </div>
-          <div className={cn(styles.availableDeposit)}>
+          <SoftTitleValue title="Stake now!" subTitle={this.props.callToAction} />
+          <Icon name="dropdown" />
+        </Accordion.Title>
+        <Accordion.Content active={activeIndex === 0}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+
+              marginLeft: '3.5rem',
+              marginRight: '3.5rem',
+            }}
+          >
             <ScrtTokenBalance
               value={this.props.token.balance}
               decimals={0}
@@ -165,20 +179,44 @@ class EarnRow extends Component<
               pulseInterval={this.state.pulseInterval}
               unlockTitle={'View Balance'}
               unlockSubtitle={'Available to Deposit'}
-              onUnlock={(value) => {
+              onUnlock={value => {
                 if (value) {
                   this.props.notify('success', `Created a viewing key for s${this.props.token.display_props.symbol}`);
                 } else {
-                  this.props.notify('error', `Failed to create viewing key for s${this.props.token.display_props.symbol}!`);
+                  this.props.notify(
+                    'error',
+                    `Failed to create viewing key for s${this.props.token.display_props.symbol}!`,
+                  );
                 }
               }}
             />
-
-            {/*/<SoftTitleValue title={`${} ${} `}  />*/}
+            <ScrtTokenBalance
+              subtitle={'Available Rewards'}
+              tokenAddress={this.props.token.rewardsContract}
+              decimals={0}
+              userStore={this.props.userStore}
+              currency={this.props.token.rewardsSymbol || 'sSCRT'}
+              selected={false}
+              value={this.props.token.rewards}
+              pulse={this.state.claimButtonPulse}
+              pulseInterval={this.state.pulseInterval}
+              unlockTitle="View Balance"
+              unlockSubtitle="Available Rewards"
+              onUnlock={value => {
+                if (value) {
+                  this.props.notify(
+                    'success',
+                    `Created a viewing key for s${this.props.token.display_props.symbol} rewards`,
+                  );
+                } else {
+                  this.props.notify(
+                    'error',
+                    `Failed to create viewing key for s${this.props.token.display_props.symbol} rewards!`,
+                  );
+                }
+              }}
+            />
           </div>
-          <Icon name="dropdown" />
-        </Accordion.Title>
-        <Accordion.Content active={activeIndex === 0}>
           <div>
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
@@ -240,18 +278,13 @@ class EarnRow extends Component<
               <Divider vertical>Or</Divider>
             </Segment>
           </div>
-          <div>
-            <ClaimBox
-              available={this.props.token.rewards}
-              userStore={this.props.userStore}
-              rewardsContract={this.props.token.rewardsContract}
-              pulse={this.state.claimButtonPulse}
-              pulseInterval={this.state.pulseInterval}
-              symbol={this.props.token.display_props.symbol}
-              notify={this.props.notify}
-              rewardsCurrency={this.props.token.rewardsSymbol}
-            />
-          </div>
+          <ClaimBox
+            available={this.props.token.rewards}
+            userStore={this.props.userStore}
+            rewardsContract={this.props.token.rewardsContract}
+            symbol={this.props.token.display_props.symbol}
+            notify={this.props.notify}
+          />
           <Text
             size="medium"
             style={{

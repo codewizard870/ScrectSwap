@@ -10,6 +10,9 @@ import { truncateAddressString } from '../../utils';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
 
 const selectTokenText = (mode: string, token: ITokenInfo) => {
+  if (token.display_props.symbol === 'SEFI') {
+    return `Secret Finance Token (SeFi)`
+  }
   if (mode === EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {
     return `Secret ${token.name} (secret${token.display_props.symbol})`;
   } else if (mode !== EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {

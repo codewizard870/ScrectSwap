@@ -31,6 +31,9 @@ export function getFeeForExecute(gas: number): StdFee {
 }
 
 export const secretTokenName = (mode: EXCHANGE_MODE, token: TOKEN, label: string): string => {
+  if (label === 'SEFI') {
+    return "SEFI"
+  }
   if (label === 'WSCRT') {
     return mode === EXCHANGE_MODE.SCRT_TO_ETH ? 'SSCRT' : 'WSCRT';
   }

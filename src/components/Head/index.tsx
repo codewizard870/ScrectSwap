@@ -17,13 +17,14 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
     const { palette, container } = theme;
     const { minWidth, maxWidth } = container;
 
-    const isExplorer = history.location.pathname === '/explorer';
+    // const isExplorer = history.location.pathname === '/explorer';
     const isSwap = history.location.pathname === '/swap';
-    const isTokens = history.location.pathname === '/tokens';
-    const isGetTokens = history.location.pathname === '/get-tokens';
-    const isFaq = history.location.pathname === '/faq';
-    const isInfo = history.location.pathname === '/info';
-    const isEarn = history.location.pathname === '/earn';
+    const isPool = history.location.pathname === '/pool';
+    // const isTokens = history.location.pathname === '/tokens';
+    // const isGetTokens = history.location.pathname === '/get-tokens';
+    // const isFaq = history.location.pathname === '/faq';
+    // const isInfo = history.location.pathname === '/info';
+    // const isEarn = history.location.pathname === '/earn';
     const isSeFi = history.location.pathname === '/sefi';
 
     const goToBridge = () => {
@@ -79,7 +80,7 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             </a>
           </Box>
           <Box direction="row" align="center" gap="15px">
-            <Box
+            {/* <Box
               className={cn(
                 styles.itemToken,
                 !isInfo && !isFaq && !isExplorer && !isGetTokens && !isTokens && !isSwap && !isEarn && !isSeFi
@@ -89,28 +90,48 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
               onClick={goToBridge}
             >
               <Text>Bridge</Text>
-            </Box>
+            </Box> */}
 
-            <Box
+            {/* <Box
               className={cn(styles.itemToken, isTokens ? styles.selected : '')}
               onClick={() => {
                 routing.push(`/tokens`);
               }}
             >
               <Text>Assets</Text>
-            </Box>
+            </Box> */}
 
-            <Box
+            {/* <Box
               className={cn(styles.itemToken, isExplorer ? styles.selected : '')}
               onClick={() => {
                 routing.push(`/explorer`);
               }}
             >
               <Text>Transactions</Text>
+            </Box> */}
+
+            {/*<Box className={cn(styles.itemToken, isEarn ? styles.selected : '')} onClick={() => routing.push('/earn')}>
+              <Text>Earn</Text>
+            </Box> */}
+
+            
+
+            <Box
+              className={cn(styles.itemToken, isSwap ? styles.selected : '')}
+              onClick={() => {
+                routing.push(`/swap`);
+              }}
+            >
+              <Text>Swap</Text>
             </Box>
 
-            <Box className={cn(styles.itemToken, isEarn ? styles.selected : '')} onClick={() => routing.push('/earn')}>
-              <Text>Earn</Text>
+            <Box
+              className={cn(styles.itemToken, isPool ? styles.selected : '')}
+              onClick={() => {
+                routing.push(`/pool`);
+              }}
+            >
+              <Text>Pool</Text>
             </Box>
 
             <Box
@@ -122,18 +143,9 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
               <Text>SeFi</Text>
             </Box>
 
-            <Box
-              className={cn(styles.itemToken, isSwap ? styles.selected : '')}
-              onClick={() => {
-                routing.push(`/swap`);
-              }}
-            >
-              <Text>Swap</Text>
-            </Box>
-
-            <Box className={cn(styles.itemToken, isFaq ? styles.selected : '')} onClick={() => routing.push('/faq')}>
+            {/* <Box className={cn(styles.itemToken, isFaq ? styles.selected : '')} onClick={() => routing.push('/faq')}>
               <Text>FAQ</Text>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
       </Box>

@@ -5,7 +5,8 @@ const paths = require('./paths');
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')];
 
-const { NODE_ENV = 'mainnet' } = process.env;
+const { NODE_ENV = 'testnet' } = process.env;
+//const { NODE_ENV = 'mainnet' } = process.env;
 
 const dotenvFiles = [`${paths.dotenv}.${NODE_ENV}`].filter(Boolean);
 console.log('dotenvFiles', dotenvFiles);

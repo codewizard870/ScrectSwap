@@ -3,7 +3,7 @@ import React from 'react';
 import { SigningCosmWasmClient } from 'secretjs';
 import { Container } from 'semantic-ui-react';
 import { UserStoreEx } from 'stores/UserStore';
-import { TabsHeader } from './TabsHeader';
+// import { TabsHeader } from './TabsHeaderDELETED';
 import { SwapTokenMap } from './types/SwapToken';
 import cn from 'classnames';
 import * as styles from './styles.styl';
@@ -36,7 +36,7 @@ export class HistoryTab extends React.Component<
     if (pairs.length === 0) {
       return (
         <Container className={cn(styles.swapContainerStyle)}>
-          <TabsHeader />
+          {/* <TabsHeader /> */}
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Loader type="ThreeDots" color="#00BFFF" height="0.5em" />
           </div>
@@ -46,7 +46,7 @@ export class HistoryTab extends React.Component<
 
     return (
       <Container className={cn(styles.swapContainerStyle)}>
-        <TabsHeader />
+        {/* <TabsHeader /> */}
         {pairs.length > 0 ? (
           <div style={{ display: 'flex' }}>
             <input

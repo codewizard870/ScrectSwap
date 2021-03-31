@@ -407,13 +407,17 @@ export class UserStoreEx extends StoreConstructor {
       chainId: this.chainId,
       address: snip20Address,
     });
+    try {
+      return await QueryDeposit({
+        cosmJS: this.secretjs,
+        contract: snip20Address,
+        address: this.address,
+        key: viewingKey,
+      });
+    } catch (e) {
+      return await Snip20GetBalance({secretjs: this.secretjs, address: this.address, token: snip20Address, key: viewingKey});
+    }
 
-    return await QueryDeposit({
-      cosmJS: this.secretjs,
-      contract: snip20Address,
-      address: this.address,
-      key: viewingKey,
-    });
   };
 
   @action public getBalances = async () => {
@@ -502,7 +506,7 @@ export class UserStoreEx extends StoreConstructor {
 
   async refreshRewardsBalances(symbol: string) {
     const rewardsToken = this.stores.rewards.allData.find(t => {
-      return t.inc_token.symbol.toLowerCase().includes(symbol.toLowerCase());
+      return t.inc_token.symbol.toLowerCase() === symbol.toLowerCase();
     });
     if (!rewardsToken) {
       console.log('No rewards token for', symbol);

@@ -154,7 +154,7 @@ export const SeFiPage = observer(() => {
         }
       }
     })();
-  }, [userMetamask, userMetamask?.ethAddress]);
+  }, [userMetamask, userMetamask.ethAddress]);
 
   useEffect(() => {
     const refreshAllTokens = async () => {

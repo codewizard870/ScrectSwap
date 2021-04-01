@@ -11,7 +11,7 @@ import { SwapToken } from '../types/SwapToken';
 
 const AddTokenButton = (props: { onClick?: any }) => {
   return (
-    <button className={cn(styles.selectATokenButton)} onClick={props.onClick}>
+    <button className={cn(styles.addCustomToken__button)} onClick={props.onClick}>
       <Text size="medium">Add custom token</Text>
     </button>
   );

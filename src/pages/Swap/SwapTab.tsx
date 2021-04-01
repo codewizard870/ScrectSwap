@@ -553,9 +553,12 @@ export class SwapTab extends React.Component<
             fluid
             style={{
               margin: '1em 0 0 0',
-              borderRadius: '12px',
+              borderRadius: '4px',
               padding: '18px',
-              fontSize: '20px',
+              fontSize: '16px',
+              color:'#5F5F6B',
+              background:'#DEDEDE',
+              fontWeight:'600',
               fontFamily: 'Poppins,Arial, Helvetica, sans-serif'
             }}
             onClick={async () => {

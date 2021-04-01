@@ -77,60 +77,45 @@ export const TokenSelector = (props: {
         {props.tokens.length > 0 ? (
           filteredTokens.length === 0 ? (
             <div
-              style={{ display: 'flex', justifyContent: 'center', fontSize: '16px', fontWeight: 500, padding: '30px' }}
+              className={styles.listTokens__container}
             >
-              No results found.
+              <h4>No results found.</h4>
             </div>
           ) : (
             <div className={styles.listTokens__container}>
-            <div className={styles.listTokens__subcontainer}>
-              {
-            filteredTokens
-              .sort((a, b) => {
-                /* sSCRT first */
-                if (a.symbol === 'sSCRT') {
-                  return -1;
+              <div className={styles.listTokens__subcontainer}>
+                {
+                  filteredTokens
+                    .sort((a, b) => {
+                      /* sSCRT first */
+                      if (a.symbol === 'sSCRT') {
+                        return -1;
+                      }
+                      if (b.symbol === 'sSCRT') {
+                        return 1;
+                      }
+      
+                      const aSymbol = a.symbol.replace(/^s/, '');
+                      const bSymbol = b.symbol.replace(/^s/, '');
+      
+                      return aSymbol.localeCompare(bSymbol);
+                    })
+                    .map(t => {
+                      return (
+                        <TokenInfoRow
+                          key={t.identifier}
+                          token={t}
+                          onClick={() => {
+                            props?.onClick ? props.onClick(t.identifier) : (() => {})();
+                            setOpen(false);
+                            setSearchText('');
+                          }}
+                        />
+                      );
+                    })
                 }
-                if (b.symbol === 'sSCRT') {
-                  return 1;
-                }
-                /* then SCRT */
-                if (a.symbol === 'SCRT') {
-                  return -1;
-                }
-                if (b.symbol === 'SCRT') {
-                  return 1;
-                }
-
-                /* then SCRT */
-                if (a.symbol === 'SEFI') {
-                  return -1;
-                }
-                if (b.symbol === 'SEFI') {
-                  return 1;
-                }
-
-                const aSymbol = a.symbol.replace(/^s/, '');
-                const bSymbol = b.symbol.replace(/^s/, '');
-
-                return aSymbol.localeCompare(bSymbol);
-              })
-              .map(t => {
-                return (
-                  <TokenInfoRow
-                    key={t.identifier}
-                    token={t}
-                    onClick={() => {
-                      props?.onClick ? props.onClick(t.identifier) : (() => {})();
-                      setOpen(false);
-                      setSearchText('');
-                    }}
-                  />
-                );
-              })
-            }
+              </div>
             </div>
-          </div>
           )
         ) : (
           <div style={{ display: 'flex', justifyContent: 'center' }}>

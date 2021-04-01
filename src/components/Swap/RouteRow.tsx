@@ -1,4 +1,4 @@
-import { SwapTokenMap } from 'pages/Swap/types/SwapToken';
+import { SwapTokenMap } from 'pages/TokenModal/types/SwapToken';
 import React, { useEffect, useState } from 'react';
 import { Icon, Image, Popup } from 'semantic-ui-react';
 import { FlexRowSpace } from './FlexRowSpace';

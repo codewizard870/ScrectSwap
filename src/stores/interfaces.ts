@@ -1,4 +1,4 @@
-import { NativeToken, Token } from 'pages/Swap/types/trade';
+import { NativeToken, Token } from 'pages/TokenModal/types/trade';
 import { SwapStatus } from '../constants';
 
 export enum EXCHANGE_MODE {

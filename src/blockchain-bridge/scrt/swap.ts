@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { storeTxResultLocally } from 'pages/Swap/utils';
 import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
-import { Asset, Currency, NativeToken, Token, Trade, TradeType } from '../../pages/Swap/types/trade';
+import { Asset, Currency, NativeToken, Token, Trade, TradeType } from '../../pages/TokenModal/types/trade';
 import { GetContractCodeHash } from './snip20';
 import { extractValueFromLogs, getFeeForExecute, validateBech32Address } from './utils';
 

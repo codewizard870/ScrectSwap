@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 import { Button, Modal } from 'semantic-ui-react';
 import { ExitIcon } from '../../../ui/Icons/ExitIcon';
-import { IsValid } from '../../../pages/Swap/TokenSelector/IsValid';
+import { IsValid } from '../../../pages/TokenModal/TokenSelector/IsValid';
 import { divDecimals, sleep } from '../../../utils';
 import { SigningCosmWasmClient } from 'secretjs';
 import Loader from 'react-loader-spinner';

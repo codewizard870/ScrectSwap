@@ -1,4 +1,4 @@
-import { SwapToken } from '../../pages/Swap/types/SwapToken';
+import { SwapToken } from '../../pages/TokenModal/types/SwapToken';
 
 const LOCAL_STORAGE_KEY = 'SwapLocalStorageTokensNew';
 

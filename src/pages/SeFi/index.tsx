@@ -97,12 +97,12 @@ export const SeFiPage = observer(() => {
           },
         },
       });
-    
+
       if (wasAdded) {
         notify('success', 'SeFi in on your watchlist on Metamask');
       }
     } catch (error) {
-      notify('error', `Failed to add SeFi to the watchlist on Metamask: ${error}`)
+      notify('error', `Failed to add SeFi to the watchlist on Metamask: ${error}`);
       console.log(`Failed to add SeFi to the watchlist on Metamask: ${error}`);
     }
   }
@@ -164,7 +164,7 @@ export const SeFiPage = observer(() => {
       while (!user.secretjs || tokens.isPending) {
         await sleep(100);
       }
-      await Promise.all([...filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
+      await Promise.all(filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol)));
       setSefiBalance(user.balanceToken['SEFI']);
     };
 
@@ -224,11 +224,12 @@ export const SeFiPage = observer(() => {
                     try {
                       await claimScrt(user.secretjs, user.address);
                       notify('success', 'Claimed SeFi successfully!');
-                      await user.updateBalanceForSymbol('SEFI');
-                      setSefiBalance(user.balanceToken['SEFI']);
                     } catch (e) {
                       console.error(`failed to claim ${e}`);
                       notify('error', 'Failed to claim SeFi!');
+                    } finally {
+                      await user.updateBalanceForSymbol('SEFI');
+                      setSefiBalance(user.balanceToken['SEFI']);
                     }
                   }}
                 />

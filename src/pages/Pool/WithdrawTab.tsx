@@ -5,10 +5,10 @@ import { Container } from 'semantic-ui-react';
 import { UserStoreEx } from 'stores/UserStore';
 import { WithdrawLiquidityPanel } from './WithdrawLiqudityPanel';
 import { TabsHeader } from './TabsHeader';
-import { SwapTokenMap } from './types/SwapToken';
+import { SwapTokenMap } from '../TokenModal/types/SwapToken';
 import cn from 'classnames';
 import * as styles from './styles.styl';
-import { PairMap } from './types/SwapPair';
+import { PairMap } from '../TokenModal/types/SwapPair';
 import Loader from 'react-loader-spinner';
 
 export class WithdrawTab extends React.Component<

@@ -9,15 +9,15 @@ import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { TabsHeader } from './TabsHeader';
 import { BigNumber } from 'bignumber.js';
 import { extractValueFromLogs, getFeeForExecute } from '../../blockchain-bridge';
-import { SwapTokenMap } from './types/SwapToken';
+import { SwapTokenMap } from '../TokenModal/types/SwapToken';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
-import { PairMap, SwapPair } from './types/SwapPair';
+import { PairMap, SwapPair } from '../TokenModal/types/SwapPair';
 import { DownArrow } from '../../ui/Icons/DownArrow';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
 import { RouteRow } from 'components/Swap/RouteRow';
-import { Token } from './types/trade';
+import { Token } from '../TokenModal/types/trade';
 
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';

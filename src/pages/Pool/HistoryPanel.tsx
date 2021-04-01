@@ -5,8 +5,8 @@ import { Accordion, Button, Container, Divider, Header, Image } from 'semantic-u
 import { CSSProperties } from 'styled-components';
 import { displayHumanizedBalance, humanizeBalance } from 'utils';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
-import { SwapTokenMap } from './types/SwapToken';
-import { SwapPair } from './types/SwapPair';
+import { SwapTokenMap } from '../TokenModal/types/SwapToken';
+import { SwapPair } from '../TokenModal/types/SwapPair';
 import Loader from 'react-loader-spinner';
 import { UserStoreEx } from 'stores/UserStore';
 import { User } from 'components/Base/components/Icons/tsx_svg_icons';

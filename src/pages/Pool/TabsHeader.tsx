@@ -6,12 +6,14 @@ const Tab: React.FC<{ name: string }> = ({ name }) => {
   return (
     <strong
       style={{
-        padding: '0.3em',
-        marginRight: '1em',
+        padding: '8px',
         fontSize: '16px',
         cursor: 'pointer',
         borderRadius: '10px',
-        background: isSelected ? 'whitesmoke' : null,
+        width: '224px',
+        background: isSelected ? 'rgba(255, 114, 110, 0.2)' : null,
+        color: isSelected ? '#FF726E' : '#5F5F6B',
+        textAlign: 'center'
       }}
       onClick={() => {
         if (!isSelected) {
@@ -34,10 +36,11 @@ export class TabsHeader extends React.Component {
       <div
         style={{
           display: 'flex',
+          justifyContent: 'space-between',
           paddingBottom: '1em',
         }}
       >
-        <Tab name="Swap" />
+        {/* <Tab name="Swap" /> */}
         <Tab name="Provide" />
         <Tab name="Withdraw" />
         {/* <Tab name="History" /> */}

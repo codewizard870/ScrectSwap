@@ -82,6 +82,9 @@ export const TokenSelector = (props: {
               No results found.
             </div>
           ) : (
+            <div className={styles.listTokens__container}>
+            <div className={styles.listTokens__subcontainer}>
+              {
             filteredTokens
               .sort((a, b) => {
                 /* sSCRT first */
@@ -125,6 +128,9 @@ export const TokenSelector = (props: {
                   />
                 );
               })
+            }
+            </div>
+          </div>
           )
         ) : (
           <div style={{ display: 'flex', justifyContent: 'center' }}>

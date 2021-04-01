@@ -24,9 +24,9 @@ import { NewPoolWarning } from '../../components/Swap/NewPoolWarning';
 
 const buttonStyle = {
   margin: '0.5em 0 0 0',
-  borderRadius: '12px',
-  padding: '18px',
-  fontSize: '20px',
+  borderRadius: '4px',
+  padding: '11px 42px',
+  fontSize: '16px',
 };
 
 enum TokenSelector {

@@ -802,6 +802,7 @@ export class SwapRouter extends React.Component<
               pad={{ bottom: 'medium' }}
             >
               {/* <KeplrButton /> */}
+              {isSwap && (
                 <SwapTab
                   secretjs={this.props.user.secretjs}
                   tokens={this.state.allTokens}
@@ -818,7 +819,8 @@ export class SwapRouter extends React.Component<
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
                 />
-              {/* {isProvide && (
+              )}
+              {isProvide && (
                 <ProvideTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}

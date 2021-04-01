@@ -792,8 +792,9 @@ export class SwapRouter extends React.Component<
           >
             <Box
               style={{
-                maxWidth: '420px',
-                minWidth: '420px',
+                maxWidth: '500px',
+                minWidth: '500px',
+                height:'388px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

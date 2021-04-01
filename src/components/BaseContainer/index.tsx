@@ -17,22 +17,16 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
         {/*<div className={styles.blur} />*/}
         <div
           style={{
-            minHeight: '100%',
-            zIndex: 5,
-            position: 'absolute',
-            top: 0,
+            height: '100%',
             width: '100vw',
-            background: 'linear-gradient(0deg, rgba(248,236,153,1) 0%, rgba(255,255,255,1) 100%)'
           }}
         >
           <Header />
           <Box
             style={{
-              minWidth,
-              maxWidth,
-              margin: '120px auto 52px',
-              height: 'calc(100% - 388px)',
-              minHeight: '586px',
+              width:'100%',
+              height: 'calc(100vh - 100px)',
+              background: 'linear-gradient(0deg, rgba(248,236,153,1) 0%, rgba(255,255,255,1) 100%)'
             }}
             {...props}
           >

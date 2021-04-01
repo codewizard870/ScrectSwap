@@ -1,0 +1,68 @@
+@import '../../Vars.stylus'
+.swapContainerStyle {
+  z-index: 10;
+  border-radius: 16px;
+  background-color: white;
+  padding: 2em;
+  box-shadow: 2px 2px 20px 0px rgb(200,200,200,200,25);
+
+}
+
+.tokenInfoRow {
+  border-radius: 20px; 
+  height: 62px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  transition: all 0.8s ease;
+  outline: none;
+
+  &:hover {
+    background-color: rgba(255,114,110,.10);
+  }
+
+  &:disabled {
+    color: #848484;
+    background-color: transparent;
+    cursor: default;
+  }
+}
+
+.tokenInfoItemsLeft {
+  padding-left: 5px;
+  align-items: center;
+  display: flex;
+
+  * {
+    margin-left: 5px;
+  }
+}
+
+.tokenInfoItemsRight {
+  padding-right: 10px;
+  align-items: center;
+  margin: revert;
+}
+
+input {
+  text-overflow: ellipsis;
+}
+
+.withdrawLiquiditySearch {
+  flex: 1;
+  border-radius: 20px;
+  border: 1px solid rgb(237, 238, 242);
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 0.2em;
+
+  &:focus {
+    border: 1px solid rgba(0, 191, 255, 0.9);
+  }
+}

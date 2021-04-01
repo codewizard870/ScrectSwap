@@ -110,6 +110,7 @@ export const SwapAssetRow = ({
         {maxButton && token && (
           <Button
             basic
+            color="black"
             disabled={new BigNumber(balance as any).isNaN()}
             style={{
               marginRight:'.5rem',

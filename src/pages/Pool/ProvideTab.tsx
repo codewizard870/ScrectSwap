@@ -23,10 +23,14 @@ import { SwapPlus } from '../../components/Swap/SwapPlus';
 import { NewPoolWarning } from '../../components/Swap/NewPoolWarning';
 
 const buttonStyle = {
-  margin: '0.5em 0 0 0',
+  margin: '1em 0 0 0',
   borderRadius: '4px',
   padding: '11px 42px',
   fontSize: '16px',
+  fontWeight: '600',
+  color: '#5F5F6B',
+  background: '#DEDEDE',
+  height: '46px',
 };
 
 enum TokenSelector {

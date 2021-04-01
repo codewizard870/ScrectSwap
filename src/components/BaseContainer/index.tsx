@@ -25,7 +25,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
           <Box
             style={{
               width:'100%',
-              height: 'calc(100vh - 100px)',
+              height: 'calc(100vh - 59px)',
               background: 'linear-gradient(0deg, rgba(248,236,153,1) 0%, rgba(255,255,255,1) 100%)'
             }}
             {...props}

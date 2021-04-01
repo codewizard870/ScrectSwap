@@ -383,6 +383,9 @@ export class UserStoreEx extends StoreConstructor {
       chainId: this.chainId,
       address: snip20Address,
     });
+    if (!viewingKey) {
+      throw new Error('Failed to get viewing key');
+    }
     try {
       return await QueryRewards({
         cosmJS: this.secretjs,
@@ -407,6 +410,9 @@ export class UserStoreEx extends StoreConstructor {
       chainId: this.chainId,
       address: snip20Address,
     });
+    if (!viewingKey) {
+      throw new Error('Failed to get viewing key');
+    }
     try {
       return await QueryDeposit({
         cosmJS: this.secretjs,
@@ -415,9 +421,13 @@ export class UserStoreEx extends StoreConstructor {
         key: viewingKey,
       });
     } catch (e) {
-      return await Snip20GetBalance({secretjs: this.secretjs, address: this.address, token: snip20Address, key: viewingKey});
+      return await Snip20GetBalance({
+        secretjs: this.secretjs,
+        address: this.address,
+        token: snip20Address,
+        key: viewingKey,
+      });
     }
-
   };
 
   @action public getBalances = async () => {

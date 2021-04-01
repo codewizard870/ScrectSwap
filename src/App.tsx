@@ -8,6 +8,7 @@ import { EthBridge } from './pages/EthBridge';
 import { Explorer } from './pages/Explorer';
 import { Tokens } from './pages/Tokens';
 import { SwapPageWrapper } from './pages/Swap';
+import { SwapPagePool } from './pages/Pool';
 import { InfoModal } from './components/InfoModal';
 import { EarnRewards } from './pages/Earn';
 import { FAQPage } from './pages/FAQ';
@@ -21,7 +22,7 @@ export const App: React.FC = () => (
     <Suspense fallback={<div />}>
       <Switch>
         <Route exact path="/swap" component={SwapPageWrapper} />
-        <Route exact path="/pool" component={SwapPageWrapper} />
+        <Route exact path="/pool" component={SwapPagePool} />
         <Route exact path="/sefi" component={SeFiPage} />
         {/* <Route exact path="/tokens" component={Tokens} /> */}
         {/* <Route exact path="/faq" component={FAQPage} /> */}

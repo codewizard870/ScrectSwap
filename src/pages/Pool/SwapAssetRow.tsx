@@ -35,10 +35,16 @@ export const SwapAssetRow = ({
   disabled?: boolean;
 }) => {
   const font = {
-    fontWeight: 500,
-    fontSize: '14px',
-    color: 'rgb(86, 90, 105)',
+    fontWeight: 400,
+    fontSize: '16px',
+    color: '#5F5F6B',
+    fontFamily:'Poppins,Arial, Helvetica, sans-serif'
   };
+  const balanceStyle ={
+    display:'flex',
+    padding: '.5rem 1rem',
+    ...font,
+  }
 
   return (
     <Container

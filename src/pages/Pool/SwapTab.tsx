@@ -483,7 +483,7 @@ export class SwapTab extends React.Component<
           />
           <div
             style={{
-              padding: '1em',
+              padding: '2em',
               display: 'flex',
               alignItems: 'center',
             }}
@@ -556,7 +556,8 @@ export class SwapTab extends React.Component<
               margin: '1em 0 0 0',
               borderRadius: '12px',
               padding: '18px',
-              fontSize: '20px',
+              fontSize: '16px',
+              fontWeight:'600',
               fontFamily: 'Poppins,Arial, Helvetica, sans-serif'
             }}
             onClick={async () => {

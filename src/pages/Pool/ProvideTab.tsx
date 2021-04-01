@@ -4,7 +4,7 @@ import { Button, Container } from 'semantic-ui-react';
 import { canonicalizeBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
 import * as styles from './styles.styl';
 import { SwapAssetRow } from './SwapAssetRow';
-import { TabsHeader } from './TabsHeaderDELETED';
+import { TabsHeader } from './TabsHeader';
 import { PriceRow } from '../../components/Swap/PriceRow';
 import { UserStoreEx } from 'stores/UserStore';
 import { Coin } from 'secretjs/types/types';

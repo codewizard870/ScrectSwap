@@ -60,11 +60,7 @@ const apyString = (token: RewardsToken) => {
 
   const apyStr = zeroDecimalsFormatter.format(Number(apy));
 
-  if (token.deposit && Number(token.deposit) > 0) {
-    return `${apyStr}% on ${token.deposit} ${token.lockedAsset}`;
-  } else {
-    return `${apyStr}%`;
-  }
+  return `${apyStr}%`;
 };
 
 @observer
@@ -103,9 +99,10 @@ class EarnRow extends Component<
     const { index } = titleProps;
     const { activeIndex } = this.state;
     const newIndex = activeIndex === index ? -1 : index;
-
+    if (activeIndex === -1) {
+      this.props.userStore.refreshRewardsBalances(this.props.token.display_props.symbol);
+    }
     this.setState({ activeIndex: newIndex });
-    this.props.userStore.refreshRewardsBalances(this.props.token.display_props.symbol);
   };
 
   togglePulse = () =>
@@ -139,7 +136,9 @@ class EarnRow extends Component<
           </div>
           <div className={cn(styles.assetName)}>
             <SoftTitleValue
-              title={this.props.token.display_props.label === "SEFI" ? "SEFI STAKING" : this.props.token.display_props.label}
+              title={
+                this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : this.props.token.display_props.label
+              }
               subTitle={this.props.token.display_props.symbol}
             />
           </div>

@@ -60,11 +60,7 @@ const apyString = (token: RewardsToken) => {
 
   const apyStr = zeroDecimalsFormatter.format(Number(apy));
 
-  if (token.deposit && Number(token.deposit) > 0) {
-    return `${apyStr}% on ${token.deposit} ${token.lockedAsset}`;
-  } else {
-    return `${apyStr}%`;
-  }
+  return `${apyStr}%`;
 };
 
 @observer

@@ -613,9 +613,9 @@ export class SwapRouter extends React.Component<
   }
 
   async componentWillUnmount() {
-    this.props.user.websocketInit();
+    //this.props.user.websocketInit();
 
-    if (this.ws) {
+    if (this?.ws) {
       while (this.ws.readyState === WebSocket.CONNECTING) {
         await sleep(100);
       }

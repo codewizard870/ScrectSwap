@@ -91,7 +91,7 @@ export class UserStoreEx extends StoreConstructor {
 
         this.getBalances();
 
-        this.websocketInit();
+        //this.websocketInit();
       });
     }
   }
@@ -156,7 +156,7 @@ export class UserStoreEx extends StoreConstructor {
           return;
         }
         symbolUpdateHeightCache[symbol] = height;
-        await this.updateBalanceForSymbol(symbol);
+        //await this.updateBalanceForSymbol(symbol);
       } catch (error) {
         console.log(`Error parsing websocket event: ${error}`);
       }
@@ -413,18 +413,19 @@ export class UserStoreEx extends StoreConstructor {
     if (!viewingKey) {
       throw new Error('Failed to get viewing key');
     }
+
     try {
-      return await QueryDeposit({
-        cosmJS: this.secretjs,
-        contract: snip20Address,
-        address: this.address,
-        key: viewingKey,
-      });
-    } catch (e) {
       return await Snip20GetBalance({
         secretjs: this.secretjs,
         address: this.address,
         token: snip20Address,
+        key: viewingKey,
+      });
+    } catch (e) {
+      return await QueryDeposit({
+        cosmJS: this.secretjs,
+        contract: snip20Address,
+        address: this.address,
         key: viewingKey,
       });
     }

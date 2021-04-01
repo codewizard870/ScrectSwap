@@ -3,7 +3,6 @@ import React from 'react';
 import { SigningCosmWasmClient } from 'secretjs';
 import { Container } from 'semantic-ui-react';
 import { UserStoreEx } from 'stores/UserStore';
-// import { TabsHeader } from './TabsHeaderDELETED';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
 import cn from 'classnames';
 import * as styles from './styles.styl';

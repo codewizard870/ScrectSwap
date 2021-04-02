@@ -66,3 +66,28 @@ input {
     border: 1px solid rgba(0, 191, 255, 0.9);
   }
 }
+.additionalInfo_container{
+  margin-top: -2rem;
+  border-bottom-left-radius:  20px;
+  border-bottom-right-radius:  20px;
+  background-color:  rgba(255, 255, 255, 0.4);
+  padding: calc(16px + 2rem) 2rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+
+  .subcontainer{
+    display: flex;
+    width: 100%
+    justify-content: space-between;
+    padding: .5rem 0;
+    font-family: Poppins,Arial, Helvetica, sans-serif;
+    color:#1B1B1B;
+      size: 16px;
+    &>span{
+      font-weight: 400;
+    }
+    &>strong{
+      font-weight: 600;
+    }
+  }
+}

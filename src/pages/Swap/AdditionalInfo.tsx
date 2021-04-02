@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import React, { useState } from 'react';
 import { Container, Popup, Icon } from 'semantic-ui-react';
 import { PairAnalyticsLink } from '../../components/Swap/PairAnalyticsLink';
-
+import style from './styles.styl';
 export const AdditionalInfo = ({
   minimumReceived,
   maximumSold,
@@ -36,22 +36,10 @@ export const AdditionalInfo = ({
   return (
     <div style={{ maxWidth: '400px', minWidth: '400px' }}>
       <Container
-        style={{
-          marginTop: '-2rem',
-          borderBottomLeftRadius: '20px',
-          borderBottomRightRadius: '20px',
-          backgroundColor: 'rgba(255, 255, 255, 0.6)',
-          padding: 'calc(16px + 2rem) 2rem 1rem 2rem',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
+        className={style.additionalInfo_container}
       >
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            paddingTop: '0.2rem',
-          }}
+          className={style.subcontainer}
         >
           <span>
             {minimumReceived !== null ? 'Minimum Received' : 'Maximum Sold'}
@@ -80,7 +68,7 @@ export const AdditionalInfo = ({
               : `${maximumSold.toFormat(6)} ${fromToken}`}
           </strong>
         </div>
-        <div
+        {/* <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -117,13 +105,9 @@ export const AdditionalInfo = ({
                   useGrouping: true,
                 }).format(priceImpact * 100)
           }%`}</strong>
-        </div>
+        </div> */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            paddingTop: '0.2rem',
-          }}
+          className={style.subcontainer}
         >
           <span>
             Liquidity Provider Fee

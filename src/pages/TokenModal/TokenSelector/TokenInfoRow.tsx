@@ -9,6 +9,7 @@ import { FlexRowSpace } from '../../../components/Swap/FlexRowSpace';
 import { SwapToken } from '../types/SwapToken';
 
 export const TokenInfoRow = (props: { token: SwapToken; balance?: number; onClick?: any }) => {
+  console.log(props)
   return (
     <div style={{ display: 'flex' }}>
       <div className={cn(styles.tokenInfoRow)} onClick={props.onClick}>
@@ -19,7 +20,7 @@ export const TokenInfoRow = (props: { token: SwapToken; balance?: number; onClic
         <FlexRowSpace />
         <h3 className={cn(styles.tokenInfoItemsRight)}>{props.token.address ?? 'native'}</h3>
       </div>
-      <h3 style={{ margin: 'auto' }} hidden={!props.token.address}>
+      <h3 style={{ margin: 'auto',color:'#5F5F6B' }} hidden={!props.token.address}>
         <CopyWithFeedback text={props.token.address} />
       </h3>
     </div>

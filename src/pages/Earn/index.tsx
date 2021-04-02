@@ -47,7 +47,7 @@ export const EarnRewards = observer((props: any) => {
       }
       setFilteredTokens(await tokens.tokensUsage('REWARDS'));
     };
-    asyncWrapper().then(() => {});
+    asyncWrapper().then(() => { });
   }, [tokens, tokens.data]);
 
   useEffect(() => {
@@ -65,15 +65,15 @@ export const EarnRewards = observer((props: any) => {
       try {
         const sushipool = await services.getSushiPool('0x9c86bc3c72ab97c2234cba8c6c7069009465ae86');
         const liquidity = sushipool.entryUSD - sushipool.exitUSD;
-        const apy = ((10000 * user.scrtRate) / liquidity) * 52;
+        const apy = ((3000 * user.scrtRate) / liquidity) * 52;
         setSushiAPY(Number((apy * 100).toFixed(2)));
       } catch (error) {
         setSushiAPY(0);
       }
     };
 
-    resolveSushiAPY().then(() => {});
-    refreshAllTokens().then(() => {});
+    resolveSushiAPY().then(() => { });
+    refreshAllTokens().then(() => { });
   }, [user, filteredTokens]);
 
   useEffect(() => {

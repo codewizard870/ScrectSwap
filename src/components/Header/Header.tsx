@@ -1,24 +1,30 @@
 import React from 'react';
+import {Link} from 'react-router-dom'
+import { useHistory } from 'react-router';
+import { observer } from 'mobx-react-lite';
+import { useStores } from '../../stores';
 import  "./header.scss";
 // Import Icons
-import SecretSwap from '../../../public/static/secret-swap.svg';
-import KeplrIcon from '../../../public/static/keplricon.svg';
-import Key from '../../../public/static/key.png';
-
 const Header = () =>{
+    const history = useHistory();
 
+    const isSwap = history.location.pathname === '/swap';
+    const isPool = history.location.pathname === '/pool';
+    const isSeFi = history.location.pathname === '/sefi';
     return(
         <>
-            <nav className="menu">
-
+            <nav className="menu"> 
                 <div className="menu-left">
-                    <ul>
-                        {/* Brand Icon */}
-                        <img src={SecretSwap} alt="brand logo"/>
-                        <li><a href={"/swap"}>Swap</a></li>
-                        <li><a href={"/pool"}>Pool</a></li>
-                        <li><a href="#">Earn</a></li>
-                        <li><a href="#">Governance</a></li>
+                    <img src='/static/secret-swap.svg' alt="brand logo"/>
+
+                    <ul className='nav_menu__items'> 
+                        <li className={(isSwap) && 'active'}><Link  to={"/swap"}>Swap</Link></li>
+                        <li><span>|</span></li>
+                        <li  className={(isPool) && 'active'}><Link  to={"/pool"}>Pool</Link></li>
+                        <li><span>|</span></li>
+                        <li  className={(isSeFi) && 'active'}><Link  to="/sefi">Earn</Link></li>
+                        <li><span>|</span></li>
+                        <li><Link  to="/">Governance</Link></li> 
                     </ul>
                 </div>
                 
@@ -30,10 +36,10 @@ const Header = () =>{
                     <button className="btn-secondary">
                         <a href="#">324 SEFI</a>
                     </button>
-                
-                    <img src={Key} alt="Key Icon"/>
-                    <img src={KeplrIcon} alt="Keplr Icon"/>
-                    
+                <div className="kpl_images__container">
+                    <img  src='/static/key.svg' alt="Keplr Icon"/>
+                    <img  src='/static/keplricon.svg' alt="Key Icon"/>
+                </div>
                 </div>
 
             </nav>

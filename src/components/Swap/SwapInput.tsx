@@ -1,5 +1,6 @@
 import { Input } from 'semantic-ui-react';
 import React from 'react';
+import * as styles from './style.styl';
 
 export const SwapInput = (props: {
   value: string;
@@ -15,6 +16,7 @@ export const SwapInput = (props: {
         padding: 0,
         width: props.width || '180px',
       }}
+      className={styles.customInput}
       transparent
       size="massive"
       placeholder={props.placeholder || '0.0'}

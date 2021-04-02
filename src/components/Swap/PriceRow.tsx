@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
+import * as style from './style.styl';
 import { FlexRowSpace } from './FlexRowSpace';
 
 const numberFormat = new Intl.NumberFormat('en-US', {
@@ -38,11 +39,7 @@ export const PriceRow = ({
   return (
     <>
       <div
-        style={{
-          padding: '1em 0 0 0',
-          display: 'flex',
-          alignItems: 'center',
-        }}
+        className={style.priceRow_container}
       >
         {labelPrefix}Price
         <FlexRowSpace />

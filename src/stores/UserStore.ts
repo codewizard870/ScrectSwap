@@ -376,7 +376,7 @@ export class UserStoreEx extends StoreConstructor {
       return '0';
     }
 
-    const height = noheight ? undefined : String(await this.secretjs.getHeight());
+    let height = noheight ? undefined : String(await this.secretjs.getHeight());
 
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
@@ -386,6 +386,7 @@ export class UserStoreEx extends StoreConstructor {
     if (!viewingKey) {
       throw new Error('Failed to get viewing key');
     }
+
     try {
       return await QueryRewards({
         cosmJS: this.secretjs,
@@ -395,8 +396,19 @@ export class UserStoreEx extends StoreConstructor {
         height: height,
       });
     } catch (e) {
-      console.error(`failed to query rewards: ${e}`);
-      throw new Error('failed to query rewards');
+      try {
+        height = String(await this.secretjs.getHeight());
+        return await QueryRewards({
+          cosmJS: this.secretjs,
+          contract: snip20Address,
+          address: this.address,
+          key: viewingKey,
+          height: height,
+        });
+      } catch (e) {
+        console.error(`failed to query rewards: ${e}`);
+        throw new Error('failed to query rewards');
+      }
     }
   };
 
@@ -516,12 +528,17 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   async refreshRewardsBalances(symbol: string) {
-    const rewardsToken = this.stores.rewards.allData.find(t => {
+    let rewardsToken = this.stores.rewards.allData.find(t => {
       return t.inc_token.symbol.toLowerCase() === symbol.toLowerCase();
     });
     if (!rewardsToken) {
+      rewardsToken = this.stores.rewards.allData.find(t => {
+        return t.inc_token.symbol.toLowerCase().includes(symbol.toLowerCase());
+      });
+    }
+    if (!rewardsToken) {
       console.log('No rewards token for', symbol);
-      return;
+      throw new Error(`No rewards token for ${symbol}`);
     }
 
     try {

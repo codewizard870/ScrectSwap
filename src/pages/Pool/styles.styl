@@ -3,7 +3,7 @@
   border-radius: 16px;
   background-color: white;
   padding: 1.625em;
-  box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px, rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px;
+  box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
 }
 
 .tokenInfoRow {
@@ -55,17 +55,29 @@ input {
   text-overflow: ellipsis;
 }
 
+.withdrawLiquitityContent{
+  height: 50vh;
+  overflow-y: scroll;
+  margin-top: 1rem;
+}
 .withdrawLiquiditySearch {
   flex: 1;
-  border-radius: 20px;
-  border: 1px solid rgb(237, 238, 242);
+  border-radius: 4px;
+  border: 1px solid#5F5F6B;
+  background-color: #F9FAFA;
   width: 100%;
-  padding: 12px;
-  font-size: 14px;
+  height: 46px;
+  padding: 16px;
+  font-size: 18px;
   outline: none;
   margin-bottom: 0.2em;
 
   &:focus {
-    border: 1px solid rgba(0, 191, 255, 0.9);
+    border: 1px solid rgba(255,114,110,1);
+  }
+  &::placeholder{
+    font-family: 'Poppins',Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    color: #5F5F6B;
   }
 }

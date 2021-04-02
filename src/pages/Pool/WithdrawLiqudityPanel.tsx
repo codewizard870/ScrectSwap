@@ -128,6 +128,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     const rowStyle: CSSProperties = {
       display: 'flex',
       padding: '0.5em 0 0 0',
+      color:'#5F5F6B'
     };
 
     const poolA = new BigNumber(this.props.balances[`${tokenA}-${pairSymbol}`] as any);
@@ -145,9 +146,10 @@ export class WithdrawLiquidityPanel extends React.Component<
     return (
       <Container
         style={{
-          padding: '1rem',
-          borderRadius: '20px',
-          border: '1px solid rgb(247, 248, 250)',
+          padding: '.5rem 1rem',
+          margin:'.5rem 0',
+          borderRadius: '16px',
+          border:'1px solid #DEDEDE',
           backgroundColor: 'white',
         }}
       >

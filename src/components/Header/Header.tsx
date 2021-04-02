@@ -18,11 +18,11 @@ const Header = () =>{
                     <img src='/static/secret-swap.svg' alt="brand logo"/>
 
                     <ul className='nav_menu__items'> 
-                        <li className={(isSwap) && 'active'}><Link  to={"/swap"}>Swap</Link></li>
+                        <li className={(isSwap) ? 'active':''}><Link  to={"/swap"}>Swap</Link></li>
                         <li><span>|</span></li>
-                        <li  className={(isPool) && 'active'}><Link  to={"/pool"}>Pool</Link></li>
+                        <li  className={(isPool)  ? 'active':''}><Link  to={"/pool"}>Pool</Link></li>
                         <li><span>|</span></li>
-                        <li  className={(isSeFi) && 'active'}><Link  to="/sefi">Earn</Link></li>
+                        <li  className={(isSeFi) ? 'active':''}><Link  to="/sefi">Earn</Link></li>
                         <li><span>|</span></li>
                         <li><Link  to="/">Governance</Link></li> 
                     </ul>

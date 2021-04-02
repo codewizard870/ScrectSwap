@@ -57,7 +57,8 @@ export class WithdrawTab extends React.Component<
             />
           </div>
         ) : null}
-        {pairs
+        <div className={styles.withdrawLiquitityContent}>
+          {pairs
           .filter(p => {
             return (
               p.contract_addr +
@@ -108,10 +109,10 @@ export class WithdrawTab extends React.Component<
                   getBalance={this.props.updateToken}
                   onCloseTab={this.props.onCloseTab}
                 />
-                <div style={{ minHeight: '1em' }} />
               </span>
             );
           })}
+        </div>
       </Container>
     );
   }

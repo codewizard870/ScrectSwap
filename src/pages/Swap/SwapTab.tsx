@@ -88,7 +88,7 @@ export class SwapTab extends React.Component<
     if (sortedStringify(previousProps.balances) !== sortedStringify(this.props.balances)) {
       this.updateInputs();
     }
-
+    console.table(this.props.balances);
     //initial load
     // if (previousProps.tokens.size !== this.props.tokens.size) {
     //   const fromToken = this.props.tokens.values().next().value.identifier;
@@ -119,7 +119,7 @@ export class SwapTab extends React.Component<
       new BigNumber(this.props.balances[`${toToken}-${pair.identifier()}`] as any),
       toDecimals,
     );
-
+    
     if (offer_pool.isNaN() || ask_pool.isNaN()) {
       const balances = await this.props.refreshPools({ pair });
       offer_pool = humanizeBalance(new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any), fromDecimals);
@@ -460,7 +460,6 @@ export class SwapTab extends React.Component<
       this.state.buttonMessage === BUTTON_MSG_NOT_ENOUGH_LIQUIDITY ||
       this.state.buttonMessage === BUTTON_MSG_NO_TRADNIG_PAIR;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
-
     return (
       <>
         <Container className={cn(styles.swapContainerStyle)}>

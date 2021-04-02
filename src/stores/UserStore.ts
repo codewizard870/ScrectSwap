@@ -427,17 +427,17 @@ export class UserStoreEx extends StoreConstructor {
     }
 
     try {
-      return await Snip20GetBalance({
-        secretjs: this.secretjs,
-        address: this.address,
-        token: snip20Address,
-        key: viewingKey,
-      });
-    } catch (e) {
       return await QueryDeposit({
         cosmJS: this.secretjs,
         contract: snip20Address,
         address: this.address,
+        key: viewingKey,
+      });
+    } catch (e) {
+      return await Snip20GetBalance({
+        secretjs: this.secretjs,
+        address: this.address,
+        token: snip20Address,
         key: viewingKey,
       });
     }
@@ -532,13 +532,15 @@ export class UserStoreEx extends StoreConstructor {
       return t.inc_token.symbol.toLowerCase() === symbol.toLowerCase();
     });
     if (!rewardsToken) {
+      // old style rewards token (earn page)
       rewardsToken = this.stores.rewards.allData.find(t => {
         return t.inc_token.symbol.toLowerCase().includes(symbol.toLowerCase());
       });
-    }
-    if (!rewardsToken) {
-      console.log('No rewards token for', symbol);
-      throw new Error(`No rewards token for ${symbol}`);
+
+      if (!rewardsToken) {
+        console.log('No rewards token for', symbol);
+        throw new Error(`No rewards token for ${symbol}`);
+      }
     }
 
     try {

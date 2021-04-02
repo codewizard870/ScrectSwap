@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Container } from 'semantic-ui-react';
 import { canonicalizeBalance, humanizeBalance, sortedStringify } from 'utils';
-import { SwapAssetRow } from './SwapAssetRow';
+import { SwapAssetRow } from '../SwapAssetRow/SwapAssetRow';
 import { AdditionalInfo } from './AdditionalInfo';
 import { PriceRow } from '../../components/Swap/PriceRow';
 import { compute_offer_amount, compute_swap } from '../../blockchain-bridge/scrt/swap';

@@ -15,6 +15,7 @@ import { Text } from 'components/Base';
 import { CopyWithFeedback } from 'components/Swap/CopyWithFeedback';
 import { Spinner2 } from '../../../ui/Spinner2';
 import { useStores } from 'stores';
+import BigNumber from 'bignumber.js';
 
 export const CheckClaim = (props: { isEth?: boolean; onClick?: any; loading?: boolean; title?: string }) => {
   // const { user } = useStores();
@@ -140,7 +141,7 @@ export const CheckClaimModal = (props: {
             }
           }}
           positive
-          disabled={claimInfo === undefined || claimInfo.isClaimed}
+          disabled={claimInfo === undefined || claimInfo.isClaimed || claimInfo.amount.isZero()}
         />
       </Modal.Actions>
     </Modal>
@@ -151,6 +152,8 @@ export const ClaimBoxInfo = (props: { address: string; amount?: string; isClaime
   if (!props.address) {
     return <div style={{ display: 'flex', justifyContent: 'center' }}>Please connect wallet.</div>;
   }
+
+  const amountAsNumber = new BigNumber(props.amount);
 
   return (
     <div>
@@ -174,7 +177,8 @@ export const ClaimBoxInfo = (props: { address: string; amount?: string; isClaime
           <h3>Available for claim?</h3>
         </div>
         <div className={cn(styles.tokenInfoItemsRight)}>
-          <IsValid isValid={!props.isClaimed} /> {props.isClaimed && 'Already claimed'}
+          <IsValid isValid={!props.isClaimed && !amountAsNumber.isZero()} /> {props.isClaimed && 'Already claimed'}{' '}
+          {amountAsNumber.isZero() && 'No claim found for this address'}
         </div>
       </div>
     </div>

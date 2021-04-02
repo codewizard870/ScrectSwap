@@ -5,7 +5,7 @@ import { Button, Container } from 'semantic-ui-react';
 import Loader from 'react-loader-spinner';
 import { TokenSelector } from './TokenSelector/TokenSelector';
 import { SwapInput } from '../../components/Swap/SwapInput';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import { SwapTokenMap } from './types/SwapToken';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 
@@ -31,7 +31,7 @@ export const SwapAssetRow = ({
   balance: BigNumber | JSX.Element;
   label: string;
   maxButton: boolean;
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   disabled?: boolean;
 }) => {
   const font = {

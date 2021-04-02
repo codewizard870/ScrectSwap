@@ -1,4 +1,4 @@
-import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { divDecimals, unlockToken } from '../../utils';
 
 export const Snip20SwapHash = (params: { tx_id: string; address: string }): string => {
@@ -13,7 +13,7 @@ export interface Snip20TokenInfo {
 }
 
 export const GetSnip20Params = async (params: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   address: string;
 }): Promise<Snip20TokenInfo> => {
   const { secretjs, address } = params;
@@ -33,7 +33,7 @@ export const GetSnip20Params = async (params: {
 };
 
 export const Snip20GetBalance = async (params: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   token: string;
   address: string;
   key: string;
@@ -109,7 +109,7 @@ export const GetContractCodeHash = async ({
   secretjs,
   address,
 }: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   address: string;
 }): Promise<string> => {
   return await secretjs.getCodeHashByContractAddr(address);

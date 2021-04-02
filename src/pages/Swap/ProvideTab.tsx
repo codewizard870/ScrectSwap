@@ -1,5 +1,5 @@
 import React from 'react';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
 import { Button, Container } from 'semantic-ui-react';
 import { canonicalizeBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
 import * as styles from './styles.styl';
@@ -82,7 +82,8 @@ const ButtonMessage = (state: ProvideState): string => {
 export class ProvideTab extends React.Component<
   {
     user: UserStoreEx;
-    secretjs: SigningCosmWasmClient;
+    secretjs: CosmWasmClient;
+    secretjsSender: SigningCosmWasmClient;
     tokens: SwapTokenMap;
     balances: {
       [symbol: string]: BigNumber | JSX.Element;
@@ -314,7 +315,7 @@ export class ProvideTab extends React.Component<
     });
 
     try {
-      const tx = await this.props.secretjs.execute(
+      const tx = await this.props.secretjsSender.execute(
         tokenAddress,
         {
           increase_allowance: {
@@ -639,6 +640,7 @@ export class ProvideTab extends React.Component<
   private async createNewPairAction(tokenA: Asset, tokenB: Asset): Promise<string> {
     const { contractAddress } = await CreateNewPair({
       secretjs: this.props.secretjs,
+      secretjsSender: this.props.secretjsSender,
       tokenA,
       tokenB,
     });
@@ -712,7 +714,7 @@ export class ProvideTab extends React.Component<
     const { inputA, inputB, tokenA, tokenB } = this.state;
 
     try {
-      const tx = await this.props.secretjs.execute(
+      const tx = await this.props.secretjsSender.execute(
         pair.contract_addr,
         msg,
         '',

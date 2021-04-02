@@ -1,4 +1,4 @@
-import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { JsonObject } from 'secretjs/types/types';
 import { Snip20Send } from './snip20';
 
@@ -21,7 +21,7 @@ interface IQueryRewardPoolBalance {
 }
 
 export const QueryRewards = async (params: {
-  cosmJS: SigningCosmWasmClient;
+  cosmJS: CosmWasmClient;
   contract: string;
   address: string;
   height?: string;
@@ -46,7 +46,7 @@ export const QueryRewards = async (params: {
 };
 
 export const QueryDeposit = async (params: {
-  cosmJS: SigningCosmWasmClient;
+  cosmJS: CosmWasmClient;
   contract: string;
   address: string;
   key: string;

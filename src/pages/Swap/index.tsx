@@ -804,6 +804,7 @@ export class SwapRouter extends React.Component<
               {isSwap && (
                 <SwapTab
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   selectedPair={this.state.selectedPair}
@@ -823,6 +824,7 @@ export class SwapRouter extends React.Component<
                 <ProvideTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   pairs={this.state.pairs}
@@ -837,6 +839,7 @@ export class SwapRouter extends React.Component<
                 <WithdrawTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   pairs={this.state.pairs}
@@ -875,7 +878,7 @@ export class SwapRouter extends React.Component<
               )} */}
             </Box>
             <SwapFooter />
-            <BetaWarning secretjs={this.props.user.secretjs} />
+            <BetaWarning secretjs={this.props.user.secretjsSend} />
           </Box>
         </PageContainer>
       </BaseContainer>

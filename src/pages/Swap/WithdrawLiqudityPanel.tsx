@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import React from 'react';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
 import { Accordion, Button, Container, Divider, Header, Image } from 'semantic-ui-react';
 import { CSSProperties } from 'styled-components';
 import { displayHumanizedBalance, humanizeBalance } from 'utils';
@@ -19,7 +19,8 @@ export class WithdrawLiquidityPanel extends React.Component<
     lpTokenSymbol: string;
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
-    secretjs: SigningCosmWasmClient;
+    secretjs: CosmWasmClient;
+    secretjsSender: SigningCosmWasmClient;
     selectedPair: SwapPair;
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     getBalance: CallableFunction;
@@ -368,7 +369,7 @@ export class WithdrawLiquidityPanel extends React.Component<
                         const { withdrawPercentage } = this.state;
 
                         try {
-                          const result = await this.props.secretjs.execute(
+                          const result = await this.props.secretjsSender.execute(
                             selectedPair.liquidity_token,
                             {
                               send: {

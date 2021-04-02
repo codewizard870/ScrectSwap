@@ -222,7 +222,7 @@ export const SeFiPage = observer(() => {
                   loadingBalance={!user.address}
                   onClick={async () => {
                     try {
-                      await claimScrt(user.secretjs, user.address);
+                      await claimScrt(user.secretjsSend, user.address);
                       notify('success', 'Claimed SeFi successfully!');
                     } catch (e) {
                       console.error(`failed to claim ${e}`);

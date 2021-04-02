@@ -5,7 +5,7 @@ import { SwapAssetRow } from './SwapAssetRow';
 import { AdditionalInfo } from './AdditionalInfo';
 import { PriceRow } from '../../components/Swap/PriceRow';
 import { compute_offer_amount, compute_swap } from '../../blockchain-bridge/scrt/swap';
-import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { TabsHeader } from './TabsHeader';
 import { BigNumber } from 'bignumber.js';
 import { extractValueFromLogs, getFeeForExecute } from '../../blockchain-bridge';
@@ -28,7 +28,8 @@ const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
 
 export class SwapTab extends React.Component<
   {
-    secretjs: SigningCosmWasmClient;
+    secretjs: CosmWasmClient;
+    secretjsSender: SigningCosmWasmClient;
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
     selectedToken0?: string;
@@ -599,7 +600,7 @@ export class SwapTab extends React.Component<
                   if (bestRoute) {
                     const hops = await this.getHops(bestRoute);
 
-                    result = await this.props.secretjs.execute(
+                    result = await this.props.secretjsSender.execute(
                       process.env.AMM_ROUTER_CONTRACT,
                       {
                         receive: {
@@ -624,7 +625,7 @@ export class SwapTab extends React.Component<
                       getFeeForExecute(bestRoute.length * 400_000),
                     );
                   } else {
-                    result = await this.props.secretjs.execute(
+                    result = await this.props.secretjsSender.execute(
                       pair.contract_addr,
                       {
                         swap: {
@@ -669,7 +670,7 @@ export class SwapTab extends React.Component<
                   if (bestRoute) {
                     const hops = await this.getHops(bestRoute);
 
-                    result = await this.props.secretjs.execute(
+                    result = await this.props.secretjsSender.execute(
                       fromToken,
                       {
                         send: {
@@ -689,7 +690,7 @@ export class SwapTab extends React.Component<
                       getFeeForExecute(bestRoute.length * 400_000),
                     );
                   } else {
-                    result = await this.props.secretjs.execute(
+                    result = await this.props.secretjsSender.execute(
                       fromToken,
                       {
                         send: {

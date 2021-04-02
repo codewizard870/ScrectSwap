@@ -19,7 +19,7 @@ const ClaimBox = (props: {
   return (
     <div className={cn(styles.claimBox)}>
       <ClaimButton
-        secretjs={props.userStore.secretjs}
+        secretjs={props.userStore.secretjsSend}
         contract={props.rewardsContract}
         available={props.available}
         symbol={props.symbol}

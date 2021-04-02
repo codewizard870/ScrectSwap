@@ -7,7 +7,7 @@ import { Button, Modal } from 'semantic-ui-react';
 import { ExitIcon } from '../../../ui/Icons/ExitIcon';
 import { IsValid } from '../../../pages/Swap/TokenSelector/IsValid';
 import { divDecimals, sleep } from '../../../utils';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
 import Loader from 'react-loader-spinner';
 import * as styles from './styles.styl';
 import { FlexRowSpace } from '../../Swap/FlexRowSpace';
@@ -31,7 +31,7 @@ export const CheckClaim = (props: { isEth?: boolean; onClick?: any; loading?: bo
 };
 
 export const CheckClaimModal = (props: {
-  secretjs?: SigningCosmWasmClient;
+  secretjs?: CosmWasmClient;
   address: string;
   loadingBalance?: boolean;
   isEth?: boolean;

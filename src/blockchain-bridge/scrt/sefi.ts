@@ -1,8 +1,8 @@
-import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { getScrtProof } from 'services';
 
 export const isClaimedSefiRewardsScrt = async (params: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   index: number;
 }): Promise<boolean> => {
   const { secretjs, index } = params;

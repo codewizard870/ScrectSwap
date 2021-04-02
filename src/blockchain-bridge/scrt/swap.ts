@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { storeTxResultLocally } from 'pages/Swap/utils';
-import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { Asset, Currency, NativeToken, Token, Trade, TradeType } from '../../pages/Swap/types/trade';
 import { GetContractCodeHash } from './snip20';
 import { extractValueFromLogs, getFeeForExecute, validateBech32Address } from './utils';
@@ -233,10 +233,12 @@ interface CreatePairResponse {
 
 export const CreateNewPair = async ({
   secretjs,
+  secretjsSender,
   tokenA,
   tokenB,
 }: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
+  secretjsSender: SigningCosmWasmClient;
   tokenA: Asset;
   tokenB: Asset;
 }): Promise<CreatePairResponse> => {
@@ -262,7 +264,7 @@ export const CreateNewPair = async ({
 
   const factoryAddress = process.env.AMM_FACTORY_CONTRACT;
   const pairCodeId = Number(process.env.AMM_PAIR_CODE_ID);
-  const response: ExecuteResult = await secretjs.execute(
+  const response: ExecuteResult = await secretjsSender.execute(
     factoryAddress,
     {
       create_pair: { asset_infos },

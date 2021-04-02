@@ -518,7 +518,7 @@ export class SwapTab extends React.Component<
           </div>
           <SwapAssetRow
             secretjs={this.props.secretjs}
-            label="To (estimated)"
+            label="To"
             disabled={this.state.isToEstimated && this.state.loadingBestRoute}
             maxButton={false}
             balance={toBalance}

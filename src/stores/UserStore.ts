@@ -5,8 +5,9 @@ import { StoreConstructor } from './core/StoreConstructor';
 import * as agent from 'superagent';
 import { IOperation } from './interfaces';
 import { divDecimals, fixUnlockToken, formatWithSixDecimals, sleep, unlockToken } from '../utils';
-import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
+import { BroadcastMode, CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
 import { getViewingKey, QueryDeposit, QueryRewards, Snip20GetBalance } from '../blockchain-bridge';
+import { AsyncSender } from '../blockchain-bridge/scrt/asyncSender';
 
 export const rewardsDepositKey = key => `${key}RewardsDeposit`;
 
@@ -21,7 +22,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public keplrWallet: any;
   @observable public keplrOfflineSigner: any;
   @observable public secretjs: CosmWasmClient;
-  @observable public secretjsSend: SigningCosmWasmClient;
+  @observable public secretjsSend: AsyncSender;
   @observable public isKeplrWallet = false;
   @observable public error: string;
 
@@ -319,7 +320,7 @@ export class UserStoreEx extends StoreConstructor {
   initSecretJS = (address: string, isSigner: boolean) => {
     try {
       const client = isSigner
-        ? new SigningCosmWasmClient(
+        ? new AsyncSender(
             address,
             this.address,
             this.keplrOfflineSigner,
@@ -335,6 +336,7 @@ export class UserStoreEx extends StoreConstructor {
                 gas: '500000',
               },
             },
+            BroadcastMode.Async,
           )
         : new CosmWasmClient(
             address,

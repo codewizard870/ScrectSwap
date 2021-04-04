@@ -4,6 +4,7 @@ import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { Asset, Currency, NativeToken, Token, Trade, TradeType } from '../../pages/Swap/types/trade';
 import { GetContractCodeHash } from './snip20';
 import { extractValueFromLogs, getFeeForExecute, validateBech32Address } from './utils';
+import { AsyncSender } from './asyncSender';
 
 export const buildAssetInfo = (currency: Currency) => {
   if (currency.token.info.type === 'native_token') {
@@ -93,7 +94,7 @@ interface GenericSimulationResult {
 
 export const handleSimulation = async (
   trade: Trade,
-  secretjs: SigningCosmWasmClient,
+  secretjs: AsyncSender,
   pair: string,
   swapDirection: TradeType,
 ): Promise<GenericSimulationResult> => {
@@ -238,7 +239,7 @@ export const CreateNewPair = async ({
   tokenB,
 }: {
   secretjs: CosmWasmClient;
-  secretjsSender: SigningCosmWasmClient;
+  secretjsSender: AsyncSender;
   tokenA: Asset;
   tokenB: Asset;
 }): Promise<CreatePairResponse> => {
@@ -264,7 +265,7 @@ export const CreateNewPair = async ({
 
   const factoryAddress = process.env.AMM_FACTORY_CONTRACT;
   const pairCodeId = Number(process.env.AMM_PAIR_CODE_ID);
-  const response: ExecuteResult = await secretjsSender.execute(
+  const response: ExecuteResult = await secretjsSender.asyncExecute(
     factoryAddress,
     {
       create_pair: { asset_infos },

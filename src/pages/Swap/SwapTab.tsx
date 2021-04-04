@@ -18,6 +18,7 @@ import * as styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
 import { RouteRow } from 'components/Swap/RouteRow';
 import { Token } from './types/trade';
+import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';
@@ -33,7 +34,7 @@ enum SwapDirection {
 
 function executeRouterSwap(
   direction: SwapDirection,
-  secretjsSender: SigningCosmWasmClient,
+  secretjsSender: AsyncSender,
   secretAddress: string,
   fromAmount: string,
   hops: (null | {
@@ -45,7 +46,7 @@ function executeRouterSwap(
   expected_return: string,
   bestRoute: string[],
 ) {
-  return secretjsSender.execute(
+  return secretjsSender.asyncExecute(
     process.env.AMM_ROUTER_CONTRACT,
     {
       [direction === SwapDirection.Send ? 'send' : 'receive']: {
@@ -73,14 +74,9 @@ function executeRouterSwap(
   );
 }
 
-function executeSwapUscrt(
-  secretjsSender: SigningCosmWasmClient,
-  pair: SwapPair,
-  fromAmount: string,
-  expected_return: string,
-) {
+function executeSwapUscrt(secretjsSender: AsyncSender, pair: SwapPair, fromAmount: string, expected_return: string) {
   // call the swap function directly since this is with uscrt
-  return secretjsSender.execute(
+  return secretjsSender.asyncExecute(
     pair.contract_addr,
     {
       swap: {
@@ -127,7 +123,7 @@ function storeResult(
 export class SwapTab extends React.Component<
   {
     secretjs: CosmWasmClient;
-    secretjsSender: SigningCosmWasmClient;
+    secretjsSender: AsyncSender;
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
     selectedToken0?: string;

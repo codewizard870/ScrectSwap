@@ -13,6 +13,7 @@ import { DownArrow } from '../../ui/Icons/DownArrow';
 import { PairAnalyticsLink } from '../../components/Swap/PairAnalyticsLink';
 import Loader from 'react-loader-spinner';
 import { shareOfPoolNumberFormat, storeTxResultLocally } from './utils';
+import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 
 export class WithdrawLiquidityPanel extends React.Component<
   {
@@ -20,7 +21,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
     secretjs: CosmWasmClient;
-    secretjsSender: SigningCosmWasmClient;
+    secretjsSender: AsyncSender;
     selectedPair: SwapPair;
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     getBalance: CallableFunction;
@@ -369,7 +370,7 @@ export class WithdrawLiquidityPanel extends React.Component<
                         const { withdrawPercentage } = this.state;
 
                         try {
-                          const result = await this.props.secretjsSender.execute(
+                          const result = await this.props.secretjsSender.asyncExecute(
                             selectedPair.liquidity_token,
                             {
                               send: {

@@ -10,12 +10,13 @@ import cn from 'classnames';
 import * as styles from './styles.styl';
 import { PairMap } from './types/SwapPair';
 import Loader from 'react-loader-spinner';
+import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 
 export class WithdrawTab extends React.Component<
   {
     user: UserStoreEx;
     secretjs: CosmWasmClient;
-    secretjsSender: SigningCosmWasmClient;
+    secretjsSender: AsyncSender;
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
     pairs: PairMap;

@@ -5,9 +5,10 @@ import cn from 'classnames';
 import * as styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores';
+import { AsyncSender } from '../../../blockchain-bridge/scrt/asyncSender';
 
 const ClaimButton = (props: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: AsyncSender;
   contract: string;
   available: string;
   symbol: string;

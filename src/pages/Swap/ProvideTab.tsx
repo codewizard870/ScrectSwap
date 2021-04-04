@@ -736,12 +736,14 @@ export class ProvideTab extends React.Component<
         isEstimatedA: false,
         isEstimatedB: false,
       });
+
+      await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
     } catch (error) {
       console.error('Error while trying to add liquidity', error);
       this.props.notify('error', `Error providing to ${tokenA}/${tokenB}: ${error.message}`);
+    } finally {
+      this.setState({ loadingProvide: false });
     }
-
-    this.setState({ loadingProvide: false });
   }
 
   private showPoolWarning(): boolean {

@@ -33,6 +33,10 @@ const WithdrawButton = ({ props, value, changeValue }) => {
             props.notify('error', `Failed to withdraw: ${reason}`);
             console.log(`Failed to withdraw: ${reason}`);
           });
+        await Promise.all([
+          props.userStore.refreshRewardsBalances(props.token.display_props.symbol),
+          props.userStore.refreshTokenBalance(props.token.display_props.symbol),
+        ]);
         setLoading(false);
       }}
     >

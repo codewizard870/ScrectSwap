@@ -205,7 +205,11 @@ export class SwapRouter extends React.Component<
       balanceTasks.push(this.refreshPoolBalance(pair));
     }
 
+    console.log('refreshing balances..');
+
     const results = await Promise.all([...balanceTasks]);
+
+    console.log(`balances: ${JSON.stringify(results)}`);
 
     // flatten array to a single object
     const newObject = Object.assign(
@@ -845,14 +849,14 @@ export class SwapRouter extends React.Component<
                   pairs={this.state.pairs}
                   notify={this.notify}
                   updateToken={async (pair: SwapPair) => {
-                    this.registerPairQueries(pair);
+                    //this.registerPairQueries(pair);
                     await this.refreshBalances({
                       pair,
                       tokens: pair.assetIds(),
                     });
                   }}
                   onCloseTab={pair => {
-                    this.unSubscribePair(pair);
+                    //this.unSubscribePair(pair);
                   }}
                 />
               )}

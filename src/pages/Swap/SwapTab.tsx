@@ -8,7 +8,7 @@ import { compute_offer_amount, compute_swap } from '../../blockchain-bridge/scrt
 import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { TabsHeader } from './TabsHeader';
 import { BigNumber } from 'bignumber.js';
-import { extractValueFromLogs, getFeeForExecute } from '../../blockchain-bridge';
+import { extractValueFromLogs, getFeeForExecute, Snip20Send } from '../../blockchain-bridge';
 import { SwapTokenMap } from './types/SwapToken';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 import { PairMap, SwapPair } from './types/SwapPair';
@@ -25,6 +25,104 @@ const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
 const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
 const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
+
+enum SwapDirection {
+  Send,
+  Receive,
+}
+
+function executeRouterSwap(
+  direction: SwapDirection,
+  secretjsSender: SigningCosmWasmClient,
+  secretAddress: string,
+  fromAmount: string,
+  hops: (null | {
+    from_token: { snip20: { address: string; code_hash: string } } | 'scrt';
+    pair_address: string;
+    pair_code_hash: string;
+    expected_return?: string;
+  })[],
+  expected_return: string,
+  bestRoute: string[],
+) {
+  return secretjsSender.execute(
+    process.env.AMM_ROUTER_CONTRACT,
+    {
+      [direction === SwapDirection.Send ? 'send' : 'receive']: {
+        from: secretAddress,
+        amount: fromAmount,
+        msg: btoa(
+          JSON.stringify({
+            to: secretAddress,
+            hops,
+            expected_return,
+          }),
+        ),
+      },
+    },
+    '',
+    direction === SwapDirection.Send
+      ? [
+          {
+            amount: fromAmount,
+            denom: 'uscrt',
+          },
+        ]
+      : [],
+    getFeeForExecute(bestRoute.length * 400_000),
+  );
+}
+
+function executeSwapUscrt(
+  secretjsSender: SigningCosmWasmClient,
+  pair: SwapPair,
+  fromAmount: string,
+  expected_return: string,
+) {
+  // call the swap function directly since this is with uscrt
+  return secretjsSender.execute(
+    pair.contract_addr,
+    {
+      swap: {
+        offer_asset: {
+          info: { native_token: { denom: 'uscrt' } },
+          amount: fromAmount,
+        },
+        expected_return,
+        // offer_asset: Asset,
+        // expected_return: Option<Uint128>
+        // belief_price: Option<Decimal>,
+        // max_spread: Option<Decimal>,
+        // to: Option<HumanAddr>, // TODO
+      },
+    },
+    '',
+    [
+      {
+        amount: fromAmount,
+        denom: 'uscrt',
+      },
+    ],
+    getFeeForExecute(500_000),
+  );
+}
+
+function storeResult(
+  result: ExecuteResult,
+  fromAmount: string,
+  fromDecimals: number,
+  bestRoute: string[],
+  toDecimals: number,
+) {
+  storeTxResultLocally(result);
+
+  const sent = humanizeBalance(new BigNumber(fromAmount), fromDecimals).toFixed();
+  const received = humanizeBalance(
+    new BigNumber(extractValueFromLogs(result, 'return_amount', bestRoute != null)),
+    toDecimals,
+  ).toFixed();
+  return { sent, received };
+}
 
 export class SwapTab extends React.Component<
   {
@@ -181,11 +279,7 @@ export class SwapTab extends React.Component<
               break;
             }
 
-            const { return_amount, spread_amount, commission_amount } = compute_swap(
-              offer_pool,
-              ask_pool,
-              offer_amount,
-            );
+            const { return_amount, spread_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
 
             if (return_amount.isNaN() || return_amount.isLessThanOrEqualTo(0)) {
               to = new BigNumber(0);
@@ -230,11 +324,7 @@ export class SwapTab extends React.Component<
               break;
             }
 
-            const { offer_amount, spread_amount, commission_amount } = compute_offer_amount(
-              offer_pool,
-              ask_pool,
-              ask_amount,
-            );
+            const { offer_amount, spread_amount } = compute_offer_amount(offer_pool, ask_pool, ask_amount);
 
             if (offer_amount.isNaN() || offer_amount.isLessThanOrEqualTo(0)) {
               from = new BigNumber(Infinity);
@@ -600,64 +690,20 @@ export class SwapTab extends React.Component<
                   if (bestRoute) {
                     const hops = await this.getHops(bestRoute);
 
-                    result = await this.props.secretjsSender.execute(
-                      process.env.AMM_ROUTER_CONTRACT,
-                      {
-                        receive: {
-                          from: this.props.secretAddress,
-                          amount: fromAmount,
-                          msg: btoa(
-                            JSON.stringify({
-                              to: this.props.secretAddress,
-                              hops,
-                              expected_return,
-                            }),
-                          ),
-                        },
-                      },
-                      '',
-                      [
-                        {
-                          amount: fromAmount,
-                          denom: 'uscrt',
-                        },
-                      ],
-                      getFeeForExecute(bestRoute.length * 400_000),
+                    result = await executeRouterSwap(
+                      SwapDirection.Receive,
+                      this.props.secretjsSender,
+                      this.props.secretAddress,
+                      fromAmount,
+                      hops,
+                      expected_return,
+                      bestRoute,
                     );
                   } else {
-                    result = await this.props.secretjsSender.execute(
-                      pair.contract_addr,
-                      {
-                        swap: {
-                          offer_asset: {
-                            info: { native_token: { denom: 'uscrt' } },
-                            amount: fromAmount,
-                          },
-                          expected_return,
-                          // offer_asset: Asset,
-                          // expected_return: Option<Uint128>
-                          // belief_price: Option<Decimal>,
-                          // max_spread: Option<Decimal>,
-                          // to: Option<HumanAddr>, // TODO
-                        },
-                      },
-                      '',
-                      [
-                        {
-                          amount: fromAmount,
-                          denom: 'uscrt',
-                        },
-                      ],
-                      getFeeForExecute(500_000),
-                    );
+                    result = await executeSwapUscrt(this.props.secretjsSender, pair, fromAmount, expected_return);
                   }
-                  storeTxResultLocally(result);
 
-                  const sent = humanizeBalance(new BigNumber(fromAmount), fromDecimals).toFixed();
-                  const received = humanizeBalance(
-                    new BigNumber(extractValueFromLogs(result, 'return_amount', bestRoute != null)),
-                    toDecimals,
-                  ).toFixed();
+                  const { sent, received } = storeResult(result, fromAmount, fromDecimals, bestRoute, toDecimals);
 
                   this.props.notify(
                     'success',
@@ -669,59 +715,33 @@ export class SwapTab extends React.Component<
                   let result: ExecuteResult;
                   if (bestRoute) {
                     const hops = await this.getHops(bestRoute);
-
-                    result = await this.props.secretjsSender.execute(
-                      fromToken,
-                      {
-                        send: {
-                          recipient: process.env.AMM_ROUTER_CONTRACT,
-                          amount: fromAmount,
-                          msg: btoa(
-                            JSON.stringify({
-                              to: this.props.secretAddress,
-                              hops,
-                              expected_return,
-                            }),
-                          ),
-                        },
-                      },
-                      '',
-                      [],
-                      getFeeForExecute(bestRoute.length * 400_000),
+                    result = await executeRouterSwap(
+                      SwapDirection.Send,
+                      this.props.secretjsSender,
+                      this.props.secretAddress,
+                      fromAmount,
+                      hops,
+                      expected_return,
+                      bestRoute,
                     );
                   } else {
-                    result = await this.props.secretjsSender.execute(
-                      fromToken,
-                      {
-                        send: {
-                          recipient: pair.contract_addr,
-                          amount: fromAmount,
-                          msg: btoa(
-                            JSON.stringify({
-                              swap: {
-                                expected_return,
-                                // expected_return: Option<Uint128>
-                                // belief_price: Option<Decimal>,
-                                // max_spread: Option<Decimal>,
-                                // to: Option<HumanAddr>, // TODO
-                              },
-                            }),
-                          ),
-                        },
-                      },
-                      '',
-                      [],
-                      getFeeForExecute(500_000),
-                    );
+                    result = await Snip20Send({
+                      secretjs: this.props.secretjsSender,
+                      address: fromToken,
+                      amount: fromAmount,
+                      msg: btoa(
+                        JSON.stringify({
+                          swap: {
+                            expected_return,
+                          },
+                        }),
+                      ),
+                      recipient: pair.contract_addr,
+                      fee: getFeeForExecute(500_000),
+                    });
                   }
 
-                  storeTxResultLocally(result);
-
-                  const sent = humanizeBalance(new BigNumber(fromAmount), fromDecimals).toFixed();
-                  const received = humanizeBalance(
-                    new BigNumber(extractValueFromLogs(result, 'return_amount', bestRoute != null)),
-                    toDecimals,
-                  ).toFixed();
+                  const { sent, received } = storeResult(result, fromAmount, fromDecimals, bestRoute, toDecimals);
 
                   this.props.notify(
                     'success',
@@ -738,14 +758,14 @@ export class SwapTab extends React.Component<
                     this.props.tokens.get(toToken).symbol
                   }: ${error.message}`,
                 );
+                return;
+              } finally {
                 this.setState({
                   loadingSwap: false,
                 });
-                return;
               }
-
+              await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
               this.setState({
-                loadingSwap: false,
                 toInput: '',
                 fromInput: '',
                 isFromEstimated: false,

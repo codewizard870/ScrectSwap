@@ -396,6 +396,7 @@ export class WithdrawLiquidityPanel extends React.Component<
                           this.setState({
                             withdrawPercentage: 0,
                           });
+                          await this.props.getBalance(selectedPair);
                         } catch (error) {
                           this.props.notify(
                             'error',

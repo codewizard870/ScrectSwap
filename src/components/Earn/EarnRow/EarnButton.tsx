@@ -43,6 +43,10 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
             props.notify('error', `Failed to deposit: ${reason}`);
             console.log(`Failed to deposit: ${reason}`);
           });
+        await Promise.all([
+          props.userStore.refreshRewardsBalances(props.token.display_props.symbol),
+          props.userStore.refreshTokenBalance(props.token.display_props.symbol),
+        ]);
         setLoading(false);
       }}
     >

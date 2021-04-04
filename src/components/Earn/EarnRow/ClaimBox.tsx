@@ -11,11 +11,8 @@ const ClaimBox = (props: {
   available: string;
   symbol: string;
   notify?: Function;
+  rewardsToken?: string;
 }) => {
-  const [available, setAvailable] = useState<string>(props.available);
-  useEffect(() => {
-    setAvailable(props.available);
-  }, [props.available]);
   return (
     <div className={cn(styles.claimBox)}>
       <ClaimButton
@@ -24,6 +21,7 @@ const ClaimBox = (props: {
         available={props.available}
         symbol={props.symbol}
         notify={props.notify}
+        rewardsToken={props.rewardsToken}
       />
     </div>
   );

@@ -65,6 +65,7 @@ export const SeFiPage = observer(() => {
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
 
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
+
   function setSefiBalance(balance: string) {
     if (balance === unlockToken) {
       balance = unlockJsx({
@@ -157,7 +158,7 @@ export const SeFiPage = observer(() => {
   }, [userMetamask, userMetamask.ethAddress]);
 
   useEffect(() => {
-    const refreshAllTokens = async () => {
+    const refreshSefi = async () => {
       // if (filteredTokens.length <= 0) {
       //   return;
       // }
@@ -169,16 +170,8 @@ export const SeFiPage = observer(() => {
       setSefiBalance(user.balanceToken['SEFI']);
     };
 
-    // const getSefiRewards = async () => {
-    //   while (!user.secretjs) {
-    //     await sleep(100);
-    //   }
-    //
-    //
-    // }
-
-    //refreshAllTokens().then(() => {});
-  }, [filteredTokens]);
+    refreshSefi().then(() => {});
+  }, []);
 
   useEffect(() => {
     rewards.init({

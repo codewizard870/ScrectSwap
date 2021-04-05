@@ -126,7 +126,7 @@ export const WalletBalances = observer(() => {
 
       exchange.token === TOKEN.ERC20
         ? setDisplayedTokens(
-        (await tokens.tokensUsage('BRIDGE')).filter(
+            (await tokens.tokensUsage('BRIDGE')).filter(
               token =>
                 token.display_props &&
                 exchange.token === TOKEN.ERC20 &&
@@ -145,7 +145,7 @@ export const WalletBalances = observer(() => {
       const balances = [];
 
       if (user.snip20Address === process.env.SSCRT_CONTRACT) {
-        await user.updateBalanceForSymbol('SSCRT');
+        await user.updateBalanceForSymbol('sSCRT');
 
         user.setSnip20Balance(user.balanceToken['sSCRT']);
         user.setSnip20BalanceMin(user.balanceTokenMin['sSCRT']);
@@ -200,7 +200,8 @@ export const WalletBalances = observer(() => {
                 selected={exchange.token === TOKEN.ETH && exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT}
               />
 
-              {tokens.tokensUsageSync('BRIDGE')
+              {tokens
+                .tokensUsageSync('BRIDGE')
                 .filter(
                   token =>
                     token.display_props &&
@@ -272,10 +273,7 @@ export const WalletBalances = observer(() => {
                     token={token}
                     userStore={user}
                     link={`${process.env.SCRT_EXPLORER_URL}/contracts/${token.dst_address}`}
-                    selected={
-                      exchange.token === TOKEN.ERC20 &&
-                      user.snip20Address === token.dst_address
-                    }
+                    selected={exchange.token === TOKEN.ERC20 && user.snip20Address === token.dst_address}
                   />
                 );
               })}

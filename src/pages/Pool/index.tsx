@@ -7,7 +7,7 @@ import { useStores } from 'stores';
 import { fixUnlockToken, isEmptyObject, sleep, unlockToken } from 'utils';
 import { UserStoreEx } from 'stores/UserStore';
 import { observer } from 'mobx-react';
-import { SwapTab } from './SwapTab';
+// import { SwapTab } from '../Swap/SwapTab';
 import { ProvideTab } from './ProvideTab';
 import { WithdrawTab } from './WithdrawTab';
 import { BigNumber } from 'bignumber.js';
@@ -141,6 +141,11 @@ export class SwapRouter extends React.Component<
 
     if (!this.props.user.secretjs) {
       await this.updateTokens();
+      setTimeout(async ()=>{
+        const tokens = await this.updateTokens();
+        const tokensAsArray = Array.from(tokens).map((t)=>t[1].identifier);
+        await this.refreshBalances({tokens:tokensAsArray})
+      },500)
     }
 
     while (this.props.pairs.isPending || this.props.tokens.isPending) {

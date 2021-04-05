@@ -136,6 +136,11 @@ export class SwapRouter extends React.Component<
 
     if (!this.props.user.secretjs) {
       await this.updateTokens();
+      setTimeout(async ()=>{
+        const tokens = await this.updateTokens();
+        const tokensAsArray = Array.from(tokens).map((t)=>t[1].identifier);
+        const balances = await this.refreshBalances({tokens:tokensAsArray})
+      },500)
     }
 
     while (this.props.pairs.isPending || this.props.tokens.isPending) {

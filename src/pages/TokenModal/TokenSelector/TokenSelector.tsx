@@ -12,10 +12,12 @@ import { ExitIcon } from '../../../ui/Icons/ExitIcon';
 import { SwapToken, SwapTokenFromSnip20Params } from '../types/SwapToken';
 import cn from 'classnames';
 import * as styles from './styles.styl';
+import { BigNumber } from 'bignumber.js';
 
 export const TokenSelector = (props: {
   secretjs: SigningCosmWasmClient;
   tokens: SwapToken[];
+  balances: { [symbol: string]: BigNumber | JSX.Element };
   token?: SwapToken;
   onClick?: any;
   notify?: CallableFunction;
@@ -104,6 +106,7 @@ export const TokenSelector = (props: {
                       return (
                         <TokenInfoRow
                           key={t.identifier}
+                          balance={props.balances[t.identifier]}
                           token={t}
                           onClick={() => {
                             props?.onClick ? props.onClick(t.identifier) : (() => {})();

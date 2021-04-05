@@ -7,9 +7,10 @@ import * as styles from '../styles.styl';
 import { CopyWithFeedback } from '../../../components/Swap/CopyWithFeedback';
 import { FlexRowSpace } from '../../../components/Swap/FlexRowSpace';
 import { SwapToken } from '../types/SwapToken';
+import BigNumber from 'bignumber.js';
+import { displayHumanizedBalance, humanizeBalance } from 'utils/formatNumber';
 
-export const TokenInfoRow = (props: { token: SwapToken; balance?: number; onClick?: any }) => {
-  console.log(props)
+export const TokenInfoRow = (props: { token: SwapToken; balance?: any; onClick?: any }) => {
   return (
     <div style={{ display: 'flex' }}>
       <div className={cn(styles.tokenInfoRow)} onClick={props.onClick}>
@@ -18,11 +19,17 @@ export const TokenInfoRow = (props: { token: SwapToken; balance?: number; onClic
           <SoftTitleValue title={props.token.symbol} subTitle={props.token.symbol} />
         </div>
         <FlexRowSpace />
-        <h3 className={cn(styles.tokenInfoItemsRight)}>{props.token.address ?? 'native'}</h3>
+        <h3 className={cn(styles.tokenInfoItemsRight)}>
+          {
+            displayHumanizedBalance(
+            humanizeBalance(new BigNumber(props.balance as BigNumber),props.token.decimals),
+            BigNumber.ROUND_DOWN,)
+          }
+        </h3>
       </div>
-      <h3 style={{ margin: 'auto',color:'#5F5F6B' }} hidden={!props.token.address}>
+      {/* <h3 style={{ margin: 'auto',color:'#5F5F6B' }} hidden={!props.token.address}>
         <CopyWithFeedback text={props.token.address} />
-      </h3>
+      </h3> */}
     </div>
   );
 };

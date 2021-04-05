@@ -26,8 +26,9 @@ const chainIdMap: Record<string, NETWORKS> = {
   '0x5': NETWORKS.ETH,
   '0x2a': NETWORKS.ETH,
   '0x38': NETWORKS.BSC,
-  '0x61': NETWORKS.BSC
-}
+  '0x61': NETWORKS.BSC,
+  '0x50': NETWORKS.PLSM,
+};
 
 export interface IERC20Token {
   name: string;
@@ -196,7 +197,7 @@ export class UserStoreMetamask extends StoreConstructor {
       this.network = NETWORKS.ETH;
     }
 
-    this.mainnet = (chainId === ETH_MAINNET || chainId === BSC_MAINNET);
+    this.mainnet = chainId === ETH_MAINNET || chainId === BSC_MAINNET;
   }
 
   private syncLocalStorage() {

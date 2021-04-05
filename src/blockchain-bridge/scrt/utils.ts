@@ -11,8 +11,10 @@ export const swapContractAddress = (network: NETWORKS): string => {
       return process.env.SCRT_SWAP_CONTRACT;
     case NETWORKS.BSC:
       return process.env.BSC_SCRT_SWAP_CONTRACT;
+    case NETWORKS.PLSM:
+      return process.env.PLSM_SWAP_CONTRACT;
   }
-}
+};
 
 export const getScrtAddress = (address: string): string => {
   try {

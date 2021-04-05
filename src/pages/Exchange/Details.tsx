@@ -10,58 +10,51 @@ import { useEffect, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import { messages, messageToString } from '../EthBridge/messages';
 
-const AssetRow = observer((
-  props: {
-    label?: string,
-    link?: string,
-    address?: boolean,
-    value?: string,
-    children?: any,
-    after?: any,
-
-  }) => {
-
-  return (
-    <Box direction="row" justify="between" margin={{ bottom: 'medium' }} align="start">
-      <Box>
-        <Text size="small" bold={true}>
-          {props.label}
-        </Text>
-      </Box>
-      <Box direction="row" align="center">
-        {props.address ? (
-          <a href={props.link}>
-            <Text
-              size="small"
-              style={{
-                fontFamily: 'monospace',
-              }}
-            >
-              {props.address ? truncateAddressString(props.value) : props.value}
-            </Text>
-          </a>
-        ) : (
-          <>
-            {props.value ? <Text size="small">{props.value}</Text> : null}
-            {props.children}
-          </>
-        )}
-
-        {props.after && (
-          <Text style={{ marginLeft: 5 }} color="Basic500">
-            {props.after}
+const AssetRow = observer(
+  (props: { label?: string; link?: string; address?: boolean; value?: string; children?: any; after?: any }) => {
+    return (
+      <Box direction="row" justify="between" margin={{ bottom: 'medium' }} align="start">
+        <Box>
+          <Text size="small" bold={true}>
+            {props.label}
           </Text>
-        )}
-        {props.address && (
-          <CopyToClipboard text={props.value}>
-            <Icon glyph="PrintFormCopy" size="1em" color="#1c2a5e" style={{ marginLeft: 10, width: 20 }} />
-          </CopyToClipboard>
-        )}
+        </Box>
+        <Box direction="row" align="center">
+          {props.address ? (
+            <a href={props.link}>
+              <Text
+                size="small"
+                style={{
+                  fontFamily: 'monospace',
+                }}
+              >
+                {props.address ? truncateAddressString(props.value) : props.value}
+              </Text>
+            </a>
+          ) : (
+            <>
+              {props.value ? <Text size="small">{props.value}</Text> : null}
+              {props.children}
+            </>
+          )}
+
+          {props.after && (
+            <Text style={{ marginLeft: 5 }} color="Basic500">
+              {props.after}
+            </Text>
+          )}
+          {props.address && (
+            <CopyToClipboard text={props.value}>
+              <Icon glyph="PrintFormCopy" size="1em" color="#1c2a5e" style={{ marginLeft: 10, width: 20 }} />
+            </CopyToClipboard>
+          )}
+        </Box>
       </Box>
-    </Box>
-  );
-});
+    );
+  },
+);
 
 export const Details = observer<{ showTotal?: boolean; children?: any }>(({ showTotal, children }) => {
   const { exchange, userMetamask } = useStores();
@@ -71,21 +64,30 @@ export const Details = observer<{ showTotal?: boolean; children?: any }>(({ show
 
   return (
     <Box direction="column">
-      <AssetRow label="ETH Address" value={exchange.transaction.ethAddress} address={true} />
+      <AssetRow
+        label={`${messageToString(messages.currency_symbol, userMetamask.network)} Address`}
+        value={exchange.transaction.ethAddress}
+        address={true}
+      />
       <AssetRow label="Secret Address" value={exchange.transaction.scrtAddress} address={true} />
-      {exchange.token === TOKEN.ERC20 ? (
-        <AssetRow
-          label={`${String(
-            userMetamask.erc20TokenDetails && userMetamask.erc20TokenDetails.symbol,
-          ).toUpperCase()} amount`}
-          value={formatWithSixDecimals(exchange.transaction.amount)}
-        />
-      ) : (
-        <AssetRow
-          label={`${String(exchange.token).toUpperCase()} amount`}
-          value={formatWithSixDecimals(exchange.transaction.amount)}
-        />
-      )}
+      <AssetRow
+        label={`${String(
+          exchange.token === TOKEN.NATIVE
+            ? messageToString(messages.currency_symbol, userMetamask.network)
+            : userMetamask.erc20TokenDetails.symbol,
+        ).toUpperCase()} amount`}
+        value={formatWithSixDecimals(exchange.transaction.amount)}
+      />
+      {/*{exchange.token === TOKEN.ERC20 ? (*/}
+      {/*  <AssetRow*/}
+      {/*    label={`${String(*/}
+      {/*      userMetamask.erc20TokenDetails && userMetamask.erc20TokenDetails.symbol,*/}
+      {/*    ).toUpperCase()} amount`}*/}
+      {/*    value={formatWithSixDecimals(exchange.transaction.amount)}*/}
+      {/*  />*/}
+      {/*) : (*/}
+
+      {/*)}*/}
 
       {/*<DataItem*/}
       {/*  icon="User"*/}

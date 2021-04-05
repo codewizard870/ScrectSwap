@@ -15,7 +15,8 @@ import { messages, messageToString } from './messages';
 
 export const enum NETWORKS {
   ETH,
-  BSC
+  BSC,
+  PLSM,
 }
 
 const LargeButton = (props: {
@@ -38,8 +39,10 @@ const LargeButton = (props: {
       <BridgeHealth from_scrt={props.reverse} />
       <Box direction={props.reverse ? 'row-reverse' : 'row'} align="center">
         <Box direction="row" align="center">
-          <img className={styles.imgToken} src={
-            props.network ? messageToString(messages.image_logo, props.network) : '/static/eth.svg'} />
+          <img
+            className={styles.imgToken}
+            src={props.network ? messageToString(messages.image_logo, props.network) : '/static/eth.svg'}
+          />
           <Text size="large" className={styles.title}>
             {props.network ? messageToString(messages.currency_symbol, props.network) : 'ETH'}
           </Text>
@@ -97,8 +100,7 @@ export const EthBridge = observer((props: any) => {
       exchange.setMainnet(userMetamask.mainnet);
       setNetwork(userMetamask.network);
     }
-
-  }, [userMetamask.network, userMetamask.mainnet, exchange])
+  }, [userMetamask.network, userMetamask.mainnet, exchange]);
 
   return (
     <BaseContainer>

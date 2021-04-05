@@ -73,9 +73,11 @@ function getClientEnvironment(publicUrl) {
 
         ETH_MANAGER_CONTRACT: process.env.ETH_MANAGER_CONTRACT,
         BSC_MANAGER_CONTRACT: process.env.BSC_MANAGER_CONTRACT,
+        PLSM_MANAGER_CONTRACT: process.env.PLSM_MANAGER_CONTRACT,
 
         SCRT_SWAP_CONTRACT: process.env.SCRT_SWAP_CONTRACT,
         BSC_SCRT_SWAP_CONTRACT: process.env.BSC_SCRT_SWAP_CONTRACT,
+        PLSM_SWAP_CONTRACT: process.env.PLSM_SWAP_CONTRACT,
 
         ETH_EXPLORER_URL: process.env.ETH_EXPLORER_URL,
         SCRT_EXPLORER_URL: process.env.SCRT_EXPLORER_URL,

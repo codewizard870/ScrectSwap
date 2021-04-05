@@ -13,9 +13,23 @@ const ethManagerJson = require('../out/MultiSigSwapWallet.json');
 
 const ethManagerContract = new web3.eth.Contract(ethManagerJson.abi, process.env.ETH_MANAGER_CONTRACT);
 const bscManagerContract = new web3.eth.Contract(ethManagerJson.abi, process.env.BSC_MANAGER_CONTRACT);
+const plmManagerContract = new web3.eth.Contract(ethManagerJson.abi, process.env.PLSM_MANAGER_CONTRACT);
 
 export const fromScrtMethods: Record<NETWORKS, Record<TOKEN, any>> = {
-  [NETWORKS.ETH]: {[TOKEN.NATIVE]: new EthMethods({
+  [NETWORKS.PLSM]: {
+    [TOKEN.NATIVE]: new EthMethods({
+      web3: web3,
+      ethManagerContract: plmManagerContract,
+    }),
+    [TOKEN.ERC20]: new EthMethodsERC20({
+      web3: web3,
+      ethManagerContract: plmManagerContract,
+      ethManagerAddress: process.env.PLSM_MANAGER_CONTRACT,
+    }),
+    [TOKEN.S20]: null,
+  },
+  [NETWORKS.ETH]: {
+    [TOKEN.NATIVE]: new EthMethods({
       web3: web3,
       ethManagerContract: ethManagerContract,
     }),
@@ -27,7 +41,8 @@ export const fromScrtMethods: Record<NETWORKS, Record<TOKEN, any>> = {
     }),
     [TOKEN.S20]: null,
   },
-  [NETWORKS.BSC]: {[TOKEN.NATIVE]: new EthMethods({
+  [NETWORKS.BSC]: {
+    [TOKEN.NATIVE]: new EthMethods({
       web3: web3,
       ethManagerContract: bscManagerContract,
     }),
@@ -38,5 +53,5 @@ export const fromScrtMethods: Record<NETWORKS, Record<TOKEN, any>> = {
       ethManagerAddress: process.env.BSC_MANAGER_CONTRACT,
     }),
     [TOKEN.S20]: null,
-  }
-}
+  },
+};

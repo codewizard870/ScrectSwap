@@ -181,6 +181,30 @@ export interface ISecretSwapPair {
   };
 }
 
+export interface TokenPool {
+  info: {
+    token: {
+      contract_addr: string;
+      token_code_hash: string;
+      viewing_key: string;
+    };
+  };
+  amount: string;
+}
+
+export interface NativeTokenPool {
+  info: {
+    native_token: {
+      denom: string;
+    };
+  };
+  amount: string;
+}
+export interface ISecretSwapPool {
+  assets: Array<TokenPool | NativeTokenPool>;
+  total_share: string;
+}
+
 export interface ISignerHealth {
   signer: string;
   health: boolean;

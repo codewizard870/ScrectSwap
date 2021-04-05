@@ -591,7 +591,7 @@ export class SwapTab extends React.Component<
                     isFromEstimated: this.state.isToEstimated,
                   },
                   async () => {
-                    await this.props.onSetTokens(this.state.fromToken, this.state.toToken, false);
+                    await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
                     this.updateInputs();
                   },
@@ -898,12 +898,8 @@ export class SwapTab extends React.Component<
   };
 
   private async setToToken(identifier: string) {
-    const setStateCallback = async (refreshBalances: boolean) => {
-      if (refreshBalances) {
-        this.setState({ loadingPriceData: true });
-      }
-      await this.props.onSetTokens(this.state.fromToken, this.state.toToken, refreshBalances);
-      this.setState({ loadingPriceData: false });
+    const setStateCallback = async () => {
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.fromToken) {
         this.updateInputs();
@@ -921,7 +917,7 @@ export class SwapTab extends React.Component<
           fromInput: this.state.toInput,
           toInput: this.state.fromInput,
         },
-        () => setStateCallback(false),
+        () => setStateCallback(),
       );
     } else {
       this.setState(
@@ -931,19 +927,14 @@ export class SwapTab extends React.Component<
           isToEstimated: true,
           isFromEstimated: false,
         },
-        () => setStateCallback(true),
+        () => setStateCallback(),
       );
     }
   }
 
   private async setFromToken(identifier: string) {
-    const setStateCallback = async (refreshBalances: boolean) => {
-      if (refreshBalances) {
-        this.setState({ loadingPriceData: true });
-      }
-
-      await this.props.onSetTokens(this.state.fromToken, this.state.toToken, refreshBalances);
-      this.setState({ loadingPriceData: false });
+    const setStateCallback = async () => {
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.toToken) {
         this.updateInputs();
@@ -961,7 +952,7 @@ export class SwapTab extends React.Component<
           fromInput: this.state.toInput,
           toInput: this.state.fromInput,
         },
-        () => setStateCallback(false),
+        () => setStateCallback(),
       );
     } else {
       this.setState(
@@ -971,7 +962,7 @@ export class SwapTab extends React.Component<
           isFromEstimated: true,
           isToEstimated: false,
         },
-        () => setStateCallback(true),
+        () => setStateCallback(),
       );
     }
   }

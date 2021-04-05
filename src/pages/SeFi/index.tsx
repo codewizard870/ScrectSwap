@@ -164,7 +164,8 @@ export const SeFiPage = observer(() => {
       while (!user.secretjs || tokens.isPending) {
         await sleep(100);
       }
-      await Promise.all(filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol)));
+      await user.updateBalanceForSymbol('SEFI');
+      //await Promise.all(filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol)));
       setSefiBalance(user.balanceToken['SEFI']);
     };
 
@@ -176,7 +177,7 @@ export const SeFiPage = observer(() => {
     //
     // }
 
-    refreshAllTokens().then(() => {});
+    //refreshAllTokens().then(() => {});
   }, [filteredTokens]);
 
   useEffect(() => {

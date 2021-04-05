@@ -1,6 +1,7 @@
 import { SigningCosmWasmClient } from 'secretjs';
 import { Coin, StdFee } from 'secretjs/types/types';
 import retry from 'async-await-retry';
+import { sleep } from '../utils';
 
 export class AsyncSender extends SigningCosmWasmClient {
   asyncExecute = async (
@@ -12,14 +13,15 @@ export class AsyncSender extends SigningCosmWasmClient {
   ) => {
     try {
       const tx = await this.execute(contractAddress, handleMsg, memo, transferAmount, fee);
-      //const options = { limit: 10, delay: 6000, firstAttemptDelay: 3000 };
 
+      // optimistic
+      await sleep(3000);
       const res = await retry(
         () => {
           return this.restClient.txById(tx.transactionHash);
         },
         null,
-        { retriesMax: 5, interval: 6000 },
+        { retriesMax: 5, interval: 4000 },
       );
 
       console.log(`yay! ${JSON.stringify(res)}`);

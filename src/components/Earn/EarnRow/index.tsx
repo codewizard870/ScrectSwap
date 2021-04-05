@@ -100,6 +100,7 @@ class EarnRow extends Component<
     const { activeIndex } = this.state;
     const newIndex = activeIndex === index ? -1 : index;
     if (activeIndex === -1) {
+      this.props.userStore.updateBalanceForSymbol(this.props.token.display_props.symbol);
       this.props.userStore.refreshRewardsBalances(this.props.token.display_props.symbol);
     }
     this.setState({ activeIndex: newIndex });

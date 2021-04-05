@@ -87,7 +87,7 @@ export class WithdrawLiquidityPanel extends React.Component<
 
     const lpTokenBalanceNum = new BigNumber(lpTokenBalance as BigNumber);
     if (!lpTokenBalanceNum.isNaN()) {
-      if (lpTokenTotalSupply.isGreaterThan(0)) {
+      if (lpTokenTotalSupply?.isGreaterThan(0)) {
         lpShare = lpTokenBalanceNum.dividedBy(lpTokenTotalSupply);
 
         pooledTokenA = displayHumanizedBalance(

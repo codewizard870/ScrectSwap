@@ -28,10 +28,11 @@ import { NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { HistoryTab } from './HistoryTab';
+import { SecretSwapPools } from 'stores/SecretSwapPools';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
-  let { user, tokens, secretSwapPairs } = useStores();
+  let { user, tokens, secretSwapPairs, secretSwapPools } = useStores();
   secretSwapPairs.init({
     isLocal: true,
     sorter: 'none',
@@ -42,11 +43,19 @@ export const SwapPageWrapper = observer(() => {
   if (process.env.ENV === 'DEV') {
     tokens = { allData: JSON.parse(process.env.AMM_TOKENS) } as Tokens;
     secretSwapPairs = { allData: JSON.parse(process.env.AMM_PAIRS) } as SecretSwapPairs;
+    secretSwapPools = null;
   } else {
     tokens.init();
+
+    secretSwapPools.init({
+      isLocal: true,
+      sorter: 'none',
+      pollingInterval: 60000,
+    });
+    secretSwapPools.fetch();
   }
 
-  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} />;
+  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} />;
 });
 
 export class SwapRouter extends React.Component<
@@ -54,6 +63,7 @@ export class SwapRouter extends React.Component<
     user: UserStoreEx;
     tokens: Tokens;
     pairs: SecretSwapPairs;
+    pools: SecretSwapPools;
   },
   {
     allTokens: SwapTokenMap;
@@ -71,7 +81,7 @@ export class SwapRouter extends React.Component<
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
   private ws: WebSocket;
 
-  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs }) {
+  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools }) {
     super(props);
     window.onhashchange = this.onHashChange;
     this.state = {
@@ -86,6 +96,40 @@ export class SwapRouter extends React.Component<
       routingGraph: {},
       selectedPairRoutes: [],
     };
+
+    if (process.env.ENV !== 'DEV') {
+      setInterval(() => {
+        const balances = {};
+        for (const pool of props.pools.allData) {
+          let id0: string;
+          let id1: string;
+
+          if ('native_token' in pool.assets[0].info) {
+            id0 = pool.assets[0].info.native_token.denom;
+          } else {
+            id0 = pool.assets[0].info.token.contract_addr;
+          }
+          if ('native_token' in pool.assets[1].info) {
+            id1 = pool.assets[1].info.native_token.denom;
+          } else {
+            id1 = pool.assets[1].info.token.contract_addr;
+          }
+
+          const pair = this.state.pairs.get(`${id0}${SwapPair.id_delimiter}${id1}`);
+
+          if (!pair) {
+            // pairs or tokens aren't loaded yet
+            continue;
+          }
+
+          balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
+
+          balances[`${id0}-${pair.identifier()}`] = new BigNumber(pool.assets[0].amount);
+          balances[`${id1}-${pair.identifier()}`] = new BigNumber(pool.assets[1].amount);
+        }
+        this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
+      }, 1000);
+    }
   }
 
   onHashChange = () => {
@@ -299,36 +343,39 @@ export class SwapRouter extends React.Component<
 
   private async refreshPoolBalance(pair: SwapPair) {
     const balances = [];
-    try {
-      const res: {
-        assets: Array<{ amount: string; info: Token | NativeToken }>;
-        total_share: string;
-      } = await this.props.user.secretjs.queryContractSmart(pair.contract_addr, {
-        pool: {},
-      });
 
-      const amount0 = new BigNumber(res.assets[0].amount);
-      const amount1 = new BigNumber(res.assets[1].amount);
-      if ('native_token' in res.assets[0].info) {
-        balances.push({
-          [`${res.assets[0].info.native_token.denom}-${pair.identifier()}`]: amount0,
+    if (process.env.ENV === 'DEV') {
+      try {
+        let res: {
+          assets: Array<{ amount: string; info: Token | NativeToken }>;
+          total_share: string;
+        } = await this.props.user.secretjs.queryContractSmart(pair.contract_addr, {
+          pool: {},
         });
-      } else {
-        balances.push({
-          [`${res.assets[0].info.token.contract_addr}-${pair.identifier()}`]: amount0,
-        });
+
+        const amount0 = new BigNumber(res.assets[0].amount);
+        const amount1 = new BigNumber(res.assets[1].amount);
+        if ('native_token' in res.assets[0].info) {
+          balances.push({
+            [`${res.assets[0].info.native_token.denom}-${pair.identifier()}`]: amount0,
+          });
+        } else {
+          balances.push({
+            [`${res.assets[0].info.token.contract_addr}-${pair.identifier()}`]: amount0,
+          });
+        }
+        if ('native_token' in res.assets[1].info) {
+          balances.push({
+            [`${res.assets[1].info.native_token.denom}-${pair.identifier()}`]: amount1,
+          });
+        } else {
+          balances.push({
+            [`${res.assets[1].info.token.contract_addr}-${pair.identifier()}`]: amount1,
+          });
+        }
+      } catch (error) {
+        this.notify('error', `Error getting pools' balances for ${pair.identifier()}: ${error.message}`);
       }
-      if ('native_token' in res.assets[1].info) {
-        balances.push({
-          [`${res.assets[1].info.native_token.denom}-${pair.identifier()}`]: amount1,
-        });
-      } else {
-        balances.push({
-          [`${res.assets[1].info.token.contract_addr}-${pair.identifier()}`]: amount1,
-        });
-      }
-    } catch (error) {
-      this.notify('error', `Error getting pools' balances for ${pair.identifier()}: ${error.message}`);
     }
 
     return balances;
@@ -374,21 +421,28 @@ export class SwapRouter extends React.Component<
   }
 
   private async refreshLpTokenBalance(pair: SwapPair) {
+    let returnBalances = [];
+
     const pairSymbol = pair.identifier();
     console.log('Refresh LP token for', pairSymbol);
     // update my LP token balance
     const lpTokenSymbol = `LP-${pairSymbol}`;
     const lpTokenAddress = pair.liquidity_token;
-    let lpTotalSupply = new BigNumber(0);
-    try {
-      const result = await GetSnip20Params({
-        address: pair.liquidity_token,
-        secretjs: this.props.user.secretjs,
-      });
-      lpTotalSupply = new BigNumber(result.total_supply);
-    } catch (error) {
-      console.error(`Error trying to get LP token total supply of ${pairSymbol}`, pair, error);
-      return [];
+    if (process.env.ENV === 'DEV') {
+      let lpTotalSupply = new BigNumber(0);
+      try {
+        const result = await GetSnip20Params({
+          address: pair.liquidity_token,
+          secretjs: this.props.user.secretjs,
+        });
+        lpTotalSupply = new BigNumber(result.total_supply);
+        returnBalances.push({
+          [`${lpTokenSymbol}-total-supply`]: lpTotalSupply,
+        });
+      } catch (error) {
+        console.error(`Error trying to get LP token total supply of ${pairSymbol}`, pair, error);
+        return [];
+      }
     }
 
     let balanceResult = await this.props.user.getSnip20Balance(lpTokenAddress);
@@ -409,14 +463,11 @@ export class SwapRouter extends React.Component<
       lpBalance = new BigNumber(balanceResult);
     }
 
-    return [
-      {
-        [lpTokenSymbol]: lpBalance,
-      },
-      {
-        [`${lpTokenSymbol}-total-supply`]: lpTotalSupply,
-      },
-    ];
+    returnBalances.push({
+      [lpTokenSymbol]: lpBalance,
+    });
+
+    return returnBalances;
   }
 
   private static getHeightFromEvent(data) {

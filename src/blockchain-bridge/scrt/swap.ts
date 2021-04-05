@@ -74,17 +74,6 @@ export const ReverseSimulateResult = async (params: {
   });
 };
 
-export const GetPairLiquidity = async (params: {
-  secretjs: SigningCosmWasmClient;
-  pair: string;
-}): Promise<PoolResponse> => {
-  const { secretjs, pair } = params;
-
-  return await secretjs.queryContractSmart(pair, {
-    pool: {},
-  });
-};
-
 interface GenericSimulationResult {
   returned_asset: string;
   commission_amount: string;

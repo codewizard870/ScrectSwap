@@ -23,8 +23,6 @@ src/**/*.js.map
 .env.production.local
 .env.production
 
-myserver.js
-
 
 npm-debug.log*
 yarn-debug.log*

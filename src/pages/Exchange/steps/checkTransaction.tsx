@@ -96,7 +96,7 @@ export const CheckTransaction = observer(() => {
                         </Box>
 
                         <Box direction='column' fill margin={{ top: 'xsmall' }}>
-                            <ProgressBar bgcolor={color} completed={progressBar} isLabelVisible={false} />
+                            <ProgressBar bgColor={color} completed={progressBar} isLabelVisible={false} />
                         </Box>
 
                         <Text margin={{ top: 'medium' }}><b>Confirmations:</b> {exchange.confirmations}</Text>

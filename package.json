@@ -20,6 +20,7 @@
   "dependencies": {
     "@metamask/detect-provider": "^1.1.0",
     "@types/react-outside-click-handler": "^1.3.0",
+    "async-await-retry": "^1.2.1",
     "async-validator": "1.11.5",
     "bech32": "1.1.4",
     "bignumber.js": "^9.0.1",
@@ -187,7 +188,8 @@
   },
   "babel": {
     "presets": [
-      "react-app"
+      "react-app",
+      "es2015"
     ]
   },
   "proxy": "http://localhost:3001",

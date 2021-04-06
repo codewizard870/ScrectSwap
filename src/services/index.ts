@@ -3,6 +3,7 @@ import {
   IOperation,
   IRewardPool,
   ISecretSwapPair,
+  ISecretSwapPool,
   ISecretToken,
   ISignerHealth,
   ISwap,
@@ -119,6 +120,16 @@ export const getSecretSwapPairs = async (params: any): Promise<{ content: ISecre
   const res = await agent.get<{ body: ISecretSwapPair[] }>(url, params);
 
   const content = res.body.pairs;
+
+  return { content: content };
+};
+
+export const getSecretSwapPools = async (params: any): Promise<{ content: ISecretSwapPool[] }> => {
+  const url = backendUrl('/secretswap_pools/');
+
+  const res = await agent.get<{ body: ISecretSwapPool[] }>(url, params);
+
+  const content = res.body.pools;
 
   return { content: content };
 };

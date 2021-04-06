@@ -4,7 +4,7 @@ import { TokenInfoRow } from './TokenInfoRow';
 import { TokenSelectorButton } from './TokenSelectorButton';
 import { AddTokenModal } from './AddTokenModal';
 import { GetSnip20Params, Snip20TokenInfo } from '../../../blockchain-bridge';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import LocalStorageTokens from '../../../blockchain-bridge/scrt/CustomTokens';
 import Loader from 'react-loader-spinner';
 import { ClearCustomTokensButton } from './ClearCustomTokens';
@@ -15,7 +15,7 @@ import * as styles from './styles.styl';
 import { BigNumber } from 'bignumber.js';
 
 export const TokenSelector = (props: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   tokens: SwapToken[];
   token?: SwapToken;
   onClick?: any;
@@ -93,6 +93,18 @@ export const TokenSelector = (props: {
                         return -1;
                       }
                       if (b.symbol === 'sSCRT') {
+                        return 1;
+                      }
+                      
+                      if (b.symbol === 'SCRT') {
+                        return 1;
+                      }
+
+                      /* then SEFI */
+                      if (a.symbol === 'SEFI') {
+                        return -1;
+                      }
+                      if (b.symbol === 'SEFI') {
                         return 1;
                       }
       

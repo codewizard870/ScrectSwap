@@ -7,6 +7,7 @@ import { TokenSelector } from '../TokenModal/TokenSelector/TokenSelector';
 import { SwapInput } from '../../components/Swap/SwapInput';
 import { SigningCosmWasmClient } from 'secretjs';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
+import { CosmWasmClient } from 'secretjs';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 
 export const SwapAssetRow = ({
@@ -31,7 +32,7 @@ export const SwapAssetRow = ({
   balance: BigNumber | JSX.Element;
   label: string;
   maxButton: boolean;
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   disabled?: boolean;
 }) => {
   const font = {
@@ -82,10 +83,13 @@ export const SwapAssetRow = ({
                 return balance;
               }
 
-              return displayHumanizedBalance(
-                humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token).decimals),
-                BigNumber.ROUND_DOWN,
-              );
+              if (tokens.size > 0) {
+                return displayHumanizedBalance(
+                  humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token).decimals),
+                  BigNumber.ROUND_DOWN,
+                );
+              }
+              return undefined;
             })()}
           </div>
         )}

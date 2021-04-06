@@ -67,6 +67,7 @@ function getClientEnvironment(publicUrl) {
         CHAIN_NAME: process.env.CHAIN_NAME,
         SECRET_RPC: process.env.SECRET_RPC,
         SECRET_LCD: process.env.SECRET_LCD,
+        SECRET_POST_ADDRESS: process.env.SECRET_POST_ADDRESS,
         SECRET_WS: process.env.SECRET_WS,
         SSCRT_CONTRACT: process.env.SSCRT_CONTRACT,
         WSCRT_PROXY_CONTRACT: process.env.WSCRT_PROXY_CONTRACT,

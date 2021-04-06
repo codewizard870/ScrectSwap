@@ -65,6 +65,7 @@ export const SeFiPage = observer(() => {
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
 
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
+
   function setSefiBalance(balance: string) {
     if (balance === unlockToken) {
       balance = unlockJsx({
@@ -157,27 +158,20 @@ export const SeFiPage = observer(() => {
   }, [userMetamask, userMetamask.ethAddress]);
 
   useEffect(() => {
-    const refreshAllTokens = async () => {
+    const refreshSefi = async () => {
       // if (filteredTokens.length <= 0) {
       //   return;
       // }
       while (!user.secretjs || tokens.isPending) {
         await sleep(100);
       }
-      await Promise.all(filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol)));
+      await user.updateBalanceForSymbol('SEFI');
+      //await Promise.all(filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol)));
       setSefiBalance(user.balanceToken['SEFI']);
     };
 
-    // const getSefiRewards = async () => {
-    //   while (!user.secretjs) {
-    //     await sleep(100);
-    //   }
-    //
-    //
-    // }
-
-    refreshAllTokens().then(() => {});
-  }, [filteredTokens]);
+    refreshSefi().then(() => {});
+  }, []);
 
   useEffect(() => {
     rewards.init({
@@ -222,7 +216,7 @@ export const SeFiPage = observer(() => {
                   loadingBalance={!user.address}
                   onClick={async () => {
                     try {
-                      await claimScrt(user.secretjs, user.address);
+                      await claimScrt(user.secretjsSend, user.address);
                       notify('success', 'Claimed SeFi successfully!');
                     } catch (e) {
                       console.error(`failed to claim ${e}`);

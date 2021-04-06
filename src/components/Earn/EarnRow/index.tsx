@@ -100,6 +100,7 @@ class EarnRow extends Component<
     const { activeIndex } = this.state;
     const newIndex = activeIndex === index ? -1 : index;
     if (activeIndex === -1) {
+      this.props.userStore.updateBalanceForSymbol(this.props.token.display_props.symbol);
       this.props.userStore.refreshRewardsBalances(this.props.token.display_props.symbol);
     }
     this.setState({ activeIndex: newIndex });
@@ -179,7 +180,12 @@ class EarnRow extends Component<
               unlockSubtitle={'Available to Deposit'}
               onUnlock={value => {
                 if (value) {
-                  this.props.notify('success', `Created a viewing key for s${this.props.token.display_props.symbol}`);
+                  this.props.notify(
+                    'success',
+                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
+                      this.props.token.display_props.symbol
+                    }`,
+                  );
                 } else {
                   this.props.notify(
                     'error',
@@ -204,7 +210,9 @@ class EarnRow extends Component<
                 if (value) {
                   this.props.notify(
                     'success',
-                    `Created a viewing key for s${this.props.token.display_props.symbol} rewards`,
+                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
+                      this.props.token.display_props.symbol
+                    } rewards`,
                   );
                 } else {
                   this.props.notify(
@@ -282,6 +290,7 @@ class EarnRow extends Component<
             rewardsContract={this.props.token.rewardsContract}
             symbol={this.props.token.display_props.symbol}
             notify={this.props.notify}
+            rewardsToken={this.props.token.rewardsSymbol || 'sSCRT'}
           />
           <Text
             size="medium"

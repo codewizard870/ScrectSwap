@@ -28,15 +28,10 @@ const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
 const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
 
-enum SwapDirection {
-  Send,
-  Receive,
-}
-
 function executeRouterSwap(
-  direction: SwapDirection,
   secretjsSender: AsyncSender,
   secretAddress: string,
+  fromToken: string,
   fromAmount: string,
   hops: (null | {
     from_token: { snip20: { address: string; code_hash: string } } | 'scrt';
@@ -47,32 +42,52 @@ function executeRouterSwap(
   expected_return: string,
   bestRoute: string[],
 ) {
-  return secretjsSender.asyncExecute(
-    process.env.AMM_ROUTER_CONTRACT,
-    {
-      [direction === SwapDirection.Send ? 'send' : 'receive']: {
-        from: secretAddress,
-        amount: fromAmount,
-        msg: btoa(
-          JSON.stringify({
-            to: secretAddress,
-            hops,
-            expected_return,
-          }),
-        ),
+  if (fromToken === 'uscrt') {
+    return secretjsSender.asyncExecute(
+      process.env.AMM_ROUTER_CONTRACT,
+      {
+        receive: {
+          from: secretAddress,
+          amount: fromAmount,
+          msg: btoa(
+            JSON.stringify({
+              to: secretAddress,
+              hops,
+              expected_return,
+            }),
+          ),
+        },
       },
-    },
-    '',
-    direction === SwapDirection.Send
-      ? [
-          {
-            amount: fromAmount,
-            denom: 'uscrt',
-          },
-        ]
-      : [],
-    getFeeForExecute(bestRoute.length * 400_000),
-  );
+      '',
+      [
+        {
+          amount: fromAmount,
+          denom: 'uscrt',
+        },
+      ],
+      getFeeForExecute(bestRoute.length * 400_000),
+    );
+  } else {
+    return secretjsSender.asyncExecute(
+      fromToken,
+      {
+        send: {
+          recipient: process.env.AMM_ROUTER_CONTRACT,
+          amount: fromAmount,
+          msg: btoa(
+            JSON.stringify({
+              to: secretAddress,
+              hops,
+              expected_return,
+            }),
+          ),
+        },
+      },
+      '',
+      [],
+      getFeeForExecute(bestRoute.length * 400_000),
+    );
+  }
 }
 
 function executeSwapUscrt(secretjsSender: AsyncSender, pair: SwapPair, fromAmount: string, expected_return: string) {
@@ -131,7 +146,7 @@ function storeResult(result: any, fromAmount: string, fromDecimals: number, best
   return { sent, received };
 }
 
-const DEFAULT_SLIPPAGE = 1 / 100;
+const DEFAULT_SLIPPAGE = 0.5 / 100;
 
 export class SwapTab extends React.Component<
   {
@@ -193,19 +208,12 @@ export class SwapTab extends React.Component<
   }
 
   componentDidUpdate(previousProps) {
-    if (sortedStringify(previousProps.balances) !== sortedStringify(this.props.balances)) {
+    if (
+      sortedStringify({ ...previousProps.balances, ...previousProps.selectedPairRoutes }) !==
+      sortedStringify({ ...this.props.balances, ...this.props.selectedPairRoutes })
+    ) {
       this.updateInputs();
     }
-
-    //initial load
-    // if (previousProps.tokens.size !== this.props.tokens.size) {
-    //   const fromToken = this.props.tokens.values().next().value.identifier;
-    //   const toToken = '';
-    //   this.setState({
-    //     fromToken,
-    //     toToken,
-    //   });
-    // }
   }
 
   async getOfferAndAskPools(
@@ -395,10 +403,10 @@ export class SwapTab extends React.Component<
   async updateInputs() {
     this.setState({ bestRoute: null });
 
-    const pair = this.props.selectedPair;
+    // const pair = this.props.selectedPair;
     const routes = this.props.selectedPairRoutes;
 
-    if (!pair && routes.length === 0) {
+    if (/* !pair && */ routes.length === 0) {
       this.setState({
         fromInput: '',
         isFromEstimated: false,
@@ -408,12 +416,12 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    if (!pair && routes.length > 0) {
-      this.updateInputsFromBestRoute();
-      return;
-    }
+    // if (!pair && routes.length > 0) {
+    this.updateInputsFromBestRoute();
+    return;
+    // }
 
-    this.setState({ loadingPriceData: true });
+    /*  this.setState({ loadingPriceData: true });
 
     const fromDecimals = this.props.tokens.get(this.state.fromToken).decimals;
     const toDecimals = this.props.tokens.get(this.state.toToken).decimals;
@@ -485,7 +493,7 @@ export class SwapTab extends React.Component<
       }
     }
 
-    this.setState({ loadingPriceData: false });
+    this.setState({ loadingPriceData: false }); */
   }
 
   render() {
@@ -697,13 +705,13 @@ export class SwapTab extends React.Component<
 
                 if (fromToken === 'uscrt') {
                   let result: ExecuteResult;
-                  if (bestRoute) {
+                  if (bestRoute && bestRoute.length > 2) {
                     const hops = await this.getHops(bestRoute);
 
                     result = await executeRouterSwap(
-                      SwapDirection.Receive,
                       this.props.secretjsSender,
                       this.props.secretAddress,
+                      fromToken,
                       fromAmount,
                       hops,
                       expected_return,
@@ -723,12 +731,12 @@ export class SwapTab extends React.Component<
                   );
                 } else {
                   let result: ExecuteResult;
-                  if (bestRoute) {
+                  if (bestRoute && bestRoute.length > 2) {
                     const hops = await this.getHops(bestRoute);
                     result = await executeRouterSwap(
-                      SwapDirection.Send,
                       this.props.secretjsSender,
                       this.props.secretAddress,
+                      fromToken,
                       fromAmount,
                       hops,
                       expected_return,

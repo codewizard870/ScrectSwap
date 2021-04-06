@@ -34,9 +34,9 @@ enum SwapDirection {
 }
 
 function executeRouterSwap(
-  direction: SwapDirection,
   secretjsSender: AsyncSender,
   secretAddress: string,
+  fromToken: string,
   fromAmount: string,
   hops: (null | {
     from_token: { snip20: { address: string; code_hash: string } } | 'scrt';
@@ -47,10 +47,11 @@ function executeRouterSwap(
   expected_return: string,
   bestRoute: string[],
 ) {
+  if (fromToken === 'uscrt') {
   return secretjsSender.asyncExecute(
     process.env.AMM_ROUTER_CONTRACT,
     {
-      [direction === SwapDirection.Send ? 'send' : 'receive']: {
+        receive: {
         from: secretAddress,
         amount: fromAmount,
         msg: btoa(
@@ -63,16 +64,35 @@ function executeRouterSwap(
       },
     },
     '',
-    direction === SwapDirection.Send
-      ? [
+      [
           {
             amount: fromAmount,
             denom: 'uscrt',
           },
-        ]
-      : [],
+      ],
     getFeeForExecute(bestRoute.length * 400_000),
   );
+  } else {
+    return secretjsSender.asyncExecute(
+      fromToken,
+      {
+        send: {
+          recipient: process.env.AMM_ROUTER_CONTRACT,
+          amount: fromAmount,
+          msg: btoa(
+            JSON.stringify({
+              to: secretAddress,
+              hops,
+              expected_return,
+            }),
+          ),
+        },
+      },
+      '',
+      [],
+      getFeeForExecute(bestRoute.length * 400_000),
+    );
+  }
 }
 
 function executeSwapUscrt(secretjsSender: AsyncSender, pair: SwapPair, fromAmount: string, expected_return: string) {
@@ -701,9 +721,9 @@ export class SwapTab extends React.Component<
                     const hops = await this.getHops(bestRoute);
 
                     result = await executeRouterSwap(
-                      SwapDirection.Receive,
                       this.props.secretjsSender,
                       this.props.secretAddress,
+                      fromToken,
                       fromAmount,
                       hops,
                       expected_return,
@@ -726,9 +746,9 @@ export class SwapTab extends React.Component<
                   if (bestRoute) {
                     const hops = await this.getHops(bestRoute);
                     result = await executeRouterSwap(
-                      SwapDirection.Send,
                       this.props.secretjsSender,
                       this.props.secretAddress,
+                      fromToken,
                       fromAmount,
                       hops,
                       expected_return,

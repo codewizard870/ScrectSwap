@@ -765,26 +765,30 @@ export class SwapRouter extends React.Component<
   setCurrentPair = async (token0: string, token1: string) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
 
-    const routes: string[][] = [];
-    if (!selectedPair) {
-      let graph = JSON.parse(JSON.stringify(this.state.routingGraph)); // deep copy
-      try {
-        while (true) {
-          const dijkstra = new Graph(graph);
-          const route: string[] = dijkstra.path(token0, token1) ?? [];
-
-          if (route.length <= 2) {
-            break;
-          }
-          routes.push(route);
-
-          delete graph[route[0]][route[1]];
-          delete graph[route[1]][route[0]];
-        }
-      } catch (e) {
-        console.error('Error computing selectedPairRoutes:', e.message);
-      }
+    while (Object.keys(this.state.routingGraph).length === 0) {
+      await sleep(100);
     }
+
+    const routes: string[][] = [];
+    // if (!selectedPair) {
+    let graph = JSON.parse(JSON.stringify(this.state.routingGraph)); // deep copy
+    try {
+      while (true) {
+        const dijkstra = new Graph(graph);
+        const route: string[] = dijkstra.path(token0, token1) ?? [];
+
+        if (route.length < 2) {
+          break;
+        }
+        routes.push(route);
+
+        delete graph[route[0]][route[1]];
+        delete graph[route[1]][route[0]];
+      }
+    } catch (e) {
+      console.error('Error computing selectedPairRoutes:', e.message);
+    }
+    // }
 
     this.setState({
       selectedPair: selectedPair,

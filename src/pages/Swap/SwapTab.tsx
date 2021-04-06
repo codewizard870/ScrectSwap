@@ -48,30 +48,30 @@ function executeRouterSwap(
   bestRoute: string[],
 ) {
   if (fromToken === 'uscrt') {
-  return secretjsSender.asyncExecute(
-    process.env.AMM_ROUTER_CONTRACT,
-    {
+    return secretjsSender.asyncExecute(
+      process.env.AMM_ROUTER_CONTRACT,
+      {
         receive: {
-        from: secretAddress,
-        amount: fromAmount,
-        msg: btoa(
-          JSON.stringify({
-            to: secretAddress,
-            hops,
-            expected_return,
-          }),
-        ),
+          from: secretAddress,
+          amount: fromAmount,
+          msg: btoa(
+            JSON.stringify({
+              to: secretAddress,
+              hops,
+              expected_return,
+            }),
+          ),
+        },
       },
-    },
-    '',
+      '',
       [
-          {
-            amount: fromAmount,
-            denom: 'uscrt',
-          },
+        {
+          amount: fromAmount,
+          denom: 'uscrt',
+        },
       ],
-    getFeeForExecute(bestRoute.length * 400_000),
-  );
+      getFeeForExecute(bestRoute.length * 400_000),
+    );
   } else {
     return secretjsSender.asyncExecute(
       fromToken,
@@ -213,19 +213,12 @@ export class SwapTab extends React.Component<
   }
 
   componentDidUpdate(previousProps) {
-    if (sortedStringify(previousProps.balances) !== sortedStringify(this.props.balances)) {
+    if (
+      sortedStringify({ ...previousProps.balances, ...previousProps.selectedPairRoutes }) !==
+      sortedStringify({ ...this.props.balances, ...this.props.selectedPairRoutes })
+    ) {
       this.updateInputs();
     }
-
-    //initial load
-    // if (previousProps.tokens.size !== this.props.tokens.size) {
-    //   const fromToken = this.props.tokens.values().next().value.identifier;
-    //   const toToken = '';
-    //   this.setState({
-    //     fromToken,
-    //     toToken,
-    //   });
-    // }
   }
 
   async getOfferAndAskPools(
@@ -415,10 +408,10 @@ export class SwapTab extends React.Component<
   async updateInputs() {
     this.setState({ bestRoute: null });
 
-    const pair = this.props.selectedPair;
+    // const pair = this.props.selectedPair;
     const routes = this.props.selectedPairRoutes;
 
-    if (!pair && routes.length === 0) {
+    if (/* !pair && */ routes.length === 0) {
       this.setState({
         fromInput: '',
         isFromEstimated: false,
@@ -428,12 +421,12 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    if (!pair && routes.length > 0) {
-      this.updateInputsFromBestRoute();
-      return;
-    }
+    // if (!pair && routes.length > 0) {
+    this.updateInputsFromBestRoute();
+    return;
+    // }
 
-    this.setState({ loadingPriceData: true });
+    /*  this.setState({ loadingPriceData: true });
 
     const fromDecimals = this.props.tokens.get(this.state.fromToken).decimals;
     const toDecimals = this.props.tokens.get(this.state.toToken).decimals;
@@ -505,7 +498,7 @@ export class SwapTab extends React.Component<
       }
     }
 
-    this.setState({ loadingPriceData: false });
+    this.setState({ loadingPriceData: false }); */
   }
 
   render() {
@@ -717,7 +710,7 @@ export class SwapTab extends React.Component<
 
                 if (fromToken === 'uscrt') {
                   let result: ExecuteResult;
-                  if (bestRoute) {
+                  if (bestRoute && bestRoute.length > 2) {
                     const hops = await this.getHops(bestRoute);
 
                     result = await executeRouterSwap(
@@ -743,7 +736,7 @@ export class SwapTab extends React.Component<
                   );
                 } else {
                   let result: ExecuteResult;
-                  if (bestRoute) {
+                  if (bestRoute && bestRoute.length > 2) {
                     const hops = await this.getHops(bestRoute);
                     result = await executeRouterSwap(
                       this.props.secretjsSender,

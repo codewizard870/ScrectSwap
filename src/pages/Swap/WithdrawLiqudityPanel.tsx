@@ -79,7 +79,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     const decimalsB = this.props.tokens.get(tokenB)?.decimals;
 
     const lpTokenBalance = this.props.balances[this.props.lpTokenSymbol];
-    const lpTokenTotalSupply = this.props.balances[this.props.lpTokenSymbol + '-total-supply'] as BigNumber;
+    const lpTokenTotalSupply = this.props.balances[selectedPair.liquidity_token + '-total-supply'] as BigNumber;
 
     let lpShare = new BigNumber(0);
     let lpShareJsxElement = lpTokenBalance; // View Balance

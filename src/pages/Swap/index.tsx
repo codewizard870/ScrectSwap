@@ -496,7 +496,7 @@ export class SwapRouter extends React.Component<
         });
         lpTotalSupply = new BigNumber(result.total_supply);
         returnBalances.push({
-          [`${lpTokenSymbol}-total-supply`]: lpTotalSupply,
+          [`${lpTokenAddress}-total-supply`]: lpTotalSupply,
         });
       } catch (error) {
         console.error(`Error trying to get LP token total supply of ${pairSymbol}`, pair, error);

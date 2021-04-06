@@ -99,7 +99,7 @@ export const TokenSelector = (props: {
                   return 1;
                 }
 
-                /* then SCRT */
+                /* then SEFI */
                 if (a.symbol === 'SEFI') {
                   return -1;
                 }

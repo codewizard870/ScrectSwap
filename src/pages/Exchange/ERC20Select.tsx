@@ -7,6 +7,9 @@ import { Button, Select, Text } from 'components/Base';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
 
 const selectTokenText = (mode: string, token: ITokenInfo) => {
+  if (token.display_props.symbol === 'SEFI') {
+    return `Secret Finance Token (SeFi)`
+  }
   if (mode === EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {
     return `secret${token.display_props.symbol}`;
   } else if (mode !== EXCHANGE_MODE.SCRT_TO_ETH && !token.display_props.proxy) {
@@ -27,6 +30,8 @@ export const ERC20Select = observer((props: {
 
   // useEffect(() => {}, [token]);
 
+  const bridgeTokens = tokens.tokensUsageSync('BRIDGE');
+
   return (
     <Box direction="column">
       <Box direction="row" align="center" justify="between">
@@ -37,10 +42,13 @@ export const ERC20Select = observer((props: {
 
       <Box style={{ marginTop: 8 }}>
         <Select
-          options={tokens.allData
-            .slice()
+          options={bridgeTokens
             .sort((a, b) =>
+              /* SCRT first */
               a.display_props.symbol.toLowerCase().includes('scrt') ? -1 : 1,
+            ).sort((a, b) =>
+              /* SEFI first */
+              a.display_props.symbol.toLowerCase().includes('sefi') ? -1 : 1,
             )
             .map(token => ({
               ...token,

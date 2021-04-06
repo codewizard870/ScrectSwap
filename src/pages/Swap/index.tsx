@@ -4,7 +4,7 @@ import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
-import { fixUnlockToken, isEmptyObject, sleep, unlockToken } from 'utils';
+import { fixUnlockToken, sleep, unlockToken } from 'utils';
 import { UserStoreEx } from 'stores/UserStore';
 import { observer } from 'mobx-react';
 import { SwapTab } from './SwapTab';
@@ -24,12 +24,14 @@ import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import cogoToast from 'cogo-toast';
 import { pairIdFromTokenIds, PairMap, SwapPair } from './types/SwapPair';
 import { KeplrButton } from '../../components/Secret/KeplrButton';
-import { NativeToken, Token } from './types/trade';
+import { Asset, NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
+import Graph from 'node-dijkstra';
+import { SecretSwapPools } from 'stores/SecretSwapPools';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
-  const { user, tokens, secretSwapPairs } = useStores();
+  let { user, tokens, secretSwapPairs, secretSwapPools } = useStores();
   secretSwapPairs.init({
     isLocal: true,
     sorter: 'none',
@@ -37,7 +39,22 @@ export const SwapPageWrapper = observer(() => {
   });
   secretSwapPairs.fetch();
 
-  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} />;
+  if (process.env.ENV === 'DEV') {
+    tokens = { allData: JSON.parse(process.env.AMM_TOKENS) } as Tokens;
+    secretSwapPairs = { allData: JSON.parse(process.env.AMM_PAIRS) } as SecretSwapPairs;
+    secretSwapPools = null;
+  } else {
+    tokens.init();
+
+    secretSwapPools.init({
+      isLocal: true,
+      sorter: 'none',
+      pollingInterval: 60000,
+    });
+    secretSwapPools.fetch();
+  }
+
+  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} />;
 });
 
 export class SwapRouter extends React.Component<
@@ -45,6 +62,7 @@ export class SwapRouter extends React.Component<
     user: UserStoreEx;
     tokens: Tokens;
     pairs: SecretSwapPairs;
+    pools: SecretSwapPools;
   },
   {
     allTokens: SwapTokenMap;
@@ -54,35 +72,70 @@ export class SwapRouter extends React.Component<
     selectedToken0: string;
     selectedToken1: string;
     queries: string[];
+    routerSupportedTokens: Set<string>;
+    routingGraph: { [token0: string]: { [token1: string]: number } };
+    selectedPairRoutes: string[][];
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
   private ws: WebSocket;
-  public state: {
-    allTokens: SwapTokenMap;
-    balances: { [symbol: string]: BigNumber | JSX.Element };
-    pairs: PairMap;
-    selectedPair: SwapPair | undefined;
-    selectedToken0: string;
-    selectedToken1: string;
-    queries: string[];
-  } = {
-    allTokens: new Map<string, SwapToken>(),
-    balances: {},
-    pairs: new Map<string, SwapPair>(),
-    selectedPair: undefined,
-    selectedToken0: process.env.SSCRT_CONTRACT,
-    selectedToken1: '',
-    queries: [],
-  };
 
-  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs }) {
+  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools }) {
     super(props);
     window.onhashchange = this.onHashChange;
+    this.state = {
+      allTokens: new Map<string, SwapToken>(),
+      balances: {},
+      pairs: new Map<string, SwapPair>(),
+      selectedPair: undefined,
+      selectedToken0: process.env.SSCRT_CONTRACT,
+      selectedToken1: '',
+      queries: [],
+      routerSupportedTokens: new Set(),
+      routingGraph: {},
+      selectedPairRoutes: [],
+    };
+
+    if (process.env.ENV !== 'DEV') {
+      setInterval(() => {
+        const balances = {};
+        for (const pool of props.pools.allData) {
+          let id0: string;
+          let id1: string;
+          if ('native_token' in pool.assets[0].info) {
+            id0 = pool.assets[0].info.native_token.denom;
+          } else {
+            id0 = pool.assets[0].info.token.contract_addr;
+          }
+          if ('native_token' in pool.assets[1].info) {
+            id1 = pool.assets[1].info.native_token.denom;
+          } else {
+            id1 = pool.assets[1].info.token.contract_addr;
+          }
+
+          const pair = this.state.pairs.get(`${id0}${SwapPair.id_delimiter}${id1}`);
+
+          if (!pair) {
+            // pairs or tokens aren't loaded yet
+            continue;
+          }
+
+          balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
+
+          balances[`${id0}-${pair.identifier()}`] = new BigNumber(pool.assets[0].amount);
+          balances[`${id1}-${pair.identifier()}`] = new BigNumber(pool.assets[1].amount);
+        }
+        this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
+      }, 1000);
+    }
   }
 
   onHashChange = () => {
     this.forceUpdate();
+  };
+
+  symbolFromAddress = (identifier: string) => {
+    return this.state.allTokens.get(identifier)?.symbol;
   };
 
   async componentDidUpdate(previousProps, prevState) {
@@ -94,35 +147,33 @@ export class SwapRouter extends React.Component<
       await this.updatePairs();
     }
 
-    const tokensToRefresh = [];
+    const newBalances = {};
+    let updateState = false;
+    const { selectedToken0, selectedToken1 } = this.state;
 
-    if (this.state.selectedToken1 && !this.state.balances[this.state.selectedToken1]) {
-      tokensToRefresh.push(this.state.selectedToken1);
+    if (selectedToken0 !== prevState.selectedToken0 && selectedToken0 !== prevState.selectedToken1) {
+      console.log(
+        `new token: ${selectedToken0}: prev state t0: ${prevState.selectedToken0}, prev state t1: ${prevState.selectedToken1}`,
+      );
+
+      updateState = true;
+      newBalances[selectedToken0] = await this.refreshTokenBalance(selectedToken0);
     }
 
-    if (this.state.selectedToken0 && !this.state.balances[this.state.selectedToken0]) {
-      tokensToRefresh.push(this.state.selectedToken0);
+    if (selectedToken1 !== prevState.selectedToken0 && selectedToken1 !== prevState.selectedToken1) {
+      console.log(
+        `new token: ${selectedToken1}: prev state t0: ${prevState.selectedToken0}, prev state t1: ${prevState.selectedToken1}`,
+      );
+      updateState = true;
+      newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
     }
 
-    if (tokensToRefresh.length > 0) {
-      await this.refreshBalances({ tokenSymbols: tokensToRefresh });
+    if (updateState) {
+      console.log('updated state');
+      this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
 
-    if (
-      prevState.selectedToken0 !== this.state.selectedToken0 ||
-      prevState.selectedToken1 !== this.state.selectedToken1
-    ) {
-      this.unSubscribeAll();
-
-      // Register for token or SCRT events
-      this.registerTokenQueries(this.state.selectedToken0, this.state.selectedToken1);
-
-      // Register for pair events
-      this.registerPairQueries(this.state.selectedPair);
-    }
   }
-
-  async reRegisterPairHooks() {}
 
   async componentDidMount() {
     window.addEventListener('storage', this.updateTokens);
@@ -138,53 +189,46 @@ export class SwapRouter extends React.Component<
 
     await this.updatePairs();
 
-    this.props.user.websocketTerminate(true);
-
-    this.ws = new WebSocket(process.env.SECRET_WS);
-
-    this.ws.onmessage = async event => {
-      await this.onMessage(event);
-    };
-
-    this.ws.onopen = async () => {
-      // Here we register for token related events
-      // Then in onmessage we know when to refresh all the balances
-      while (!this.props.user.address) {
-        await sleep(100);
-      }
-
-      // Register for SCRT events
-      this.registerSCRTQueries();
-
-      // Register for token or SCRT events
-      // this.registerTokenQueries();
-      //
-      // // Register for pair events
-      // this.registerPairQueries();
-      //}
-    };
-  }
-
-  private async refreshBalances(params: { tokenSymbols: string[]; pair?: SwapPair; height?: number }) {
-    const { pair, tokenSymbols } = params;
-    let { height } = params;
-
-    if (!height) {
-      height = await this.props.user.secretjs.getHeight();
+    while (!this.props.user.secretjs) {
+      await sleep(100);
     }
 
-    //console.log(`Hello from refreshBalances for height: ${height}`);
-    const balanceTasks = tokenSymbols.map(s => {
-      return this.refreshTokenBalance(height, s);
-    });
+    const sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
+
+    this.setState({ balances: { ...this.state.balances, ...sScrtBalance } });
+
+
+    while (!this.props.user.secretjs) {
+      await sleep(100);
+    }
+
+    const routerSupportedTokens: Set<string> = new Set(
+      await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
+        supported_tokens: {},
+      }),
+    );
+    routerSupportedTokens.add('uscrt');
+
+    this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
+  }
+
+  private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
+
+    const balanceTasks = [];
 
     // these will return a list of promises, which we will flatten then map to a single object
     if (pair) {
       balanceTasks.push(this.refreshLpTokenBalance(pair));
-      balanceTasks.push(this.refreshPoolBalance(pair));
+      if (process.env.ENV === 'DEV') {
+        balanceTasks.push(this.refreshPoolBalance(pair));
+      }
     }
 
+    //console.log('refreshing balances..');
+
     const results = await Promise.all([...balanceTasks]);
+
+    //console.log(`balances: ${JSON.stringify(results)}`);
 
     // flatten array to a single object
     const newObject = Object.assign(
@@ -198,138 +242,114 @@ export class SwapRouter extends React.Component<
         ...newObject,
       },
     }));
-  }
 
-  private async onMessage(event: WebSocketMessageEvent | MessageEvent<any>) {
-    try {
-      const data = JSON.parse(event.data);
-
-      if (isEmptyObject(data.result)) {
-        return;
-      }
-
-      if (data.id === -1) {
-        return;
-      }
-
-      const symbols: Array<string> = data.id.split('/');
-
-      // refresh selected token balances as well (because why not?)
-      if (this.state.selectedToken0) {
-        symbols.push(this.state.allTokens.get(this.state.selectedToken0)?.identifier);
-      }
-      if (this.state.selectedToken1) {
-        symbols.push(this.state.allTokens.get(this.state.selectedToken1)?.identifier);
-      }
-
-      const filteredSymbols = [...new Set(symbols)];
-
-      // todo: move this to another function
-      const height = SwapRouter.getHeightFromEvent(data);
-
-      console.log(`Refreshing ${filteredSymbols.join(' and ')} for height ${height}`);
-
-      const pairSymbol = data.id;
-      const pair = this.state.pairs.get(pairSymbol);
-
-      await this.refreshBalances({ height, tokenSymbols: filteredSymbols, pair });
-    } catch (error) {
-      console.log(`Failed to refresh balances: ${error}`);
-    }
+    return newObject;
   }
 
   private async refreshPoolBalance(pair: SwapPair) {
     const balances = [];
-    try {
-      const res: {
-        assets: Array<{ amount: string; info: Token | NativeToken }>;
-        total_share: string;
-      } = await this.props.user.secretjs.queryContractSmart(pair.contract_addr, {
-        pool: {},
-      });
 
-      const amount0 = new BigNumber(res.assets[0].amount);
-      const amount1 = new BigNumber(res.assets[1].amount);
-      if ('native_token' in res.assets[0].info) {
-        balances.push({
-          [`${res.assets[0].info.native_token.denom}-${pair.identifier()}`]: amount0,
+    if (process.env.ENV === 'DEV') {
+      try {
+        let res: {
+          assets: Array<{ amount: string; info: Token | NativeToken }>;
+          total_share: string;
+        } = await this.props.user.secretjs.queryContractSmart(pair.contract_addr, {
+          pool: {},
         });
-      } else {
-        balances.push({
-          [`${res.assets[0].info.token.contract_addr}-${pair.identifier()}`]: amount0,
-        });
+
+        const amount0 = new BigNumber(res.assets[0].amount);
+        const amount1 = new BigNumber(res.assets[1].amount);
+        if ('native_token' in res.assets[0].info) {
+          balances.push({
+            [`${res.assets[0].info.native_token.denom}-${pair.identifier()}`]: amount0,
+          });
+        } else {
+          balances.push({
+            [`${res.assets[0].info.token.contract_addr}-${pair.identifier()}`]: amount0,
+          });
+        }
+        if ('native_token' in res.assets[1].info) {
+          balances.push({
+            [`${res.assets[1].info.native_token.denom}-${pair.identifier()}`]: amount1,
+          });
+        } else {
+          balances.push({
+            [`${res.assets[1].info.token.contract_addr}-${pair.identifier()}`]: amount1,
+          });
+        }
+      } catch (error) {
+        this.notify('error', `Error getting pools' balances for ${pair.identifier()}: ${error.message}`);
       }
-      if ('native_token' in res.assets[1].info) {
-        balances.push({
-          [`${res.assets[1].info.native_token.denom}-${pair.identifier()}`]: amount1,
-        });
-      } else {
-        balances.push({
-          [`${res.assets[1].info.token.contract_addr}-${pair.identifier()}`]: amount1,
-        });
-      }
-    } catch (error) {
-      this.notify('error', `Error getting pools' balances for ${pair.identifier()}: ${error.message}`);
     }
 
     return balances;
   }
 
-  private async refreshTokenBalance(height: number, tokenSymbol: string) {
-    if (height <= this.symbolUpdateHeightCache[tokenSymbol]) {
+  private async refreshTokenBalance(tokenIdentifier: string, height?: number): Promise<JSX.Element | BigNumber> {
+    if (height && height <= this.symbolUpdateHeightCache[tokenIdentifier]) {
       //console.log(`${tokenSymbol} already fresh for height ${height}`);
-      return {};
+      return undefined;
     }
 
-    let userBalancePromise; //balance.includes(unlockToken)
-    if (tokenSymbol !== 'uscrt') {
-      // todo: move this inside getTokenBalance?
-      const tokenAddress = this.state.allTokens.get(tokenSymbol)?.address;
+    if (height) {
+      this.symbolUpdateHeightCache[tokenIdentifier] = height;
+    }
 
-      if (!tokenAddress) {
-        console.log('refreshTokenBalance: Cannot find token address for symbol', tokenSymbol);
-        return {};
-      }
+    let userBalance; //balance.includes(unlockToken)
 
-      let balance = await this.props.user.getSnip20Balance(tokenAddress);
+    if (tokenIdentifier === 'uscrt') {
+      userBalance = await getNativeBalance(this.props.user.address, this.props.user.secretjs);
+      //this.props.user.balanceSCRT = userBalance.toString();
+      return userBalance;
+    }
 
-      if (balance === unlockToken) {
-        balance = unlockJsx({
-          onClick: async () => {
-            await this.props.user.keplrWallet.suggestToken(this.props.user.chainId, tokenAddress);
-            // TODO trigger balance refresh if this was an "advanced set" that didn't
-            // result in an on-chain transaction
-          },
-        });
-        userBalancePromise = balance;
-      } else if (balance === fixUnlockToken) {
-        userBalancePromise = wrongViewingKey;
-      } else {
-        userBalancePromise = new BigNumber(balance);
-      }
+    let balance = await this.props.user.getSnip20Balance(tokenIdentifier);
+
+    userBalance = this.displayedBalance(balance, tokenIdentifier);
+
+    return userBalance;
+  }
+
+  private displayedBalance(balance: string, tokenIdentifier: string) {
+    if (balance === unlockToken) {
+      return unlockJsx({
+        onClick: async () => {
+          await this.props.user.keplrWallet.suggestToken(this.props.user.chainId, tokenIdentifier);
+          // TODO trigger balance refresh if this was an "advanced set" that didn't
+          // result in an on-chain transaction
+        },
+      });
+    } else if (balance === fixUnlockToken) {
+      return wrongViewingKey;
     } else {
-      userBalancePromise = await getNativeBalance(this.props.user.address, this.props.user.secretjs);
+      return new BigNumber(balance);
     }
-    this.symbolUpdateHeightCache[tokenSymbol] = height;
-    return { [tokenSymbol]: userBalancePromise };
   }
 
   private async refreshLpTokenBalance(pair: SwapPair) {
+    let returnBalances = [];
+
     const pairSymbol = pair.identifier();
     console.log('Refresh LP token for', pairSymbol);
     // update my LP token balance
     const lpTokenSymbol = `LP-${pairSymbol}`;
     const lpTokenAddress = pair.liquidity_token;
-    let lpTotalSupply = new BigNumber(0);
-    try {
-      const result = await GetSnip20Params({
-        address: pair.liquidity_token,
-        secretjs: this.props.user.secretjs,
-      });
-      lpTotalSupply = new BigNumber(result.total_supply);
-    } catch (error) {
-      console.error(`Error trying to get LP token total supply of ${pairSymbol}`, pair, error);
-      return [];
+    if (process.env.ENV === 'DEV') {
+      let lpTotalSupply = new BigNumber(0);
+      try {
+        const result = await GetSnip20Params({
+          address: pair.liquidity_token,
+          secretjs: this.props.user.secretjs,
+        });
+        lpTotalSupply = new BigNumber(result.total_supply);
+        returnBalances.push({
+          [`${lpTokenAddress}-total-supply`]: lpTotalSupply,
+        });
+      } catch (error) {
+        console.error(`Error trying to get LP token total supply of ${pairSymbol}`, pair, error);
+        return [];
+      }
     }
 
     let balanceResult = await this.props.user.getSnip20Balance(lpTokenAddress);
@@ -350,162 +370,33 @@ export class SwapRouter extends React.Component<
       lpBalance = new BigNumber(balanceResult);
     }
 
-    return [
-      {
-        [lpTokenSymbol]: lpBalance,
-      },
-      {
-        [`${lpTokenSymbol}-total-supply`]: lpTotalSupply,
-      },
-    ];
-  }
-
-  private static getHeightFromEvent(data) {
-    const heightFromEvent =
-      data?.result?.data?.value?.TxResult?.height || data?.result?.data?.value?.block?.header?.height || 0;
-    const height = Number(heightFromEvent);
-
-    // todo: why not break here?
-    if (isNaN(height)) {
-      console.error(
-        `height is NaN for some reason. Unexpected behavior from here on out: got heightFromEvent=${heightFromEvent}`,
-      );
-    }
-    return height;
-  }
-
-  private registerSCRTQueries() {
-    const myAddress = this.props.user.address;
-    const scrtQueries = [
-      `message.sender='${myAddress}'` /* sent a tx (gas) */,
-      `message.signer='${myAddress}'` /* executed a contract (gas) */,
-      `transfer.recipient='${myAddress}'` /* received SCRT */,
-    ];
-
-    for (const query of scrtQueries) {
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          id: 'uscrt', // jsonrpc id
-          method: 'subscribe',
-          params: { query },
-        }),
-      );
-    }
-  }
-
-  private registerTokenQueries(token0: string, token1: string) {
-    for (const token of [this.state.allTokens.get(token0), this.state.allTokens.get(token1)]) {
-      console.log(`Registering queries for ${token.symbol}`);
-      const tokenAddress = token.address;
-      const tokenQueries = [`message.contract_address='${tokenAddress}'`, `wasm.contract_address='${tokenAddress}'`];
-      for (const query of tokenQueries) {
-        this.ws.send(
-          JSON.stringify({
-            jsonrpc: '2.0',
-            id: token.identifier, // jsonrpc id
-            method: 'subscribe',
-            params: { query },
-          }),
-        );
-      }
-      this.setState(currentState => ({
-        queries: currentState.queries.concat(tokenQueries),
-      }));
-    }
-  }
-
-  private getPairQueries(pair: SwapPair): string[] {
-    return [
-      `message.contract_address='${pair.contract_addr}'`,
-      `wasm.contract_address='${pair.contract_addr}'`,
-      `message.contract_address='${pair.liquidity_token}'`,
-      `wasm.contract_address='${pair.liquidity_token}'`,
-    ];
-  }
-
-  private registerPairQueries(pair?: SwapPair) {
-    const registerPair = pair || this.state.selectedPair;
-    if (!registerPair) {
-      console.log('Tried to register queries for empty pair');
-      return;
-    }
-
-    const pairQueries = this.getPairQueries(pair);
-
-    for (const query of pairQueries) {
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          id: registerPair.identifier(), // jsonrpc id
-          method: 'subscribe',
-          params: { query },
-        }),
-      );
-    }
-    this.setState(currentState => ({
-      queries: currentState.queries.concat(pairQueries),
-    }));
-  }
-
-  unSubscribePair(pair: SwapPair) {
-    console.log(`Unsubscribing queries for ${pair.identifier()}`);
-
-    const queries = this.getPairQueries(pair);
-    for (const query of queries) {
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          id: '-1',
-          method: 'unsubscribe',
-          params: { query },
-        }),
-      );
-    }
-
-    this.setState(currentState => {
-      let queries = currentState.queries;
-      for (const query of this.getPairQueries(pair)) {
-        queries = queries.filter(q => q !== query);
-      }
-      return { queries };
+    returnBalances.push({
+      [lpTokenSymbol]: lpBalance,
     });
-  }
 
-  unSubscribeAll() {
-    for (const query of this.state.queries) {
-      console.log(`Unsubscribing queries for ${query}`);
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          id: '-1',
-          method: 'unsubscribe',
-          params: { query },
-        }),
-      );
-    }
-    this.setState({ queries: [] });
+    return returnBalances;
   }
 
   async componentWillUnmount() {
-    this.props.user.websocketInit();
+    //this.props.user.websocketInit();
 
-    if (this.ws) {
-      while (this.ws.readyState === WebSocket.CONNECTING) {
-        await sleep(100);
-      }
-
-      if (this.ws.readyState === WebSocket.OPEN) {
-        this.ws.close(1000 /* Normal Closure */, 'See ya');
-      }
-    }
+    // if (this?.ws) {
+    //   while (this.ws.readyState === WebSocket.CONNECTING) {
+    //     await sleep(100);
+    //   }
+    //
+    //   if (this.ws.readyState === WebSocket.OPEN) {
+    //     this.ws.close(1000 /* Normal Closure */, 'See ya');
+    //   }
+    // }
 
     window.removeEventListener('storage', this.updateTokens);
     window.removeEventListener('updatePairsAndTokens', this.updatePairs);
   }
 
-  updateTokens = () => {
-    const tokens: ITokenInfo[] = [...this.props.tokens.allData];
+  updateTokens = async () => {
+    //console.log(...this.props.tokens.allData);
+    const tokens: ITokenInfo[] = [...(await this.props.tokens.tokensUsage('SWAP'))];
 
     // convert to token map for swap
     const swapTokens: SwapTokenMap = TokenMapfromITokenInfo(tokens); // [...TokenMapfromITokenInfo(tokens), ...loadTokensFromList('secret-2')];
@@ -521,11 +412,7 @@ export class SwapRouter extends React.Component<
       swapTokens.set(t.identifier, t);
     }
 
-    this.setState(_currentState => {
-      return {
-        allTokens: swapTokens,
-      };
-    });
+    this.setState({ allTokens: swapTokens });
 
     return swapTokens;
   };
@@ -533,56 +420,128 @@ export class SwapRouter extends React.Component<
   setCurrentPair = async (token0: string, token1: string) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
 
-    this.setState(currentState => {
-      return {
-        ...currentState,
-        selectedPair: selectedPair,
-      };
+    while (Object.keys(this.state.routingGraph).length === 0) {
+      await sleep(100);
+    }
+
+    const routes: string[][] = [];
+    // if (!selectedPair) {
+    let graph = JSON.parse(JSON.stringify(this.state.routingGraph)); // deep copy
+    try {
+      while (true) {
+        const dijkstra = new Graph(graph);
+        const route: string[] = dijkstra.path(token0, token1) ?? [];
+
+        if (route.length < 2) {
+          break;
+        }
+        routes.push(route);
+
+        delete graph[route[0]][route[1]];
+        delete graph[route[1]][route[0]];
+      }
+    } catch (e) {
+      console.error('Error computing selectedPairRoutes:', e.message);
+    }
+    // }
+
+    this.setState({
+      selectedPair: selectedPair,
+      selectedPairRoutes: routes,
     });
 
     const height = await this.props.user.secretjs.getHeight();
-    await this.refreshBalances({ height, tokenSymbols: [token0, token1], pair: selectedPair });
+    await this.refreshBalances({ height, tokens: [token0, token1], pair: selectedPair });
   };
 
   updatePairs = async () => {
     // gather tokens from our list, and from local storage
-    const tokens = this.updateTokens();
+    const tokens = await this.updateTokens();
 
     let pairs: ISecretSwapPair[] = Array.from(this.props.pairs.allData);
 
     // filter all pairs that aren't known tokens
     pairs = pairs.filter(p => {
-      for (const s of getSymbolsFromPair(p)) {
+      const pairSymbols = getSymbolsFromPair(p);
+      for (const s of pairSymbols) {
         if (!tokens.has(s)) {
           return false;
         }
       }
 
-      return true;
+      return !(pairSymbols.includes('uscrt') && !pairSymbols.includes(process.env.SSCRT_CONTRACT));
     });
 
     const newPairs: PairMap = new Map<string, SwapPair>();
 
     for (const p of pairs) {
-      const newPair = SwapPair.fromPair(p, tokens);
-      newPairs.set(newPair.identifier(), newPair);
+      try {
+        const newPair = SwapPair.fromPair(p, tokens);
+        newPairs.set(newPair.identifier(), newPair);
+        newPairs.set(
+          newPair
+            .identifier()
+            .split(SwapPair.id_delimiter)
+            .reverse()
+            .join(SwapPair.id_delimiter),
+          newPair,
+        );
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    this.setState({ pairs: newPairs });
+    this.setState({ pairs: newPairs }, this.updateRoutingGraph);
   };
 
-  notify(type: 'success' | 'error', msg: string, hideAfterSec: number = 120) {
+  updateRoutingGraph = () => {
+    const { pairs, routerSupportedTokens } = this.state;
+
+    const graph = {};
+    for (const pair of new Set(pairs.values())) {
+      const [token0, token1] = pair.assetIds();
+      if (!routerSupportedTokens.has(token0) || !routerSupportedTokens.has(token1)) {
+        continue;
+      }
+
+      if (!(token0 in graph)) {
+        graph[token0] = {};
+      }
+      if (!(token1 in graph)) {
+        graph[token1] = {};
+      }
+
+      graph[token0][token1] = 1;
+      graph[token1][token0] = 1;
+    }
+
+    this.setState({ routingGraph: graph });
+  };
+
+  notify(type: 'success' | 'error' | 'errorWithHash', msg: string, hideAfterSec: number = 120, txHash?: string) {
+    let cogoType: string = type;
     if (type === 'error') {
       msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
       msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
     }
 
-    const { hide } = cogoToast[type](msg, {
+    let onClick = () => {
+      hide();
+    };
+    if (type === 'errorWithHash') {
+      cogoType = 'warn';
+      onClick = () => {
+        const url = `https://secretnodes.com/secret/chains/secret-2/transactions/${txHash}`;
+        const win = window.open(url, '_blank');
+        win.focus();
+        hide();
+      };
+    }
+
+    const { hide } = cogoToast[cogoType](msg, {
       position: 'top-right',
       hideAfter: hideAfterSec,
-      onClick: () => {
-        hide();
-      },
+      onClick,
     });
     // NotificationManager[type](undefined, msg, closesAfterMs);
   }
@@ -592,8 +551,9 @@ export class SwapRouter extends React.Component<
     const isProvide = window.location.hash === '#Provide';
     const isWithdraw = window.location.hash === '#Withdraw';
     const isPools = window.location.hash === '#Pool';
+    const isHistory = window.location.hash === '#History';
 
-    if (!isSwap && !isProvide && !isWithdraw && !isPools) {
+    if (!isSwap && !isProvide && !isWithdraw && !isPools && !isHistory) {
       window.location.hash = 'Swap';
       return <></>;
     }
@@ -619,20 +579,27 @@ export class SwapRouter extends React.Component<
               <KeplrButton />
               {isSwap && (
                 <SwapTab
+                  user={this.props.user}
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   selectedPair={this.state.selectedPair}
                   selectedToken0={this.state.selectedToken0}
                   selectedToken1={this.state.selectedToken1}
+                  selectedPairRoutes={this.state.selectedPairRoutes}
                   notify={this.notify}
                   onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
+                  refreshPools={this.refreshBalances}
+                  secretAddress={this.props.user.address}
+                  pairs={this.state.pairs}
                 />
               )}
               {isProvide && (
                 <ProvideTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   pairs={this.state.pairs}
@@ -647,6 +614,27 @@ export class SwapRouter extends React.Component<
                 <WithdrawTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
+                  tokens={this.state.allTokens}
+                  balances={this.state.balances}
+                  pairs={this.state.pairs}
+                  notify={this.notify}
+                  updateToken={async (pair: SwapPair) => {
+                    //this.registerPairQueries(pair);
+                    await this.refreshBalances({
+                      pair,
+                      tokens: pair.assetIds(),
+                    });
+                  }}
+                  onCloseTab={pair => {
+                    //this.unSubscribePair(pair);
+                  }}
+                />
+              )}
+              {/* {isHistory && (
+                <HistoryTab
+                  user={this.props.user}
+                  secretjs={this.props.user.secretjs}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   pairs={this.state.pairs}
@@ -655,17 +643,17 @@ export class SwapRouter extends React.Component<
                     this.registerPairQueries(pair);
                     await this.refreshBalances({
                       pair,
-                      tokenSymbols: [pair.asset_infos[0].symbol, pair.asset_infos[1].symbol],
+                      tokens: pair.assetIds(),
                     });
                   }}
                   onCloseTab={pair => {
                     this.unSubscribePair(pair);
                   }}
                 />
-              )}
+              )} */}
             </Box>
             <SwapFooter />
-            <BetaWarning secretjs={this.props.user.secretjs} />
+            <BetaWarning secretjs={this.props.user.secretjsSend} />
           </Box>
         </PageContainer>
       </BaseContainer>

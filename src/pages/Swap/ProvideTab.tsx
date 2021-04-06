@@ -1,5 +1,5 @@
 import React from 'react';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import { Button, Container } from 'semantic-ui-react';
 import { canonicalizeBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
 import * as styles from './styles.styl';
@@ -21,6 +21,7 @@ import { PairAnalyticsLink } from '../../components/Swap/PairAnalyticsLink';
 import { ApproveButton } from '../../components/Swap/ApproveButton';
 import { SwapPlus } from '../../components/Swap/SwapPlus';
 import { NewPoolWarning } from '../../components/Swap/NewPoolWarning';
+import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 
 const buttonStyle = {
   margin: '0.5em 0 0 0',
@@ -49,6 +50,7 @@ enum ProvideState {
   PAIR_LIQUIDITY_ZERO,
   UNLOCK_TOKENS,
   CREATE_NEW_PAIR,
+  CANNOT_CREAT_SCRT_PAIR,
 }
 
 const ButtonMessage = (state: ProvideState): string => {
@@ -71,6 +73,8 @@ const ButtonMessage = (state: ProvideState): string => {
       return 'Unlock Tokens';
     case ProvideState.CREATE_NEW_PAIR:
       return 'Create New Pair';
+    case ProvideState.CANNOT_CREAT_SCRT_PAIR:
+      return 'Cannot Create New SCRT Pairs';
     default:
       return 'Provide';
   }
@@ -79,7 +83,8 @@ const ButtonMessage = (state: ProvideState): string => {
 export class ProvideTab extends React.Component<
   {
     user: UserStoreEx;
-    secretjs: SigningCosmWasmClient;
+    secretjs: CosmWasmClient;
+    secretjsSender: AsyncSender;
     tokens: SwapTokenMap;
     balances: {
       [symbol: string]: BigNumber | JSX.Element;
@@ -311,7 +316,7 @@ export class ProvideTab extends React.Component<
     });
 
     try {
-      const tx = await this.props.secretjs.execute(
+      const tx = await this.props.secretjsSender.asyncExecute(
         tokenAddress,
         {
           increase_allowance: {
@@ -352,7 +357,9 @@ export class ProvideTab extends React.Component<
       return ProvideState.LOADING;
     }
 
-    if (!pair) {
+    if (!pair && (this.state.tokenB === 'uscrt' || this.state.tokenA === 'uscrt')) {
+      return ProvideState.CANNOT_CREAT_SCRT_PAIR;
+    } else if (!pair) {
       return ProvideState.CREATE_NEW_PAIR;
     } else if (this.getPoolA().isNaN() || this.getPoolB().isNaN()) {
       return ProvideState.LOADING;
@@ -394,7 +401,7 @@ export class ProvideTab extends React.Component<
 
     const lpTokenBalance = this.props.balances[`LP-${this.props.selectedPair?.identifier()}`];
     const lpTokenTotalSupply = new BigNumber(
-      this.props.balances[`LP-${this.props.selectedPair?.identifier()}-total-supply`] as BigNumber,
+      this.props.balances[`${this.props.selectedPair?.liquidity_token}-total-supply`] as BigNumber,
     );
     const currentShareOfPool = lpTokenTotalSupply.isZero()
       ? lpTokenTotalSupply
@@ -428,7 +435,7 @@ export class ProvideTab extends React.Component<
           style={{
             padding: '1em',
             display: 'flex',
-            alignContent: 'center',
+            alignItems: 'center',
           }}
         >
           <FlexRowSpace />
@@ -634,6 +641,7 @@ export class ProvideTab extends React.Component<
   private async createNewPairAction(tokenA: Asset, tokenB: Asset): Promise<string> {
     const { contractAddress } = await CreateNewPair({
       secretjs: this.props.secretjs,
+      secretjsSender: this.props.secretjsSender,
       tokenA,
       tokenB,
     });
@@ -707,7 +715,7 @@ export class ProvideTab extends React.Component<
     const { inputA, inputB, tokenA, tokenB } = this.state;
 
     try {
-      const tx = await this.props.secretjs.execute(
+      const tx = await this.props.secretjsSender.asyncExecute(
         pair.contract_addr,
         msg,
         '',
@@ -729,12 +737,14 @@ export class ProvideTab extends React.Component<
         isEstimatedA: false,
         isEstimatedB: false,
       });
+
+      await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
     } catch (error) {
       console.error('Error while trying to add liquidity', error);
       this.props.notify('error', `Error providing to ${tokenA}/${tokenB}: ${error.message}`);
+    } finally {
+      this.setState({ loadingProvide: false });
     }
-
-    this.setState({ loadingProvide: false });
   }
 
   private showPoolWarning(): boolean {

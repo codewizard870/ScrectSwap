@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import { observer } from 'mobx-react-lite';
 import { Button, Text } from 'components/Base';
@@ -10,8 +11,6 @@ import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { createNotification } from '../Exchange/utils'
-import { web3 } from '../../blockchain-bridge/eth';
-import { useEffect, useState } from 'react';
 
 const WalletTemplate = observer((props: {
   address: string,

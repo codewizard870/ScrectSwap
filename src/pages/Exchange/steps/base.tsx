@@ -22,6 +22,7 @@ import { ISignerHealth } from '../../../stores/interfaces';
 import { useStores } from '../../../stores';
 import { getNetworkFee } from '../../../blockchain-bridge/eth/helpers';
 import { toInteger } from 'lodash';
+import cogoToast from 'cogo-toast';
 
 interface Errors {
     amount: string;
@@ -38,6 +39,16 @@ type BalanceInterface = {
     eth: BalanceAmountInterface,
     scrt: BalanceAmountInterface
 }
+
+export const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 10) => {
+    const { hide } = cogoToast[type](msg, {
+        position: 'top-right',
+        hideAfter: hideAfterSec,
+        onClick: () => {
+            hide();
+        },
+    });
+};
 
 const validateTokenInput = (token: any) => {
     if (!token || !token.symbol) return 'This field is required.'
@@ -79,6 +90,11 @@ const getBalance = async (exchange, userMetamask, user, isLocked, tokenPrice) =>
     const ethSwapFee = await getNetworkFee(process.env.SWAP_FEE);
     const swapFeeUsd = ethSwapFee * user.ethRate;
     const swapFeeToken = ((swapFeeUsd / tokenPrice) * 0.9).toFixed(`${toInteger(tokenPrice)}`.length);
+
+
+    console.log('tokenPrice', tokenPrice)
+    console.log('swapFeeUsd', swapFeeUsd)
+    console.log('swapFeeToken', swapFeeToken)
 
     const src_coin = exchange.transaction.tokenSelected.src_coin
 
@@ -265,6 +281,7 @@ export const Base = observer(() => {
 
     const onSelectedToken = async (value) => {
         const token = tokens.allData.find(t => t.src_address === value)
+        console.log('token', token)
         setProgress(0)
         const newerrors = errors
         setBalance({ eth: { minAmount: 'loading', maxAmount: 'loading' }, scrt: { minAmount: 'loading', maxAmount: 'loading' } })
@@ -305,7 +322,7 @@ export const Base = observer(() => {
             await user.updateBalanceForSymbol(token.display_props.symbol);
             update()
         } catch (e) {
-            console.log('Error on selecting token, are you sure you have this token on your metamask?')
+            notify('error', `Error on selecting ${token.display_props.symbol}, are you sure you have it added on your metamask?`);
             update()
         }
 

@@ -47,16 +47,16 @@ export const EarnRewards = observer((props: any) => {
       }
       setFilteredTokens(await tokens.tokensUsage('REWARDS'));
     };
-    asyncWrapper().then(() => { });
+    asyncWrapper().then(() => {});
   }, [tokens, tokens.data]);
 
   useEffect(() => {
-    const refreshAllTokens = async () => {
-      while (!user.secretjs || tokens.isPending) {
-        await sleep(100);
-      }
-      await Promise.all([...filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
-    };
+    // const refreshAllTokens = async () => {
+    //   while (!user.secretjs || tokens.isPending) {
+    //     await sleep(100);
+    //   }
+    //   await Promise.all([...filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol))]);
+    // };
     const resolveSushiAPY = async () => {
       while (!user.secretjs || !user.scrtRate) {
         await sleep(100);
@@ -72,9 +72,9 @@ export const EarnRewards = observer((props: any) => {
       }
     };
 
-    resolveSushiAPY().then(() => { });
-    refreshAllTokens().then(() => { });
-  }, [user, filteredTokens]);
+    resolveSushiAPY().then(() => {});
+    //refreshAllTokens().then(() => {});
+  }, [filteredTokens]);
 
   useEffect(() => {
     rewards.init({

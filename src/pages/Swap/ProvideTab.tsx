@@ -1,5 +1,5 @@
 import React from 'react';
-import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import { Button, Container } from 'semantic-ui-react';
 import { canonicalizeBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
 import * as styles from './styles.styl';
@@ -21,6 +21,7 @@ import { PairAnalyticsLink } from '../../components/Swap/PairAnalyticsLink';
 import { ApproveButton } from '../../components/Swap/ApproveButton';
 import { SwapPlus } from '../../components/Swap/SwapPlus';
 import { NewPoolWarning } from '../../components/Swap/NewPoolWarning';
+import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 
 const buttonStyle = {
   margin: '0.5em 0 0 0',
@@ -83,7 +84,7 @@ export class ProvideTab extends React.Component<
   {
     user: UserStoreEx;
     secretjs: CosmWasmClient;
-    secretjsSender: SigningCosmWasmClient;
+    secretjsSender: AsyncSender;
     tokens: SwapTokenMap;
     balances: {
       [symbol: string]: BigNumber | JSX.Element;
@@ -315,7 +316,7 @@ export class ProvideTab extends React.Component<
     });
 
     try {
-      const tx = await this.props.secretjsSender.execute(
+      const tx = await this.props.secretjsSender.asyncExecute(
         tokenAddress,
         {
           increase_allowance: {
@@ -714,7 +715,7 @@ export class ProvideTab extends React.Component<
     const { inputA, inputB, tokenA, tokenB } = this.state;
 
     try {
-      const tx = await this.props.secretjsSender.execute(
+      const tx = await this.props.secretjsSender.asyncExecute(
         pair.contract_addr,
         msg,
         '',
@@ -736,12 +737,14 @@ export class ProvideTab extends React.Component<
         isEstimatedA: false,
         isEstimatedB: false,
       });
+
+      await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
     } catch (error) {
       console.error('Error while trying to add liquidity', error);
       this.props.notify('error', `Error providing to ${tokenA}/${tokenB}: ${error.message}`);
+    } finally {
+      this.setState({ loadingProvide: false });
     }
-
-    this.setState({ loadingProvide: false });
   }
 
   private showPoolWarning(): boolean {

@@ -1,5 +1,7 @@
 import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { divDecimals, unlockToken } from '../../utils';
+import { StdFee } from 'secretjs/types/types';
+import { AsyncSender } from './asyncSender';
 
 export const Snip20SwapHash = (params: { tx_id: string; address: string }): string => {
   return `${params.tx_id}|${params.address}`;
@@ -64,7 +66,7 @@ export const Snip20GetBalance = async (params: {
 };
 
 export const Snip20SendToBridge = async (params: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: AsyncSender;
   address: string;
   amount: string;
   msg: string;
@@ -88,21 +90,28 @@ export const Snip20SendToBridge = async (params: {
 };
 
 export const Snip20Send = async (params: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: AsyncSender;
   address: string;
   amount: string;
   msg: string;
   recipient: string;
+  fee?: StdFee;
 }): Promise<ExecuteResult> => {
-  const { secretjs, address, amount, msg, recipient } = params;
+  const { secretjs, address, amount, msg, recipient, fee } = params;
 
-  return await secretjs.execute(address, {
-    send: {
-      amount,
-      recipient,
-      msg,
+  return await secretjs.asyncExecute(
+    address,
+    {
+      send: {
+        amount,
+        recipient,
+        msg,
+      },
     },
-  });
+    '',
+    [],
+    fee,
+  );
 };
 
 export const GetContractCodeHash = async ({

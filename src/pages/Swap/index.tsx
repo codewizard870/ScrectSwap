@@ -163,17 +163,14 @@ export class SwapRouter extends React.Component<
       prevState.selectedToken0 !== this.state.selectedToken0 ||
       prevState.selectedToken1 !== this.state.selectedToken1
     ) {
-      this.unSubscribeAll();
-
+      //this.unSubscribeAll();
       // Register for token or SCRT events
-      this.registerTokenQueries(this.state.selectedToken0, this.state.selectedToken1);
-
+      //this.registerTokenQueries(this.state.selectedToken0, this.state.selectedToken1);
       // Register for pair events
-      this.registerPairQueries(this.state.selectedPair);
-
+      //this.registerPairQueries(this.state.selectedPair);
       // Register for pair events along all routes,
       // because we need to know about changes in pool sizes
-      this.registerRoutesQueries();
+      //this.registerRoutesQueries();
     }
   }
 
@@ -193,31 +190,31 @@ export class SwapRouter extends React.Component<
 
     await this.updatePairs();
 
-    this.props.user.websocketTerminate(true);
+    // this.props.user.websocketTerminate(true);
+    //
+    // this.ws = new WebSocket(process.env.SECRET_WS);
+    //
+    // this.ws.onmessage = async event => {
+    //   await this.onMessage(event);
+    // };
 
-    this.ws = new WebSocket(process.env.SECRET_WS);
-
-    this.ws.onmessage = async event => {
-      await this.onMessage(event);
-    };
-
-    this.ws.onopen = async () => {
-      // Here we register for token related events
-      // Then in onmessage we know when to refresh all the balances
-      while (!this.props.user.address) {
-        await sleep(100);
-      }
-
-      // Register for SCRT events
-      this.registerSCRTQueries();
-
-      // Register for token or SCRT events
-      // this.registerTokenQueries();
-      //
-      // // Register for pair events
-      // this.registerPairQueries();
-      //}
-    };
+    // this.ws.onopen = async () => {
+    //   // Here we register for token related events
+    //   // Then in onmessage we know when to refresh all the balances
+    //   while (!this.props.user.address) {
+    //     await sleep(100);
+    //   }
+    //
+    //   // Register for SCRT events
+    //   //this.registerSCRTQueries();
+    //
+    //   // Register for token or SCRT events
+    //   // this.registerTokenQueries();
+    //   //
+    //   // // Register for pair events
+    //   // this.registerPairQueries();
+    //   //}
+    // };
 
     while (!this.props.user.secretjs) {
       await sleep(100);
@@ -249,7 +246,11 @@ export class SwapRouter extends React.Component<
       balanceTasks.push(this.refreshPoolBalance(pair));
     }
 
+    console.log('refreshing balances..');
+
     const results = await Promise.all([...balanceTasks]);
+
+    console.log(`balances: ${JSON.stringify(results)}`);
 
     // flatten array to a single object
     const newObject = Object.assign(
@@ -894,14 +895,14 @@ export class SwapRouter extends React.Component<
                   pairs={this.state.pairs}
                   notify={this.notify}
                   updateToken={async (pair: SwapPair) => {
-                    this.registerPairQueries(pair);
+                    //this.registerPairQueries(pair);
                     await this.refreshBalances({
                       pair,
                       tokens: pair.assetIds(),
                     });
                   }}
                   onCloseTab={pair => {
-                    this.unSubscribePair(pair);
+                    //this.unSubscribePair(pair);
                   }}
                 />
               )}

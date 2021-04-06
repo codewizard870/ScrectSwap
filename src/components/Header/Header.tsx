@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
-import { useHistory } from 'react-router';
+import { Redirect, useHistory } from 'react-router';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../stores';
 import  "./header.scss";
@@ -11,6 +11,13 @@ const Header = () =>{
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
     const isSeFi = history.location.pathname === '/sefi';
+    const { user } = useStores();
+    
+    const handleSignIn = ()=>{
+        if(user.isKeplrWallet){
+            user.signIn();
+        }
+    }
     return(
         <>
             <nav className="menu"> 
@@ -38,7 +45,7 @@ const Header = () =>{
                     </button>
                 <div className="kpl_images__container">
                     <img  src='/static/key.svg' alt="Keplr Icon"/>
-                    <img  src='/static/keplricon.svg' alt="Key Icon"/>
+                    <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>
                 </div>
                 </div>
 

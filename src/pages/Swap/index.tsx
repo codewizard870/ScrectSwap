@@ -125,22 +125,27 @@ export class SwapRouter extends React.Component<
       // Register for pair events along all routes,
       // because we need to know about changes in pool sizes
       this.registerRoutesQueries();
+
+      //Update all balances
+      await this.getAllBalances();
     }
   }
 
   async reRegisterPairHooks() {}
 
+  async getAllBalances (){
+    const tokens = await this.updateTokens();
+    const tokensAsArray = Array.from(tokens).map((t)=>t[1].identifier);
+    await this.refreshBalances({tokens:tokensAsArray})
+    console.log('Updated balances for all the tokens')
+  }
+  
   async componentDidMount() {
     window.addEventListener('storage', this.updateTokens);
     window.addEventListener('updatePairsAndTokens', this.updatePairs);
 
     if (!this.props.user.secretjs) {
       await this.updateTokens();
-      setTimeout(async ()=>{
-        const tokens = await this.updateTokens();
-        const tokensAsArray = Array.from(tokens).map((t)=>t[1].identifier);
-        const balances = await this.refreshBalances({tokens:tokensAsArray})
-      },500)
     }
 
     while (this.props.pairs.isPending || this.props.tokens.isPending) {
@@ -173,6 +178,10 @@ export class SwapRouter extends React.Component<
       // // Register for pair events
       // this.registerPairQueries();
       //}
+      //Update all balances
+      setTimeout(async()=>{
+        await this.getAllBalances(); 
+      },100)
     };
 
     while (!this.props.user.secretjs) {

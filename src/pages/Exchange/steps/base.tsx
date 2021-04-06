@@ -91,11 +91,6 @@ const getBalance = async (exchange, userMetamask, user, isLocked, tokenPrice) =>
     const swapFeeUsd = ethSwapFee * user.ethRate;
     const swapFeeToken = ((swapFeeUsd / tokenPrice) * 0.9).toFixed(`${toInteger(tokenPrice)}`.length);
 
-
-    console.log('tokenPrice', tokenPrice)
-    console.log('swapFeeUsd', swapFeeUsd)
-    console.log('swapFeeToken', swapFeeToken)
-
     const src_coin = exchange.transaction.tokenSelected.src_coin
 
     if (exchange.token === TOKEN.ERC20) {
@@ -281,7 +276,6 @@ export const Base = observer(() => {
 
     const onSelectedToken = async (value) => {
         const token = tokens.allData.find(t => t.src_address === value)
-        console.log('token', token)
         setProgress(0)
         const newerrors = errors
         setBalance({ eth: { minAmount: 'loading', maxAmount: 'loading' }, scrt: { minAmount: 'loading', maxAmount: 'loading' } })

@@ -426,7 +426,6 @@ export class Exchange extends StoreConstructor {
           this.transaction.loading = false
           this.txHash = result.hash
           this.transaction.confirmed = true
-          console.log(2)
           this.stores.routing.push('/operations/' + this.operation.id);
           this.fetchStatus(this.operation.id);
         }

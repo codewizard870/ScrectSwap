@@ -28,11 +28,6 @@ const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
 const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
 
-enum SwapDirection {
-  Send,
-  Receive,
-}
-
 function executeRouterSwap(
   secretjsSender: AsyncSender,
   secretAddress: string,
@@ -151,7 +146,7 @@ function storeResult(result: any, fromAmount: string, fromDecimals: number, best
   return { sent, received };
 }
 
-const DEFAULT_SLIPPAGE = 1 / 100;
+const DEFAULT_SLIPPAGE = 0.5 / 100;
 
 export class SwapTab extends React.Component<
   {

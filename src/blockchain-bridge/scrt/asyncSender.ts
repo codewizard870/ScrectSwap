@@ -24,7 +24,7 @@ export class AsyncSender extends SigningCosmWasmClient {
         { retriesMax: 5, interval: 4000 },
       );
 
-      console.log(`yay! ${JSON.stringify(res)}`);
+      //console.log(`yay! ${JSON.stringify(res)}`);
       return {
         ...res,
         transactionHash: tx.transactionHash,

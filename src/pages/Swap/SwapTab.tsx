@@ -103,13 +103,23 @@ function executeSwapUscrt(secretjsSender: AsyncSender, pair: SwapPair, fromAmoun
   );
 }
 
-function storeResult(
-  result: ExecuteResult,
-  fromAmount: string,
-  fromDecimals: number,
-  bestRoute: string[],
-  toDecimals: number,
-) {
+const extractError = (result: any) => {
+  if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {
+    return 'Swap fell short of expected return (slippage error)';
+  }
+  if (result?.raw_log) {
+    return result.raw_log;
+  }
+  console.error(result);
+  return `Unknown error`;
+};
+
+function storeResult(result: any, fromAmount: string, fromDecimals: number, bestRoute: string[], toDecimals: number) {
+  if (result?.code) {
+    const error = extractError(result);
+    throw new Error(error);
+  }
+
   storeTxResultLocally(result);
 
   const sent = humanizeBalance(new BigNumber(fromAmount), fromDecimals).toFixed();

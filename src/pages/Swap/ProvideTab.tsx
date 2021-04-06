@@ -401,7 +401,7 @@ export class ProvideTab extends React.Component<
 
     const lpTokenBalance = this.props.balances[`LP-${this.props.selectedPair?.identifier()}`];
     const lpTokenTotalSupply = new BigNumber(
-      this.props.balances[`LP-${this.props.selectedPair?.identifier()}-total-supply`] as BigNumber,
+      this.props.balances[`${this.props.selectedPair?.liquidity_token}-total-supply`] as BigNumber,
     );
     const currentShareOfPool = lpTokenTotalSupply.isZero()
       ? lpTokenTotalSupply

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState,useEffect } from 'react';
 import { Image } from 'semantic-ui-react';
 import cn from 'classnames';
 import * as styles from '../styles.styl';
@@ -7,23 +7,66 @@ import { FlexRowSpace } from '../../../components/Swap/FlexRowSpace';
 import { SwapToken } from '../types/SwapToken';
 import BigNumber from 'bignumber.js';
 import { displayHumanizedBalance, humanizeBalance } from 'utils/formatNumber';
+import { useStores } from 'stores';
+import { fixUnlockToken, unlockToken } from 'utils';
+import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
 
-export const TokenInfoRow = (props: { token: SwapToken; balance?: any; onClick?: any }) => {
+export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: any }) => {
+  let { user } = useStores();
+  let [balance, setBalance] = useState<any>(<Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />);
+
   const getBalance = () => {
-    //Loading 
-    if(props.balance === undefined){
-      return <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />
-    }
-    //Returns View element
-    if(JSON.stringify(props.balance).includes('View')){
-      return props.balance;
-    }
-    //Return real value
-    return displayHumanizedBalance(
-      humanizeBalance(new BigNumber(props.balance as BigNumber), props.token.decimals),
-      BigNumber.ROUND_DOWN,
-    );
+    refreshTokenBalance(props.token).then((balance)=>{
+      //Loading 
+      if(balance === undefined){
+        setBalance(<Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />);
+      }
+      //Returns View element
+      if(JSON.stringify(balance).includes('View')){
+        setBalance(balance);
+      } 
+      //Return real value
+      setBalance(displayHumanizedBalance(
+        humanizeBalance(new BigNumber(balance as BigNumber), props.token.decimals),
+        BigNumber.ROUND_DOWN,
+      ));
+    });
   }
+  
+  async function refreshTokenBalance(token: SwapToken) {
+    let userBalancePromise; //balance.includes(unlockToken)
+    if (token.identifier.toLowerCase() !== 'uscrt') {
+      // todo: move this inside getTokenBalance?
+      const tokenAddress = token?.address;
+
+      if (!tokenAddress) {
+        console.log('refreshTokenBalance: Cannot find token address for symbol', token.symbol);
+        return {};
+      }
+
+      let balance = await user.getSnip20Balance(tokenAddress);
+
+      if (balance === unlockToken) {
+        balance = unlockJsx({
+          onClick: async () => {
+            await user.keplrWallet.suggestToken(user.chainId, tokenAddress);
+            // TODO trigger balance refresh if this was an "advanced set" that didn't
+            // result in an on-chain transaction
+          },
+        });
+        userBalancePromise = balance;
+      } else if (balance === fixUnlockToken) {
+        userBalancePromise = wrongViewingKey;
+      } else {
+        userBalancePromise = new BigNumber(balance);
+      }
+    } else {
+      userBalancePromise = await getNativeBalance(user.address, user.secretjs);
+    }
+
+    return userBalancePromise ;
+  }
+  getBalance();
   return (
     <div style={{ display: 'flex' }}>
       <div className={cn(styles.tokenInfoRow)} onClick={props.onClick}>
@@ -33,12 +76,9 @@ export const TokenInfoRow = (props: { token: SwapToken; balance?: any; onClick?:
         </div>
         <FlexRowSpace />
         <div className={cn(styles.tokenInfoItemsRight)}>
-          {getBalance()}
+          {balance}
         </div>
       </div>
-      {/* <h3 style={{ margin: 'auto',color:'#5F5F6B' }} hidden={!props.token.address}>
-        <CopyWithFeedback text={props.token.address} />
-      </h3> */}
     </div>
   );
 };

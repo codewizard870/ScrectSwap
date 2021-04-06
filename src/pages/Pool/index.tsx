@@ -130,8 +130,6 @@ export class SwapRouter extends React.Component<
       // Register for pair events along all routes,
       // because we need to know about changes in pool sizes
       this.registerRoutesQueries();
-
-      await this.getAllBalances();
     }
   }
 
@@ -189,16 +187,6 @@ export class SwapRouter extends React.Component<
     routerSupportedTokens.add('uscrt');
 
     this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
-
-    setTimeout(async ()=>{
-      await this.getAllBalances();
-    },100)
-  }
-  async getAllBalances (){
-    const tokens = await this.updateTokens();
-    const tokensAsArray = Array.from(tokens).map((t)=>t[1].identifier);
-    await this.refreshBalances({tokens:tokensAsArray})
-    console.log('Updated balances for all the tokens')
   }
   private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
     if (!height) {

@@ -17,7 +17,6 @@ import { BigNumber } from 'bignumber.js';
 export const TokenSelector = (props: {
   secretjs: SigningCosmWasmClient;
   tokens: SwapToken[];
-  balances: { [symbol: string]: BigNumber | JSX.Element };
   token?: SwapToken;
   onClick?: any;
   notify?: CallableFunction;
@@ -106,7 +105,6 @@ export const TokenSelector = (props: {
                       return (
                         <TokenInfoRow
                           key={t.identifier}
-                          balance={props.balances[t.identifier]}
                           token={t}
                           onClick={() => {
                             props?.onClick ? props.onClick(t.identifier) : (() => {})();

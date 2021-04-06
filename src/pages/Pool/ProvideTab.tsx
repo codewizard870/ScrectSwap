@@ -422,7 +422,6 @@ export class ProvideTab extends React.Component<
           label="From"
           maxButton={true}
           balance={balanceA}
-          balances={this.props.balances}
           tokens={this.props.tokens}
           token={this.state.tokenA}
           setToken={async (symbol: string) => {
@@ -452,7 +451,6 @@ export class ProvideTab extends React.Component<
           label="To"
           maxButton={true}
           balance={balanceB}
-          balances={this.props.balances}
           tokens={this.props.tokens}
           token={this.state.tokenB}
           setToken={async (symbol: string) => {

@@ -17,7 +17,6 @@ export const SwapAssetRow = ({
   setAmount,
   isEstimated,
   balance,
-  balances,
   label,
   maxButton,
   secretjs,
@@ -30,7 +29,6 @@ export const SwapAssetRow = ({
   setAmount: (amount: string) => void;
   isEstimated: boolean;
   balance: BigNumber | JSX.Element;
-  balances: { [symbol: string]: BigNumber | JSX.Element };
   label: string;
   maxButton: boolean;
   secretjs: SigningCosmWasmClient;
@@ -144,7 +142,6 @@ export const SwapAssetRow = ({
         <TokenSelector
           secretjs={secretjs}
           tokens={Array.from(tokens.values())}
-          balances={balances}
           token={token ? tokens.get(token) : undefined}
           onClick={token => {
             setToken(token);

@@ -469,7 +469,6 @@ export class SwapTab extends React.Component<
             disabled={this.state.isFromEstimated && this.state.loadingBestRoute}
             maxButton={true}
             balance={fromBalance}
-            balances={this.props.balances}
             tokens={this.props.tokens}
             token={this.state.fromToken}
             setToken={async (identifier: string) => {
@@ -521,7 +520,6 @@ export class SwapTab extends React.Component<
             disabled={this.state.isToEstimated && this.state.loadingBestRoute}
             maxButton={false}
             balance={toBalance}
-            balances={this.props.balances}
             tokens={this.props.tokens}
             token={this.state.toToken}
             setToken={async (identifier: string) => {

@@ -76,10 +76,13 @@ export const SwapAssetRow = ({
                 return balance;
               }
 
-              return displayHumanizedBalance(
-                humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token).decimals),
-                BigNumber.ROUND_DOWN,
-              );
+              if (tokens.size > 0) {
+                return displayHumanizedBalance(
+                  humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token).decimals),
+                  BigNumber.ROUND_DOWN,
+                );
+              }
+              return undefined;
             })()}
           </div>
         )}

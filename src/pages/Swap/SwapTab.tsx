@@ -601,7 +601,7 @@ export class SwapTab extends React.Component<
                     isFromEstimated: this.state.isToEstimated,
                   },
                   async () => {
-                    await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+                    this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
                     this.updateInputs();
                   },
@@ -770,7 +770,7 @@ export class SwapTab extends React.Component<
                   loadingSwap: false,
                 });
               }
-              await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
+              this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
               this.setState({
                 toInput: '',
                 fromInput: '',
@@ -909,7 +909,7 @@ export class SwapTab extends React.Component<
 
   private async setToToken(identifier: string) {
     const setStateCallback = async () => {
-      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+      this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.fromToken) {
         this.updateInputs();
@@ -944,7 +944,7 @@ export class SwapTab extends React.Component<
 
   private async setFromToken(identifier: string) {
     const setStateCallback = async () => {
-      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+      this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.toToken) {
         this.updateInputs();

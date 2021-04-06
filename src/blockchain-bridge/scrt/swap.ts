@@ -293,7 +293,11 @@ export type Pair = {
   token_code_hash: string;
 };
 
-export const getSymbolsFromPair = (pair: Pair): string[] => {
+export type AssetInfos = {
+  asset_infos: Array<NativeToken | Token>;
+};
+
+export const getSymbolsFromPair = (pair: { asset_infos: any }): string[] => {
   const symbols = [];
 
   if ('native_token' in pair.asset_infos[0]) {

@@ -3,6 +3,10 @@ import { Coin, StdFee } from 'secretjs/types/types';
 import retry from 'async-await-retry';
 import { sleep } from '../utils';
 
+class CustomError extends Error {
+  public txHash: string;
+}
+
 export class AsyncSender extends SigningCosmWasmClient {
   asyncExecute = async (
     contractAddress: string,
@@ -11,9 +15,15 @@ export class AsyncSender extends SigningCosmWasmClient {
     transferAmount?: readonly Coin[],
     fee?: StdFee,
   ) => {
+    let tx;
     try {
-      const tx = await this.execute(contractAddress, handleMsg, memo, transferAmount, fee);
+      tx = await this.execute(contractAddress, handleMsg, memo, transferAmount, fee);
+    } catch (e) {
+      console.error(`failed to broadcast tx: ${e}`);
+      throw new CustomError('Failed to broadcast transaction: Network error');
+    }
 
+    try {
       // optimistic
       await sleep(3000);
       const res = await retry(
@@ -21,7 +31,7 @@ export class AsyncSender extends SigningCosmWasmClient {
           return this.restClient.txById(tx.transactionHash);
         },
         null,
-        { retriesMax: 5, interval: 4000 },
+        { retriesMax: 5, interval: 6000 },
       );
 
       //console.log(`yay! ${JSON.stringify(res)}`);
@@ -31,7 +41,9 @@ export class AsyncSender extends SigningCosmWasmClient {
       };
     } catch (e) {
       console.error(`failed to broadcast tx: ${e}`);
-      throw new Error(`Failed to broadcast transaction: Network error`);
+      let error = new CustomError(`Timed out while waiting for transaction`);
+      error.txHash = tx.transactionHash;
+      throw error;
     }
   };
 }

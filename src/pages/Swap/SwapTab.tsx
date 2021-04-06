@@ -5,7 +5,7 @@ import { SwapAssetRow } from './SwapAssetRow';
 import { AdditionalInfo } from './AdditionalInfo';
 import { PriceRow } from '../../components/Swap/PriceRow';
 import { compute_offer_amount, compute_swap } from '../../blockchain-bridge/scrt/swap';
-import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult } from 'secretjs';
 import { TabsHeader } from './TabsHeader';
 import { BigNumber } from 'bignumber.js';
 import { extractValueFromLogs, getFeeForExecute, Snip20Send } from '../../blockchain-bridge';
@@ -19,6 +19,7 @@ import { storeTxResultLocally } from './utils';
 import { RouteRow } from 'components/Swap/RouteRow';
 import { Token } from './types/trade';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
+import { UserStoreEx } from '../../stores/UserStore';
 
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';
@@ -130,8 +131,11 @@ function storeResult(result: any, fromAmount: string, fromDecimals: number, best
   return { sent, received };
 }
 
+const DEFAULT_SLIPPAGE = 1 / 100;
+
 export class SwapTab extends React.Component<
   {
+    user: UserStoreEx;
     secretjs: CosmWasmClient;
     secretjsSender: AsyncSender;
     tokens: SwapTokenMap;
@@ -140,7 +144,7 @@ export class SwapTab extends React.Component<
     selectedToken1?: string;
     selectedPair: SwapPair;
     selectedPairRoutes: string[][];
-    notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
+    notify: (type: 'success' | 'error' | 'errorWithHash', msg: string, closesAfterMs?: number, txHash?: string) => void;
     onSetTokens: CallableFunction;
     refreshPools: CallableFunction;
     secretAddress: string;
@@ -178,7 +182,7 @@ export class SwapTab extends React.Component<
       spread: 0,
       commission: 0,
       priceImpact: 0,
-      slippageTolerance: new BigNumber(0.5 / 100),
+      slippageTolerance: new BigNumber(DEFAULT_SLIPPAGE),
       buttonMessage: BUTTON_MSG_ENTER_AMOUNT,
       loadingSwap: false,
       loadingBestRoute: false,
@@ -758,11 +762,14 @@ export class SwapTab extends React.Component<
                 }
               } catch (error) {
                 console.error('Swap error', error);
+                const txHash = error?.txHash;
                 this.props.notify(
-                  'error',
+                  'errorWithHash',
                   `Error swapping ${fromInput} ${this.props.tokens.get(fromToken).symbol} for ${
                     this.props.tokens.get(toToken).symbol
-                  }: ${error.message}`,
+                  }: ${error.message} ${txHash ? '\nTx Hash: ' + txHash : ''}`,
+                  undefined,
+                  txHash,
                 );
                 return;
               } finally {

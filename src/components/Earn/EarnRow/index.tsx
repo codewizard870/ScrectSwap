@@ -180,7 +180,12 @@ class EarnRow extends Component<
               unlockSubtitle={'Available to Deposit'}
               onUnlock={value => {
                 if (value) {
-                  this.props.notify('success', `Created a viewing key for s${this.props.token.display_props.symbol}`);
+                  this.props.notify(
+                    'success',
+                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
+                      this.props.token.display_props.symbol
+                    }`,
+                  );
                 } else {
                   this.props.notify(
                     'error',
@@ -205,7 +210,9 @@ class EarnRow extends Component<
                 if (value) {
                   this.props.notify(
                     'success',
-                    `Created a viewing key for s${this.props.token.display_props.symbol} rewards`,
+                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
+                      this.props.token.display_props.symbol
+                    } rewards`,
                   );
                 } else {
                   this.props.notify(

@@ -10,6 +10,7 @@ import { displayHumanizedBalance, humanizeBalance } from 'utils/formatNumber';
 import { useStores } from 'stores';
 import { fixUnlockToken, unlockToken } from 'utils';
 import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
+import { CosmWasmClient } from 'secretjs';
 
 export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: any }) => {
   let { user } = useStores();
@@ -61,7 +62,7 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
         userBalancePromise = new BigNumber(balance);
       }
     } else {
-      userBalancePromise = await getNativeBalance(user.address, user.secretjs);
+      userBalancePromise = await getNativeBalance(user.address, user.secretjsSend);
     }
 
     return userBalancePromise ;

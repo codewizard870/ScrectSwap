@@ -366,7 +366,7 @@ export class SwapRouter extends React.Component<
         userBalancePromise = new BigNumber(balance);
       }
     } else {
-      userBalancePromise = await getNativeBalance(this.props.user.address, this.props.user.secretjs);
+      userBalancePromise = await getNativeBalance(this.props.user.address, this.props.user.secretjsSend);
     }
     this.symbolUpdateHeightCache[tokenSymbol] = height;
     return { [tokenSymbol]: userBalancePromise };
@@ -803,6 +803,7 @@ export class SwapRouter extends React.Component<
                 <ProvideTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   pairs={this.state.pairs}
@@ -817,6 +818,7 @@ export class SwapRouter extends React.Component<
                 <WithdrawTab
                   user={this.props.user}
                   secretjs={this.props.user.secretjs}
+                  secretjsSender={this.props.user.secretjsSend}
                   tokens={this.state.allTokens}
                   balances={this.state.balances}
                   pairs={this.state.pairs}

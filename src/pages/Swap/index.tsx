@@ -120,12 +120,25 @@ export class SwapRouter extends React.Component<
             continue;
           }
 
-          balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
+          if (
+            !new BigNumber(this.state.balances[`${pair.liquidity_token}-total-supply`] as any).isEqualTo(
+              new BigNumber(pool.total_share),
+            )
+          ) {
+            balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
+          }
 
-          balances[`${id0}-${pair.identifier()}`] = new BigNumber(pool.assets[0].amount);
-          balances[`${id1}-${pair.identifier()}`] = new BigNumber(pool.assets[1].amount);
+          if (!new BigNumber(balances[`${id0}-${pair.identifier()}`]).isEqualTo(new BigNumber(pool.assets[0].amount))) {
+            balances[`${id0}-${pair.identifier()}`] = new BigNumber(pool.assets[0].amount);
+          }
+
+          if (!new BigNumber(balances[`${id1}-${pair.identifier()}`]).isEqualTo(new BigNumber(pool.assets[1].amount))) {
+            balances[`${id1}-${pair.identifier()}`] = new BigNumber(pool.assets[1].amount);
+          }
         }
-        this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
+        if (Object.keys(balances).length > 0) {
+          this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
+        }
       }, 1000);
     }
   }
@@ -172,7 +185,6 @@ export class SwapRouter extends React.Component<
       console.log('updated state');
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
-
   }
 
   async componentDidMount() {
@@ -197,7 +209,6 @@ export class SwapRouter extends React.Component<
 
     this.setState({ balances: { ...this.state.balances, ...sScrtBalance } });
 
-
     while (!this.props.user.secretjs) {
       await sleep(100);
     }
@@ -213,10 +224,23 @@ export class SwapRouter extends React.Component<
   }
 
   private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
+    if (!height) {
+      height = await this.props.user.secretjs.getHeight();
+    }
 
-    const balanceTasks = [];
+    //console.log(`Hello from refreshBalances for height: ${height}`);
+    const tokenBalances = (
+      await Promise.all(
+        tokens.map(async s => {
+          return { [s]: await this.refreshTokenBalance(s, height) };
+        }),
+      )
+    ).reduce((balances, value) => {
+      return { ...balances, ...value };
+    }, {});
 
     // these will return a list of promises, which we will flatten then map to a single object
+    const balanceTasks = [];
     if (pair) {
       balanceTasks.push(this.refreshLpTokenBalance(pair));
       if (process.env.ENV === 'DEV') {
@@ -240,6 +264,7 @@ export class SwapRouter extends React.Component<
       balances: {
         ...currentState.balances,
         ...newObject,
+        ...tokenBalances,
       },
     }));
 

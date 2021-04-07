@@ -613,6 +613,8 @@ export class SwapTab extends React.Component<
                     isFromEstimated: this.state.isToEstimated,
                   },
                   async () => {
+                    this.setState({ bestRoute: null });
+
                     this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
                     this.updateInputs();
@@ -928,6 +930,8 @@ export class SwapTab extends React.Component<
 
   private async setToToken(identifier: string) {
     const setStateCallback = async () => {
+      this.setState({ bestRoute: null });
+
       this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.fromToken) {
@@ -963,6 +967,8 @@ export class SwapTab extends React.Component<
 
   private async setFromToken(identifier: string) {
     const setStateCallback = async () => {
+      this.setState({ bestRoute: null });
+
       this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.toToken) {

@@ -49,7 +49,7 @@ export const SwapPageWrapper = observer(() => {
     secretSwapPools.init({
       isLocal: true,
       sorter: 'none',
-      pollingInterval: 60000,
+      pollingInterval: 20000,
     });
     secretSwapPools.fetch();
   }

@@ -475,8 +475,7 @@ export class SwapRouter extends React.Component<
       selectedPairRoutes: routes,
     });
 
-    const height = await this.props.user.secretjs.getHeight();
-    await this.refreshBalances({ height, tokens: [token0, token1], pair: selectedPair });
+    this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
   };
 
   updatePairs = async () => {

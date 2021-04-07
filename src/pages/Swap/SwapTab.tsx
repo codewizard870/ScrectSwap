@@ -702,7 +702,7 @@ export class SwapTab extends React.Component<
                 let expected_return = canonToInput
                   .multipliedBy(new BigNumber(1).minus(slippageTolerance))
                   .toFormat(0, { groupSeparator: '' });
-                if (expected_return === '0') {
+                if (Number(expected_return) < 1) {
                   // make sure even low value trade won't lose funds
                   expected_return = '1';
                 }

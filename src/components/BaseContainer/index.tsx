@@ -4,7 +4,7 @@ import { Head } from 'components';
 import { MainFooter } from 'components';
 import { withTheme } from 'styled-components';
 import { IStyledChildrenProps } from 'interfaces';
-//import * as styles from './styles.styl';
+import './notifications.css';
 import Header from '../Header/Header';
 
 export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
@@ -17,20 +17,22 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
         {/*<div className={styles.blur} />*/}
         <div
           style={{
-            height: '100%',
+            minHeight: '100%',
             width: '100vw',
+            overflow:'auto',
           }}
         >
           <Header />
           <Box
             style={{
               width:'100%',
-              height: 'calc(100vh - 116px)',
+              minHeight: 'calc(100vh - 116px)',
               marginTop:'42px',
               background: 'linear-gradient(180deg, #FFFFFF 0%, #F8EC99 180.99%)'
             }}
             {...props}
           >
+            <div id="notifications_container"></div>
             {children}
           </Box>
           {/* <MainFooter /> */}

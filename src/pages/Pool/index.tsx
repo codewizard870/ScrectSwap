@@ -760,7 +760,7 @@ export class SwapRouter extends React.Component<
     }
 
     const { hide } = cogoToast[type](msg, {
-      position: 'top-right',
+      toastContainerID:'notifications_container', 
       hideAfter: hideAfterSec,
       onClick: () => {
         hide();

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from 'grommet';
 import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
@@ -32,26 +32,31 @@ import { SecretSwapPools } from 'stores/SecretSwapPools';
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, tokens, secretSwapPairs, secretSwapPools } = useStores();
-  secretSwapPairs.init({
-    isLocal: true,
-    sorter: 'none',
-    pollingInterval: 60000,
-  });
-  secretSwapPairs.fetch();
+
+  useEffect(() => {
+    secretSwapPairs.init({
+      isLocal: true,
+      sorter: 'none',
+      pollingInterval: 60000,
+    });
+    secretSwapPairs.fetch();
+
+    if (process.env.ENV !== 'DEV') {
+      tokens.init();
+
+      secretSwapPools.init({
+        isLocal: true,
+        sorter: 'none',
+        pollingInterval: 20000,
+      });
+      secretSwapPools.fetch();
+    }
+  }, []);
 
   if (process.env.ENV === 'DEV') {
     tokens = { allData: JSON.parse(process.env.AMM_TOKENS) } as Tokens;
     secretSwapPairs = { allData: JSON.parse(process.env.AMM_PAIRS) } as SecretSwapPairs;
     secretSwapPools = null;
-  } else {
-    tokens.init();
-
-    secretSwapPools.init({
-      isLocal: true,
-      sorter: 'none',
-      pollingInterval: 20000,
-    });
-    secretSwapPools.fetch();
   }
 
   return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} />;
@@ -82,7 +87,6 @@ export class SwapRouter extends React.Component<
 
   constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools }) {
     super(props);
-    window.onhashchange = this.onHashChange;
     this.state = {
       allTokens: new Map<string, SwapToken>(),
       balances: {},
@@ -194,6 +198,7 @@ export class SwapRouter extends React.Component<
   }
 
   async componentDidMount() {
+    window.onhashchange = this.onHashChange;
     window.addEventListener('storage', this.updateTokens);
     window.addEventListener('updatePairsAndTokens', this.updatePairs);
 
@@ -421,6 +426,7 @@ export class SwapRouter extends React.Component<
     //   }
     // }
 
+    window.onhashchange = null;
     window.removeEventListener('storage', this.updateTokens);
     window.removeEventListener('updatePairsAndTokens', this.updatePairs);
   }

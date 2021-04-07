@@ -4,7 +4,7 @@ import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
-import { fixUnlockToken, sleep, unlockToken } from 'utils';
+import { fixUnlockToken, sleep, sortedStringify, unlockToken } from 'utils';
 import { UserStoreEx } from 'stores/UserStore';
 import { observer } from 'mobx-react';
 import { SwapTab } from './SwapTab';
@@ -128,12 +128,18 @@ export class SwapRouter extends React.Component<
             balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
           }
 
-          if (!new BigNumber(balances[`${id0}-${pair.identifier()}`]).isEqualTo(new BigNumber(pool.assets[0].amount))) {
-            balances[`${id0}-${pair.identifier()}`] = new BigNumber(pool.assets[0].amount);
+          const pool0 = `${id0}-${pair.identifier()}`;
+          const pool0Amount = new BigNumber(pool.assets[0].amount);
+
+          if (!new BigNumber(this.state.balances[pool0] as any).isEqualTo(pool0Amount)) {
+            balances[pool0] = pool0Amount;
           }
 
-          if (!new BigNumber(balances[`${id1}-${pair.identifier()}`]).isEqualTo(new BigNumber(pool.assets[1].amount))) {
-            balances[`${id1}-${pair.identifier()}`] = new BigNumber(pool.assets[1].amount);
+          const pool1 = `${id1}-${pair.identifier()}`;
+          const pool1Amount = new BigNumber(pool.assets[1].amount);
+
+          if (!new BigNumber(this.state.balances[pool1] as any).isEqualTo(pool1Amount)) {
+            balances[pool1] = pool1Amount;
           }
         }
         if (Object.keys(balances).length > 0) {

@@ -699,9 +699,13 @@ export class SwapTab extends React.Component<
                 // expected_return: at least ask_amount minus some slippage
 
                 //const ask_amount = canonToInput;
-                const expected_return = canonToInput
+                let expected_return = canonToInput
                   .multipliedBy(new BigNumber(1).minus(slippageTolerance))
                   .toFormat(0, { groupSeparator: '' });
+                if (expected_return === '0') {
+                  // make sure even low value trade won't lose funds
+                  expected_return = '1';
+                }
 
                 if (fromToken === 'uscrt') {
                   let result: ExecuteResult;

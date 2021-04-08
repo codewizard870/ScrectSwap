@@ -370,7 +370,7 @@ export class SwapTab extends React.Component<
         if (this.state.isToEstimated) {
           const toDecimals = this.props.tokens.get(toToken).decimals;
           this.setState({
-            toInput: bestRouteToInput.toFixed(toDecimals),
+            toInput: bestRouteToInput.toFixed(toDecimals, BigNumber.ROUND_DOWN),
             bestRoute,
             commission: (0.3 / 100) * bestRouteToInput.toNumber(), // always denominated in toToken
             priceImpact: bestRoutePriceImpact,
@@ -379,7 +379,7 @@ export class SwapTab extends React.Component<
           // isFromEstimated
           const fromDecimals = this.props.tokens.get(fromToken).decimals;
           this.setState({
-            fromInput: bestRouteFromInput.toFixed(fromDecimals),
+            fromInput: bestRouteFromInput.toFixed(fromDecimals, BigNumber.ROUND_UP),
             bestRoute,
             commission: (0.3 / 100) * Number(this.state.toInput), // always denominated in toToken
             priceImpact: bestRoutePriceImpact,
@@ -460,7 +460,7 @@ export class SwapTab extends React.Component<
       } else {
         this.setState({
           isFromEstimated: false,
-          toInput: return_amount.isLessThan(0) ? '' : return_amount.toFixed(toDecimals),
+          toInput: return_amount.isLessThan(0) ? '' : return_amount.toFixed(toDecimals, BigNumber.ROUND_DOWN),
           isToEstimated: return_amount.isGreaterThanOrEqualTo(0),
           spread: spread_amount.toNumber(),
           commission: commission_amount.toNumber(),
@@ -484,7 +484,7 @@ export class SwapTab extends React.Component<
       } else {
         this.setState({
           isToEstimated: false,
-          fromInput: offer_amount.isLessThan(0) ? '' : offer_amount.toFixed(fromDecimals),
+          fromInput: offer_amount.isLessThan(0) ? '' : offer_amount.toFixed(fromDecimals, BigNumber.ROUND_UP),
           isFromEstimated: offer_amount.isGreaterThanOrEqualTo(0),
           spread: spread_amount.toNumber(),
           commission: commission_amount.toNumber(),

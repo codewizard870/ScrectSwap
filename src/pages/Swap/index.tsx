@@ -24,7 +24,7 @@ import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import cogoToast from 'cogo-toast';
 import { pairIdFromTokenIds, PairMap, SwapPair } from './types/SwapPair';
 import { KeplrButton } from '../../components/Secret/KeplrButton';
-import { Asset, NativeToken, Token } from './types/trade';
+import { NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
@@ -226,13 +226,13 @@ export class SwapRouter extends React.Component<
 
     while (true) {
       try {
-    const routerSupportedTokens: Set<string> = new Set(
-      await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
-        supported_tokens: {},
-      }),
-    );
-    routerSupportedTokens.add('uscrt');
-    this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
+        const routerSupportedTokens: Set<string> = new Set(
+          await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
+            supported_tokens: {},
+          }),
+        );
+        routerSupportedTokens.add('uscrt');
+        this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
         return;
       } catch (error) {
         await sleep(2000);

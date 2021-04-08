@@ -182,6 +182,12 @@ export class SwapTab extends React.Component<
     loadingBestRouteCount: number;
     bestRoute: string[];
     loadingPriceData: boolean;
+    allRoutesOutputs: Array<{
+      route: string[];
+      toOutput?: BigNumber;
+      fromOutput?: BigNumber;
+      priceImpacts: number[];
+    }>;
   }
 > {
   constructor(props) {
@@ -200,10 +206,11 @@ export class SwapTab extends React.Component<
       slippageTolerance: new BigNumber(DEFAULT_SLIPPAGE),
       buttonMessage: BUTTON_MSG_ENTER_AMOUNT,
       loadingSwap: false,
+      loadingPriceData: false,
       loadingBestRoute: false,
       loadingBestRouteCount: 0,
       bestRoute: null,
-      loadingPriceData: false,
+      allRoutesOutputs: [],
     };
   }
 
@@ -256,7 +263,7 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    this.setState({ loadingBestRoute: true, loadingBestRouteCount: 0, bestRoute: null });
+    this.setState({ loadingBestRoute: true, loadingBestRouteCount: 0, bestRoute: null, allRoutesOutputs: [] });
     try {
       let { fromToken, toToken, fromInput, toInput } = this.state;
 
@@ -268,6 +275,12 @@ export class SwapTab extends React.Component<
       }
 
       let bestRoute: string[] = null;
+      let allRoutesOutputs: Array<{
+        route: string[];
+        toOutput?: BigNumber;
+        fromOutput?: BigNumber;
+        priceImpacts: number[];
+      }> = [];
       let bestRouteToInput = new BigNumber(0);
       let bestRouteFromInput = new BigNumber(Infinity);
       let bestRoutePriceImpact = 0;
@@ -312,6 +325,8 @@ export class SwapTab extends React.Component<
               from = return_amount;
             }
           }
+
+          allRoutesOutputs.push({ route, toOutput: to, priceImpacts });
 
           if (to.isGreaterThan(bestRouteToInput)) {
             bestRouteToInput = to;
@@ -358,6 +373,8 @@ export class SwapTab extends React.Component<
             }
           }
 
+          allRoutesOutputs.push({ route, fromOutput: from, priceImpacts });
+
           if (from.isLessThan(bestRouteFromInput)) {
             bestRouteFromInput = from;
             bestRoute = route;
@@ -374,6 +391,7 @@ export class SwapTab extends React.Component<
             bestRoute,
             commission: (0.3 / 100) * bestRouteToInput.toNumber(), // always denominated in toToken
             priceImpact: bestRoutePriceImpact,
+            allRoutesOutputs,
           });
         } else {
           // isFromEstimated
@@ -383,6 +401,7 @@ export class SwapTab extends React.Component<
             bestRoute,
             commission: (0.3 / 100) * Number(this.state.toInput), // always denominated in toToken
             priceImpact: bestRoutePriceImpact,
+            allRoutesOutputs,
           });
         }
       } else {
@@ -401,7 +420,7 @@ export class SwapTab extends React.Component<
   }
 
   async updateInputs() {
-    this.setState({ bestRoute: null });
+    this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
     // const pair = this.props.selectedPair;
     const routes = this.props.selectedPairRoutes;
@@ -613,7 +632,7 @@ export class SwapTab extends React.Component<
                     isFromEstimated: this.state.isToEstimated,
                   },
                   async () => {
-                    this.setState({ bestRoute: null });
+                    this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
                     await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
@@ -656,6 +675,7 @@ export class SwapTab extends React.Component<
               isLoading={this.state.loadingBestRoute}
               loadingCount={`${this.state.loadingBestRouteCount}/${this.props.selectedPairRoutes.length}`}
               route={this.state.bestRoute}
+              allRoutesOutputs={this.state.allRoutesOutputs}
             />
           )}
           <Button
@@ -930,7 +950,7 @@ export class SwapTab extends React.Component<
 
   private async setToToken(identifier: string) {
     const setStateCallback = async () => {
-      this.setState({ bestRoute: null });
+      this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
       await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
@@ -967,7 +987,7 @@ export class SwapTab extends React.Component<
 
   private async setFromToken(identifier: string) {
     const setStateCallback = async () => {
-      this.setState({ bestRoute: null });
+      this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
       await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 

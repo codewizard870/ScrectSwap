@@ -93,7 +93,9 @@ export const RouteRow = ({
         }
         content={
           <div>
-            <div>Routing through these tokens resulted in the best price for your trade.</div>
+            <div>
+              <strong>Routing through these tokens resulted in the best price for your trade.</strong>
+            </div>
             {allRoutesOutputs
               .sort((a, b) => {
                 if (a.toOutput) {

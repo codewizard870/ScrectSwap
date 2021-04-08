@@ -235,8 +235,8 @@ export class SwapRouter extends React.Component<
         this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
         return;
       } catch (error) {
-        await sleep(2000);
         console.log('Retrying to get supported tokens from router');
+        await sleep(3000);
       }
     }
   }
@@ -636,6 +636,7 @@ export class SwapRouter extends React.Component<
                   refreshPools={this.refreshBalances}
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
+                  isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
                 />
               )}
               {isProvide && (

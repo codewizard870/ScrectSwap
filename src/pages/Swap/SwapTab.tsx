@@ -22,11 +22,12 @@ import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
-const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';
+const BUTTON_MSG_NO_ROUTE = 'Cannot find a route';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
 const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
 const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
+const BUTTON_MSG_SELECT_TOKEN = 'Select a token';
 
 function executeRouterSwap(
   secretjsSender: AsyncSender,
@@ -164,6 +165,7 @@ export class SwapTab extends React.Component<
     refreshPools: CallableFunction;
     secretAddress: string;
     pairs: PairMap;
+    isLoadingSupportedTokens: boolean;
   },
   {
     fromToken: string;
@@ -422,10 +424,9 @@ export class SwapTab extends React.Component<
   async updateInputs() {
     this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
-    // const pair = this.props.selectedPair;
     const routes = this.props.selectedPairRoutes;
 
-    if (/* !pair && */ routes.length === 0) {
+    if (routes.length === 0) {
       this.setState({
         fromInput: '',
         isFromEstimated: false,
@@ -435,84 +436,7 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    // if (!pair && routes.length > 0) {
     this.updateInputsFromBestRoute();
-    return;
-    // }
-
-    /*  this.setState({ loadingPriceData: true });
-
-    const fromDecimals = this.props.tokens.get(this.state.fromToken).decimals;
-    const toDecimals = this.props.tokens.get(this.state.toToken).decimals;
-
-    // we normalize offer_pool & ask_pool
-    // we could also canonicalize offer_amount & ask_amount
-    // but this way is less code because we get the results normalized
-    const offer_pool = humanizeBalance(
-      new BigNumber(this.props.balances[`${this.state.fromToken}-${pair.identifier()}`] as any),
-      fromDecimals,
-    );
-    const ask_pool = humanizeBalance(
-      new BigNumber(this.props.balances[`${this.state.toToken}-${pair.identifier()}`] as any),
-      toDecimals,
-    );
-
-    if (offer_pool.isNaN() || ask_pool.isNaN() || offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
-      this.setState({ loadingPriceData: false });
-      return;
-    }
-
-    if (this.state.isToEstimated) {
-      const offer_amount = new BigNumber(this.state.fromInput);
-
-      const { return_amount, spread_amount, commission_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
-
-      if (return_amount.isNaN() || this.state.fromInput === '') {
-        this.setState({
-          isFromEstimated: false,
-          toInput: '',
-          isToEstimated: false,
-          spread: 0,
-          commission: 0,
-          priceImpact: 0,
-        });
-      } else {
-        this.setState({
-          isFromEstimated: false,
-          toInput: return_amount.isLessThan(0) ? '' : return_amount.toFixed(toDecimals, BigNumber.ROUND_DOWN),
-          isToEstimated: return_amount.isGreaterThanOrEqualTo(0),
-          spread: spread_amount.toNumber(),
-          commission: commission_amount.toNumber(),
-          priceImpact: spread_amount.dividedBy(return_amount).toNumber(),
-        });
-      }
-    } else if (this.state.isFromEstimated) {
-      const ask_amount = new BigNumber(this.state.toInput);
-
-      const { offer_amount, spread_amount, commission_amount } = compute_offer_amount(offer_pool, ask_pool, ask_amount);
-
-      if (offer_amount.isNaN() || this.state.toInput === '') {
-        this.setState({
-          isToEstimated: false,
-          fromInput: '',
-          isFromEstimated: false,
-          spread: 0,
-          commission: 0,
-          priceImpact: 0,
-        });
-      } else {
-        this.setState({
-          isToEstimated: false,
-          fromInput: offer_amount.isLessThan(0) ? '' : offer_amount.toFixed(fromDecimals, BigNumber.ROUND_UP),
-          isFromEstimated: offer_amount.isGreaterThanOrEqualTo(0),
-          spread: spread_amount.toNumber(),
-          commission: commission_amount.toNumber(),
-          priceImpact: spread_amount.dividedBy(ask_amount).toNumber(),
-        });
-      }
-    }
-
-    this.setState({ loadingPriceData: false }); */
   }
 
   render() {
@@ -539,7 +463,9 @@ export class SwapTab extends React.Component<
     const canonToInput = canonicalizeBalance(new BigNumber(this.state.toInput), toDecimals);
 
     let buttonMessage: string;
-    if (this.state.loadingPriceData) {
+    if (this.state.toToken === '' || this.state.fromToken === '') {
+      buttonMessage = BUTTON_MSG_SELECT_TOKEN;
+    } else if (this.state.loadingPriceData || this.props.isLoadingSupportedTokens) {
       buttonMessage = BUTTON_MSG_LOADING_PRICE;
     } else if (this.state.loadingBestRoute) {
       buttonMessage = BUTTON_MSG_FINDING_ROUTE;
@@ -560,7 +486,7 @@ export class SwapTab extends React.Component<
         buttonMessage = BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
       }
     } else if (!pair) {
-      buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
+      buttonMessage = BUTTON_MSG_NO_ROUTE;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {
       buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
     } else if (new BigNumber(fromBalance as BigNumber).isLessThan(canonFromInput)) {
@@ -585,7 +511,7 @@ export class SwapTab extends React.Component<
       isNaN(Number(this.state.toInput) / Number(this.state.fromInput)) ||
       this.state.buttonMessage === BUTTON_MSG_LOADING_PRICE ||
       this.state.buttonMessage === BUTTON_MSG_NOT_ENOUGH_LIQUIDITY ||
-      this.state.buttonMessage === BUTTON_MSG_NO_TRADNIG_PAIR;
+      this.state.buttonMessage === BUTTON_MSG_NO_ROUTE;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
 
     return (

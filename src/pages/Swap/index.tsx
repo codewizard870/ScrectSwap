@@ -224,14 +224,21 @@ export class SwapRouter extends React.Component<
       await sleep(100);
     }
 
+    while (true) {
+      try {
     const routerSupportedTokens: Set<string> = new Set(
       await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
         supported_tokens: {},
       }),
     );
     routerSupportedTokens.add('uscrt');
-
     this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
+        return;
+      } catch (error) {
+        await sleep(2000);
+        console.log('Retrying to get supported tokens from router');
+      }
+    }
   }
 
   private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {

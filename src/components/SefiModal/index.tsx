@@ -4,11 +4,13 @@ import { GetSnip20Params, Snip20TokenInfo } from '../../blockchain-bridge';
 import { CosmWasmClient } from 'secretjs';
 import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import Loader from 'react-loader-spinner'; 
-import { ExitIcon } from '../../ui/Icons/ExitIcon'; 
-import cn from 'classnames';
+import { ExitIcon } from '../../ui/Icons/ExitIcon';
 import {SefiModalState} from './types/SefiModalState';
 import {SefiData} from './types/SefiData';
 import General from './General State';
+import Claim from './Claim/Claim';
+import ClaimCashback from './Claim/ClaimCashback';
+import Loading from './Loading'
 import  './styles.scss';
 import { BigNumber } from 'bignumber.js';
 
@@ -19,7 +21,7 @@ export const SefiModal = (props: {
   // notify?: CallableFunction;
 })=>{
   const [open, setOpen] = React.useState(true);
-  const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
+  const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.LOADING);
   const [data ,setData] = React.useState<SefiData>({
     balance:0,
     unclaimed:7.0000,
@@ -43,17 +45,20 @@ export const SefiModal = (props: {
     >
       <Modal.Header>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>Your SEFI Breakdown</span>
+          {(status === SefiModalState.GENERAL)&& <span>Your SEFI Breakdown</span>}
+          {(status === SefiModalState.CLAIM || status === SefiModalState.CLAIM_CASH_BACK)&& <span>Claim your SEFI tokens</span>}
+          {(status === SefiModalState.LOADING)&& <span>Claiming</span>}
+          {(status === SefiModalState.CONFIRMATION || status === SefiModalState.CONFIRMATION_CASHBACK)&& <span>Claimed SEFI</span>}
           <span style={{ cursor: 'pointer' }} onClick={() => setOpen(false)}>
             <ExitIcon />
           </span>
         </div>
       </Modal.Header>
       <Modal.Content>
-        {
-          (status === SefiModalState.GENERAL) && <General data={data}/>
-          
-        }
+        {(status === SefiModalState.GENERAL) && <General data={data}/>}
+        {(status === SefiModalState.CLAIM) && <Claim data={data}/>}
+        {(status === SefiModalState.CLAIM_CASH_BACK) && <ClaimCashback data={data}/>}
+        {(status === SefiModalState.LOADING) && <Loading data={data}/>}
        
       </Modal.Content>
     </Modal>

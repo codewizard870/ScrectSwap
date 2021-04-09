@@ -32,7 +32,9 @@
   }
   .content {
     color: #5f5f6b;
-    padding: 0 1.5rem !important;
+    padding: 0 1.5rem 1.5rem 1.5rem !important;
+    border-bottom-left-radius:16px !important;
+    border-bottom-right-radius:16px !important;
     div,
     span,
     h1,
@@ -136,12 +138,19 @@
   align-items: center;
 }
 .claim-sefi__container {
-  margin: 0;
+  margin: 0; 
+}
+.claim-sefi__item{
+  margin: 15px 0;
+  color: #1b1b1b;
+  border: 1px solid #d6d6d6;
+  padding: 5px 8px;
+  border-radius: 4px;
 }
 .icon-info__popup {
   background: #5f5f6b !important;
   border-radius: 4px !important;
-  color: #F9FAFA !important;
+  color: #f9fafa !important;
   border: none !important;
   min-width: 350px !important;
   font-family: Poppins, Arial, Helvetica, sans-serif;
@@ -151,7 +160,7 @@
     text-decoration: underline;
     font-size: 12px;
   }
-  p{
+  p {
     font-size: 12px;
   }
   &::before {
@@ -159,4 +168,71 @@
     border-radius: 4px !important;
     border: none !important;
   }
+}
+.small-icon {
+  width: 20px;
+  height: 20px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+.displayed-center {
+  @extend .align-center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  .displayed-center__item {
+    width: 100%;
+    img {
+      width: 50px;
+      margin: 10px 0;
+    }
+  }
+  & span {
+    text-align: start;
+    margin: 5px 0;
+  }
+  & h1 {
+    font-size: 36px;
+    font-weight: 600 !important;
+    color: #1b1b1b !important;
+  }
+  & h1,
+  & p {
+    margin: 5px 0;
+  }
+  & span,
+  & a {
+    margin: 15px 0;
+  }
+  .claim-button {
+    background: #1b1b1b !important;
+    padding: 11px 0;
+    border: none;
+    cursor: pointer;
+    min-height: 46px;
+    border-radius: 4px;
+  }
+}
+
+a {
+  text-decoration: underline;
+  font-weight: 600;
+}
+.loading-sefi{
+  h1{
+    color: #1b1b1b !important;
+    font-weight: 600 !important;
+    font-size: 36px;
+  }
+  span{
+    grid-column: 1 / span 2;
+    color: #0D1017 !important;
+  }
+}
+.loader-container{
+  padding-right: 1.5rem !important;
+}
+.ui.dimmer .ui.loader:after {
+    border-color: #5F5F6B transparent transparent !important;
 }

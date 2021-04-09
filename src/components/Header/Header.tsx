@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom'
 import { Redirect, useHistory } from 'react-router';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../stores';
+import {SefiModal} from '../SefiModal';
 import  "./header.scss";
 // Import Icons
 const Header = () =>{
@@ -24,7 +25,7 @@ const Header = () =>{
                 <div className="menu-left">
                     <img src='/static/secret-swap.svg' alt="brand logo"/>
 
-                    <ul className='nav_menu__items'> 
+                    <ul className='nav_menu__items'>
                         <li className={(isSwap) ? 'active':''}><Link  to={"/swap"}>Swap</Link></li>
                         <li><span>|</span></li>
                         <li  className={(isPool)  ? 'active':''}><Link  to={"/pool"}>Pool</Link></li>
@@ -40,9 +41,13 @@ const Header = () =>{
                     <button className="btn-main">
                         <a href="#">324 SCRT</a>
                     </button>
-                    <button className="btn-secondary">
-                        <a href="#">324 SEFI</a>
-                    </button>
+                    <SefiModal 
+                        trigger={
+                            <button className="btn-secondary">
+                                <a>324 SEFI</a>
+                            </button>
+                        }
+                    />
                 <div className="kpl_images__container">
                     <img  src='/static/key.svg' alt="Keplr Icon"/>
                     <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>

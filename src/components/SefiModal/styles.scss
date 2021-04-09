@@ -1,0 +1,140 @@
+.dimmer {
+  background: rgba(252, 249, 243, 0.7) !important;
+}
+.sefi-modal {
+  max-width: 415px;
+  min-height: 192px;
+  position: absolute !important;
+  right: 144px;
+  top: 74px;
+  font-family: Poppins, Arial, Helvetica, sans-serif;
+  border-radius: 16px !important;
+  box-shadow: 0px 6px 14px -6px rgba(24, 39, 75, 0.12), 0px 10px 32px -4px rgba(24, 39, 75, 0.1) !important;
+  div,
+  span,
+  p,
+  a,
+  button {
+    font-size: 16px;
+  }
+  .header {
+    padding: 26px 26px 16px 26px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+    border-bottom: none !important;
+    div,
+    span,
+    h1,
+    p {
+      font-weight: 600;
+      color: #5f5f6b;
+    }
+  }
+  .content {
+    color: #5f5f6b;
+    padding: 0 1.5rem !important;
+    div,
+    span,
+    h1,
+    p {
+      font-weight: 400;
+      color: #5f5f6b;
+    }
+    button {
+      background: #ff726e;
+      font-weight: 400;
+      color: #fcf9f3;
+      font-family: Poppins, Arial, Helvetica, sans-serif;
+    }
+  }
+}
+
+.sefi-grid__container {
+  display: grid;
+  grid-template-columns: repeat(2, 50%);
+  grid-template-rows: auto;
+  background: #fcf9f3;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 16px 0;
+  .icon_info {
+    color: #ff726e;
+    border: 0.1px solid #ff726e;
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .item {
+    margin: 5px 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+  }
+  .right {
+    justify-content: flex-end;
+    text-align: end;
+  }
+  .left {
+    justify-content: flex-start;
+    text-align: start;
+  }
+  strong {
+    color: #1b1b1b;
+    font-weight: 600;
+  }
+  &.links {
+    a {
+      color: #1b1b1b;
+      text-decoration: underline;
+    }
+  }
+  .primary {
+    a {
+      color: #ff726e;
+    }
+  }
+  .sefi-balance {
+    display: flex;
+    flex-direction: column;
+    background: transparent !important;
+    img {
+      width: 24px;
+    }
+    div,
+    span,
+    h1 {
+      width: 100%;
+      margin: 0;
+    }
+    span,
+    h1 {
+      font-weight: 600;
+      font-size: 22px;
+    }
+    h1 {
+      font-size: 36px;
+      color: #1b1b1b;
+    }
+  }
+}
+.background_free {
+  background: transparent !important;
+}
+.sefi-claim__button {
+  display: flex;
+  min-width: 168px;
+  border-radius: 4px;
+  min-height: 89px;
+  border: none;
+  align-items: center;
+  justify-content: center;
+}
+.align-center{
+  display: flex;
+  align-items: center;
+}
+.claim-sefi__container{
+  margin: 0;
+}

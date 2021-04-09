@@ -1,0 +1,8 @@
+export enum SefiModalState {
+  GENERAL,
+  CLAIM,
+  CLAIM_CASH_BACK,
+  LOADING,
+  CONFIRMATION,
+  CONFIRMATION_CASHBACK
+}

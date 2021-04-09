@@ -131,10 +131,32 @@
   align-items: center;
   justify-content: center;
 }
-.align-center{
+.align-center {
   display: flex;
   align-items: center;
 }
-.claim-sefi__container{
+.claim-sefi__container {
   margin: 0;
+}
+.icon-info__popup {
+  background: #5f5f6b !important;
+  border-radius: 4px !important;
+  color: #F9FAFA !important;
+  border: none !important;
+  min-width: 350px !important;
+  font-family: Poppins, Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  a {
+    color: #ff726e !important;
+    text-decoration: underline;
+    font-size: 12px;
+  }
+  p{
+    font-size: 12px;
+  }
+  &::before {
+    background: #5f5f6b !important;
+    border-radius: 4px !important;
+    border: none !important;
+  }
 }

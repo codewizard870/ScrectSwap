@@ -23,12 +23,22 @@ const GeneralState = (props:{
           <span className='item left'>Balance</span>
           <strong className='item right'>{props.data.balance} </strong>
           <span className='item left'>Unclaimed
-            <Popup trigger={<Icon
-              className="icon_info"
-              name="info"
-              circular
-              size="tiny"/>}
-          />
+            <Popup 
+              className="icon-info__popup" 
+              position='top center'
+              on='click'
+              trigger={
+                <Icon
+                  className="icon_info"
+                  name="info"
+                  circular
+                  size="tiny"
+                />
+              }
+            >
+              <p>When users trade, they acquire cashback tokens. These cashback tokens can be burned to claim SEFI.</p>
+              <a href="#">Learn more about cashback tokens</a>
+            </Popup>
           </span>
           <strong className='item right'> {props.data.unclaimed} </strong>
         </div>

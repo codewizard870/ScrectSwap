@@ -30,8 +30,8 @@ const Header = () =>{
                         <li  className={(isPool)  ? 'active':''}><Link  to={"/pool"}>Pool</Link></li>
                         <li><span>|</span></li>
                         <li  className={(isSeFi) ? 'active':''}><Link  to="/sefi">Earn</Link></li>
-                        <li><span>|</span></li>
-                        <li><Link  to="/">Governance</Link></li> 
+                        {/* <li><span>|</span></li> */}
+                        {/* <li><Link  to="/">Governance</Link></li>  */}
                     </ul>
                 </div>
                 

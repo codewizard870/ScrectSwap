@@ -4,10 +4,10 @@ import { statusFetching, SwapStatus } from '../constants';
 import { ACTION_TYPE, EXCHANGE_MODE, IOperation, ITokenInfo, TOKEN } from './interfaces';
 import * as operationService from 'services';
 import * as contract from '../blockchain-bridge';
-import { balanceNumberFormat, divDecimals, mulDecimals, formatSymbol, uuid } from '../utils';
+import { Snip20SendToBridge, Snip20SwapHash } from '../blockchain-bridge';
+import { balanceNumberFormat, divDecimals, formatSymbol, mulDecimals, uuid } from '../utils';
 import { getNetworkFee } from '../blockchain-bridge/eth/helpers';
 import { web3 } from '../blockchain-bridge/eth';
-import { Snip20SendToBridge, Snip20SwapHash } from '../blockchain-bridge';
 
 export enum EXCHANGE_STEPS {
   BASE = 'BASE',
@@ -16,7 +16,7 @@ export enum EXCHANGE_STEPS {
   CONFIRMATION = 'CONFIRMATION',
   SENDING = 'SENDING',
   RESULT = 'RESULT',
-  CHECK_TRANSACTION = 'CHECK_TRANSACTION'
+  CHECK_TRANSACTION = 'CHECK_TRANSACTION',
 }
 
 export interface IStepConfig {
@@ -41,7 +41,6 @@ export class Exchange extends StoreConstructor {
   @observable isTokenApproved = false;
   @observable tokenApprovedLoading = false;
 
-
   defaultTransaction = {
     scrtAddress: '',
     ethAddress: '',
@@ -55,8 +54,8 @@ export class Exchange extends StoreConstructor {
       symbol: '',
       image: '',
       value: '',
-      src_coin: ''
-    }
+      src_coin: '',
+    },
   };
 
   defaultOperation: IOperation = {
@@ -71,13 +70,12 @@ export class Exchange extends StoreConstructor {
     timestamp: 0,
     token: undefined,
     type: undefined,
-    swap: null
+    swap: null,
   };
 
   @observable transaction = this.defaultTransaction;
   @observable mode: EXCHANGE_MODE = EXCHANGE_MODE.ETH_TO_SCRT;
   @observable token: TOKEN;
-
 
   @computed
   get step() {
@@ -111,8 +109,8 @@ export class Exchange extends StoreConstructor {
       onClickSend: async () => {
         this.transaction.erc20Address = this.stores.userMetamask.erc20Address;
         this.transaction.snip20Address = this.stores.user.snip20Address;
-        this.transaction.loading = false
-        this.stepNumber = EXCHANGE_STEPS.CONFIRMATION
+        this.transaction.loading = false;
+        this.stepNumber = EXCHANGE_STEPS.CONFIRMATION;
 
         switch (this.mode) {
           case EXCHANGE_MODE.ETH_TO_SCRT:
@@ -139,7 +137,7 @@ export class Exchange extends StoreConstructor {
         }
       },
       onClickApprove: async () => {
-        if (this.mode != EXCHANGE_MODE.ETH_TO_SCRT || this.token === TOKEN.ETH) return
+        if (this.mode != EXCHANGE_MODE.ETH_TO_SCRT || this.token === TOKEN.ETH) return;
         this.stepNumber = EXCHANGE_STEPS.APPROVE_CONFIRMATION;
         this.isFeeLoading = true;
         this.ethNetworkFee = await getNetworkFee(Number(process.env.ETH_GAS_LIMIT));
@@ -149,32 +147,30 @@ export class Exchange extends StoreConstructor {
     [EXCHANGE_STEPS.CONFIRMATION]: {
       id: EXCHANGE_STEPS.CONFIRMATION,
       modal: true,
-      onClick: () => this.sendOperation()
+      onClick: () => this.sendOperation(),
     },
     [EXCHANGE_STEPS.APPROVE_CONFIRMATION]: {
       id: EXCHANGE_STEPS.APPROVE_CONFIRMATION,
       modal: true,
-      onClick: () => this.sendOperation()
+      onClick: () => this.sendOperation(),
     },
     [EXCHANGE_STEPS.CHECK_TRANSACTION]: {
       id: EXCHANGE_STEPS.CHECK_TRANSACTION,
       modal: true,
-    }
-  }
+    },
+  };
 
   @action.bound
   async checkTokenApprove(address: string) {
-    this.isTokenApproved = false
-    this.tokenApprovedLoading = true
+    this.isTokenApproved = false;
+    this.tokenApprovedLoading = true;
     try {
       const allowance = await contract.ethMethodsERC20.getAllowance(address);
-      if (Number(allowance) > 0) this.isTokenApproved = true
-      this.tokenApprovedLoading = false
-
+      if (Number(allowance) > 0) this.isTokenApproved = true;
+      this.tokenApprovedLoading = false;
     } catch (error) {
-      this.tokenApprovedLoading = false
+      this.tokenApprovedLoading = false;
     }
-
   }
 
   @action.bound
@@ -205,62 +201,61 @@ export class Exchange extends StoreConstructor {
 
   @action.bound
   fetchStatus(id) {
-
     const fetcher = async () => {
       const result = await operationService.getOperation({ id });
-      const swap = result.swap
-      function isEthHash(addr) { return /^0x([A-Fa-f0-9]{64})$/.test(addr); }
+      const swap = result.swap;
+      function isEthHash(addr) {
+        return /^0x([A-Fa-f0-9]{64})$/.test(addr);
+      }
 
       if (result.operation.transactionHash && isEthHash(result.operation.transactionHash))
-        this.operation.transactionHash = result.operation.transactionHash
+        this.operation.transactionHash = result.operation.transactionHash;
 
       if (swap) {
-        this.operation.status = swap.status
+        this.operation.status = swap.status;
 
-        if (isEthHash(swap.src_tx_hash)) this.operation.transactionHash = swap.src_tx_hash
-        if (isEthHash(swap.dst_tx_hash)) this.operation.transactionHash = swap.dst_tx_hash
+        if (isEthHash(swap.src_tx_hash)) this.operation.transactionHash = swap.src_tx_hash;
+        if (isEthHash(swap.dst_tx_hash)) this.operation.transactionHash = swap.dst_tx_hash;
 
-        this.operation.swap = swap
+        this.operation.swap = swap;
 
         this.operation.type = swap.src_network === 'Ethereum' ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH;
 
         if (this.operation.type === EXCHANGE_MODE.ETH_TO_SCRT) {
           const token = this.stores.tokens.allData.find(t => t.dst_address === swap.dst_address);
           if (token) {
-            this.operation.image = token.display_props.image
-            this.operation.symbol = formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, token.display_props.symbol)
+            this.operation.image = token.display_props.image;
+            this.operation.symbol = formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           }
         } else {
           const token = this.stores.tokens.allData.find(t => t.dst_address === swap.src_coin);
           if (token) {
-            this.operation.image = token.display_props.image
-            this.operation.symbol = formatSymbol(EXCHANGE_MODE.SCRT_TO_ETH, token.display_props.symbol)
+            this.operation.image = token.display_props.image;
+            this.operation.symbol = formatSymbol(EXCHANGE_MODE.SCRT_TO_ETH, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           }
         }
 
         try {
-
-          const etherHash = swap.dst_network === "Ethereum" ? swap.dst_tx_hash : swap.src_tx_hash
-          const blockNumber = await web3.eth.getBlockNumber()
-          const tx = await web3.eth.getTransaction(etherHash)
-          if (tx.blockNumber) this.confirmations = blockNumber - tx.blockNumber
-          if (this.confirmations < 0) this.confirmations = 0
-
-        } catch (error) { }
-
+          const etherHash = swap.dst_network === 'Ethereum' ? swap.dst_tx_hash : swap.src_tx_hash;
+          const blockNumber = await web3.eth.getBlockNumber();
+          const tx = await web3.eth.getTransaction(etherHash);
+          if (tx.blockNumber) this.confirmations = blockNumber - tx.blockNumber;
+          if (this.confirmations < 0) this.confirmations = 0;
+        } catch (error) {}
       }
+    };
 
-    }
+    fetcher();
 
-    fetcher()
-
-    clearInterval(this.fetchOperationInterval)
+    clearInterval(this.fetchOperationInterval);
     this.fetchOperationInterval = setInterval(async () => {
-      fetcher()
-    }, 3000)
-
+      await fetcher();
+      if ([SwapStatus.SWAP_CONFIRMED, SwapStatus.SWAP_FAILED].includes(this.operation.status)) {
+        clearInterval(this.fetchOperationInterval);
+      }
+    }, 2000);
   }
 
   @action.bound
@@ -268,20 +263,19 @@ export class Exchange extends StoreConstructor {
     this.operation = this.defaultOperation;
     this.operation.id = operationId;
     //await this.waitForResult();
-    this.stepNumber = EXCHANGE_STEPS.CHECK_TRANSACTION
+    this.stepNumber = EXCHANGE_STEPS.CHECK_TRANSACTION;
 
-    this.fetchStatus(this.operation.id)
-
+    this.fetchStatus(this.operation.id);
   }
 
   @action.bound
   async createOperation(transactionHash?: string) {
-    clearInterval(this.fetchOperationInterval)
+    clearInterval(this.fetchOperationInterval);
     let params = transactionHash ? { id: uuid(), transactionHash } : { id: uuid() };
-    this.operation = this.defaultOperation
-    this.confirmations = 0
-    this.txHash = ""
-    this.operation.id = params.id
+    this.operation = this.defaultOperation;
+    this.confirmations = 0;
+    this.txHash = '';
+    this.operation.id = params.id;
     await operationService.createOperation(params);
     return this.operation;
   }
@@ -311,20 +305,19 @@ export class Exchange extends StoreConstructor {
   async sendOperation(id: string = '') {
     try {
       this.actionStatus = 'fetching';
-      this.confirmations = 0
+      this.confirmations = 0;
       this.transaction.erc20Address = this.transaction.erc20Address.trim();
       this.transaction.scrtAddress = this.transaction.scrtAddress.trim();
       this.transaction.ethAddress = this.transaction.ethAddress.trim();
-      this.txHash = ''
-      this.transaction.loading = true
-      this.transaction.error = ''
+      this.txHash = '';
+      this.transaction.loading = true;
+      this.transaction.error = '';
 
       if (this.mode === EXCHANGE_MODE.SCRT_TO_ETH) {
         await this.swapSnip20ToEth(this.token === TOKEN.ETH);
       } else if (this.mode === EXCHANGE_MODE.ETH_TO_SCRT) {
-
         if (this.token === TOKEN.ERC20) {
-          await this.checkTokenApprove(this.transaction.erc20Address)
+          await this.checkTokenApprove(this.transaction.erc20Address);
           if (!this.isTokenApproved) {
             await this.approveEcr20();
           } else {
@@ -345,9 +338,7 @@ export class Exchange extends StoreConstructor {
       this.actionStatus = 'error';
       this.operation = null;
     }
-
   }
-
 
   async approveEcr20() {
     this.operation = this.defaultOperation;
@@ -357,60 +348,60 @@ export class Exchange extends StoreConstructor {
     contract.ethMethodsERC20.callApprove(
       this.transaction.erc20Address,
       this.transaction.amount,
-      this.stores.userMetamask.erc20TokenDetails.decimals, async (result) => {
+      this.stores.userMetamask.erc20TokenDetails.decimals,
+      async result => {
         if (result.hash) {
           this.updateOperation(this.operation.id, result.hash);
-          this.tokenApprovedLoading = true
-          this.transaction.loading = true
-          this.txHash = result.hash
+          this.tokenApprovedLoading = true;
+          this.transaction.loading = true;
+          this.txHash = result.hash;
         }
 
         if (result.receipt) {
-          this.isTokenApproved = true
-          this.tokenApprovedLoading = false
-          this.transaction.loading = false
+          this.isTokenApproved = true;
+          this.tokenApprovedLoading = false;
+          this.transaction.loading = false;
         }
 
         if (result.error) {
-          this.tokenApprovedLoading = false
-          this.transaction.loading = false
-          this.transaction.error = result.error.message
+          this.tokenApprovedLoading = false;
+          this.transaction.loading = false;
+          this.transaction.error = result.error.message;
         }
-
-      });
+      },
+    );
   }
 
   async swapErc20ToScrt() {
     this.operation = this.defaultOperation;
 
-
-
     contract.ethMethodsERC20.swapToken(
       this.transaction.erc20Address,
       this.transaction.scrtAddress,
       this.transaction.amount,
-      this.stores.userMetamask.erc20TokenDetails.decimals, async (result) => {
+      this.stores.userMetamask.erc20TokenDetails.decimals,
+      async result => {
         if (result.hash) {
           await this.createOperation(result.hash);
-          this.transaction.loading = false
-          this.txHash = result.hash
-          this.transaction.confirmed = true
+          this.transaction.loading = false;
+          this.txHash = result.hash;
+          this.transaction.confirmed = true;
           this.stores.routing.push('/operations/' + this.operation.id);
           this.fetchStatus(this.operation.id);
         }
 
         if (result.receipt) {
-          this.transaction.loading = false
-          this.transaction.confirmed = result.receipt
+          this.transaction.loading = false;
+          this.transaction.confirmed = result.receipt;
         }
 
         if (result.error) {
-          this.transaction.error = result.error.message
-          this.transaction.loading = false
+          this.transaction.error = result.error.message;
+          this.transaction.loading = false;
           this.operation.status = SwapStatus.SWAP_FAILED;
         }
-
-      });
+      },
+    );
 
     return;
   }
@@ -418,33 +409,30 @@ export class Exchange extends StoreConstructor {
   async swapEthToScrt() {
     this.operation = this.defaultOperation;
 
-
     try {
-      contract.ethMethodsETH.swapEth(this.transaction.scrtAddress, this.transaction.amount, async (result) => {
+      contract.ethMethodsETH.swapEth(this.transaction.scrtAddress, this.transaction.amount, async result => {
         if (result.hash) {
           await this.createOperation(result.hash);
-          this.transaction.loading = false
-          this.txHash = result.hash
-          this.transaction.confirmed = true
+          this.transaction.loading = false;
+          this.txHash = result.hash;
+          this.transaction.confirmed = true;
           this.stores.routing.push('/operations/' + this.operation.id);
           this.fetchStatus(this.operation.id);
         }
 
         if (result.receipt) {
-          this.transaction.loading = false
-          this.transaction.confirmed = true
-
+          this.transaction.loading = false;
+          this.transaction.confirmed = true;
         }
 
         if (result.error) {
-          this.transaction.error = result.error.message
-          this.transaction.loading = false
+          this.transaction.error = result.error.message;
+          this.transaction.loading = false;
           this.operation.status = SwapStatus.SWAP_FAILED;
         }
-
       });
     } catch (error) {
-      console.log('error', error)
+      console.log('error', error);
     }
     return;
   }
@@ -486,24 +474,22 @@ export class Exchange extends StoreConstructor {
         amount,
         msg: btoa(this.transaction.ethAddress),
       });
-      this.transaction.confirmed = true
-      this.transaction.loading = false
-      await this.createOperation(Snip20SwapHash({
-        tx_id,
-        address: proxyContract || this.transaction.snip20Address,
-      }),
+      this.transaction.confirmed = true;
+      this.transaction.loading = false;
+      await this.createOperation(
+        Snip20SwapHash({
+          tx_id,
+          address: proxyContract || this.transaction.snip20Address,
+        }),
       );
       this.stores.routing.push('/operations/' + this.operation.id);
       this.fetchStatus(this.operation.id);
     } catch (e) {
       this.operation.status = SwapStatus.SWAP_FAILED;
-      this.transaction.error = e.message
-      this.transaction.loading = false
+      this.transaction.error = e.message;
+      this.transaction.loading = false;
       //throw e;
     }
-
-
-
   }
 
   clear() {

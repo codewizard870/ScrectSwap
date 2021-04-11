@@ -155,6 +155,11 @@ export const ClaimBoxInfo = (props: { address: string; amount?: string; isClaime
 
   const amountAsNumber = new BigNumber(props.amount);
 
+  const sefiAmount = divDecimals(props.amount, 6);
+  if (sefiAmount === 'NaN') {
+    console.error('Error getting genesis SEFI amount, got', props.amount);
+  }
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -168,7 +173,8 @@ export const ClaimBoxInfo = (props: { address: string; amount?: string; isClaime
         </div>
         <div className={cn(styles.tokenInfoItemsRight)}>
           <h3>
-            {divDecimals(props.amount, 6)} {'SEFI'}
+            {sefiAmount !== 'NaN' ? sefiAmount : <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />}{' '}
+            {'SEFI'}
           </h3>
         </div>
       </div>

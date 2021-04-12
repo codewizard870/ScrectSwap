@@ -1,24 +1,41 @@
-import React from 'react';
+import React,{ useState} from 'react';
 import {Link} from 'react-router-dom'
 import { Redirect, useHistory } from 'react-router';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../stores';
 import {SefiModal} from '../SefiModal';
 import  "./header.scss";
+import { getNativeBalance } from './utils';
+import { BigNumber } from 'bignumber.js';
+import { displayHumanizedBalance, humanizeBalance } from 'utils';
 // Import Icons
 const Header = () =>{
-    const history = useHistory();
-
+    const history = useHistory(); 
+    const { user } = useStores();
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
     const isSeFi = history.location.pathname === '/sefi';
-    const { user } = useStores();
-    
-    const handleSignIn = ()=>{
+    const address_formated =user.address.substring(0,7) +'...' + user.address.substring(user.address.length - 3,user.address.length);
+    const [balance,setBalance] = useState('0.0');
+    const handleSignIn = async()=>{
         if(user.isKeplrWallet){
             user.signIn();
         }
     }
+    async function getBalanceSRCT() {
+        const balanceSCRT  = await getNativeBalance(user.address, user.secretjsSend); 
+        const _balance = displayHumanizedBalance(
+            humanizeBalance(new BigNumber(balanceSCRT as BigNumber), 6),
+            BigNumber.ROUND_DOWN,
+        ) 
+        return _balance;
+    };
+    function displayBalanceSRCT(){
+        getBalanceSRCT().then((res)=>{
+            setBalance(res)
+        })
+    }
+    displayBalanceSRCT();
     return(
         <>
             <nav className="menu"> 
@@ -45,17 +62,17 @@ const Header = () =>{
                             </button>
                         }
                     />
-                    <button className="btn-main">
+                    <div className="btn-main">
                         <div className="wallet-icon">
                             <img src="/static/wallet-icon.svg" alt="wallet icon"/>
                         </div>
-                        <p>secret1...wsk</p>
+                        <p>{address_formated}</p>
                         <span>|</span>
                         <div>
-                            <p className="balance">84,458.258991</p>
-                            <p>scrt</p>
+                            <p className="balance">{balance}</p>
+                            <p>SCRT</p>
                         </div>
-                    </button>
+                    </div>
                 <div className="kpl_images__container">
                     <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>
                 </div>

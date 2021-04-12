@@ -101,6 +101,7 @@ nav {
       }
       p{
         margin: 0;
+        font-size: 16px;
       }
       span{
         padding: 0 10px;
@@ -116,6 +117,7 @@ nav {
 
     .btn-secondary {
       background-color: #ff726e;
+      cursor: pointer;
       border: none;
       padding: 11px 20px;
       text-align: center;

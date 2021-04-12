@@ -11,6 +11,8 @@ import General from './General State';
 import Claim from './Claim/Claim';
 import ClaimCashback from './Claim/ClaimCashback';
 import Loading from './Loading'
+import Confirmation from './Confirmation/Confirmation'
+import ConfirmationCashback from './Confirmation/ConfirmationCashback'
 import  './styles.scss';
 import { BigNumber } from 'bignumber.js';
 
@@ -20,8 +22,8 @@ export const SefiModal = (props: {
   // onClick?: any;
   // notify?: CallableFunction;
 })=>{
-  const [open, setOpen] = React.useState(false);
-  const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.LOADING);
+  const [open, setOpen] = React.useState(true);
+  const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
   const [data ,setData] = React.useState<SefiData>({
     balance:0,
     unclaimed:7.0000,
@@ -59,6 +61,8 @@ export const SefiModal = (props: {
         {(status === SefiModalState.CLAIM) && <Claim data={data}/>}
         {(status === SefiModalState.CLAIM_CASH_BACK) && <ClaimCashback data={data}/>}
         {(status === SefiModalState.LOADING) && <Loading data={data}/>}
+        {(status === SefiModalState.CONFIRMATION) && <Confirmation data={data}/>}
+        {(status === SefiModalState.CONFIRMATION_CASHBACK) && <ConfirmationCashback data={data}/>}
        
       </Modal.Content>
     </Modal>

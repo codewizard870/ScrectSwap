@@ -24,11 +24,12 @@ import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
-const BUTTON_MSG_NO_TRADNIG_PAIR = 'Trading pair does not exist';
+const BUTTON_MSG_NO_ROUTE = 'Cannot find a route';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
 const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
 const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
+const BUTTON_MSG_SELECT_TOKEN = 'Select a token';
 
 function executeRouterSwap(
   secretjsSender: AsyncSender,
@@ -166,6 +167,7 @@ export class SwapTab extends React.Component<
     refreshPools: CallableFunction;
     secretAddress: string;
     pairs: PairMap;
+    isLoadingSupportedTokens: boolean;
   },
   {
     fromToken: string;
@@ -184,6 +186,12 @@ export class SwapTab extends React.Component<
     loadingBestRouteCount: number;
     bestRoute: string[];
     loadingPriceData: boolean;
+    allRoutesOutputs: Array<{
+      route: string[];
+      toOutput?: BigNumber;
+      fromOutput?: BigNumber;
+      priceImpacts: number[];
+    }>;
   }
 > {
   constructor(props) {
@@ -202,10 +210,11 @@ export class SwapTab extends React.Component<
       slippageTolerance: new BigNumber(DEFAULT_SLIPPAGE),
       buttonMessage: BUTTON_MSG_ENTER_AMOUNT,
       loadingSwap: false,
+      loadingPriceData: false,
       loadingBestRoute: false,
       loadingBestRouteCount: 0,
       bestRoute: null,
-      loadingPriceData: false,
+      allRoutesOutputs: [],
     };
   }
 
@@ -258,7 +267,7 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    this.setState({ loadingBestRoute: true, loadingBestRouteCount: 0, bestRoute: null });
+    this.setState({ loadingBestRoute: true, loadingBestRouteCount: 0, bestRoute: null, allRoutesOutputs: [] });
     try {
       let { fromToken, toToken, fromInput, toInput } = this.state;
 
@@ -270,6 +279,12 @@ export class SwapTab extends React.Component<
       }
 
       let bestRoute: string[] = null;
+      let allRoutesOutputs: Array<{
+        route: string[];
+        toOutput?: BigNumber;
+        fromOutput?: BigNumber;
+        priceImpacts: number[];
+      }> = [];
       let bestRouteToInput = new BigNumber(0);
       let bestRouteFromInput = new BigNumber(Infinity);
       let bestRoutePriceImpact = 0;
@@ -314,6 +329,8 @@ export class SwapTab extends React.Component<
               from = return_amount;
             }
           }
+
+          allRoutesOutputs.push({ route, toOutput: to, priceImpacts });
 
           if (to.isGreaterThan(bestRouteToInput)) {
             bestRouteToInput = to;
@@ -360,6 +377,8 @@ export class SwapTab extends React.Component<
             }
           }
 
+          allRoutesOutputs.push({ route, fromOutput: from, priceImpacts });
+
           if (from.isLessThan(bestRouteFromInput)) {
             bestRouteFromInput = from;
             bestRoute = route;
@@ -372,19 +391,21 @@ export class SwapTab extends React.Component<
         if (this.state.isToEstimated) {
           const toDecimals = this.props.tokens.get(toToken).decimals;
           this.setState({
-            toInput: bestRouteToInput.toFixed(toDecimals),
+            toInput: bestRouteToInput.toFixed(toDecimals, BigNumber.ROUND_DOWN),
             bestRoute,
             commission: (0.3 / 100) * bestRouteToInput.toNumber(), // always denominated in toToken
             priceImpact: bestRoutePriceImpact,
+            allRoutesOutputs,
           });
         } else {
           // isFromEstimated
           const fromDecimals = this.props.tokens.get(fromToken).decimals;
           this.setState({
-            fromInput: bestRouteFromInput.toFixed(fromDecimals),
+            fromInput: bestRouteFromInput.toFixed(fromDecimals, BigNumber.ROUND_UP),
             bestRoute,
             commission: (0.3 / 100) * Number(this.state.toInput), // always denominated in toToken
             priceImpact: bestRoutePriceImpact,
+            allRoutesOutputs,
           });
         }
       } else {
@@ -403,12 +424,11 @@ export class SwapTab extends React.Component<
   }
 
   async updateInputs() {
-    this.setState({ bestRoute: null });
+    this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
-    // const pair = this.props.selectedPair;
     const routes = this.props.selectedPairRoutes;
 
-    if (/* !pair && */ routes.length === 0) {
+    if (routes.length === 0) {
       this.setState({
         fromInput: '',
         isFromEstimated: false,
@@ -418,84 +438,7 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    // if (!pair && routes.length > 0) {
     this.updateInputsFromBestRoute();
-    return;
-    // }
-
-    /*  this.setState({ loadingPriceData: true });
-
-    const fromDecimals = this.props.tokens.get(this.state.fromToken).decimals;
-    const toDecimals = this.props.tokens.get(this.state.toToken).decimals;
-
-    // we normalize offer_pool & ask_pool
-    // we could also canonicalize offer_amount & ask_amount
-    // but this way is less code because we get the results normalized
-    const offer_pool = humanizeBalance(
-      new BigNumber(this.props.balances[`${this.state.fromToken}-${pair.identifier()}`] as any),
-      fromDecimals,
-    );
-    const ask_pool = humanizeBalance(
-      new BigNumber(this.props.balances[`${this.state.toToken}-${pair.identifier()}`] as any),
-      toDecimals,
-    );
-
-    if (offer_pool.isNaN() || ask_pool.isNaN() || offer_pool.isEqualTo(0) || ask_pool.isEqualTo(0)) {
-      this.setState({ loadingPriceData: false });
-      return;
-    }
-
-    if (this.state.isToEstimated) {
-      const offer_amount = new BigNumber(this.state.fromInput);
-
-      const { return_amount, spread_amount, commission_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
-
-      if (return_amount.isNaN() || this.state.fromInput === '') {
-        this.setState({
-          isFromEstimated: false,
-          toInput: '',
-          isToEstimated: false,
-          spread: 0,
-          commission: 0,
-          priceImpact: 0,
-        });
-      } else {
-        this.setState({
-          isFromEstimated: false,
-          toInput: return_amount.isLessThan(0) ? '' : return_amount.toFixed(toDecimals),
-          isToEstimated: return_amount.isGreaterThanOrEqualTo(0),
-          spread: spread_amount.toNumber(),
-          commission: commission_amount.toNumber(),
-          priceImpact: spread_amount.dividedBy(return_amount).toNumber(),
-        });
-      }
-    } else if (this.state.isFromEstimated) {
-      const ask_amount = new BigNumber(this.state.toInput);
-
-      const { offer_amount, spread_amount, commission_amount } = compute_offer_amount(offer_pool, ask_pool, ask_amount);
-
-      if (offer_amount.isNaN() || this.state.toInput === '') {
-        this.setState({
-          isToEstimated: false,
-          fromInput: '',
-          isFromEstimated: false,
-          spread: 0,
-          commission: 0,
-          priceImpact: 0,
-        });
-      } else {
-        this.setState({
-          isToEstimated: false,
-          fromInput: offer_amount.isLessThan(0) ? '' : offer_amount.toFixed(fromDecimals),
-          isFromEstimated: offer_amount.isGreaterThanOrEqualTo(0),
-          spread: spread_amount.toNumber(),
-          commission: commission_amount.toNumber(),
-          priceImpact: spread_amount.dividedBy(ask_amount).toNumber(),
-        });
-      }
-    }
-
-    this.setState({ loadingPriceData: false }); */
   }
 
   render() {
@@ -522,7 +465,9 @@ export class SwapTab extends React.Component<
     const canonToInput = canonicalizeBalance(new BigNumber(this.state.toInput), toDecimals);
 
     let buttonMessage: string;
-    if (this.state.loadingPriceData) {
+    if (this.state.toToken === '' || this.state.fromToken === '') {
+      buttonMessage = BUTTON_MSG_SELECT_TOKEN;
+    } else if (this.state.loadingPriceData || this.props.isLoadingSupportedTokens) {
       buttonMessage = BUTTON_MSG_LOADING_PRICE;
     } else if (this.state.loadingBestRoute) {
       buttonMessage = BUTTON_MSG_FINDING_ROUTE;
@@ -543,7 +488,7 @@ export class SwapTab extends React.Component<
         buttonMessage = BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
       }
     } else if (!pair) {
-      buttonMessage = BUTTON_MSG_NO_TRADNIG_PAIR;
+      buttonMessage = BUTTON_MSG_NO_ROUTE;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {
       buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
     } else if (new BigNumber(fromBalance as BigNumber).isLessThan(canonFromInput)) {
@@ -568,7 +513,7 @@ export class SwapTab extends React.Component<
       isNaN(Number(this.state.toInput) / Number(this.state.fromInput)) ||
       this.state.buttonMessage === BUTTON_MSG_LOADING_PRICE ||
       this.state.buttonMessage === BUTTON_MSG_NOT_ENOUGH_LIQUIDITY ||
-      this.state.buttonMessage === BUTTON_MSG_NO_TRADNIG_PAIR;
+      this.state.buttonMessage === BUTTON_MSG_NO_ROUTE;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
     return (
       <>
@@ -614,7 +559,9 @@ export class SwapTab extends React.Component<
                     isFromEstimated: this.state.isToEstimated,
                   },
                   async () => {
-                    this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+                    this.setState({ bestRoute: null, allRoutesOutputs: [] });
+
+                    await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
                     this.updateInputs();
                   },
@@ -655,6 +602,7 @@ export class SwapTab extends React.Component<
               isLoading={this.state.loadingBestRoute}
               loadingCount={`${this.state.loadingBestRouteCount}/${this.props.selectedPairRoutes.length}`}
               route={this.state.bestRoute}
+              allRoutesOutputs={this.state.allRoutesOutputs}
             />
           )}
           <Button
@@ -695,9 +643,13 @@ export class SwapTab extends React.Component<
                 // expected_return: at least ask_amount minus some slippage
 
                 //const ask_amount = canonToInput;
-                const expected_return = canonToInput
+                let expected_return = canonToInput
                   .multipliedBy(new BigNumber(1).minus(slippageTolerance))
                   .toFormat(0, { groupSeparator: '' });
+                if (Number(expected_return) < 1) {
+                  // make sure even low value trade won't lose funds
+                  expected_return = '1';
+                }
 
                 if (fromToken === 'uscrt') {
                   let result: ExecuteResult;
@@ -781,7 +733,7 @@ export class SwapTab extends React.Component<
                   loadingSwap: false,
                 });
               }
-              this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
+              await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
               this.setState({
                 toInput: '',
                 fromInput: '',
@@ -920,7 +872,9 @@ export class SwapTab extends React.Component<
 
   private async setToToken(identifier: string) {
     const setStateCallback = async () => {
-      this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+      this.setState({ bestRoute: null, allRoutesOutputs: [] });
+
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.fromToken) {
         this.updateInputs();
@@ -955,7 +909,9 @@ export class SwapTab extends React.Component<
 
   private async setFromToken(identifier: string) {
     const setStateCallback = async () => {
-      this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+      this.setState({ bestRoute: null, allRoutesOutputs: [] });
+
+      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.toToken) {
         this.updateInputs();

@@ -21,16 +21,18 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
       //Loading 
       if(balance === undefined){
         setBalance(<Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />);
+        console.log("Undefined")
       }
       //Returns View element
       if(JSON.stringify(balance).includes('View')){
         setBalance(balance);
-      } 
-      //Return real value
-      setBalance(displayHumanizedBalance(
-        humanizeBalance(new BigNumber(balance as BigNumber), props.token.decimals),
-        BigNumber.ROUND_DOWN,
-      ));
+      } else{
+        //Return real value
+        setBalance(displayHumanizedBalance(
+          humanizeBalance(new BigNumber(balance as BigNumber), props.token.decimals),
+          BigNumber.ROUND_DOWN,
+        ));
+      }
     });
   }
   

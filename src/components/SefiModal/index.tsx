@@ -22,7 +22,7 @@ export const SefiModal = (props: {
   // onClick?: any;
   // notify?: CallableFunction;
 })=>{
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
   const [data ,setData] = React.useState<SefiData>({
     balance:0,

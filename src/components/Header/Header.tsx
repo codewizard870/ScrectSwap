@@ -37,10 +37,7 @@ const Header = () =>{
                 </div>
                 
                 <div className="menu-right">
-                    
-                    <button className="btn-main">
-                        <a href="#">324 SCRT</a>
-                    </button>
+                     
                     <SefiModal 
                         trigger={
                             <button className="btn-secondary">
@@ -48,8 +45,18 @@ const Header = () =>{
                             </button>
                         }
                     />
+                    <button className="btn-main">
+                        <div className="wallet-icon">
+                            <img src="/static/wallet-icon.svg" alt="wallet icon"/>
+                        </div>
+                        <p>secret1...wsk</p>
+                        <span>|</span>
+                        <div>
+                            <p className="balance">84,458.258991</p>
+                            <p>scrt</p>
+                        </div>
+                    </button>
                 <div className="kpl_images__container">
-                    <img  src='/static/key.svg' alt="Keplr Icon"/>
                     <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>
                 </div>
                 </div>

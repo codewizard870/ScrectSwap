@@ -83,20 +83,34 @@ nav {
     }
 
     .btn-main {
-      background-color: #fcf9f3;
+      background-color: transparent;
       color: #000000;
-      border: none;
-      padding: 11px 20px;
-      text-align: center;
-      text-decoration: none;
+      border: 1px solid #000000;
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1rem;
       border-radius: 5px;
       margin-right: 1rem;
-
-      a {
-        &:hover {
-          color: #000000;
-        }
+      font-family: Poppins,Arial, Helvetica, sans-serif;
+      min-height: 46px;
+      max-height: 46px;
+      div{
+        display: flex;
+      }
+      p{
+        margin: 0;
+      }
+      span{
+        padding: 0 10px;
+      }
+      .balance{
+        font-weight: 600;
+        padding-right: 3px;
+      }
+      .wallet-icon{
+        margin-right: 10px;
       }
     }
 
@@ -109,6 +123,8 @@ nav {
       font-size: 1rem;
       border-radius: 5px;
       margin-right: 1rem;
+      min-height: 46px;
+      max-height: 46px;
 
       a {
         color: #ffffff;
@@ -125,7 +141,6 @@ nav {
 }
 
 .kpl_images__container {
-  width: 90px;
   img {
     width: 35px;
     height: 35px;

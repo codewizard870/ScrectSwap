@@ -67,6 +67,13 @@ export const TokenSelector = (props: {
         {props.tokens.length > 0 ? (
           <div style={{ display: 'flex' }}>
             <input
+              onKeyDown={event => {
+                if (event.key === 'Enter' && filteredTokens.length === 1) {
+                  props?.onClick(filteredTokens[0].address);
+                  setOpen(false);
+                  setSearchText('');
+                }
+              }}
               autoFocus
               className={cn(styles.tokenSelectorSearch)}
               placeholder="Search symbol or paste address"

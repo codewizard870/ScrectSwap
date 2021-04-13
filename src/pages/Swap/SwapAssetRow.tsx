@@ -34,12 +34,6 @@ export const SwapAssetRow = ({
   secretjs: CosmWasmClient;
   disabled?: boolean;
 }) => {
-  const font = {
-    fontWeight: 500,
-    fontSize: '14px',
-    color: 'rgb(86, 90, 105)',
-  };
-
   return (
     <Container
       style={{
@@ -54,7 +48,13 @@ export const SwapAssetRow = ({
           display: 'flex',
         }}
       >
-        <span style={font}>
+        <span
+          style={{
+            fontWeight: 500,
+            fontSize: '14px',
+            color: 'rgb(86, 90, 105)',
+          }}
+        >
           {label}
           {isEstimated ? ` (estimated)` : null}
         </span>

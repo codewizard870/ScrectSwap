@@ -181,7 +181,7 @@ export const SwapConfirmation = observer(() => {
                             {exchange.isFeeLoading ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" /> : <Price
                                 value={Number(formatWithSixDecimals(exchange.swapFeeToken))}
                                 valueUsd={exchange.swapFeeUSD}
-                                token={symbol}
+                                token={formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                                 boxProps={{ pad: {} }}
                             />}
                         </Box>}
@@ -190,10 +190,12 @@ export const SwapConfirmation = observer(() => {
                             <Box direction="row">
                                 <img src={exchange.transaction.tokenSelected.image} style={{ marginRight: 6 }} width="15" />
 
-                                <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>You will recieve</Text>
+                                <Text bold size="large" color="#00ADE8" margin={{ right: 'xxsmall' }}>You will recieve</Text>
                             </Box>
                             {!calculated ? <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" /> :
-                                <Text bold size="small" color={calculated === "0" ? '#f37373' : '#212D5E'}>{calculated} {symbol}</Text>}
+                                <Text bold size="large" color={calculated === "0" ? '#f37373' : '#212D5E'}>
+                                    {calculated} {formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
+                                </Text>}
                         </Box>}
 
                         {isTokenLocked && exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT && <TokenLocked user={user} onFinish={(value) => setTokenLocked(!value)} />}

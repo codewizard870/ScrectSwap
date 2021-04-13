@@ -244,7 +244,7 @@ export const SwapConfirmation = observer(() => {
                   <Price
                     value={Number(formatWithSixDecimals(exchange.swapFeeToken))}
                     valueUsd={exchange.swapFeeUSD}
-                    token={symbol}
+                    token={formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                     boxProps={{ pad: {} }}
                   />
                 )}
@@ -264,7 +264,7 @@ export const SwapConfirmation = observer(() => {
                   <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" />
                 ) : (
                   <Text bold size="small" color={calculated === '0' ? '#f37373' : '#212D5E'}>
-                    {calculated} {symbol}
+                      {calculated} {formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                   </Text>
                 )}
               </Box>

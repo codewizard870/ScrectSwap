@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from 'grommet';
 import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
-import { fixUnlockToken, sleep, unlockToken } from 'utils';
+import { fixUnlockToken, sleep, sortedStringify, unlockToken } from 'utils';
 import { UserStoreEx } from 'stores/UserStore';
 import { observer } from 'mobx-react';
 import { SwapTab } from './SwapTab';
@@ -24,7 +24,7 @@ import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import cogoToast from 'cogo-toast';
 import { pairIdFromTokenIds, PairMap, SwapPair } from './types/SwapPair';
 import { KeplrButton } from '../../components/Secret/KeplrButton';
-import { Asset, NativeToken, Token } from './types/trade';
+import { NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
@@ -32,26 +32,31 @@ import { SecretSwapPools } from 'stores/SecretSwapPools';
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, tokens, secretSwapPairs, secretSwapPools } = useStores();
-  secretSwapPairs.init({
-    isLocal: true,
-    sorter: 'none',
-    pollingInterval: 60000,
-  });
-  secretSwapPairs.fetch();
+
+  useEffect(() => {
+    secretSwapPairs.init({
+      isLocal: true,
+      sorter: 'none',
+      pollingInterval: 60000,
+    });
+    secretSwapPairs.fetch();
+
+    if (process.env.ENV !== 'DEV') {
+      tokens.init();
+
+      secretSwapPools.init({
+        isLocal: true,
+        sorter: 'none',
+        pollingInterval: 20000,
+      });
+      secretSwapPools.fetch();
+    }
+  }, []);
 
   if (process.env.ENV === 'DEV') {
     tokens = { allData: JSON.parse(process.env.AMM_TOKENS) } as Tokens;
     secretSwapPairs = { allData: JSON.parse(process.env.AMM_PAIRS) } as SecretSwapPairs;
     secretSwapPools = null;
-  } else {
-    tokens.init();
-
-    secretSwapPools.init({
-      isLocal: true,
-      sorter: 'none',
-      pollingInterval: 60000,
-    });
-    secretSwapPools.fetch();
   }
 
   return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} />;
@@ -82,7 +87,6 @@ export class SwapRouter extends React.Component<
 
   constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools }) {
     super(props);
-    window.onhashchange = this.onHashChange;
     this.state = {
       allTokens: new Map<string, SwapToken>(),
       balances: {},
@@ -120,12 +124,31 @@ export class SwapRouter extends React.Component<
             continue;
           }
 
-          balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
+          if (
+            !new BigNumber(this.state.balances[`${pair.liquidity_token}-total-supply`] as any).isEqualTo(
+              new BigNumber(pool.total_share),
+            )
+          ) {
+            balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
+          }
 
-          balances[`${id0}-${pair.identifier()}`] = new BigNumber(pool.assets[0].amount);
-          balances[`${id1}-${pair.identifier()}`] = new BigNumber(pool.assets[1].amount);
+          const pool0 = `${id0}-${pair.identifier()}`;
+          const pool0Amount = new BigNumber(pool.assets[0].amount);
+
+          if (!new BigNumber(this.state.balances[pool0] as any).isEqualTo(pool0Amount)) {
+            balances[pool0] = pool0Amount;
+          }
+
+          const pool1 = `${id1}-${pair.identifier()}`;
+          const pool1Amount = new BigNumber(pool.assets[1].amount);
+
+          if (!new BigNumber(this.state.balances[pool1] as any).isEqualTo(pool1Amount)) {
+            balances[pool1] = pool1Amount;
+          }
         }
-        this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
+        if (Object.keys(balances).length > 0) {
+          this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
+        }
       }, 1000);
     }
   }
@@ -172,10 +195,10 @@ export class SwapRouter extends React.Component<
       console.log('updated state');
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
-
   }
 
   async componentDidMount() {
+    window.onhashchange = this.onHashChange;
     window.addEventListener('storage', this.updateTokens);
     window.addEventListener('updatePairsAndTokens', this.updatePairs);
 
@@ -197,26 +220,45 @@ export class SwapRouter extends React.Component<
 
     this.setState({ balances: { ...this.state.balances, ...sScrtBalance } });
 
-
     while (!this.props.user.secretjs) {
       await sleep(100);
     }
 
-    const routerSupportedTokens: Set<string> = new Set(
-      await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
-        supported_tokens: {},
-      }),
-    );
-    routerSupportedTokens.add('uscrt');
-
-    this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
+    while (true) {
+      try {
+        const routerSupportedTokens: Set<string> = new Set(
+          await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
+            supported_tokens: {},
+          }),
+        );
+        routerSupportedTokens.add('uscrt');
+        this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
+        return;
+      } catch (error) {
+        console.log('Retrying to get supported tokens from router');
+        await sleep(3000);
+      }
+    }
   }
 
   private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
+    if (!height) {
+      height = await this.props.user.secretjs.getHeight();
+    }
 
-    const balanceTasks = [];
+    //console.log(`Hello from refreshBalances for height: ${height}`);
+    const tokenBalances = (
+      await Promise.all(
+        tokens.map(async s => {
+          return { [s]: await this.refreshTokenBalance(s, height) };
+        }),
+      )
+    ).reduce((balances, value) => {
+      return { ...balances, ...value };
+    }, {});
 
     // these will return a list of promises, which we will flatten then map to a single object
+    const balanceTasks = [];
     if (pair) {
       balanceTasks.push(this.refreshLpTokenBalance(pair));
       if (process.env.ENV === 'DEV') {
@@ -240,6 +282,7 @@ export class SwapRouter extends React.Component<
       balances: {
         ...currentState.balances,
         ...newObject,
+        ...tokenBalances,
       },
     }));
 
@@ -390,6 +433,7 @@ export class SwapRouter extends React.Component<
     //   }
     // }
 
+    window.onhashchange = null;
     window.removeEventListener('storage', this.updateTokens);
     window.removeEventListener('updatePairsAndTokens', this.updatePairs);
   }
@@ -450,8 +494,7 @@ export class SwapRouter extends React.Component<
       selectedPairRoutes: routes,
     });
 
-    const height = await this.props.user.secretjs.getHeight();
-    await this.refreshBalances({ height, tokens: [token0, token1], pair: selectedPair });
+    this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
   };
 
   updatePairs = async () => {
@@ -593,6 +636,7 @@ export class SwapRouter extends React.Component<
                   refreshPools={this.refreshBalances}
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
+                  isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
                 />
               )}
               {isProvide && (

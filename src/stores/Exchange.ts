@@ -119,6 +119,7 @@ export class Exchange extends StoreConstructor {
             this.isFeeLoading = true;
             this.ethNetworkFee = await getNetworkFee(Number(process.env.ETH_GAS_LIMIT));
             this.isFeeLoading = false;
+            this.swapFeeToken = 0;
             break;
           case EXCHANGE_MODE.SCRT_TO_ETH:
             this.transaction.scrtAddress = this.stores.user.address;

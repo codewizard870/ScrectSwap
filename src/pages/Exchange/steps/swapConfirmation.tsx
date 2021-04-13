@@ -122,7 +122,7 @@ export const SwapConfirmation = observer(() => {
       exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.SCRT_TO_ETH : EXCHANGE_MODE.ETH_TO_SCRT,
       exchange.transaction.tokenSelected.symbol,
     ),
-    amount,
+    amount: formatWithSixDecimals(Number(amount) * (1 - feePercentage)),
     image: tokenImage,
   };
 

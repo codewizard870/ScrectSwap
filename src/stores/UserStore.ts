@@ -253,7 +253,7 @@ export class UserStoreEx extends StoreConstructor {
     while (wait && !this.keplrWallet) {
       await sleep(100);
     }
-    console.log('Found Keplr');
+    console.log('Found Keplr', process.env.CHAIN_ID);
 
     this.chainId = process.env.CHAIN_ID;
 
@@ -321,28 +321,29 @@ export class UserStoreEx extends StoreConstructor {
     try {
       const client = isSigner
         ? new AsyncSender(
-            address,
-            this.address,
-            this.keplrOfflineSigner,
-            // @ts-ignore
-            window.getEnigmaUtils(this.chainId),
-            {
-              init: {
-                amount: [{ amount: '300000', denom: 'uscrt' }],
-                gas: '300000',
-              },
-              exec: {
-                amount: [{ amount: '500000', denom: 'uscrt' }],
-                gas: '500000',
-              },
+          address,
+          this.address,
+          this.keplrOfflineSigner,
+          // @ts-ignore
+          window.getEnigmaUtils(this.chainId),
+          {
+            init: {
+              amount: [{ amount: '300000', denom: 'uscrt' }],
+              gas: '300000',
             },
-            BroadcastMode.Async,
-          )
+            exec: {
+              amount: [{ amount: '500000', denom: 'uscrt' }],
+              gas: '500000',
+            },
+          },
+          BroadcastMode.Async,
+        )
         : new CosmWasmClient(
-            address,
-            // @ts-ignore
-          );
+          address,
+          // @ts-ignore
+        );
       this.syncLocalStorage();
+      this.getBalances();
       return client;
     } catch (error) {
       this.error = error.message;

@@ -3,7 +3,8 @@ import {SefiData} from '../types/SefiData'
 import '../styles.scss';
 
 const Claim = (props:{
-  data:SefiData
+  data:SefiData,
+  onClaim:CallableFunction
 })=>{
   return(
     <>
@@ -31,7 +32,7 @@ const Claim = (props:{
         <h1 className="displayed-center__item">400 SEFI</h1>
         <span className="displayed-center__item">Claim your SEFI to participate in governance and yield opportunities</span>
         <a className="displayed-center__item" href="#">Read more about SEFI</a>
-        <button className="displayed-center__item claim-button"> Claim</button>
+        <button onClick={()=>{props.onClaim()}} className="displayed-center__item claim-button"> Claim</button>
       </div>
     </>
   )

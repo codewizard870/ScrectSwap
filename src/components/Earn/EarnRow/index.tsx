@@ -122,9 +122,6 @@ class EarnRow extends Component<
     return (
       <Accordion
         className={cn(style)}
-        style={{
-          marginTop: '62px',
-        }}
       >
         <Accordion.Title
           active={activeIndex === 0}

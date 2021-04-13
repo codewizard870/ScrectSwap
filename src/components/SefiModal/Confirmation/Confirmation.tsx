@@ -3,7 +3,7 @@ import { Popup ,Icon} from 'semantic-ui-react';
 import {SefiData} from '../types/SefiData' 
 import '../styles.scss';
 import { RightArrow } from 'components/Base/components/Icons/tsx_svg_icons';
-const GeneralState = (props:{
+const Confirmation = (props:{
   data:SefiData
 })=>{
   return(
@@ -32,4 +32,4 @@ const GeneralState = (props:{
   )
 }
 
-export default GeneralState;
+export default Confirmation;

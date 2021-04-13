@@ -11,11 +11,16 @@ import { displayHumanizedBalance, humanizeBalance } from 'utils';
 // Import Icons
 const Header = () =>{
     const history = useHistory(); 
-    const { user } = useStores();
+    const { user, tokens } = useStores();
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
     const isSeFi = history.location.pathname === '/sefi';
-    const address_formated =user.address.substring(0,7) +'...' + user.address.substring(user.address.length - 3,user.address.length);
+    let address_formated;
+    if(user.address){
+        address_formated = (user?.address?.substring(0,7) +'...' + user?.address?.substring(user?.address?.length - 3,user?.address?.length));
+    }else{
+        address_formated = '';
+    }
     const [balance,setBalance] = useState('0.0');
     const handleSignIn = async()=>{
         if(user.isKeplrWallet){
@@ -61,6 +66,8 @@ const Header = () =>{
                                 <a>324 SEFI</a>
                             </button>
                         }
+                        tokens={tokens}
+                        user={user}
                     />
                     <div className="btn-main">
                         <div className="wallet-icon">

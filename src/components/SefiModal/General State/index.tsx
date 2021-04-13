@@ -3,14 +3,15 @@ import { Popup ,Icon} from 'semantic-ui-react';
 import {SefiData} from '../types/SefiData' 
 import '../styles.scss';
 const GeneralState = (props:{
-  data:SefiData
+  data:SefiData,
+  onClaimSefi: CallableFunction
 })=>{
   return(
     <>
        <div className="sefi-grid__container background_free claim-sefi__container">
           <div className="align-center">
             {
-              (props.data.balance > 0) && <button className="sefi-claim__button">Claim Sefi</button>
+              (props.data.balance > 0) && <button onClick={()=>{props.onClaimSefi()}} className="sefi-claim__button">Claim Sefi</button>
             }
           </div>
           <div className="item right sefi-balance">

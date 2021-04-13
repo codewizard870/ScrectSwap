@@ -1,24 +1,21 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Button, Icon, Text, Title } from 'components/Base';
 import { Modal } from 'semantic-ui-react';
 import { Box } from 'grommet';
-import { IStores } from 'stores';
 import * as styles from '../styles.styl';
 import { EXCHANGE_MODE } from 'stores/interfaces';
-import { MobxForm } from 'components/Form';
 import { EXCHANGE_STEPS } from '../../../stores/Exchange';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { Price } from '../../Explorer/Components';
-import { formatWithSixDecimals, truncateAddressString, unlockToken, formatSymbol } from 'utils';
+import { formatSymbol, formatWithSixDecimals, truncateAddressString, unlockToken } from 'utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useStores } from '../../../stores';
-import { TokenLocked } from '../utils';
+import { createNotification, TokenLocked } from '../utils';
 import HeadShake from 'react-reveal/HeadShake';
 import Jump from 'react-reveal/Jump';
-import { createNotification } from '../utils';
 
 type NetworkTemplateInterface = {
   image: string;
@@ -264,7 +261,7 @@ export const SwapConfirmation = observer(() => {
                   <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" />
                 ) : (
                   <Text bold size="small" color={calculated === '0' ? '#f37373' : '#212D5E'}>
-                      {calculated} {formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
+                    {calculated} {formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                   </Text>
                 )}
               </Box>

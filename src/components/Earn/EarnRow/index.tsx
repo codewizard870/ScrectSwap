@@ -11,7 +11,7 @@ import { UserStoreEx } from '../../../stores/UserStore';
 import { observer } from 'mobx-react';
 import WithdrawButton from './WithdrawButton';
 import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
-import { Text } from '../../Base/components/Text';
+import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
 
 interface RewardsToken {

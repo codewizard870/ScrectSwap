@@ -291,7 +291,7 @@ export const SwapConfirmation = observer(() => {
                     color: 'white',
                   }}
                   onClick={() => {
-                    if (exchange.transaction.loading || feePercentage) return;
+                    if (exchange.transaction.loading || isFeeTooHigh()) return;
                     return exchange.step.onClick();
                   }}
                 >

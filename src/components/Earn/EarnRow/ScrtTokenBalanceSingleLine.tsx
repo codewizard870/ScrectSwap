@@ -29,12 +29,11 @@ const ScrtTokenBalanceSingleLine = (props: {
       </div>
     );
   } else {
-    console.log(`price: ${props.price}`);
     const valueBN = new BigNumber(props.value.replace(/,/g, '')).toFixed(6, BigNumber.ROUND_DOWN);
     return (
       <>
         {valueBN} {props.currency}{' '}
-        {props.price ? `(${nFormatter(new BigNumber(props.price).multipliedBy(valueBN).toFixed(2), 1)} USD)` : null}
+        {props.price ? `($${nFormatter(new BigNumber(props.price).multipliedBy(valueBN).toFixed(2), 1)})` : null}
       </>
     );
   }

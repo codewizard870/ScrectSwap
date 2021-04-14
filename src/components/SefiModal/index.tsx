@@ -20,7 +20,7 @@ import { Tokens } from 'stores/Tokens';
 import { UserStoreEx } from 'stores/UserStore';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { displayHumanizedBalance, divDecimals, fixUnlockToken, humanizeBalance, sleep, unlockToken } from 'utils';
-import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
+import { getNativeBalance, wrongViewingKey } from './utils';
 import axios from 'axios'
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
 import numeral from 'numeral'
@@ -33,6 +33,8 @@ export const SefiModal = (props: {
 })=>{
   const [open, setOpen] = React.useState(false);
   const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
+  const [hasViewingKey, setHasViewingKey] = React.useState<Boolean>(true);
+  const [token, setToken] = React.useState<SwapToken>(undefined);
   const [data ,setData] = React.useState<SefiData>({
     balance:'0.0',
     unclaimed:'',
@@ -80,17 +82,12 @@ export const SefiModal = (props: {
       let balance = await props.user.getSnip20Balance(tokenAddress);
 
       if (balance === unlockToken) {
-        balance = unlockJsx({
-          onClick: async () => {
-            await props.user.keplrWallet.suggestToken(props.user.chainId, tokenAddress);
-            // TODO trigger balance refresh if this was an "advanced set" that didn't
-            // result in an on-chain transaction
-          },
-        });
-        userBalancePromise = balance;
+        setHasViewingKey(false);
+
       } else if (balance === fixUnlockToken) {
         userBalancePromise = wrongViewingKey;
       } else {
+        setHasViewingKey(true)
         userBalancePromise = new BigNumber(balance);
       }
     } else {
@@ -114,7 +111,7 @@ export const SefiModal = (props: {
         address: SefiAddress,
         secretjs: props.user.secretjs,
       });
-      console.log(result)
+
       return result?.total_supply || '0';
     } catch (error) {
       console.error(error)
@@ -133,6 +130,14 @@ export const SefiModal = (props: {
       });
     }
   };
+  async function createViewingKey() {
+    try {
+      await props.user.keplrWallet.suggestToken(props.user.chainId, token.address);
+    } catch (e) {
+      console.error("Error at creating new viewing key ",e)
+    }
+    
+  }
   function getFloatFormat(number) {
     let result;
     switch (number.toFixed(0).toString().length) {
@@ -158,6 +163,7 @@ export const SefiModal = (props: {
   }
   function getData():any {
     getSefiToken().then(async(token : SwapToken)=>{
+      setToken(token)
       const balance = await getSefiBalance(token);
       const price = await getSefiPrice()
       const claimInfo = await getClaimInfo();
@@ -169,8 +175,8 @@ export const SefiModal = (props: {
         balance:balance,
         sefi_price:price,
         unclaimed: divDecimals(claimInfo?.amount.toString() || '0', 6),
-        total_supply: '0.0',
-        sefi_in_circulation: totalSupply_formatted,
+        total_supply: totalSupply_formatted,
+        sefi_in_circulation: '0.0',
       })
     });
   }
@@ -183,7 +189,7 @@ export const SefiModal = (props: {
     console.log('Claiming SEFI...')
     try {
       const result = await claimScrt(props.user.secretjsSend, props.user.address);
-      console.log(result);
+      
       console.log('success', 'Claimed SeFi successfully!');
       setStatus(SefiModalState.CONFIRMATION);
     } catch (e) {
@@ -221,7 +227,7 @@ export const SefiModal = (props: {
         </div>
       </Modal.Header>
       <Modal.Content>
-        {(status === SefiModalState.GENERAL) && <General onClaimSefi={onClaimSefi} data={data}/>}
+        {(status === SefiModalState.GENERAL) && <General createViewingKey={createViewingKey} hasViewingKey={hasViewingKey} onClaimSefi={onClaimSefi} data={data}/>}
         {(status === SefiModalState.CLAIM) && <Claim onClaim={onClaim} data={data}/>}
         {(status === SefiModalState.CLAIM_CASH_BACK) && <ClaimCashback data={data}/>}
         {(status === SefiModalState.LOADING) && <Loading data={data}/>}

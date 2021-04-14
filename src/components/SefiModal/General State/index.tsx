@@ -4,7 +4,9 @@ import {SefiData} from '../types/SefiData'
 import '../styles.scss';
 const GeneralState = (props:{
   data:SefiData,
-  onClaimSefi: CallableFunction
+  onClaimSefi: CallableFunction,
+  createViewingKey: any,
+  hasViewingKey: Boolean
 })=>{
   return(
     <>
@@ -52,8 +54,13 @@ const GeneralState = (props:{
           <strong className='item right'> {props.data.total_supply} </strong>
         </div>
         <div className="sefi-grid__container links background_free">
-              <strong className='item left'><a>View Analytics</a></strong>
-              <strong className='item right primary'><a>Create viewing keys</a></strong>
+              <strong className='item left'><a href="https://secretanalytics.xyz/secretswap" target='_blank'>View Analytics</a></strong>
+              {
+                (!props.hasViewingKey) && 
+                  <strong onClick={props?.createViewingKey} className='item right primary'>
+                    <a>Create viewing keys</a>
+                  </strong>
+              }
         </div>
     </>
   )

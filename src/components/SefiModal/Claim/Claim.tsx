@@ -29,7 +29,7 @@ const Claim = (props:{
           <img src="/static/scrt.svg" alt="scrt"/>
         </div>
         <p className="displayed-center__item">You earned</p>
-        <h1 className="displayed-center__item">400 SEFI</h1>
+        <h1 className="displayed-center__item">{props.data.unclaimed} SEFI</h1>
         <span className="displayed-center__item">Claim your SEFI to participate in governance and yield opportunities</span>
         <a className="displayed-center__item" href="#">Read more about SEFI</a>
         <button onClick={()=>{props.onClaim()}} className="displayed-center__item claim-button"> Claim</button>

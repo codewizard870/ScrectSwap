@@ -19,9 +19,11 @@ import { ITokenInfo } from 'stores/interfaces';
 import { Tokens } from 'stores/Tokens';
 import { UserStoreEx } from 'stores/UserStore';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
-import { displayHumanizedBalance, fixUnlockToken, humanizeBalance, unlockToken } from 'utils';
+import { displayHumanizedBalance, divDecimals, fixUnlockToken, humanizeBalance, sleep, unlockToken } from 'utils';
 import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
 import axios from 'axios'
+import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
+import { notify } from 'pages/Earn';
 
 export const SefiModal = (props: {
   user: UserStoreEx; 
@@ -33,10 +35,10 @@ export const SefiModal = (props: {
   const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
   const [data ,setData] = React.useState<SefiData>({
     balance:0.0,
-    unclaimed:7.0000,
-    sefi_price: 2.89,
-    sefi_in_circulation : '48,896,241',
-    total_supply: '1bn'
+    unclaimed:'',
+    sefi_price: 0.0,
+    sefi_in_circulation : '',
+    total_supply: ''
   });
 
   async function getSefiToken(){
@@ -104,13 +106,28 @@ export const SefiModal = (props: {
     });
     return parseFloat(statsData.data.price);
   }
+  async function getClaimInfo ():Promise<any>{
+    while (!props.user.secretjs) {
+      await sleep(100);
+    }
+    if (props.user.address) {
+      claimInfoScrt(props.user.secretjs, props.user.address).then((claimInfo)=>{
+        return claimInfo;
+      }).catch(() => {
+        return undefined;
+      });
+    }
+  };
+
   function getData():any {
     getSefiBalance().then(async(balance)=>{
       const price = await getSefiPrice()
+      const claimInfo = await getClaimInfo();
       setData({
         ...data,
         balance:parseFloat(balance),
         sefi_price:price,
+        unclaimed: divDecimals(claimInfo?.amount.toString() || '0', 6)
       })
     }) 
   }
@@ -119,9 +136,19 @@ export const SefiModal = (props: {
     setStatus(SefiModalState.CLAIM);
   };
 
-  const onClaim = ()=>{
+  const onClaim = async()=>{
     console.log('Claiming SEFI...')
-    setStatus(SefiModalState.CONFIRMATION);
+    try {
+      const result = await claimScrt(props.user.secretjsSend, props.user.address);
+      console.log(result);
+      console.log('success', 'Claimed SeFi successfully!');
+      setStatus(SefiModalState.CONFIRMATION);
+    } catch (e) {
+      console.error(`failed to claim ${e}`);
+    } finally {
+      await props.user.updateBalanceForSymbol('SEFI');
+      console.log(props.user.balanceToken['SEFI'])
+    }
   };
 
   return(

@@ -250,6 +250,7 @@ class EarnRow extends Component<
                     onChange={this.handleChangeDeposit}
                     balance={this.props.token.balance}
                     currency={this.props.token.lockedAsset}
+                    price={this.props.token.price}
                     balanceText="Available"
                     unlockPopupText='In order to view your available assets, click on "View Balance" above'
                   />
@@ -276,6 +277,7 @@ class EarnRow extends Component<
                     } //({props: this.props, value: this.state.withdrawValue})}
                     balance={this.props.token.deposit}
                     currency={this.props.token.lockedAsset}
+                    price={this.props.token.price}
                     balanceText="Locked"
                     unlockPopupText='In order to view your locked assets, click on "View Balance" below'
                   />

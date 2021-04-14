@@ -37,10 +37,10 @@ export const SefiModal = (props: {
   const [token, setToken] = React.useState<SwapToken>(undefined);
   const [data ,setData] = React.useState<SefiData>({
     balance:'0.0',
-    unclaimed:'',
+    unclaimed:'0.0',
     sefi_price: 0.0,
-    sefi_in_circulation : '',
-    total_supply: ''
+    sefi_in_circulation : '0.0',
+    total_supply: '0.0'
   });
 
   async function getSefiToken(){

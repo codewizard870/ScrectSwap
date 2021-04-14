@@ -63,7 +63,7 @@ const Header = () =>{
                     <SefiModal 
                         trigger={
                             <button className="btn-secondary">
-                                <a>324 SEFI</a>
+                                <a>SEFI</a>
                             </button>
                         }
                         tokens={tokens}

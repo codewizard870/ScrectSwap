@@ -23,8 +23,7 @@ import { displayHumanizedBalance, divDecimals, fixUnlockToken, humanizeBalance, 
 import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
 import axios from 'axios'
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
-import { notify } from 'pages/Earn';
-import { User } from 'components/Base/components/Icons/tsx_svg_icons';
+import numeral from 'numeral'
 
 export const SefiModal = (props: {
   user: UserStoreEx; 
@@ -35,7 +34,7 @@ export const SefiModal = (props: {
   const [open, setOpen] = React.useState(false);
   const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
   const [data ,setData] = React.useState<SefiData>({
-    balance:0.0,
+    balance:'0.0',
     unclaimed:'',
     sefi_price: 0.0,
     sefi_in_circulation : '',
@@ -58,11 +57,14 @@ export const SefiModal = (props: {
 
   async function getSefiBalance(token : SwapToken){
     let balance = await refreshTokenBalance(token);
-    const humanizedBalance = displayHumanizedBalance(
-      humanizeBalance(new BigNumber(balance as BigNumber), token.decimals),
-      BigNumber.ROUND_DOWN,)
-
-    return humanizedBalance
+    if(JSON.stringify(balance).includes('View')){
+      return balance
+    }else{
+      const humanizedBalance = displayHumanizedBalance(
+        humanizeBalance(new BigNumber(balance as BigNumber), token.decimals),
+        BigNumber.ROUND_DOWN,)
+      return humanizedBalance;
+    }
   };
   async function refreshTokenBalance(token: SwapToken) {
     let userBalancePromise; //balance.includes(unlockToken)
@@ -131,21 +133,44 @@ export const SefiModal = (props: {
       });
     }
   };
-
+  function getFloatFormat(number) {
+    let result;
+    switch (number.toFixed(0).toString().length) {
+        case 1:
+        case 2:
+        case 4:
+        case 7:
+        case 10:
+            result = '(0.00a)';
+            break;
+        case 5:
+        case 8:
+        case 11:
+            result = '(0.0a)';
+            break;
+        case 3:
+        case 6:
+        case 9:
+        default:
+            result = '(0a)';
+    }
+    return result;
+  }
   function getData():any {
     getSefiToken().then(async(token : SwapToken)=>{
       const balance = await getSefiBalance(token);
       const price = await getSefiPrice()
       const claimInfo = await getClaimInfo();
-      const totalSupply = await getTotalSupply(token.address);
-
+      const totalSupply = parseFloat(await getTotalSupply(token.address));
+      const totalSupply_formatted = numeral(totalSupply).format(getFloatFormat(totalSupply)).toString().toUpperCase()
+      
       setData({
         ...data,
-        balance:parseFloat(balance),
+        balance:balance,
         sefi_price:price,
         unclaimed: divDecimals(claimInfo?.amount.toString() || '0', 6),
-        total_supply: totalSupply,
-        sefi_in_circulation: totalSupply,
+        total_supply: '0.0',
+        sefi_in_circulation: totalSupply_formatted,
       })
     });
   }

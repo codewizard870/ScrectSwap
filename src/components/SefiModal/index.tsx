@@ -24,6 +24,7 @@ import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
 import axios from 'axios'
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
 import { notify } from 'pages/Earn';
+import { User } from 'components/Base/components/Icons/tsx_svg_icons';
 
 export const SefiModal = (props: {
   user: UserStoreEx; 
@@ -55,8 +56,7 @@ export const SefiModal = (props: {
     return SEFItoken;
   };
 
-  async function getSefiBalance(){
-    const token :SwapToken  = await getSefiToken();
+  async function getSefiBalance(token : SwapToken){
     let balance = await refreshTokenBalance(token);
     const humanizedBalance = displayHumanizedBalance(
       humanizeBalance(new BigNumber(balance as BigNumber), token.decimals),
@@ -106,6 +106,19 @@ export const SefiModal = (props: {
     });
     return parseFloat(statsData.data.price);
   }
+  async function getTotalSupply(SefiAddress : string) {
+    try {
+      const result = await GetSnip20Params({
+        address: SefiAddress,
+        secretjs: props.user.secretjs,
+      });
+      console.log(result)
+      return result?.total_supply || '0';
+    } catch (error) {
+      console.error(error)
+      return undefined;
+    }
+  }
   async function getClaimInfo ():Promise<any>{
     while (!props.user.secretjs) {
       await sleep(100);
@@ -120,16 +133,21 @@ export const SefiModal = (props: {
   };
 
   function getData():any {
-    getSefiBalance().then(async(balance)=>{
+    getSefiToken().then(async(token : SwapToken)=>{
+      const balance = await getSefiBalance(token);
       const price = await getSefiPrice()
       const claimInfo = await getClaimInfo();
+      const totalSupply = await getTotalSupply(token.address);
+
       setData({
         ...data,
         balance:parseFloat(balance),
         sefi_price:price,
-        unclaimed: divDecimals(claimInfo?.amount.toString() || '0', 6)
+        unclaimed: divDecimals(claimInfo?.amount.toString() || '0', 6),
+        total_supply: totalSupply,
+        sefi_in_circulation: totalSupply,
       })
-    }) 
+    });
   }
   const onClaimSefi = ()=>{
     console.log("Moving to Claim");

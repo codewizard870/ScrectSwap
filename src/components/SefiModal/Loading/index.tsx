@@ -9,7 +9,7 @@ const Loading = (props:{
   return(
     <>
       <div className="sefi-grid__container loading-sefi">
-        <h1 className="item left">400 SEFI</h1>
+        <h1 className="item left">{props.data.unclaimed} SEFI</h1>
         <div className="item right loader-container">
             <Loader active inline inverted/>
         </div>

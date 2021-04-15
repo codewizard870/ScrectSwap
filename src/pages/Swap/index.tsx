@@ -84,6 +84,7 @@ export class SwapRouter extends React.Component<
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
   private ws: WebSocket;
+  private pairRefreshInterval;
 
   constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools }) {
     super(props);
@@ -99,58 +100,6 @@ export class SwapRouter extends React.Component<
       routingGraph: {},
       selectedPairRoutes: [],
     };
-
-    if (process.env.ENV !== 'DEV') {
-      setInterval(() => {
-        const balances = {};
-        for (const pool of props.pools.allData) {
-          let id0: string;
-          let id1: string;
-          if ('native_token' in pool.assets[0].info) {
-            id0 = pool.assets[0].info.native_token.denom;
-          } else {
-            id0 = pool.assets[0].info.token.contract_addr;
-          }
-          if ('native_token' in pool.assets[1].info) {
-            id1 = pool.assets[1].info.native_token.denom;
-          } else {
-            id1 = pool.assets[1].info.token.contract_addr;
-          }
-
-          const pair = this.state.pairs.get(`${id0}${SwapPair.id_delimiter}${id1}`);
-
-          if (!pair) {
-            // pairs or tokens aren't loaded yet
-            continue;
-          }
-
-          if (
-            !new BigNumber(this.state.balances[`${pair.liquidity_token}-total-supply`] as any).isEqualTo(
-              new BigNumber(pool.total_share),
-            )
-          ) {
-            balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
-          }
-
-          const pool0 = `${id0}-${pair.identifier()}`;
-          const pool0Amount = new BigNumber(pool.assets[0].amount);
-
-          if (!new BigNumber(this.state.balances[pool0] as any).isEqualTo(pool0Amount)) {
-            balances[pool0] = pool0Amount;
-          }
-
-          const pool1 = `${id1}-${pair.identifier()}`;
-          const pool1Amount = new BigNumber(pool.assets[1].amount);
-
-          if (!new BigNumber(this.state.balances[pool1] as any).isEqualTo(pool1Amount)) {
-            balances[pool1] = pool1Amount;
-          }
-        }
-        if (Object.keys(balances).length > 0) {
-          this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
-        }
-      }, 1000);
-    }
   }
 
   onHashChange = () => {
@@ -163,10 +112,12 @@ export class SwapRouter extends React.Component<
 
   async componentDidUpdate(previousProps, prevState) {
     if (previousProps.tokens.allData.length !== this.props.tokens.allData.length) {
+      console.log('updated pairs');
       await this.updateTokens();
     }
 
     if (previousProps.pairs.allData.length !== this.props.pairs.allData.length) {
+      console.log('updated pairs');
       await this.updatePairs();
     }
 
@@ -224,6 +175,13 @@ export class SwapRouter extends React.Component<
       await sleep(100);
     }
 
+    if (process.env.ENV !== 'DEV') {
+      while (this.state.pairs.size === 0) {
+        await sleep(200);
+      }
+      this.pairRefreshInterval = setInterval(this.reloadPairData(), 1000);
+    }
+
     while (true) {
       try {
         const routerSupportedTokens: Set<string> = new Set(
@@ -239,6 +197,58 @@ export class SwapRouter extends React.Component<
         await sleep(3000);
       }
     }
+  }
+
+  private reloadPairData() {
+    return () => {
+      const balances = {};
+      for (const pool of this.props.pools.allData) {
+        let id0: string;
+        let id1: string;
+        if ('native_token' in pool.assets[0].info) {
+          id0 = pool.assets[0].info.native_token.denom;
+        } else {
+          id0 = pool.assets[0].info.token.contract_addr;
+        }
+        if ('native_token' in pool.assets[1].info) {
+          id1 = pool.assets[1].info.native_token.denom;
+        } else {
+          id1 = pool.assets[1].info.token.contract_addr;
+        }
+
+        const pair = this.state.pairs.get(`${id0}${SwapPair.id_delimiter}${id1}`);
+
+        if (!pair) {
+          // pairs or tokens aren't loaded yet
+          continue;
+        }
+
+        if (
+          !new BigNumber(this.state.balances[`${pair.liquidity_token}-total-supply`] as any).isEqualTo(
+            new BigNumber(pool.total_share),
+          )
+        ) {
+          balances[`${pair.liquidity_token}-total-supply`] = new BigNumber(pool.total_share);
+        }
+
+        const pool0 = `${id0}-${pair.identifier()}`;
+        const pool0Amount = new BigNumber(pool.assets[0].amount);
+
+        if (!new BigNumber(this.state.balances[pool0] as any).isEqualTo(pool0Amount)) {
+          balances[pool0] = pool0Amount;
+        }
+
+        const pool1 = `${id1}-${pair.identifier()}`;
+        const pool1Amount = new BigNumber(pool.assets[1].amount);
+
+        if (!new BigNumber(this.state.balances[pool1] as any).isEqualTo(pool1Amount)) {
+          balances[pool1] = pool1Amount;
+        }
+      }
+      if (Object.keys(balances).length > 0) {
+        this.setState(currentState => ({ balances: { ...currentState.balances, ...balances } }));
+      }
+    };
   }
 
   private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
@@ -432,7 +442,9 @@ export class SwapRouter extends React.Component<
     //     this.ws.close(1000 /* Normal Closure */, 'See ya');
     //   }
     // }
-
+    if (process.env.ENV !== 'DEV') {
+      clearInterval(this.pairRefreshInterval);
+    }
     window.onhashchange = null;
     window.removeEventListener('storage', this.updateTokens);
     window.removeEventListener('updatePairsAndTokens', this.updatePairs);
@@ -501,8 +513,11 @@ export class SwapRouter extends React.Component<
     // gather tokens from our list, and from local storage
     const tokens = await this.updateTokens();
 
-    let pairs: ISecretSwapPair[] = Array.from(this.props.pairs.allData);
+    while (this.props.pairs.allData.length === 0) {
+      await sleep(100);
+    }
 
+    let pairs: ISecretSwapPair[] = Array.from(this.props.pairs.allData);
     // filter all pairs that aren't known tokens
     pairs = pairs.filter(p => {
       const pairSymbols = getSymbolsFromPair(p);

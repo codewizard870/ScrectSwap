@@ -60,12 +60,7 @@ const Header = () =>{
                 
                 <div className="menu-right">
                      
-                    <SefiModal 
-                        trigger={
-                            <button className="btn-secondary">
-                                <a>SEFI</a>
-                            </button>
-                        }
+                    <SefiModal
                         tokens={tokens}
                         user={user}
                     />

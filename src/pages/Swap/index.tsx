@@ -609,7 +609,7 @@ export class SwapRouter extends React.Component<
               style={{
                 maxWidth: '500px',
                 minWidth: '500px',
-                height:'388px',
+                height:'650px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

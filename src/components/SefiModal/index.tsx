@@ -26,8 +26,7 @@ import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } f
 import numeral from 'numeral'
 
 export const SefiModal = (props: {
-  user: UserStoreEx; 
-  trigger: any;
+  user: UserStoreEx;
   tokens: Tokens;
   // notify?: CallableFunction;
 })=>{
@@ -36,11 +35,11 @@ export const SefiModal = (props: {
   const [hasViewingKey, setHasViewingKey] = React.useState<Boolean>(true);
   const [token, setToken] = React.useState<SwapToken>(undefined);
   const [data ,setData] = React.useState<SefiData>({
-    balance:'0.0',
-    unclaimed:'0.0',
+    balance:'--',
+    unclaimed:'--',
     sefi_price: 0.0,
-    sefi_in_circulation : '0.0',
-    total_supply: '0.0'
+    sefi_in_circulation : '--',
+    total_supply: '--'
   });
 
   async function getSefiToken(){
@@ -166,15 +165,17 @@ export const SefiModal = (props: {
       setToken(token)
       const balance = await getSefiBalance(token);
       const price = await getSefiPrice()
+      const price_formatted = numeral(price).format('$0.00');
       const claimInfo = await getClaimInfo();
+      const unclaimed = divDecimals(claimInfo?.amount.toString() || '0', 6);
       const totalSupply = parseFloat(await getTotalSupply(token.address));
       const totalSupply_formatted = numeral(totalSupply).format(getFloatFormat(totalSupply)).toString().toUpperCase()
       
       setData({
         ...data,
         balance:balance,
-        sefi_price:price,
-        unclaimed: divDecimals(claimInfo?.amount.toString() || '0', 6),
+        sefi_price:price_formatted,
+        unclaimed: unclaimed,
         total_supply: totalSupply_formatted,
         sefi_in_circulation: '0.0',
       })
@@ -209,7 +210,7 @@ export const SefiModal = (props: {
       }
       onOpen={() =>{ setOpen(true);getData()}}
       open={open}
-      trigger={props.trigger}
+      trigger={<button className="btn-secondary"><a>{data.balance}&nbsp;SEFI</a></button>}
       className="sefi-modal"
     >
       <Modal.Header>

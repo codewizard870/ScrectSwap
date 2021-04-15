@@ -568,7 +568,7 @@ export class SwapTab extends React.Component<
                 );
               }}
             >
-              <DownArrow />
+              <img src='/static/exchange-arrows.svg' alt='exchange arrows'/>
             </span>
             <FlexRowSpace />
           </div>

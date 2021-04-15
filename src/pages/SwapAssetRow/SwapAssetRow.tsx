@@ -122,14 +122,15 @@ export const SwapAssetRow = ({
             basic
             disabled={new BigNumber(balance as any).isNaN()}
             style={{
-              marginRight:'.5rem',
+              marginRight:'2rem',
               color:'#5F5F6B' ,
               border:'1px solid #5F5F6B' ,
               borderRadius: '15px',
               fontSize: '12px',
               fontWeight: 700,
-              height: '24px',
-              padding: '0.2rem .8rem',
+              width:'63px',
+              height: '26px',
+              padding: '4px 12px',
             }}
             onClick={() => {
               const { decimals } = tokens.get(token);

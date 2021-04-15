@@ -35,11 +35,11 @@ export const SefiModal = (props: {
   const [hasViewingKey, setHasViewingKey] = React.useState<Boolean>(true);
   const [token, setToken] = React.useState<SwapToken>(undefined);
   const [data ,setData] = React.useState<SefiData>({
-    balance:'--',
-    unclaimed:'--',
+    balance:'—',
+    unclaimed:'—',
     sefi_price: 0.0,
-    sefi_in_circulation : '--',
-    total_supply: '--'
+    sefi_in_circulation : '—',
+    total_supply: '—'
   });
 
   async function getSefiToken(){

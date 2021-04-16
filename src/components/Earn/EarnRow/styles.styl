@@ -15,6 +15,7 @@
 
 .assetRow {
   width: 100%;
+  height: calc(100% - 48px);
   flex: available;
   display: flex;
   flex-wrap: nowrap;
@@ -23,16 +24,26 @@
 }
 
 .assetIcon {
-  width: 40px;
+  width: 100px;
   height: 40px;
   margin-right: 24px;
+  display: flex;
+  flex-direction: row;
+  img{
+    margin: 0 5px;
+  }
 }
 
-.assetName {
-  width: 150px;
+.title_content__center{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+.title_item__container {
   display: flex;
   align-items: center;
-  margin-right: 24px;
+  padding: 0 26px;
 }
 
 .totalRewards {
@@ -81,7 +92,6 @@
 .balanceRow {
   width: 100%;
   text-align: right;
-  padding-right: 20px;
   overflow: hidden;
   margin-bottom: 8px;
 }
@@ -126,6 +136,22 @@
   padding-bottom: 1rem;
   .button{
     color:#5F5F6B;
+  }
+}
+.claim_label{
+  border: 1px solid #DEDEDE;
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 8.5px 8px;
+  margin-top: 0.3em;
+  margin-right: 1rem;
+  font-family: 'Poppins',Arial, Helvetica, sans-serif;
+  color: #DEDEDE;
+  font-size: 22px;
+  font-weight: 600;
+  strong{
+    color: #0D1017;
+    margin: 0 .5rem
   }
 }
 
@@ -183,5 +209,4 @@
   text-overflow: ellipsis;
   float: left;
   color:#0D1017;
-  margin-left: 5%;
 }

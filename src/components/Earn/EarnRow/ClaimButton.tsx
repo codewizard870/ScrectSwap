@@ -18,6 +18,12 @@ const ClaimButton = (props: {
   const { user } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
   return (
+    <>
+    <span 
+      className={cn(styles.claim_label)}
+    >
+      <strong>{props?.available}</strong> {props.rewardsToken}
+    </span>
     <Button
       loading={loading}
       className={cn(styles.button)}
@@ -46,6 +52,7 @@ const ClaimButton = (props: {
     >
       Claim
     </Button>
+    </>
   );
 };
 

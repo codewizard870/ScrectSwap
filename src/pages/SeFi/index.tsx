@@ -107,16 +107,10 @@ export const SeFiPage = observer(() => {
       console.log(`Failed to add SeFi to the watchlist on Metamask: ${error}`);
     }
   }
-  function getTotalRewards(){
-    rewardsData.map((token)=>{
-      console.log(token)
-    })
-  }
+
 
   const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);
-
   const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
-  const [totalRewards, setTotalRewards] = useState<number>(0.0);
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -128,7 +122,6 @@ export const SeFiPage = observer(() => {
         .map(reward => {
           return { reward, token: filteredTokens.find(element => element.dst_address === reward.inc_token.address) };
         });
-
       setRewardsData(mappedRewards);
     };
     asyncWrapper().then(() => {});
@@ -188,9 +181,6 @@ export const SeFiPage = observer(() => {
     rewards.fetch();
     tokens.init();
   }, []);
-  useEffect(()=>{
-    getTotalRewards();
-  },[])
 
   return (
     <BaseContainer>
@@ -273,7 +263,7 @@ export const SeFiPage = observer(() => {
             </div>
           </Box> */}
           <Box style={{width:'80%'}} direction='column' align='end' justify='end'>
-            <p> Total Earning <strong>{totalRewards} SEFI</strong></p>
+            <p> Total Earning <strong> SEFI</strong></p>
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData

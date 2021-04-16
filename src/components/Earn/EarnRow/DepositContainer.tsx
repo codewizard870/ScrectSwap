@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import * as styles from './styles.styl';
-import { Button, Input } from 'semantic-ui-react';
+import { Button, Input, Popup } from 'semantic-ui-react';
 import React from 'react';
 import { unlockToken } from '../../../utils';
 import ScrtTokenBalanceSingleLine from './ScrtTokenBalanceSingleLine';
@@ -66,7 +66,14 @@ const DepositContainer = props => {
             /> */}
             {props.currency}
           </div>
-          <div className={cn(styles.subtitle)}>{props.balanceText}</div>
+          <Popup
+            content={props.unlockPopupText}
+            trigger={ 
+              <div className={cn(styles.subtitle)}>
+                {props.balanceText}
+              </div>
+            }
+          />
         </div>
         <div>
           <Input placeholder="0.0" className={cn(styles.form)} value={props.value} onChange={props.onChange}>

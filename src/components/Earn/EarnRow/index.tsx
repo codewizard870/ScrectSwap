@@ -131,25 +131,37 @@ class EarnRow extends Component<
         >
           <div className={cn(styles.assetIcon)}>
             <Image src={this.props.token.display_props.image} rounded size="mini" />
+            <Image src={this.props.token.display_props.image} rounded size="mini" />
           </div>
-          <div className={cn(styles.assetName)}>
-            <SoftTitleValue
-              title={
-                this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : this.props.token.display_props.label
-              }
-              subTitle={this.props.token.display_props.symbol}
-            />
+          <div className={cn(styles.title_content__center)}>
+            <div className={cn(styles.title_item__container)}>
+              <SoftTitleValue
+                title={
+                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : this.props.token.display_props.label
+                }
+                subTitle='    '
+              />
+            </div>
+            <div className={cn(styles.title_item__container)}>
+              <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
+            </div>
+            <div className={cn(styles.title_item__container)}>
+              <SoftTitleValue
+                title={`${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards))}$`}
+                subTitle={'TVL'}
+              />
+            </div>
+            <div className={cn(styles.title_item__container)}>
+              <SoftTitleValue
+                title={`${formatWithTwoDecimals(Number(this.props.token.balance))}$`}
+                subTitle={this.props.token.display_props.label}
+              />
+            </div>
+            <div className={cn(styles.title_item__container)}>
+              <SoftTitleValue title={this.props.token.rewards} subTitle={this.props.callToAction} />
+            </div>
+            
           </div>
-          <div className={cn(styles.apy)}>
-            <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
-          </div>
-          <div className={cn(styles.totalRewards)}>
-            <SoftTitleValue
-              title={`${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards))}$`}
-              subTitle={'TVL'}
-            />
-          </div>
-          <SoftTitleValue title={this.props.token.rewards} subTitle={this.props.callToAction} />
           <Icon name="dropdown" />
         </Accordion.Title>
         <Accordion.Content className={cn(styles.content)} active={activeIndex === 0}>

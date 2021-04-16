@@ -63,7 +63,7 @@ export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
-
+  const [earnings,setEarnings] = useState('0');
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
 
   function setSefiBalance(balance: string) {
@@ -111,7 +111,24 @@ export const SeFiPage = observer(() => {
 
   const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);
   const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
+  const getTotalEarnings = ()=>{
+    const mappedEarnings = rewards.allData.filter(rewards => filteredTokens.find(element => element.dst_address === rewards.inc_token.address))
+        .map(reward => {
+          return {
+            earnings:user.balanceRewards[rewardsKey(reward.inc_token.symbol)],
+            symbol: reward.inc_token.symbol,
+          };
+        });
+        const totalEarnigs : any = mappedEarnings.reduce((sum,earns)=>{
+          if(typeof earns.earnings !== undefined){
+            return sum + parseFloat(earns?.earnings)
+          }else{
+            return 0;
+          }
+        },0) || undefined;
 
+      setEarnings(totalEarnigs)
+  }
   useEffect(() => {
     const asyncWrapper = async () => {
       while (rewards.isPending) {
@@ -122,6 +139,8 @@ export const SeFiPage = observer(() => {
         .map(reward => {
           return { reward, token: filteredTokens.find(element => element.dst_address === reward.inc_token.address) };
         });
+      
+      
       setRewardsData(mappedRewards);
     };
     asyncWrapper().then(() => {});
@@ -182,6 +201,9 @@ export const SeFiPage = observer(() => {
     tokens.init();
   }, []);
 
+  useEffect(()=>{
+    getTotalEarnings();
+  });
   return (
     <BaseContainer>
       <PageContainer>
@@ -263,7 +285,13 @@ export const SeFiPage = observer(() => {
             </div>
           </Box> */}
           <Box style={{width:'80%'}} direction='column' align='end' justify='end'>
-            <p> Total Earning <strong> SEFI</strong></p>
+            <p className={cn(thisStyles.total_earnings)}> Total Earning 
+              {
+                (earnings == undefined)
+                  ? <Loader type="ThreeDots" color="#ff726e" height="1em" width="1em" style={{ margin: '0 1rem' }} />
+                  : <strong className={cn(thisStyles.earnings)}> {earnings} SEFI</strong>
+              }
+            </p>
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData

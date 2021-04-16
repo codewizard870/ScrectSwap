@@ -68,7 +68,7 @@ export const AdditionalInfo = ({
               : `${maximumSold.toFormat(6)} ${fromToken}`}
           </strong>
         </div>
-        {/* <div
+        <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -105,7 +105,7 @@ export const AdditionalInfo = ({
                   useGrouping: true,
                 }).format(priceImpact * 100)
           }%`}</strong>
-        </div> */}
+        </div>
         <div
           className={style.subcontainer}
         >

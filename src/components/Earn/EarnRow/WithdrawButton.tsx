@@ -12,7 +12,7 @@ const WithdrawButton = ({ props, value, changeValue }) => {
   return (
     <Button
       loading={loading}
-      className={cn(styles.button, 'ui', 'blue', 'basic', 'button', 'circular')}
+      className={cn(styles.button)}
       disabled={Number(value) === 0 || isNaN(value)}
       onClick={async () => {
         setLoading(true);

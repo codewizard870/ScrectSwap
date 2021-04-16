@@ -20,7 +20,7 @@ const ClaimButton = (props: {
   return (
     <Button
       loading={loading}
-      className={cn(styles.button, 'blue', 'basic', 'circular')}
+      className={cn(styles.button)}
       disabled={typeof props.available === 'undefined' || props.available === '0'}
       onClick={async () => {
         setLoading(true);
@@ -44,7 +44,7 @@ const ClaimButton = (props: {
         setLoading(false);
       }}
     >
-      Claim Rewards
+      Claim
     </Button>
   );
 };

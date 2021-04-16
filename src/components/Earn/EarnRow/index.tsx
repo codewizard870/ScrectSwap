@@ -141,19 +141,19 @@ class EarnRow extends Component<
             />
           </div>
           <div className={cn(styles.apy)}>
-            <SoftTitleValue title={apyString(this.props.token)} subTitle={'Annual Percentage Yield'} />
+            <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
           </div>
           <div className={cn(styles.totalRewards)}>
             <SoftTitleValue
               title={`${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards))}$`}
-              subTitle={'Total Value Locked'}
+              subTitle={'TVL'}
             />
           </div>
-          <SoftTitleValue title="Stake now!" subTitle={this.props.callToAction} />
+          <SoftTitleValue title={this.props.token.rewards} subTitle={this.props.callToAction} />
           <Icon name="dropdown" />
         </Accordion.Title>
-        <Accordion.Content active={activeIndex === 0}>
-          <div
+        <Accordion.Content className={cn(styles.content)} active={activeIndex === 0}>
+          {/* <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -219,19 +219,20 @@ class EarnRow extends Component<
                 }
               }}
             />
-          </div>
+          </div> */}
           <div>
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
                 <Grid.Column>
                   <DepositContainer
+                    title='Earn'
                     value={this.state.depositValue}
                     action={
                       <Grid columns={1} stackable relaxed={'very'}>
                         <Grid.Column
                           style={{
                             display: 'flex',
-                            justifyContent: 'center',
+                            justifyContent: 'flex-start',
                           }}
                         >
                           <EarnButton
@@ -253,6 +254,7 @@ class EarnRow extends Component<
                 </Grid.Column>
                 <Grid.Column>
                   <DepositContainer
+                    title='Withdraw'
                     value={this.state.withdrawValue}
                     onChange={this.handleChangeWithdraw}
                     action={
@@ -260,7 +262,7 @@ class EarnRow extends Component<
                         <Grid.Column
                           style={{
                             display: 'flex',
-                            justifyContent: 'center',
+                            justifyContent:'flex-start',
                           }}
                         >
                           <WithdrawButton
@@ -278,7 +280,6 @@ class EarnRow extends Component<
                   />
                 </Grid.Column>
               </Grid>
-              <Divider vertical>Or</Divider>
             </Segment>
           </div>
           <ClaimBox
@@ -289,7 +290,7 @@ class EarnRow extends Component<
             notify={this.props.notify}
             rewardsToken={this.props.token.rewardsSymbol || 'sSCRT'}
           />
-          <Text
+          {/* <Text
             size="medium"
             style={{
               padding: '20 20 0 20',
@@ -298,7 +299,7 @@ class EarnRow extends Component<
             }}
           >
             * Every time you deposit, withdraw or claim the contract will automagically claim your rewards for you!
-          </Text>
+          </Text> */}
         </Accordion.Content>
       </Accordion>
     );

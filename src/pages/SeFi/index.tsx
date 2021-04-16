@@ -107,10 +107,16 @@ export const SeFiPage = observer(() => {
       console.log(`Failed to add SeFi to the watchlist on Metamask: ${error}`);
     }
   }
+  function getTotalRewards(){
+    rewardsData.map((token)=>{
+      console.log(token)
+    })
+  }
 
   const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);
 
   const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
+  const [totalRewards, setTotalRewards] = useState<number>(0.0);
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -182,12 +188,16 @@ export const SeFiPage = observer(() => {
     rewards.fetch();
     tokens.init();
   }, []);
+  useEffect(()=>{
+    getTotalRewards();
+  },[])
 
   return (
     <BaseContainer>
       <PageContainer>
-        <Box direction="row" wrap={true} fill={true} justify="center" align="start">
-          <Box direction="column" align="center" justify="center" style={{ marginTop: '10px' }}>
+        <Box style={{width:'100%'}} direction="row" wrap={true} fill={true} justify="center" align="start">
+          {/* <Box direction="column" align="center" justify="center" style={{ marginTop: '10px' }}>
+            
             <EarnInfoBox type={'LPSTAKING'} />
 
             <div
@@ -227,8 +237,8 @@ export const SeFiPage = observer(() => {
                     }
                   }}
                 />
-                {/*<ClaimTokenErc />*/}
-                {/*<ClaimTokenScrt />*/}
+                <ClaimTokenErc />
+                <ClaimTokenScrt />
               </div>
 
               <div
@@ -257,10 +267,13 @@ export const SeFiPage = observer(() => {
                     }
                   }}
                 />
-                {/*<ClaimTokenErc />*/}
-                {/*<ClaimTokenScrt />*/}
+                <ClaimTokenErc />
+                <ClaimTokenScrt />
               </div>
             </div>
+          </Box> */}
+          <Box style={{width:'80%'}} direction='column' align='end' justify='end'>
+            <p> Total Earning <strong>{totalRewards} SEFI</strong></p>
           </Box>
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData
@@ -277,7 +290,9 @@ export const SeFiPage = observer(() => {
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;
                 }
-
+                user.updateBalanceForSymbol(rewardToken.token.display_props.symbol);
+                user.refreshRewardsBalances(rewardToken.token.display_props.symbol);
+                
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,
                   lockedAsset: rewardToken.reward.inc_token.symbol,
@@ -306,7 +321,7 @@ export const SeFiPage = observer(() => {
                     key={rewardToken.reward.inc_token.symbol}
                     userStore={user}
                     token={rewardsToken}
-                    callToAction="Earn SeFi"
+                    callToAction="Sefi Earnings"
                   />
                 );
               })}

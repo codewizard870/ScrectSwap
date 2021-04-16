@@ -14,7 +14,7 @@ const buttonStyle = {
   marginRight: '12px',
   marginLeft: '12px',
   padding: '0.5rem 1rem 1rem 1rem',
-  color: '#2F80ED',
+  color: '#5F5F6B',
   backgroundColor: 'transparent',
 };
 
@@ -46,24 +46,31 @@ const changeInput = (balance, percentage, onChange) => {
 };
 
 const DepositContainer = props => {
+  
   return (
     <div className={cn(styles.changeBalance)}>
-      <div>
+      <div className={cn(styles.deposit_content)}>
+        <div className={cn(styles.balanceRow)}>
+          <div className={cn(styles.title)}> 
+            {props.title}
+          </div>
+        </div>
         <div className={cn(styles.balanceRow)}>
           <div className={cn(styles.h4)}>
-            <ScrtTokenBalanceSingleLine
+            {/* <ScrtTokenBalanceSingleLine
               value={props.balance}
               currency={props.currency}
               selected={false}
               balanceText={props.balanceText}
               popupText={props.unlockPopupText}
-            />
+            /> */}
+            {props.currency}
           </div>
           <div className={cn(styles.subtitle)}>{props.balanceText}</div>
         </div>
         <div>
           <Input placeholder="0.0" className={cn(styles.form)} value={props.value} onChange={props.onChange}>
-            <input style={{ borderRadius: '100px', height: '47px' }} />
+            <input style={{ borderRadius: '4px', height: '40px' }} />
           </Input>
         </div>
         <div className={styles.amountRow}>

@@ -50,9 +50,9 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
         }}
       >
 
-        <Box className={styles.headerContainer} style={{ minWidth, maxWidth}}>
+        <Box className={styles.headerContainer} style={{ minWidth, maxWidth }}>
 
-          <Box className={styles.mobileMenuButton} margin={{right: 'large'}} onClick={() => setMobileMenu(true)}>
+          <Box className={styles.mobileMenuButton} margin={{ right: 'large' }} onClick={() => setMobileMenu(true)}>
             <Icon glyph="Menu" size="medium" color={'rgb(33, 45, 94)'} />
           </Box>
 
@@ -75,7 +75,7 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
 
           <Box className={cn(mobileMenu ? styles.mobileMenu : styles.menu)} gap="15px">
 
-            <Box className={styles.mobileMenuButton} onClick={() => setMobileMenu(false)}>
+            <Box style={{ display: mobileMenu ? 'flex' : 'none' }} onClick={() => setMobileMenu(false)}>
               <Icon glyph="Close" size="medium" color={'rgb(33, 45, 94)'} />
             </Box>
 

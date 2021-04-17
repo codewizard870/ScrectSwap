@@ -77,7 +77,7 @@ export const NetworkTemplate = (props: {
     template: NetworkTemplateInterface, onSwap: boolean, user: any
 }) => (
     <HeadShake spy={props.onSwap} delay={0}>
-        <Box direction="column" style={{ minWidth: 230 }}>
+        <Box className={styles.networkBox} >
             <Box direction="row" align={"start"} margin={{ top: 'xxsmall' }}>
                 <Box direction="column" style={{ marginRight: 7 }} align="center">
                     <img style={{ marginBottom: 5 }} height="37" src={props.template.name === "Ethereum" ? "/static/eth.svg" : "/static/scrt.svg"} />

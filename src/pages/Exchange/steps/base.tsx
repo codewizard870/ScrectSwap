@@ -378,12 +378,9 @@ export const Base = observer(() => {
 
   return (
     <Box fill direction="column" background="transparent">
-      <Box fill direction="row" justify="around" pad="xlarge" background="#f5f5f5" style={{ position: 'relative' }}>
+      <Box className={styles.networksContainer} background="#f5f5f5" style={{ position: 'relative' }}>
         <NetworkTemplate template={networkTemplates[0]} onSwap={onSwap} user={user} />
-        <Box
-          style={{ margin: '0 16', position: 'absolute', left: 'Calc(50% - 60px)' }}
-          className={styles.reverseButton}
-        >
+        <Box className={styles.reverseButton}>
           <Icon
             size="60"
             glyph="Reverse"
@@ -403,8 +400,8 @@ export const Base = observer(() => {
       </Box>
       <Box fill direction="column" className={styles.exchangeContainer}>
         <Form data={exchange.transaction} {...({} as any)}>
-          <Box direction="row" fill={true} pad="xlarge">
-            <Box direction="row" gap="2px" width="50%" margin={{ right: 'medium' }}>
+          <Box className={styles.baseContainer} >
+            <Box className={styles.baseRightSide} gap="2px">
               <Box width="100%" margin={{ right: 'medium' }} direction="column">
                 <ERC20Select value={selectedToken.value} onSelectToken={value => onSelectedToken(value)} />
                 <Box style={{ minHeight: 20 }} margin={{ top: 'medium' }} direction="column">
@@ -521,7 +518,7 @@ export const Base = observer(() => {
               </Box>
             </Box>
 
-            <Box width="50%" direction="column" style={{ position: 'relative' }}>
+            <Box className={styles.addressInput} >
               {((exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && userMetamask.isAuthorized) ||
                 (exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT && user.isAuthorized)) && (
                 <Box

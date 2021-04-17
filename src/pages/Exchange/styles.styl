@@ -4,6 +4,33 @@
     color #47b8eb
 }
 
+.networksContainer{
+    flex-direction: row;
+    padding: 48px;
+    justify-content: space-around;
+    flex: 1;
+}
+
+.addressInput{
+    width: 50%;
+    flex-direction: column;
+    position: relative;
+}
+
+.baseContainer{
+    display:flex;
+    flex-direction: row;
+    padding: 48px;
+    flex:1;
+}
+
+.baseRightSide{
+    display:flex;
+    flex-direction: row;
+    width: 50%;
+    margin-right: 12px;
+}
+
 .fill {
     width: 100%;
 }
@@ -60,6 +87,9 @@
 }
 
 .reverseButton{
+    margin: 0 16px;
+    position: absolute;
+    left: calc(50% - 60px);
     border-radius: 50%;
     animation: pulse-animation 3s infinite ;
     box-sizing: border-box;
@@ -141,6 +171,39 @@
 }
 
 @media screen and (max-width: 800px) {
+
+    .baseContainer{
+        display:flex;
+        flex-direction: column;
+        padding: 24px;
+        flex:1;
+    }
+
+    .reverseButton{
+        margin: 0 16px;
+        position: relative;
+        left: 0;
+        min-width: 62px;
+    }
+
+    .baseRightSide{
+        flex-direction: column;
+        width: 100%;
+        margin-right: 0px;
+    }
+
+    .addressInput{
+        width: 100%;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .networksContainer{
+        padding: 24px;
+        justify-content: space-between;
+        position: inherit;
+    }
+
     .exchangeContainer {
         width 100%
     }

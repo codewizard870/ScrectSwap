@@ -45,11 +45,12 @@ export const OperationsPanel = observer(() => {
 
             return <Box key={index} direction="row" justify="between" fill align="center"
               onClick={() => {
+                exchange.setOperationId(operation.id);
+                //routing.push(`/operations/${operation.id}`)
                 exchange.stepNumber = EXCHANGE_STEPS.CHECK_TRANSACTION
-                routing.push(`/operations/${operation.id}`)
               }}>
               <Box direction="row" align="center">
-                <img src={operation.tokenImage} width={25} />
+                <img src={operation.tokenImage} width={20} />
                 <Box margin={{ left: 'xxsmall' }} >
                   <Text bold size="small" style={{ width: 60, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {operation.amount}</Text>
@@ -71,6 +72,14 @@ export const OperationsPanel = observer(() => {
                       operation.toToken,
                     )}
                   </Text>
+                </Box>
+
+                <Box justify="center" align="center" margin={{ left: 'small' }} onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  exchange.removeLocalstorageOperation(operation.id)
+                }}>
+                  <Icon size="10" glyph="Close" />
                 </Box>
               </Box>
 

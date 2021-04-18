@@ -196,7 +196,15 @@ export class Exchange extends StoreConstructor {
   }
 
   @action.bound
-  setLocalstorageOperations(operation) {
+  removeLocalstorageOperation(id) {
+    let tmpoperations = this.getLocalstorageOperations().filter(o => o.id !== id)
+    this.operations = tmpoperations
+    localStorage.setItem(LOCAL_STORAGE_OPERATIONS_KEY, JSON.stringify(tmpoperations))
+
+  }
+
+  @action.bound
+  addLocalstorageOperation(operation) {
     let tmpoperations = this.getLocalstorageOperations()
     tmpoperations.push(operation)
     this.operations = tmpoperations
@@ -307,7 +315,7 @@ export class Exchange extends StoreConstructor {
     this.confirmations = 0;
     this.txHash = '';
     this.operation.id = params.id;
-    this.setLocalstorageOperations({
+    this.addLocalstorageOperation({
       id: params.id,
       tokenImage: this.transaction.tokenSelected.image,
       amount: this.transaction.amount,

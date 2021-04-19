@@ -11,6 +11,7 @@ import { useStores } from 'stores';
 import { fixUnlockToken, unlockToken } from 'utils';
 import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
 import { CosmWasmClient } from 'secretjs';
+import { CopyWithFeedback } from '../../../components/Swap/CopyWithFeedback';
 
 export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: any }) => {
   let { user } = useStores();
@@ -81,6 +82,9 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
         <div className={cn(styles.tokenInfoItemsRight)}>
           {(props.token.identifier !== 'uscrt')? props.token.address:'native'}
         </div>
+        <h3 className={cn(styles.CopyWithFeedback)} hidden={!props.token.address}>
+          <CopyWithFeedback text={props.token.address} />
+        </h3>
       </div>
     </div>
   );

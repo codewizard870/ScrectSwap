@@ -614,7 +614,7 @@ export class SwapTab extends React.Component<
           )}
           <Button
             disabled={buttonMessage !== BUTTON_MSG_SWAP || this.state.loadingSwap}
-            loading={this.state.loadingSwap}
+            // loading={this.state.loadingSwap}
             primary={buttonMessage === BUTTON_MSG_SWAP}
             fluid
             style={(buttonMessage !== BUTTON_MSG_SWAP) ? disableButtonStyle : enableButtonStyle}
@@ -749,7 +749,7 @@ export class SwapTab extends React.Component<
               });
             }}
           >
-            {buttonMessage}
+            {(!this.state.loadingSwap)?buttonMessage:''}
           </Button>
         </Container>
         {!hidePriceRow && (

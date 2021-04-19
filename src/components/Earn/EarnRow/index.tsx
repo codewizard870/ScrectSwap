@@ -114,8 +114,14 @@ class EarnRow extends Component<
   clearPulseInterval = () => clearInterval(this.state.pulseInterval);
 
   setPulseInterval = interval => this.setState({ pulseInterval: interval });
-
+  async componentDidMount (){
+    setTimeout(async() => {
+      await this.props.userStore.updateBalanceForSymbol(this.props.token.display_props.symbol);
+      await this.props.userStore.refreshRewardsBalances(this.props.token.display_props.symbol);
+    }, 500);
+  }
   render() {
+    console.log(this.props.token.rewards);
     const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : styles.accordion;
     //this.props.userStore.keplrWallet.suggestToken(this.props.userStore.chainId, );
     const { activeIndex } = this.state;
@@ -147,18 +153,18 @@ class EarnRow extends Component<
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
-                title={`${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards))}$`}
+                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards))}`}
                 subTitle={'TVL'}
               />
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
-                title={`${formatWithTwoDecimals(Number(this.props.token.balance))}$`}
+                title={`$${formatWithTwoDecimals(Number(this.props.token.balance))}`}
                 subTitle={this.props.token.display_props.label}
               />
             </div>
             <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue title={this.props.token.rewards} subTitle={this.props.callToAction} />
+              <SoftTitleValue title={formatWithTwoDecimals(this.props.token.rewards)} subTitle={this.props.callToAction} />
             </div>
             
           </div>

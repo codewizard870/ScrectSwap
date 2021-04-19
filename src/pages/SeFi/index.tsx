@@ -13,6 +13,7 @@ import {
   displayHumanizedBalance,
   divDecimals,
   fixUnlockToken,
+  formatWithTwoDecimals,
   humanizeBalance,
   sleep,
   truncateAddressString,
@@ -289,7 +290,7 @@ export const SeFiPage = observer(() => {
               {
                 (earnings == undefined)
                   ? <Loader type="ThreeDots" color="#ff726e" height="1em" width="1em" style={{ margin: '0 1rem' }} />
-                  : <strong className={cn(thisStyles.earnings)}> {earnings} SEFI</strong>
+                  : <strong className={cn(thisStyles.earnings)}> {formatWithTwoDecimals(earnings)} SEFI</strong>
               }
             </p>
           </Box>
@@ -308,8 +309,8 @@ export const SeFiPage = observer(() => {
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;
                 }
-                user.updateBalanceForSymbol(rewardToken.token.display_props.symbol);
-                user.refreshRewardsBalances(rewardToken.token.display_props.symbol);
+                // user.updateBalanceForSymbol(rewardToken.token.display_props.symbol);
+                // user.refreshRewardsBalances(rewardToken.token.display_props.symbol);
                 
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,

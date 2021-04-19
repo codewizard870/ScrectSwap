@@ -131,6 +131,7 @@ export const SefiModal = (props: {
   };
   async function createViewingKey() {
     try {
+      setOpen(false);
       await props.user.keplrWallet.suggestToken(props.user.chainId, token.address);
     } catch (e) {
       console.error("Error at creating new viewing key ",e)
@@ -200,7 +201,7 @@ export const SefiModal = (props: {
       console.log(props.user.balanceToken['SEFI'])
     }
   };
-
+  
   return(
     <Modal
       onClose={() => { 

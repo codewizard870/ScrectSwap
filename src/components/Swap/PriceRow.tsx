@@ -19,19 +19,19 @@ export const PriceRow = ({
   labelPrefix?: string;
 }) => {
   const [tokens, setTokens] = useState({
-    from: fromToken,
-    to: toToken,
-    price: numberFormat.format(price),
-    priceInvert: numberFormat.format(1 / price), // prevents price distortion from multiple clicks
+    from: toToken,
+    to: fromToken,
+    price: numberFormat.format(1 / price), // prevents price distortion from multiple clicks
+    priceInvert: numberFormat.format(price),
   });
   const [iconBackground, setIconBackground] = useState('whitesmoke');
 
   useEffect(() => {
     setTokens({
-      from: fromToken,
-      to: toToken,
-      price: numberFormat.format(price),
-      priceInvert: numberFormat.format(1 / price), // prevents price distortion from multiple clicks
+      from: toToken,
+      to: fromToken,
+      price: numberFormat.format(1 / price), // prevents price distortion from multiple clicks
+      priceInvert: numberFormat.format(price),
     });
   }, [fromToken, toToken, price]);
 
@@ -41,7 +41,7 @@ export const PriceRow = ({
         style={{
           padding: '1em 0 0 0',
           display: 'flex',
-          alignContent: 'center',
+          alignItems: 'center',
         }}
       >
         {labelPrefix}Price

@@ -3,8 +3,9 @@ import { Button, Image } from 'semantic-ui-react';
 import { AuthWarning } from '../AuthWarning';
 import { useStores } from '../../stores';
 import { observer } from 'mobx-react';
-import { Text } from 'components/Base';
+import { Icon, Text } from 'components/Base';
 import { truncateAddressString } from '../../utils';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 export const KeplrButton = observer((props: { disabled?: boolean; loading?: boolean; onClick?: any }) => {
   const { actionModals, user } = useStores();
@@ -30,7 +31,15 @@ export const KeplrButton = observer((props: { disabled?: boolean; loading?: bool
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <img src="/static/scrt.svg" style={{ height: '24px' }} alt={'scrt'} />
         <span style={{ margin: '0 0.3em' }}>
-          {user.secretjs ? <SecretAddress address={user.address} /> : <LoginText />}
+          {user.secretjs ? (
+            <CopyToClipboard text={user.address}>
+              <div>
+                <SecretAddress address={user.address} />
+              </div>
+            </CopyToClipboard>
+          ) : (
+            <LoginText />
+          )}
         </span>
       </div>
     </Button>

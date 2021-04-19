@@ -150,6 +150,7 @@ export const Tokens = observer((props: any) => {
 
   const lastUpdateAgo = Math.ceil((Date.now() - tokens.lastUpdateTime) / 1000);
 
+  //const filteredData = tokens.tokensUsageSync('BRIDGE')
   //const filteredData = ;
     // .filter((value) => {
     //   return !(value.dst_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH) &&
@@ -157,7 +158,7 @@ export const Tokens = observer((props: any) => {
     //
     // });
 
-  const filteredDataSearch = tokens.allData
+  const filteredData = tokens.tokensUsageSync('BRIDGE')
     .filter(token => {
       if (search) {
         // todo: check dst_network
@@ -243,7 +244,7 @@ export const Tokens = observer((props: any) => {
 
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Table
-            data={filteredDataSearch}
+            data={filteredData}
             columns={columns}
             isPending={tokens.isPending}
             hidePagination={true}

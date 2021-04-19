@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import React from 'react';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
 import { Container } from 'semantic-ui-react';
 import { UserStoreEx } from 'stores/UserStore';
 import { WithdrawLiquidityPanel } from './WithdrawLiqudityPanel';
@@ -10,11 +10,13 @@ import cn from 'classnames';
 import * as styles from './styles.styl';
 import { PairMap } from './types/SwapPair';
 import Loader from 'react-loader-spinner';
+import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 
 export class WithdrawTab extends React.Component<
   {
     user: UserStoreEx;
-    secretjs: SigningCosmWasmClient;
+    secretjs: CosmWasmClient;
+    secretjsSender: AsyncSender;
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
     pairs: PairMap;
@@ -31,7 +33,7 @@ export class WithdrawTab extends React.Component<
   state = { searchText: '' };
 
   render() {
-    const pairs = Array.from(this.props.pairs.values());
+    const pairs = Array.from(new Set(this.props.pairs.values()));
 
     if (pairs.length === 0) {
       return (
@@ -101,6 +103,7 @@ export class WithdrawTab extends React.Component<
                 <WithdrawLiquidityPanel
                   lpTokenSymbol={p.lpTokenSymbol()}
                   tokens={this.props.tokens}
+                  secretjsSender={this.props.secretjsSender}
                   selectedPair={p}
                   balances={this.props.balances}
                   secretjs={this.props.secretjs}

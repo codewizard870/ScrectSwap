@@ -123,7 +123,13 @@ export const Details = observer<{ showTotal?: boolean; children?: any }>(({ show
                 <Price
                   value={exchange.swapFee}
                   valueUsd={exchange.swapFeeUSD}
-                  token={userMetamask.erc20TokenDetails?.symbol || 'ETH'}
+                  token={
+                    exchange.token === TOKEN.ERC20
+                      ? userMetamask.erc20TokenDetails?.symbol === 'WSCRT'
+                        ? 'SSCRT'
+                        : userMetamask.erc20TokenDetails?.symbol
+                      : 'ETH'
+                  }
                   boxProps={{ pad: {} }}
                 />
               ) : (

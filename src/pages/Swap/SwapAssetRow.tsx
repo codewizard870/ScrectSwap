@@ -5,7 +5,7 @@ import { Button, Container } from 'semantic-ui-react';
 import Loader from 'react-loader-spinner';
 import { TokenSelector } from './TokenSelector/TokenSelector';
 import { SwapInput } from '../../components/Swap/SwapInput';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import { SwapTokenMap } from './types/SwapToken';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 
@@ -20,6 +20,7 @@ export const SwapAssetRow = ({
   label,
   maxButton,
   secretjs,
+  disabled,
 }: {
   tokens: SwapTokenMap;
   token: string;
@@ -30,14 +31,9 @@ export const SwapAssetRow = ({
   balance: BigNumber | JSX.Element;
   label: string;
   maxButton: boolean;
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
+  disabled?: boolean;
 }) => {
-  const font = {
-    fontWeight: 500,
-    fontSize: '14px',
-    color: 'rgb(86, 90, 105)',
-  };
-
   return (
     <Container
       style={{
@@ -52,7 +48,13 @@ export const SwapAssetRow = ({
           display: 'flex',
         }}
       >
-        <span style={font}>
+        <span
+          style={{
+            fontWeight: 500,
+            fontSize: '14px',
+            color: 'rgb(86, 90, 105)',
+          }}
+        >
           {label}
           {isEstimated ? ` (estimated)` : null}
         </span>
@@ -74,10 +76,13 @@ export const SwapAssetRow = ({
                 return balance;
               }
 
-              return displayHumanizedBalance(
-                humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token).decimals),
-                BigNumber.ROUND_DOWN,
-              );
+              if (tokens.size > 0) {
+                return displayHumanizedBalance(
+                  humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token).decimals),
+                  BigNumber.ROUND_DOWN,
+                );
+              }
+              return undefined;
             })()}
           </div>
         )}
@@ -90,6 +95,7 @@ export const SwapAssetRow = ({
       >
         <SwapInput
           value={amount}
+          disabled={disabled}
           setValue={value => {
             if (isNaN(Number(value))) {
               return;
@@ -114,7 +120,16 @@ export const SwapAssetRow = ({
             onClick={() => {
               const { decimals } = tokens.get(token);
 
-              setAmount(humanizeBalance(new BigNumber(balance as any), decimals).toFixed(decimals));
+              let leftoverForGas = 0;
+              if (token === 'uscrt') {
+                leftoverForGas = 0.5;
+              }
+
+              setAmount(
+                humanizeBalance(new BigNumber(balance as any), decimals)
+                  .minus(leftoverForGas)
+                  .toFixed(decimals),
+              );
             }}
           >
             MAX

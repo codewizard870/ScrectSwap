@@ -67,9 +67,15 @@ function getClientEnvironment(publicUrl) {
         CHAIN_NAME: process.env.CHAIN_NAME,
         SECRET_RPC: process.env.SECRET_RPC,
         SECRET_LCD: process.env.SECRET_LCD,
+        SECRET_POST_ADDRESS: process.env.SECRET_POST_ADDRESS,
         SECRET_WS: process.env.SECRET_WS,
         SSCRT_CONTRACT: process.env.SSCRT_CONTRACT,
         WSCRT_PROXY_CONTRACT: process.env.WSCRT_PROXY_CONTRACT,
+
+        AMM_FACTORY_CONTRACT: process.env.AMM_FACTORY_CONTRACT,
+        AMM_ROUTER_CONTRACT: process.env.AMM_ROUTER_CONTRACT,
+        AMM_TOKENS: process.env.AMM_TOKENS,
+        AMM_PAIRS: process.env.AMM_PAIRS,
 
         ETH_MANAGER_CONTRACT: process.env.ETH_MANAGER_CONTRACT,
         BSC_MANAGER_CONTRACT: process.env.BSC_MANAGER_CONTRACT,
@@ -86,15 +92,21 @@ function getClientEnvironment(publicUrl) {
         ETH_GAS_PRICE: process.env.ETH_GAS_PRICE,
         ETH_GAS_LIMIT: process.env.ETH_GAS_LIMIT,
 
+        ETH_GOV_TOKEN_ADDRESS: process.env.ETH_GOV_TOKEN_ADDRESS,
+        ETH_DIST_TOKEN_ADDRESS: process.env.ETH_DIST_TOKEN_ADDRESS,
+
+        SCRT_GOV_TOKEN_ADDRESS: process.env.SCRT_GOV_TOKEN_ADDRESS,
+        SCRT_DIST_TOKEN_ADDRESS: process.env.SCRT_DIST_TOKEN_ADDRESS,
+
         SWAP_FEE: process.env.SWAP_FEE,
 
         GAS_LIMIT: process.env.GAS_LIMIT,
         GAS_PRICE: process.env.GAS_PRICE,
 
         BACKEND_URL: process.env.BACKEND_URL,
+        SUSHI_API: process.env.SUSHI_API,
         GET_TOKENS_SERVICE: process.env.GET_TOKENS_SERVICE,
 
-        AMM_FACTORY_CONTRACT: process.env.AMM_FACTORY_CONTRACT,
         TEST_COINS: !!process.env.TEST_COINS,
         SIG_THRESHOLD: process.env.SIG_THRESHOLD,
         LEADER_ACCOUNT: process.env.LEADER_ACCOUNT,

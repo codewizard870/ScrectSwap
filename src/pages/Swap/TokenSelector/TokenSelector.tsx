@@ -4,7 +4,7 @@ import { TokenInfoRow } from './TokenInfoRow';
 import { TokenSelectorButton } from './TokenSelectorButton';
 import { AddTokenModal } from './AddTokenModal';
 import { GetSnip20Params, Snip20TokenInfo } from '../../../blockchain-bridge';
-import { SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import LocalStorageTokens from '../../../blockchain-bridge/scrt/CustomTokens';
 import Loader from 'react-loader-spinner';
 import { ClearCustomTokensButton } from './ClearCustomTokens';
@@ -14,7 +14,7 @@ import cn from 'classnames';
 import * as styles from './styles.styl';
 
 export const TokenSelector = (props: {
-  secretjs: SigningCosmWasmClient;
+  secretjs: CosmWasmClient;
   tokens: SwapToken[];
   token?: SwapToken;
   onClick?: any;
@@ -67,6 +67,13 @@ export const TokenSelector = (props: {
         {props.tokens.length > 0 ? (
           <div style={{ display: 'flex' }}>
             <input
+              onKeyDown={event => {
+                if (event.key === 'Enter' && filteredTokens.length === 1) {
+                  props?.onClick(filteredTokens[0].address);
+                  setOpen(false);
+                  setSearchText('');
+                }
+              }}
               autoFocus
               className={cn(styles.tokenSelectorSearch)}
               placeholder="Search symbol or paste address"
@@ -91,13 +98,21 @@ export const TokenSelector = (props: {
                 if (b.symbol === 'sSCRT') {
                   return 1;
                 }
-                /* then sUNILP-WSCRT-ETH ? */
-                // if (a.symbol === 'sUNILP-WSCRT-ETH') {
-                //   return -1;
-                // }
-                // if (b.symbol === 'sUNILP-WSCRT-ETH') {
-                //   return 1;
-                // }
+                /* then SCRT */
+                if (a.symbol === 'SCRT') {
+                  return -1;
+                }
+                if (b.symbol === 'SCRT') {
+                  return 1;
+                }
+
+                /* then SEFI */
+                if (a.symbol === 'SEFI') {
+                  return -1;
+                }
+                if (b.symbol === 'SEFI') {
+                  return 1;
+                }
 
                 const aSymbol = a.symbol.replace(/^s/, '');
                 const bSymbol = b.symbol.replace(/^s/, '');

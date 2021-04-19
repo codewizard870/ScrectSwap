@@ -389,7 +389,7 @@ export class SwapRouter extends React.Component<
       try {
         const result = await GetSnip20Params({
           address: pair.liquidity_token,
-          secretjs: this.props.user.secretjs,
+          secretjs: this.props.user.secretjsSend,
         });
         lpTotalSupply = new BigNumber(result.total_supply);
         returnBalances.push({

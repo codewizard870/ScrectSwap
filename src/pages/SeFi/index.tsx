@@ -32,6 +32,7 @@ import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
 import { claimErc, claimScrt } from '../../components/Earn/ClaimToken/utils';
 import { unlockJsx, wrongViewingKey } from 'pages/Swap/utils';
 import BigNumber from 'bignumber.js';
+import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 
 function SefiBalance(props: { address: string; sefiBalance: string | JSX.Element; isEth?: boolean }) {
   const src_img = props.isEth ? '/static/eth.png' : '/static/scrt.svg';
@@ -64,6 +65,7 @@ export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
+  const [allTokens, setAllTokens] = useState<SwapTokenMap>();
   const [earnings,setEarnings] = useState('0');
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
 
@@ -120,15 +122,15 @@ export const SeFiPage = observer(() => {
             symbol: reward.inc_token.symbol,
           };
         });
-        const totalEarnigs : any = mappedEarnings.reduce((sum,earns)=>{
-          if(typeof earns.earnings !== undefined){
+        const totalEarnigs : number = mappedEarnings.reduce((sum,earns)=>{
+          if(earns.earnings){
             return sum + parseFloat(earns?.earnings)
           }else{
-            return 0;
+            return sum + 0;
           }
-        },0) || undefined;
+        },0);
 
-      setEarnings(totalEarnigs)
+      setEarnings(totalEarnigs.toString())
   }
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -152,6 +154,11 @@ export const SeFiPage = observer(() => {
       if (tokens.allData.length > 0) {
         await sleep(500);
         setFilteredTokens(tokens.tokensUsageSync('LPSTAKING'));
+
+        const _tokens: ITokenInfo[] = [...(await tokens.tokensUsageSync('SWAP'))];
+        // convert to token map for swap
+        const swapTokens: SwapTokenMap = TokenMapfromITokenInfo(_tokens);
+        setAllTokens(swapTokens);
       }
     };
     asyncWrapper();
@@ -205,6 +212,8 @@ export const SeFiPage = observer(() => {
   useEffect(()=>{
     getTotalEarnings();
   });
+
+  console.log(allTokens)
   return (
     <BaseContainer>
       <PageContainer>
@@ -333,6 +342,13 @@ export const SeFiPage = observer(() => {
                   deadline: Number(rewardToken.reward.deadline),
                   rewardsSymbol: 'SEFI',
                 };
+                console.log(rewardToken.reward.inc_token.symbol)
+                const str = rewardToken.reward.inc_token.symbol.split("-")
+                console.log()
+                // const token = allTokens.map((t :SwapToken)=>t.symbol == )
+                // const token_secondary{
+                //   image:
+                // }
 
                 return (
                   <EarnRow

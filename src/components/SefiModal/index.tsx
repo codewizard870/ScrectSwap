@@ -19,7 +19,7 @@ import { ITokenInfo } from 'stores/interfaces';
 import { Tokens } from 'stores/Tokens';
 import { UserStoreEx } from 'stores/UserStore';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
-import { displayHumanizedBalance, divDecimals, fixUnlockToken, humanizeBalance, sleep, unlockToken } from 'utils';
+import { displayHumanizedBalance, divDecimals, fixUnlockToken, formatWithTwoDecimals, humanizeBalance, sleep, unlockToken } from 'utils';
 import { getNativeBalance, wrongViewingKey } from './utils';
 import axios from 'axios'
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
@@ -32,7 +32,7 @@ export const SefiModal = (props: {
 })=>{
   const [open, setOpen] = React.useState(false);
   const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
-  const [hasViewingKey, setHasViewingKey] = React.useState<Boolean>(true);
+  const [hasViewingKey, setHasViewingKey] = React.useState<Boolean>(false);
   const [token, setToken] = React.useState<SwapToken>(undefined);
   const [data ,setData] = React.useState<SefiData>({
     balance:'—',
@@ -58,6 +58,7 @@ export const SefiModal = (props: {
 
   async function getSefiBalance(token : SwapToken){
     let balance = await refreshTokenBalance(token);
+    console.log(balance)
     if(JSON.stringify(balance).includes('View')){
       return balance
     }else{
@@ -108,10 +109,9 @@ export const SefiModal = (props: {
     try {
       const result = await GetSnip20Params({
         address: SefiAddress,
-        secretjs: props.user.secretjs,
-      });
-
-      return result?.total_supply || '0';
+        secretjs: props.user.secretjsSend,
+      }); 
+      return parseInt(result?.total_supply) / 10^result?.decimals || 0;
     } catch (error) {
       console.error(error)
       return undefined;
@@ -133,6 +133,7 @@ export const SefiModal = (props: {
     try {
       setOpen(false);
       await props.user.keplrWallet.suggestToken(props.user.chainId, token.address);
+      setHasViewingKey(true)
     } catch (e) {
       console.error("Error at creating new viewing key ",e)
     }
@@ -164,17 +165,24 @@ export const SefiModal = (props: {
   function getData():any {
     getSefiToken().then(async(token : SwapToken)=>{
       setToken(token)
-      const balance = await getSefiBalance(token);
+      let balance = undefined;
+      try {
+        balance = await getSefiBalance(token);
+        balance = balance.toString().replace(",","")
+        balance = formatWithTwoDecimals(balance);
+      } catch (error) {
+        console.error("Error at getting SEFI balance")
+      }
       const price = await getSefiPrice()
       const price_formatted = numeral(price).format('$0.00');
       const claimInfo = await getClaimInfo();
       const unclaimed = divDecimals(claimInfo?.amount.toString() || '0', 6);
-      const totalSupply = parseFloat(await getTotalSupply(token.address));
+      const totalSupply = await getTotalSupply(token.address);
       const totalSupply_formatted = numeral(totalSupply).format(getFloatFormat(totalSupply)).toString().toUpperCase()
       
       setData({
         ...data,
-        balance:balance,
+        balance: balance || "—",
         sefi_price:price_formatted,
         unclaimed: unclaimed,
         total_supply: totalSupply_formatted,
@@ -211,7 +219,10 @@ export const SefiModal = (props: {
       }
       onOpen={() =>{ setOpen(true);getData()}}
       open={open}
-      trigger={<button className="btn-secondary"><a>{data.balance}&nbsp;SEFI</a></button>}
+      trigger={
+      <button className="btn-secondary">
+        <a>SEFI</a>
+      </button>}
       className="sefi-modal"
     >
       <Modal.Header>

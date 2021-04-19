@@ -77,6 +77,7 @@ class EarnRow extends Component<
     withdrawValue: string;
     claimButtonPulse: boolean;
     pulseInterval: number;
+    secondary_token:any;
   }
 > {
   state = {
@@ -85,6 +86,10 @@ class EarnRow extends Component<
     withdrawValue: '0.0',
     claimButtonPulse: true,
     pulseInterval: -1,
+    secondary_token:{
+      image:'',
+      symbol:'',
+    },
   };
 
   handleChangeDeposit = event => {
@@ -114,14 +119,7 @@ class EarnRow extends Component<
   clearPulseInterval = () => clearInterval(this.state.pulseInterval);
 
   setPulseInterval = interval => this.setState({ pulseInterval: interval });
-  async componentDidMount (){
-    setTimeout(async() => {
-      await this.props.userStore.updateBalanceForSymbol(this.props.token.display_props.symbol);
-      await this.props.userStore.refreshRewardsBalances(this.props.token.display_props.symbol);
-    }, 500);
-  }
   render() {
-    console.log(this.props.token.rewards);
     const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : styles.accordion;
     //this.props.userStore.keplrWallet.suggestToken(this.props.userStore.chainId, );
     const { activeIndex } = this.state;
@@ -137,7 +135,9 @@ class EarnRow extends Component<
         >
           <div className={cn(styles.assetIcon)}>
             <Image src={this.props.token.display_props.image} rounded size="mini" />
-            <Image src={this.props.token.display_props.image} rounded size="mini" />
+            {(this.props.token.lockedAsset != "SEFI")&&
+              <Image src={this.state.secondary_token?.image} rounded size="mini" />
+            }
           </div>
           <div className={cn(styles.title_content__center)}>
             <div className={cn(styles.title_item__container)}>
@@ -157,7 +157,7 @@ class EarnRow extends Component<
                 subTitle={'TVL'}
               />
             </div>
-            <div className={cn(styles.title_item__container)}>
+            {/* <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
                 title={`$${formatWithTwoDecimals(Number(this.props.token.balance))}`}
                 subTitle={this.props.token.display_props.label}
@@ -165,7 +165,7 @@ class EarnRow extends Component<
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue title={formatWithTwoDecimals(this.props.token.rewards)} subTitle={this.props.callToAction} />
-            </div>
+            </div> */}
             
           </div>
           <Icon name="dropdown" />

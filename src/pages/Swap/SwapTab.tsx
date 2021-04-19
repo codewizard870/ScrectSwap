@@ -749,7 +749,7 @@ export class SwapTab extends React.Component<
               });
             }}
           >
-            {(!this.state.loadingSwap)?buttonMessage:''}
+            {buttonMessage}
           </Button>
         </Container>
         {!hidePriceRow && (

@@ -15,6 +15,7 @@ const Header = () =>{
     const history = useHistory(); 
     const { user, tokens } = useStores();
     const [theme,setTheme] = useState<String>(undefined);
+    const [hasViewingKey, setHasViewingKey] = React.useState<Boolean>(true);
     const [sefi,setSefi] = useState(undefined);
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
@@ -112,8 +113,9 @@ const Header = () =>{
         const local_theme = localStorage.getItem('currentTheme');
         if(!local_theme){
             updateTheme('light')
-        } 
+        }
     },[])
+    
     return(
         <>
             <nav className="menu"> 
@@ -163,7 +165,3 @@ const Header = () =>{
 }
 
 export default Header;
-
-function setHasViewingKey(arg0: boolean) {
-    throw new Error('Function not implemented.');
-}

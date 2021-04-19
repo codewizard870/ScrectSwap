@@ -46,7 +46,7 @@ export const SwapAssetRow = ({
     padding: '.5rem 1rem',
     ...font,
   }
-
+  console.log(tokens)
   return (
     <Container
       style={{

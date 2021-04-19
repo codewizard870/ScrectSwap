@@ -78,7 +78,6 @@ export const Snip20SendToBridge = async (params: {
   });
 
   const txIdKvp = tx.logs[0].events[1].attributes.find(kv => kv.key === 'tx_id');
-
   let tx_id: string;
   if (txIdKvp && txIdKvp.value) {
     tx_id = txIdKvp.value;

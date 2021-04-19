@@ -93,6 +93,7 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
         t.display_props.proxy_address = t.dst_address;
         t.dst_address = process.env.SSCRT_CONTRACT;
         t.display_props.proxy_symbol = 'WSCRT';
+
         //t.display_props.symbol = t.name;
       }
 

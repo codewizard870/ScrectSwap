@@ -48,6 +48,7 @@ export interface IAction {
 }
 
 export interface IOperation {
+  transactionHash: string;
   id: string;
   type: EXCHANGE_MODE;
   token: TOKEN;
@@ -59,6 +60,9 @@ export interface IOperation {
   actions: Array<IAction>;
   timestamp: number;
   erc20Address?: string;
+  swap?: ISwap;
+  symbol?: string;
+  image?: string;
 }
 
 export interface ISwap {

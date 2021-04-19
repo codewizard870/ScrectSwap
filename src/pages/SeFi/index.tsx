@@ -325,7 +325,7 @@ export const SeFiPage = observer(() => {
                   balance: user.balanceToken[rewardToken.token.src_coin],
                   decimals: rewardToken.token.decimals,
                   name: rewardToken.token.name,
-                  price: rewardToken.token.price,
+                  price: String(rewardToken.reward.inc_token.price),
                   rewardsPrice: String(rewardToken.reward.rewards_token.price),
                   display_props: rewardToken.token.display_props,
                   remainingLockedRewards: rewardToken.reward.pending_rewards,

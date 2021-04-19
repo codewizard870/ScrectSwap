@@ -544,32 +544,39 @@ export class SwapTab extends React.Component<
             }}
           >
             <FlexRowSpace />
-            <span
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                // switch
-                this.setState(
-                  {
-                    toToken: this.state.fromToken,
-                    toInput: this.state.isFromEstimated ? '' : this.state.fromInput,
-                    isToEstimated: this.state.isFromEstimated,
+            {
+              (this.state.loadingSwap)?
+                <span>
+                  <img className={cn(styles.spin)} width="28" height="23" src="/static/logoIcon.svg" alt="Secret Swap" />
+                </span>:
+                <span
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    // switch
+                    this.setState(
+                      {
+                        toToken: this.state.fromToken,
+                        toInput: this.state.isFromEstimated ? '' : this.state.fromInput,
+                        isToEstimated: this.state.isFromEstimated,
 
-                    fromToken: this.state.toToken,
-                    fromInput: this.state.isToEstimated ? '' : this.state.toInput,
-                    isFromEstimated: this.state.isToEstimated,
-                  },
-                  async () => {
-                    this.setState({ bestRoute: null, allRoutesOutputs: [] });
+                        fromToken: this.state.toToken,
+                        fromInput: this.state.isToEstimated ? '' : this.state.toInput,
+                        isFromEstimated: this.state.isToEstimated,
+                      },
+                      async () => {
+                        this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
-                    await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+                        await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
-                    this.updateInputs();
-                  },
-                );
-              }}
-            >
-              <img src='/static/exchange-arrows.svg' alt='exchange arrows'/>
-            </span>
+                        this.updateInputs();
+                      },
+                    );
+                  }}
+                >
+                  <img src='/static/exchange-arrows.svg' alt='exchange arrows'/>
+                </span>
+            }
+            
             <FlexRowSpace />
           </div>
           <SwapAssetRow
@@ -746,24 +753,26 @@ export class SwapTab extends React.Component<
           </Button>
         </Container>
         {!hidePriceRow && (
-          <AdditionalInfo
-            fromToken={this.props.tokens.get(this.state.fromToken).symbol}
-            toToken={this.props.tokens.get(this.state.toToken).symbol}
-            liquidityProviderFee={this.state.commission * price}
-            priceImpact={this.state.priceImpact}
-            minimumReceived={new BigNumber(this.state.toInput).multipliedBy(
-              new BigNumber(1).minus(this.state.slippageTolerance),
-            )}
-            pairAddress={this.props.selectedPair?.contract_addr}
-            /*
-            maximumSold={
-              this.state.isFromEstimated
-                ? Number(this.state.fromInput) *
-                  (1 + this.state.slippageTolerance)
-                : null
-            }
-            */
-          />
+          <div style = {(this.state.loadingSwap)? {opacity:'0.4'}:{}}> 
+            <AdditionalInfo
+              fromToken={this.props.tokens.get(this.state.fromToken).symbol}
+              toToken={this.props.tokens.get(this.state.toToken).symbol}
+              liquidityProviderFee={this.state.commission * price}
+              priceImpact={this.state.priceImpact}
+              minimumReceived={new BigNumber(this.state.toInput).multipliedBy(
+                new BigNumber(1).minus(this.state.slippageTolerance),
+              )}
+              pairAddress={this.props.selectedPair?.contract_addr}
+              /*
+              maximumSold={
+                this.state.isFromEstimated
+                  ? Number(this.state.fromInput) *
+                    (1 + this.state.slippageTolerance)
+                  : null
+              }
+              */
+            />
+          </div>
         )}
       </>
     );

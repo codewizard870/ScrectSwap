@@ -16,21 +16,24 @@ const ClaimButton = (props: {
   symbol: string;
   notify: Function;
   rewardsToken?: string;
-  lockedAssetAddress?: any;
 }) => {
-  console.log(props)
+  
   const { user } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
   const displayAvailable = ()=>{
     if (props.available === unlockToken) {
-      return unlockJsx({
-        onClick: async () => {
-          await user.keplrWallet.suggestToken(user.chainId, props.lockedAssetAddress);
-          // TODO trigger balance refresh if this was an "advanced set" that didn't
-          // result in an on-chain transaction
-          await user.updateBalanceForSymbol(props.symbol);
-        },
-      });
+      return (<div className={cn(styles.create_viewingkey)}>
+        {
+          unlockJsx({
+          onClick: async () => {
+            await user.keplrWallet.suggestToken(user.chainId, props.contract);
+            // TODO trigger balance refresh if this was an "advanced set" that didn't
+            // result in an on-chain transaction
+            await user.updateBalanceForSymbol(props.symbol);
+          },
+        })
+        }
+      </div>)
     }else{
       return <strong>{props?.available}</strong>
     }

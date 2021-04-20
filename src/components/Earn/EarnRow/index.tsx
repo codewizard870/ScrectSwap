@@ -349,7 +349,6 @@ class EarnRow extends Component<
             symbol={this.props.token.display_props.symbol}
             notify={this.props.notify}
             rewardsToken={this.props.token.rewardsSymbol || 'sSCRT'}
-            lockedAssetAddress={this.props.token.lockedAssetAddress}
           />
           {/* <Text
             size="medium"

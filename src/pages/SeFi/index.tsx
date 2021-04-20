@@ -209,11 +209,10 @@ export const SeFiPage = observer(() => {
     tokens.init();
   }, []);
 
-  useEffect(()=>{
-    getTotalEarnings();
-  });
+  // useEffect(()=>{
+  //   getTotalEarnings();
+  // });
 
-  console.log(allTokens)
   return (
     <BaseContainer>
       <PageContainer>
@@ -294,7 +293,7 @@ export const SeFiPage = observer(() => {
               </div>
             </div>
           </Box> */}
-          <Box style={{width:'80%'}} direction='column' align='end' justify='end'>
+          {/* <Box style={{width:'80%'}} direction='column' align='end' justify='end'>
             <p className={cn(thisStyles.total_earnings)}> Total Earning 
               {
                 (earnings == undefined)
@@ -302,7 +301,7 @@ export const SeFiPage = observer(() => {
                   : <strong className={cn(thisStyles.earnings)}> {formatWithTwoDecimals(earnings)} SEFI</strong>
               }
             </p>
-          </Box>
+          </Box> */}
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData
               .slice()

@@ -79,8 +79,8 @@ export class Exchange extends StoreConstructor {
   @observable mode: EXCHANGE_MODE = EXCHANGE_MODE.TO_SCRT;
   @observable token: TOKEN;
 
-  @observable network: NETWORKS = NETWORKS.ETH
-  @observable mainnet: boolean = true
+  @observable network: NETWORKS = NETWORKS.ETH;
+  @observable mainnet: boolean = true;
 
   @computed
   get step() {
@@ -207,7 +207,7 @@ export class Exchange extends StoreConstructor {
   setNetwork(network: NETWORKS) {
     this.network = network;
     this.stores.tokens.filters = {
-      src_network: messageToString(messages.full_name, network)
+      src_network: messageToString(messages.full_name, network),
     };
     this.stores.tokens.fetch();
   }
@@ -222,7 +222,7 @@ export class Exchange extends StoreConstructor {
   @action.bound
   fetchStatus(id) {
     const fetcher = async () => {
-      const result = await operationService.getOperation({ id });
+      const result = await operationService.getOperation(this.network, { id });
       const swap = result.swap;
       function isEthHash(addr) {
         return /^0x([A-Fa-f0-9]{64})$/.test(addr);
@@ -258,7 +258,7 @@ export class Exchange extends StoreConstructor {
         }
 
         try {
-          const etherHash = swap.dst_network === 'Ethereum' ? swap.dst_tx_hash : swap.src_tx_hash;
+          const etherHash = swap.src_network === 'Secret' ? swap.dst_tx_hash : swap.src_tx_hash;
           const blockNumber = await web3.eth.getBlockNumber();
           const tx = await web3.eth.getTransaction(etherHash);
           if (tx.blockNumber) this.confirmations = blockNumber - tx.blockNumber;
@@ -296,13 +296,13 @@ export class Exchange extends StoreConstructor {
     this.confirmations = 0;
     this.txHash = '';
     this.operation.id = params.id;
-    await operationService.createOperation(params);
+    await operationService.createOperation(this.network, params);
     return this.operation;
   }
 
   @action.bound
   async updateOperation(id: string, transactionHash: string) {
-    const result = await operationService.updateOperation(id, transactionHash);
+    const result = await operationService.updateOperation(this.network, id, transactionHash);
 
     if (result.result === 'failed') {
       throw Error(
@@ -430,27 +430,31 @@ export class Exchange extends StoreConstructor {
     this.operation = this.defaultOperation;
 
     try {
-      contract.fromScrtMethods[this.network][this.token].swapEth(this.transaction.scrtAddress, this.transaction.amount, async result => {
-        if (result.hash) {
-          await this.createOperation(result.hash);
-          this.transaction.loading = false;
-          this.txHash = result.hash;
-          this.transaction.confirmed = true;
-          this.stores.routing.push('/operations/' + this.operation.id);
-          this.fetchStatus(this.operation.id);
-        }
+      contract.fromScrtMethods[this.network][this.token].swapEth(
+        this.transaction.scrtAddress,
+        this.transaction.amount,
+        async result => {
+          if (result.hash) {
+            await this.createOperation(result.hash);
+            this.transaction.loading = false;
+            this.txHash = result.hash;
+            this.transaction.confirmed = true;
+            this.stores.routing.push('/operations/' + this.operation.id);
+            this.fetchStatus(this.operation.id);
+          }
 
-        if (result.receipt) {
-          this.transaction.loading = false;
-          this.transaction.confirmed = true;
-        }
+          if (result.receipt) {
+            this.transaction.loading = false;
+            this.transaction.confirmed = true;
+          }
 
-        if (result.error) {
-          this.transaction.error = result.error.message;
-          this.transaction.loading = false;
-          this.operation.status = SwapStatus.SWAP_FAILED;
-        }
-      });
+          if (result.error) {
+            this.transaction.error = result.error.message;
+            this.transaction.loading = false;
+            this.operation.status = SwapStatus.SWAP_FAILED;
+          }
+        },
+      );
     } catch (error) {
       console.log('error', error);
     }

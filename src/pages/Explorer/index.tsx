@@ -71,11 +71,10 @@ const getColumns = (): IColumn<ISwap>[] => [
     dataIndex: 'src_coin',
     width: 180,
     render: (value, data) => {
-
       return data.dst_network === 'secret20' ? (
         <ERC20Token value={TOKEN.ERC20} erc20Address={data.src_coin} />
       ) : (
-        <SecretToken value={TOKEN.S20} secretAddress={data.src_coin}  />
+        <SecretToken value={TOKEN.S20} secretAddress={data.src_coin} />
       );
     },
   },
@@ -85,7 +84,6 @@ const getColumns = (): IColumn<ISwap>[] => [
     dataIndex: 'dst_coin',
     width: 180,
     render: (value, data) => {
-
       return data.dst_network !== 'secret20' ? (
         <ERC20Token value={TOKEN.ERC20} erc20Address={data.dst_coin} />
       ) : (
@@ -123,7 +121,7 @@ export const Explorer = observer((props: any) => {
   useEffect(() => {
     tokens.init();
     tokens.filters = {
-      src_network: messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH)
+      src_network: userMetamask.getNetworkFullName(),
     };
     tokens.fetch();
     operations.init({
@@ -131,8 +129,8 @@ export const Explorer = observer((props: any) => {
       sorter: 'created_on, desc',
       pollingInterval: 20000,
       filters: {
-        src_network: messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH),
-      }
+        src_network: userMetamask.getNetworkFullName(),
+      },
     });
     operations.fetch();
   }, []);
@@ -145,17 +143,15 @@ export const Explorer = observer((props: any) => {
     operations.onChangeDataFlow(props);
   };
 
-  const filteredData = operations.allData
-    .filter((value) => {
-      return !(value.dst_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH) &&
-        value.src_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH));
-
-    });
+  const filteredData = operations.allData.filter(value => {
+    return !(
+      value.dst_network !== userMetamask.getNetworkFullName() && value.src_network !== userMetamask.getNetworkFullName()
+    );
+  });
 
   // todo: make this a button.. it's too slow as a live search
   const filteredDataSearch = filteredData
     .filter(value => {
-
       if (search) {
         return (
           Object.values(value).some(

@@ -25,7 +25,7 @@ export const CheckTransaction = observer(() => {
   const [progressBar, setProgressBar] = useState<number>(0);
 
   useEffect(() => {
-    if (exchange.operation.type === EXCHANGE_MODE.SCRT_TO_ETH) {
+    if (exchange.operation.type === EXCHANGE_MODE.FROM_SCRT) {
       setConfirmationsMessage(
         'You will have your Ethereum Tokens in your Metamask wallet within 6 network confirmations',
       );
@@ -42,13 +42,13 @@ export const CheckTransaction = observer(() => {
         break;
       case SwapStatus.SWAP_SIGNED:
         status =
-          exchange.operation.type === EXCHANGE_MODE.ETH_TO_SCRT
+          exchange.operation.type === EXCHANGE_MODE.TO_SCRT
             ? 'Being processed on Ethereum'
             : 'Being processed on Secret Network';
         break;
       case SwapStatus.SWAP_SUBMITTED:
         status =
-          exchange.operation.type === EXCHANGE_MODE.ETH_TO_SCRT
+          exchange.operation.type === EXCHANGE_MODE.TO_SCRT
             ? `Confirmed on Ethereum and it's being processed on Secret Network`
             : `Confirmed on Secret Network and it's being processed on Ethereum`;
         break;

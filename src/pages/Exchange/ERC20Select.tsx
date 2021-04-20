@@ -10,7 +10,7 @@ import { NETWORKS } from '../EthBridge';
 
 const selectTokenText = (mode: string, token: ITokenInfo) => {
   if (token.display_props.symbol === 'SEFI') {
-    return `Secret Finance Token (SeFi)`
+    return `Secret Finance Token (SeFi)`;
   }
   if (mode === EXCHANGE_MODE.FROM_SCRT && !token.display_props.proxy) {
     return `secret${token.display_props.symbol}`;
@@ -23,11 +23,7 @@ const selectTokenText = (mode: string, token: ITokenInfo) => {
   }
 };
 
-export const ERC20Select = observer((props: {
-  onSelectToken?: Function,
-  value: string,
-}) => {
-
+export const ERC20Select = observer((props: { onSelectToken?: Function; value: string }) => {
   const { userMetamask, exchange, tokens } = useStores();
   const [erc20, setERC20] = useState(userMetamask.erc20Address);
   const [error, setError] = useState('');
@@ -44,19 +40,18 @@ export const ERC20Select = observer((props: {
     const bridgeTokens = tokens.tokensUsageSync('BRIDGE');
     if (bridgeTokens.length > 0) {
       setFilteredTokens(
-        bridgeTokens
-          .filter((value) => {
-            return (value.src_network === messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH));
-          })
-      )
+        bridgeTokens.filter(value => {
+          return value.src_network === userMetamask.getNetworkFullName();
+        }),
+      );
     }
-  }, [tokens.allData, userMetamask.network])
+  }, [tokens.allData, userMetamask.network]);
 
   return (
     <Box direction="column">
       <Box direction="row" align="center" justify="between">
         <Text size="large" bold>
-          {/*{exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH ? 'SecretToken' : 'Ethereum Asset'}*/}
+          {/*{exchange.mode === EXCHANGE_MODE.FROM_SCRT ? 'SecretToken' : 'Ethereum Asset'}*/}
           Token
         </Text>
       </Box>
@@ -67,7 +62,8 @@ export const ERC20Select = observer((props: {
             .sort((a, b) =>
               /* SCRT first */
               a.display_props.symbol.toLowerCase().includes('scrt') ? -1 : 1,
-            ).sort((a, b) =>
+            )
+            .sort((a, b) =>
               /* SEFI first */
               a.display_props.symbol.toLowerCase().includes('sefi') ? -1 : 1,
             )
@@ -79,13 +75,11 @@ export const ERC20Select = observer((props: {
             }))}
           value={props.value}
           onChange={async value => {
-            props.onSelectToken(value)
+            props.onSelectToken(value);
           }}
           placeholder="Select your token"
         />
-
       </Box>
-
     </Box>
   );
 });

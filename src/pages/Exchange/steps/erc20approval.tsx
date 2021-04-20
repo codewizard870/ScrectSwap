@@ -56,7 +56,7 @@ export const ERC20ApprovalModal = observer(() => {
               ) : (
                 <Price
                   value={exchange.networkFee}
-                  isEth={exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT}
+                  isEth={exchange.mode === EXCHANGE_MODE.TO_SCRT}
                   boxProps={{ pad: {} }}
                 />
               )}

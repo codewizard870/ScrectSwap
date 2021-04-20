@@ -104,6 +104,9 @@ function getClientEnvironment(publicUrl) {
         GAS_PRICE: process.env.GAS_PRICE,
 
         BACKEND_URL: process.env.BACKEND_URL,
+        PLSM_BACKEND_URL: process.env.PLSM_BACKEND_URL,
+        BSC_BACKEND_URL: process.env.BSC_BACKEND_URL,
+
         SUSHI_API: process.env.SUSHI_API,
         GET_TOKENS_SERVICE: process.env.GET_TOKENS_SERVICE,
 

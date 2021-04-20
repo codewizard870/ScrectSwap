@@ -94,11 +94,11 @@ export const ERC20Token = observer((props: IERC20TokenProps) => {
       return token.display_props.proxy_symbol ? (
         <Box>{token.display_props.proxy_symbol}</Box>
       ) : (
-          <Box>{token.display_props.symbol}</Box>
-        );
+        <Box>{token.display_props.symbol}</Box>
+      );
     }
   } else if (value === TOKEN.NATIVE) {
-    return <Box>{messageToString(messages.currency_symbol, userMetamask.network || NETWORKS.ETH)}</Box>;
+    return <Box>{userMetamask.getCurrencySymbol()}</Box>;
   }
 
   return <Box>{value ? value.toUpperCase() : '--'}</Box>;
@@ -121,11 +121,11 @@ export const SecretToken = observer((props: ISecretTokenProps) => {
       return token.display_props.proxy_symbol ? (
         <Box>{token.display_props.symbol}</Box>
       ) : (
-          <Box>secret{token.display_props.symbol}</Box>
-        );
+        <Box>secret{token.display_props.symbol}</Box>
+      );
     }
   } else if (value === TOKEN.NATIVE) {
-    return <Box>{messageToString(messages.currency_symbol, userMetamask.network || NETWORKS.ETH)}</Box>;
+    return <Box>{userMetamask.getCurrencySymbol()}</Box>;
   }
 
   return <Box>{value ? value.toUpperCase() : '--'}</Box>;

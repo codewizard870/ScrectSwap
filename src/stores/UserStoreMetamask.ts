@@ -8,6 +8,7 @@ import { divDecimals, formatWithSixDecimals } from '../utils';
 import Web3 from 'web3';
 import { TOKEN } from './interfaces';
 import { NETWORKS } from '../pages/EthBridge';
+import { messages, messageToString } from '../pages/EthBridge/messages';
 
 const defaults = {};
 
@@ -92,18 +93,36 @@ export class UserStoreMetamask extends StoreConstructor {
     }
   }
 
+  getCurrencySymbol() {
+    return messageToString(messages.currency_symbol, this.network || NETWORKS.ETH);
+  }
+
+  getNetworkFullName() {
+    return messageToString(messages.full_name, this.network || NETWORKS.ETH);
+  }
+
+  getNetworkImage() {
+    return messageToString(messages.image_logo, this.network || NETWORKS.ETH);
+  }
+
   getNetworkName(id: string) {
     switch (id) {
-      case "0x1":
-        return "mainnet"
-      case "0x2a":
-        return "kovan"
-      case "0x3":
-        return "ropsten"
-      case "0x4":
-        return "rinkeby"
+      case '0x1':
+        return 'mainnet';
+      case '0x2a':
+        return 'kovan';
+      case '0x3':
+        return 'ropsten';
+      case '0x4':
+        return 'rinkeby';
+      case '0x38':
+        return 'BSC Mainnet';
+      case '0x61':
+        return 'BSC Testnet';
+      case '0x50':
+        return 'Plasm Testnet';
       default:
-        return ""
+        return '';
     }
   }
 
@@ -138,13 +157,12 @@ export class UserStoreMetamask extends StoreConstructor {
 
       // @ts-ignore
       const chainId = await provider.request({ method: 'eth_chainId' });
-      this.chainName = this.getNetworkName(chainId)
+      this.chainName = this.getNetworkName(chainId);
 
       // @ts-ignore
-      provider.on('chainChanged', (chainId) => {
-        this.chainName = this.getNetworkName(chainId)
-
-      })
+      provider.on('chainChanged', chainId => {
+        this.chainName = this.getNetworkName(chainId);
+      });
 
       if (!provider) {
         return this.setError('Metamask not found');
@@ -186,7 +204,7 @@ export class UserStoreMetamask extends StoreConstructor {
                   },
                 ],
               },
-              err => (err ? reject(err) : accept("success")),
+              err => (err ? reject(err) : accept('success')),
             ),
           );
         }
@@ -278,7 +296,7 @@ export class UserStoreMetamask extends StoreConstructor {
     if (tokens) {
       const token = tokens.allData.find(t => t.src_address === this.erc20Address);
       if (token.dst_address) {
-        await this.stores.user.updateBalanceForSymbol(token.display_props.symbol)
+        await this.stores.user.updateBalanceForSymbol(token.display_props.symbol);
         this.stores.user.snip20Address = token.dst_address;
         this.stores.user.snip20Balance = this.stores.user.balanceToken[token.src_coin];
         this.stores.user.snip20BalanceMin = this.stores.user.balanceTokenMin[token.src_coin];

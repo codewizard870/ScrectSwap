@@ -45,7 +45,7 @@ const renderNetworkTemplate = (template: NetworkTemplateInterface, justify: any)
 );
 
 export const SwapConfirmation = observer(() => {
-  const { exchange, user } = useStores();
+  const { exchange, user, userMetamask } = useStores();
   const [hash, setHash] = useState<string>(null);
   const [calculated, setCalculated] = useState<string>(null);
   const [feePercentage, setFeePercentage] = useState<number>(0);
@@ -90,11 +90,11 @@ export const SwapConfirmation = observer(() => {
   }, []);
 
   useEffect(() => {
-    if (exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT) {
+    if (exchange.mode === EXCHANGE_MODE.TO_SCRT) {
       setHash(`${process.env.ETH_EXPLORER_URL}/tx/${exchange.txHash}`);
     }
 
-    if (exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH) {
+    if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
       setHash(`${process.env.SCRT_EXPLORER_URL}/transactions/${exchange.txHash}`);
     }
   }, [exchange.txHash]);
@@ -110,7 +110,7 @@ export const SwapConfirmation = observer(() => {
 
   const NTemplate1: NetworkTemplateInterface = {
     symbol: formatSymbol(
-      exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH,
+      exchange.mode === EXCHANGE_MODE.TO_SCRT ? EXCHANGE_MODE.TO_SCRT : EXCHANGE_MODE.FROM_SCRT,
       exchange.transaction.tokenSelected.symbol,
     ),
     amount,
@@ -119,7 +119,7 @@ export const SwapConfirmation = observer(() => {
 
   const NTemplate2: NetworkTemplateInterface = {
     symbol: formatSymbol(
-      exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.SCRT_TO_ETH : EXCHANGE_MODE.ETH_TO_SCRT,
+      exchange.mode === EXCHANGE_MODE.TO_SCRT ? EXCHANGE_MODE.FROM_SCRT : EXCHANGE_MODE.TO_SCRT,
       exchange.transaction.tokenSelected.symbol,
     ),
     amount: formatWithSixDecimals(Number(amount) * (1 - feePercentage)),
@@ -156,9 +156,9 @@ export const SwapConfirmation = observer(() => {
               <b>
                 {amount} {symbol}
               </b>{' '}
-              to <b>{exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? 'Secret Network' : 'Ethereum'}</b>, please be patient
-              as the transaction may take a few minutes. You can follow each step of the transaction here once you
-              confirm it!
+              to <b>{exchange.mode === EXCHANGE_MODE.TO_SCRT ? 'Secret Network' : userMetamask.getNetworkFullName()}</b>
+              , please be patient as the transaction may take a few minutes. You can follow each step of the transaction
+              here once you confirm it!
             </Text>
 
             <Box direction="column">
@@ -208,12 +208,13 @@ export const SwapConfirmation = observer(() => {
             <Box style={{ height: 40 }} direction="row" justify="between" align="start" margin={{ top: 'large' }}>
               <Box direction="row" align="center">
                 <img
-                  style={{ marginRight: 6, width: exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH ? 15 : 12 }}
+                  style={{ marginRight: 6, width: exchange.mode === EXCHANGE_MODE.FROM_SCRT ? 15 : 12 }}
                   className={styles.imgToken}
-                  src={exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH ? '/static/scrt.svg' : '/static/eth.svg'}
+                  src={exchange.mode === EXCHANGE_MODE.FROM_SCRT ? '/static/scrt.svg' : userMetamask.getNetworkImage()}
                 />
                 <Text bold size="small" color="#00ADE8">
-                  {exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH ? 'Secret Network Fee' : 'Ethereum Fee'}
+                  {exchange.mode === EXCHANGE_MODE.FROM_SCRT ? 'Secret Network' : userMetamask.getNetworkFullName()}{' '}
+                  {' Fee'}
                 </Text>
               </Box>
               {exchange.isFeeLoading ? (
@@ -221,16 +222,16 @@ export const SwapConfirmation = observer(() => {
               ) : (
                 <Price
                   value={exchange.networkFee}
-                  isEth={exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT}
+                  isEth={exchange.mode === EXCHANGE_MODE.TO_SCRT}
                   boxProps={{ pad: {} }}
                 />
               )}
             </Box>
 
-            {exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && (
+            {exchange.mode === EXCHANGE_MODE.FROM_SCRT && (
               <Box style={{ height: 40 }} direction="row" justify="between" align="start" margin={{ top: 'xsmall' }}>
                 <Box className={styles.warningSign} direction="row" align="center">
-                  <img style={{ marginRight: 6, width: 12 }} src={'/static/eth.svg'} />
+                  <img style={{ marginRight: 6, width: 12 }} src={userMetamask.getNetworkImage()} />
                   <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>
                     Ethereum Fee
                   </Text>
@@ -241,14 +242,14 @@ export const SwapConfirmation = observer(() => {
                   <Price
                     value={Number(formatWithSixDecimals(exchange.swapFeeToken))}
                     valueUsd={exchange.swapFeeUSD}
-                    token={formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
+                    token={formatSymbol(EXCHANGE_MODE.TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                     boxProps={{ pad: {} }}
                   />
                 )}
               </Box>
             )}
 
-            {exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && (
+            {exchange.mode === EXCHANGE_MODE.FROM_SCRT && (
               <Box style={{ height: 40 }} direction="row" align="start" margin={{ top: 'xsmall' }} justify="between">
                 <Box direction="row">
                   <img src={exchange.transaction.tokenSelected.image} style={{ marginRight: 6 }} width="15" />
@@ -261,13 +262,13 @@ export const SwapConfirmation = observer(() => {
                   <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" />
                 ) : (
                   <Text bold size="small" color={calculated === '0' ? '#f37373' : '#212D5E'}>
-                    {calculated} {formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
+                    {calculated} {formatSymbol(EXCHANGE_MODE.TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                   </Text>
                 )}
               </Box>
             )}
 
-            {isTokenLocked && exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT && (
+            {isTokenLocked && exchange.mode === EXCHANGE_MODE.TO_SCRT && (
               <TokenLocked user={user} onFinish={value => setTokenLocked(!value)} />
             )}
 
@@ -315,10 +316,11 @@ export const SwapConfirmation = observer(() => {
                 </Jump>
               )}
             </Box>
-            {exchange.mode === EXCHANGE_MODE.SCRT_TO_ETH && (
+            {exchange.mode === EXCHANGE_MODE.FROM_SCRT && (
               <Box margin={{ top: 'xsmall' }}>
                 <Text color="#748695" size="xsmall">
-                  You are about to move your secret tokens back to Ethereum. You will receive approximately{' '}
+                  You are about to move your secret tokens back to {userMetamask.getNetworkFullName()}. You will receive
+                  approximately{' '}
                   <b>
                     {calculated} {symbol}
                   </b>{' '}

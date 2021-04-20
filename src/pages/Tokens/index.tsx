@@ -13,11 +13,16 @@ import { SearchInput } from 'components/Search';
 import { getScrtAddress } from '../../blockchain-bridge';
 import { isMobile } from 'react-device-detect';
 import { messages, messageToString } from '../EthBridge/messages';
-import { NETWORKS } from '../EthBridge';
+import { NETWORKS, networkFromToken } from '../EthBridge';
 
-const ethAddress = (value, num = 10) => (
+const ethAddress = (value, num = 10, network?: NETWORKS) => (
   <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
-    <img className={styles.imgToken} style={{ height: 20 }} src="/static/eth.svg" alt={'scrt'} />
+    <img
+      className={styles.imgToken}
+      style={{ height: 20 }}
+      src={messageToString(messages.image_logo, network || NETWORKS.ETH)}
+      alt={'scrt'}
+    />
     <a
       className={styles.addressLink}
       href={`${process.env.ETH_EXPLORER_URL}/token/${value}`}
@@ -70,7 +75,7 @@ const getColumns = (): IColumn<ITokenInfo>[] => [
     key: 'src_address',
     dataIndex: 'src_address',
     width: 220,
-    render: value => (value === 'native' ? 'native' : ethAddress(value, 8)),
+    render: (value, data) => (value === 'native' ? 'native' : ethAddress(value, 8, networkFromToken(data))),
   },
   {
     title: 'Secret Network Address',
@@ -138,11 +143,10 @@ export const Tokens = observer((props: any) => {
   }, []);
 
   useEffect(() => {
-
     if (tokens.allData.length > 0) {
-      setTVL(tokens.totalLockedUSD)
+      setTVL(tokens.totalLockedUSD);
     }
-  }, [tokens.allData.length])
+  }, [tokens.allData.length]);
 
   const onChangeDataFlow = (props: any) => {
     tokens.onChangeDataFlow(props);
@@ -152,13 +156,14 @@ export const Tokens = observer((props: any) => {
 
   //const filteredData = tokens.tokensUsageSync('BRIDGE')
   //const filteredData = ;
-    // .filter((value) => {
-    //   return !(value.dst_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH) &&
-    //     value.src_network !== messageToString(messages.full_name, userMetamask.network || NETWORKS.ETH));
-    //
-    // });
+  // .filter((value) => {
+  //   return !(value.dst_network !== userMetamask.getNetworkFullName() &&
+  //     value.src_network !== userMetamask.getNetworkFullName());
+  //
+  // });
 
-  const filteredData = tokens.tokensUsageSync('BRIDGE')
+  const filteredData = tokens
+    .tokensUsageSync('BRIDGE')
     .filter(token => {
       if (search) {
         // todo: check dst_network

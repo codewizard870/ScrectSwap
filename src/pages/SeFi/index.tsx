@@ -65,7 +65,6 @@ export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
-  const [allTokens, setAllTokens] = useState<SwapTokenMap>();
   const [earnings,setEarnings] = useState('0');
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
 
@@ -154,11 +153,6 @@ export const SeFiPage = observer(() => {
       if (tokens.allData.length > 0) {
         await sleep(500);
         setFilteredTokens(tokens.tokensUsageSync('LPSTAKING'));
-
-        const _tokens: ITokenInfo[] = [...(await tokens.tokensUsageSync('SWAP'))];
-        // convert to token map for swap
-        const swapTokens: SwapTokenMap = TokenMapfromITokenInfo(_tokens);
-        setAllTokens(swapTokens);
       }
     };
     asyncWrapper();
@@ -341,13 +335,6 @@ export const SeFiPage = observer(() => {
                   deadline: Number(rewardToken.reward.deadline),
                   rewardsSymbol: 'SEFI',
                 };
-                console.log(rewardToken.reward.inc_token.symbol)
-                const str = rewardToken.reward.inc_token.symbol.split("-")
-                console.log()
-                // const token = allTokens.map((t :SwapToken)=>t.symbol == )
-                // const token_secondary{
-                //   image:
-                // }
 
                 return (
                   <EarnRow

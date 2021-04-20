@@ -123,6 +123,40 @@ class EarnRow extends Component<
     const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : styles.accordion;
     //this.props.userStore.keplrWallet.suggestToken(this.props.userStore.chainId, );
     const { activeIndex } = this.state;
+    const images = [
+      {
+        symbol:'sscrt',
+        src:'/static/tokens/sscrt.svg'
+      },
+      {
+        symbol:'scrt',
+        src:'/static/tokens/srct.svg'
+      },
+      {
+        symbol:'sefi',
+        src:'/static/tokens/sefi.png'
+      },
+      {
+        symbol:'seth',
+        src:'/static/tokens/seth.png'
+      },
+      {
+        symbol:'slink',
+        src:'/static/tokens/slink.png'
+      },
+      {
+        symbol:'susdt',
+        src:'/static/tokens/susdt.png'
+      },
+      {
+        symbol:'swbtc',
+        src:'/static/tokens/swbtc.png'
+      },
+    ]
+    const _symbols = this.props.token.lockedAsset?.split('-');
+    const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());
+    const image_secondaryToken = images.filter((img)=>img.symbol === _symbols[2]?.toLowerCase());
+    
     return (
       <Accordion
         className={cn(style)}
@@ -133,12 +167,18 @@ class EarnRow extends Component<
           onClick={this.handleClick}
           className={cn(styles.assetRow)}
         >
-          <div className={cn(styles.assetIcon)}>
-            <Image src={this.props.token.display_props.image} rounded size="mini" />
-            {(this.props.token.lockedAsset != "SEFI")&&
-              <Image src={this.state.secondary_token?.image} rounded size="mini" />
-            }
-          </div>
+          {(this.props.token.lockedAsset === "SEFI")?
+              <div className={cn(styles.assetIcon)}>
+                <Image src={this.props.token.display_props.image} rounded size="mini" />
+              </div>
+            :
+            (
+              <div className={cn(styles.assetIcon)}>
+              <Image src={image_primaryToken[0]?.src} rounded size="mini" />
+              <Image src={image_secondaryToken[0]?.src} rounded size="mini" />
+              </div>
+            )
+          }
           <div className={cn(styles.title_content__center)}>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue

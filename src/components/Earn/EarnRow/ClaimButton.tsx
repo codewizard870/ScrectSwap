@@ -6,6 +6,8 @@ import * as styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import { AsyncSender } from '../../../blockchain-bridge/scrt/asyncSender';
+import { unlockToken } from 'utils';
+import { unlockJsx } from 'pages/Swap/utils';
 
 const ClaimButton = (props: {
   secretjs: AsyncSender;
@@ -14,15 +16,31 @@ const ClaimButton = (props: {
   symbol: string;
   notify: Function;
   rewardsToken?: string;
+  lockedAssetAddress?: any;
 }) => {
+  console.log(props)
   const { user } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
+  const displayAvailable = ()=>{
+    if (props.available === unlockToken) {
+      return unlockJsx({
+        onClick: async () => {
+          await user.keplrWallet.suggestToken(user.chainId, props.lockedAssetAddress);
+          // TODO trigger balance refresh if this was an "advanced set" that didn't
+          // result in an on-chain transaction
+          await user.updateBalanceForSymbol(props.symbol);
+        },
+      });
+    }else{
+      return <strong>{props?.available}</strong>
+    }
+  }
   return (
     <>
     <span 
       className={cn(styles.claim_label)}
     >
-      <strong>{props?.available}</strong> {props.rewardsToken}
+      {displayAvailable()}{props.rewardsToken}
     </span>
     <Button
       loading={loading}

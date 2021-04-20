@@ -13,7 +13,7 @@ const GeneralState = (props:{
        <div className="sefi-grid__container background_free claim-sefi__container">
           <div className="align-center">
             {
-              <button onClick={()=>{props.onClaimSefi()}} className="sefi-claim__button">Claim Sefi</button>
+              <button disabled={parseFloat(props.data.unclaimed) == 0} onClick={()=>{props.onClaimSefi()}} className="sefi-claim__button">Claim Sefi</button>
             }
           </div>
           <div className="item right sefi-balance">

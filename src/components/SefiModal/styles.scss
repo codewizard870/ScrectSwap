@@ -133,6 +133,10 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
 }
 .align-center {
   display: flex;
@@ -209,11 +213,15 @@
   }
   .claim-button {
     background: #1b1b1b !important;
-    padding: 11px 0;
+    padding: 11px 15px;
     border: none;
     cursor: pointer;
-    min-height: 46px;
     border-radius: 4px;
+    font-size: medium;
+    &:disabled {
+      background: #1b1b1b69 !important;
+      cursor: default;
+    }
   }
 }
 
@@ -283,4 +291,11 @@ a {
 }
 .m-small {
   margin: 0.4rem 0;
+}
+
+.claiming_section {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }

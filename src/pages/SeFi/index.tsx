@@ -33,7 +33,29 @@ import { claimErc, claimScrt } from '../../components/Earn/ClaimToken/utils';
 import { unlockJsx, wrongViewingKey } from 'pages/Swap/utils';
 import BigNumber from 'bignumber.js';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
+const Web3 = require("web3");
 
+const sefiAddr = "0x773258b03c730f84af10dfcb1bfaa7487558b8ac";
+const abi = {
+  constant: true,
+  inputs: [],
+  name: "totalSupply",
+  outputs: [
+    {
+      name: "",
+      type: "uint256",
+    },
+  ],
+  type: "function",
+};
+
+// // Get ERC20 Token contract instance
+// let contract = new web3.eth.Contract(abi).at(sefiAddr);
+
+// // Call function
+// contract.totalSupply((error, totalSupply) => {
+//   console.log("Total Supply: " + totalSupply.toString());
+// });
 function SefiBalance(props: { address: string; sefiBalance: string | JSX.Element; isEth?: boolean }) {
   const src_img = props.isEth ? '/static/eth.png' : '/static/scrt.svg';
 

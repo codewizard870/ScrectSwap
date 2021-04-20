@@ -12,6 +12,7 @@ const ClaimBox = (props: {
   symbol: string;
   notify?: Function;
   rewardsToken?: string;
+  lockedAssetAddress?: any;
 }) => {
   return (
     <div className={cn(styles.claimBox)}>
@@ -22,6 +23,7 @@ const ClaimBox = (props: {
         symbol={props.symbol}
         notify={props.notify}
         rewardsToken={props.rewardsToken}
+        lockedAssetAddress={props.lockedAssetAddress}
       />
     </div>
   );

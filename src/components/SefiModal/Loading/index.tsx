@@ -4,12 +4,12 @@ import {SefiData} from '../types/SefiData'
 import '../styles.scss';
 
 const Loading = (props:{
-  data:SefiData
+  unclaimed:number
 })=>{
   return(
     <>
       <div className="sefi-grid__container loading-sefi">
-        <h1 className="item left">{props.data.unclaimed} SEFI</h1>
+        <h1 className="item left">{props.unclaimed} SEFI</h1>
         <div className="item right loader-container">
             <Loader active inline inverted/>
         </div>

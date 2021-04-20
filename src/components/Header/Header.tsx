@@ -13,7 +13,7 @@ import { ITokenInfo } from 'stores/interfaces';
 // Import Icons
 const Header = () =>{
     const history = useHistory(); 
-    const { user, tokens } = useStores();
+    const { user, tokens,userMetamask } = useStores();
     const [theme,setTheme] = useState<String>(undefined);
     const [hasViewingKey, setHasViewingKey] = React.useState<Boolean>(true);
     const [sefi,setSefi] = useState(undefined);
@@ -138,7 +138,7 @@ const Header = () =>{
                     <SefiModal
                         tokens={tokens}
                         user={user}
-                        // sefiBalance={sefi}
+                        metaMask={userMetamask}
                     />
                     <div className="btn-main">
                         <div className="wallet-icon">

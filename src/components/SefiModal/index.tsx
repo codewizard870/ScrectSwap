@@ -24,11 +24,12 @@ import { getNativeBalance, wrongViewingKey } from './utils';
 import axios from 'axios'
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
 import numeral from 'numeral'
+import { UserStoreMetamask } from 'stores/UserStoreMetamask';
 
 export const SefiModal = (props: {
   user: UserStoreEx;
   tokens: Tokens;
-  // notify?: CallableFunction;
+  metaMask: UserStoreMetamask;
 })=>{
   const [open, setOpen] = React.useState(false);
   const [status, setStatus] = React.useState<SefiModalState>(SefiModalState.GENERAL);
@@ -41,6 +42,11 @@ export const SefiModal = (props: {
     sefi_in_circulation : '—',
     total_supply: '—'
   });
+  const [claimInfo,setClaimInfo] = React.useState<{
+    eth:any;
+    scrt:any;
+  }>(undefined)
+const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
 
   async function getSefiToken(){
     const tokens: ITokenInfo[] = [...(await props.tokens.tokensUsage('SWAP'))];
@@ -58,7 +64,6 @@ export const SefiModal = (props: {
 
   async function getSefiBalance(token : SwapToken){
     let balance = await refreshTokenBalance(token);
-    console.log(balance)
     if(JSON.stringify(balance).includes('View')){
       return balance
     }else{
@@ -117,17 +122,47 @@ export const SefiModal = (props: {
       return undefined;
     }
   }
-  async function getClaimInfo ():Promise<any>{
-    while (!props.user.secretjs) {
-      await sleep(100);
-    }
-    if (props.user.address) {
-      claimInfoScrt(props.user.secretjs, props.user.address).then((claimInfo)=>{
-        return claimInfo;
-      }).catch(() => {
+  const loadSRCTClaimInfo = async () => {
+    console.log('Load SRCT claim');
+    try {
+      if (props.user.address) {
+        const infoSrct = await claimInfoScrt(props.user.secretjs, props.user.address)
+        while (!props.user.secretjs) {
+          await sleep(100);
+        }
+        return infoSrct;
+      }else{
+        props.user.signIn();
         return undefined;
-      });
+      }
+    } catch (error) {
+      console.error("Error at loading SRCT claim info",error)
+      return undefined;
     }
+  };
+  const loadETHClaimInfo = async () => {
+    console.log('Load ETH claim');
+    try {
+      if (props.metaMask.ethAddress) {
+        const infoErc = await claimInfoErc(props.user.address);
+        while (!props.user.secretjs) {
+          await sleep(100);
+        }
+        return infoErc;
+      }else{
+        console.log('Meta mask sigin now');
+        props.metaMask.signIn();
+        return undefined;
+      }
+    } catch (error) {
+      console.error("Error at loading ETH claim info",error)
+      return undefined;
+    }
+  };
+  async function getClaimInfo ():Promise<any>{
+    const ethClaimInfo = await loadETHClaimInfo();
+    const scrtClaimInfo = await loadSRCTClaimInfo();
+    return {scrtClaimInfo,ethClaimInfo}
   };
   async function createViewingKey() {
     try {
@@ -165,7 +200,8 @@ export const SefiModal = (props: {
   function getData():any {
     getSefiToken().then(async(token : SwapToken)=>{
       setToken(token)
-      let balance = undefined;
+      let balance,unclaimed = undefined;
+      //Get sefi balance here
       try {
         balance = await getSefiBalance(token);
         balance = balance.toString().replace(",","")
@@ -173,10 +209,21 @@ export const SefiModal = (props: {
       } catch (error) {
         console.error("Error at getting SEFI balance")
       }
+      //Load unclaimed 
+      try {
+        const {scrtClaimInfo,ethClaimInfo} = await getClaimInfo();
+        const totalUnclaimed = parseFloat(divDecimals(scrtClaimInfo?.amount?.toString() || 0, 6)) + parseFloat(divDecimals(ethClaimInfo?.amount?.toString() || 0, 8));
+        unclaimed = numeral(totalUnclaimed).format(getFloatFormat(totalUnclaimed)).toString().toUpperCase()
+        setClaimInfo({
+          eth:ethClaimInfo,
+          scrt:scrtClaimInfo,
+        })
+      } catch (error) {
+        console.error("Error at fetch unclaimed SEFI",error)
+      }
       const price = await getSefiPrice()
       const price_formatted = numeral(price).format('$0.00');
-      const claimInfo = await getClaimInfo();
-      const unclaimed = divDecimals(claimInfo?.amount.toString() || '0', 6);
+      
       const totalSupply = await getTotalSupply(token.address);
       const totalSupply_formatted = numeral(totalSupply).format(getFloatFormat(totalSupply)).toString().toUpperCase()
       
@@ -195,11 +242,11 @@ export const SefiModal = (props: {
     setStatus(SefiModalState.CLAIM);
   };
 
-  const onClaim = async()=>{
+  const onClaimSCRT = async()=>{
     console.log('Claiming SEFI...')
     try {
+      setUnclaimedAmout(parseFloat(claimInfo.scrt?.amount))
       const result = await claimScrt(props.user.secretjsSend, props.user.address);
-      
       console.log('success', 'Claimed SeFi successfully!');
       setStatus(SefiModalState.CONFIRMATION);
     } catch (e) {
@@ -209,7 +256,34 @@ export const SefiModal = (props: {
       console.log(props.user.balanceToken['SEFI'])
     }
   };
-  
+  const onClaimErc = async()=>{
+    console.log('Claiming SEFI...')
+    try {
+      setUnclaimedAmout(parseFloat(claimInfo.eth?.amount))
+      const result = await claimErc();
+      console.log('success', 'Claimed SeFi successfully!');
+      setStatus(SefiModalState.CONFIRMATION);
+    } catch (e) {
+      console.error(`failed to claim ${e}`);
+    } finally {
+      await props.user.updateBalanceForSymbol('SEFI');
+      console.log(props.user.balanceToken['SEFI'])
+    }
+  };
+  const loginMetaMask = ()=>{
+    try {
+      props.metaMask.signIn();
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const loginKeplr = ()=>{
+    try {
+      props.user.signIn()
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return(
     <Modal
       onClose={() => { 
@@ -241,9 +315,9 @@ export const SefiModal = (props: {
       </Modal.Header>
       <Modal.Content>
         {(status === SefiModalState.GENERAL) && <General createViewingKey={createViewingKey} hasViewingKey={hasViewingKey} onClaimSefi={onClaimSefi} data={data}/>}
-        {(status === SefiModalState.CLAIM) && <Claim onClaim={onClaim} data={data}/>}
+        {(status === SefiModalState.CLAIM) && <Claim onKeplrIcon={loginKeplr} onMetaMaskIcon={loginMetaMask} claimInfo={claimInfo} onClaimSCRT={onClaimSCRT} onClaimErc={onClaimErc} data={data}/>}
         {(status === SefiModalState.CLAIM_CASH_BACK) && <ClaimCashback data={data}/>}
-        {(status === SefiModalState.LOADING) && <Loading data={data}/>}
+        {(status === SefiModalState.LOADING) && <Loading unclaimed={unclaimedAmount}/>}
         {(status === SefiModalState.CONFIRMATION) && <Confirmation data={data}/>}
         {(status === SefiModalState.CONFIRMATION_CASHBACK) && <ConfirmationCashback data={data}/>}
        

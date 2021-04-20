@@ -17,7 +17,7 @@ const GeneralState = (props:{
             }
           </div>
           <div className="item right sefi-balance">
-            <div><img src="/static/sefi.png" alt=""/></div>
+            <div><img src="/static/tokens/sefi.png" alt=""/></div>
             <span>SEFI</span>
             <h1>{props.data.balance}</h1>
           </div>

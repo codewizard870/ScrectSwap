@@ -309,6 +309,8 @@ class EarnRow extends Component<
                     price={this.props.token.price}
                     balanceText="Available"
                     unlockPopupText='In order to view your available assets, click on "View Balance" above'
+                    tokenAddress={this.props.token.lockedAssetAddress} 
+                    userStore={this.props.userStore}
                   />
                 </Grid.Column>
                 <Grid.Column>
@@ -333,10 +335,12 @@ class EarnRow extends Component<
                       </Grid>
                     } //({props: this.props, value: this.state.withdrawValue})}
                     balance={this.props.token.deposit}
-                    currency={this.props.token.lockedAsset}
+                    currency={this.props.token.rewardsSymbol}
                     price={this.props.token.price}
                     balanceText="Locked"
                     unlockPopupText='In order to view your locked assets, click on "View Balance" below'
+                    tokenAddress={this.props.token.rewardsContract} 
+                    userStore={this.props.userStore}
                   />
                 </Grid.Column>
               </Grid>

@@ -5,6 +5,8 @@ import React from 'react';
 import { unlockToken } from '../../../utils';
 import ScrtTokenBalanceSingleLine from './ScrtTokenBalanceSingleLine';
 import BigNumber from 'bignumber.js';
+import { unlockJsx } from 'pages/Pool/utils';
+import { useStores } from 'stores';
 
 const buttonStyle = {
   borderRadius: '15px',
@@ -44,8 +46,15 @@ const changeInput = (balance, percentage, onChange) => {
   };
   onChange(event);
 };
-
 const DepositContainer = props => {
+
+  const createViewingKey = ()=>{
+    return unlockJsx({
+      onClick:async()=>{
+        await props.userStore?.keplrWallet?.suggestToken(props.userStore?.chainId, props.tokenAddress);
+      }
+    })
+  }
   
   return (
     <div className={cn(styles.changeBalance)}>
@@ -57,15 +66,15 @@ const DepositContainer = props => {
         </div>
         <div className={cn(styles.balanceRow)}>
           <div className={cn(styles.h4)}>
-            {/* <ScrtTokenBalanceSingleLine
+            <ScrtTokenBalanceSingleLine
               value={props.balance}
               currency={props.currency}
               price={props.price}
               selected={false}
               balanceText={props.balanceText}
               popupText={props.unlockPopupText}
-            /> */}
-            {props.currency}
+              createKey={createViewingKey}
+            />
           </div>
           <Popup
             content={props.unlockPopupText}

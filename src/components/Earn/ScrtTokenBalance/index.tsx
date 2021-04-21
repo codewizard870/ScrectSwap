@@ -63,23 +63,17 @@ const ScrtTokenBalance = (props: {
     );
   } else {
     return (
-      <SoftTitleValue
-        title={
-          <div className={cn(styles.assetRow)}>
-            <NumberOdometer
-              number={(() => {
-                if (value.includes('Unlock')) {
-                  return 'Fix Viewing Key';
-                }
-
-                return `${formatNumber(divDecimals(value.replace(/,/g, ''), props.decimals), minimumFactions)}`;
-              })()}
-            />
-            <div style={{ marginLeft: '5px', paddingTop: '4px' }}>{props.currency}</div>
-          </div>
-        }
-        subTitle={text}
-      />
+        <div className={cn(styles.assetRow)}>
+          <NumberOdometer
+            number={(() => {
+              if (value.includes('Unlock')) {
+                return 'Fix Viewing Key';
+              }
+              return `${formatNumber(divDecimals(value.replace(/,/g, ''), props.decimals), minimumFactions)}`;
+            })()}
+          />
+          <div style={{ marginLeft: '5px', paddingTop: '4px' }}>{props.currency}</div>
+        </div>
     );
   }
 };

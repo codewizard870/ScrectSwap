@@ -40,7 +40,7 @@ export const SefiModal = (props: {
     unclaimed:'—',
     sefi_price: 0.0,
     sefi_in_circulation : '—',
-    total_supply: '—'
+    total_supply: '1bn'
   });
   const [claimInfo,setClaimInfo] = React.useState<{
     eth:any;
@@ -116,7 +116,6 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         address: SefiAddress,
         secretjs: props.user.secretjsSend,
       }); 
-      console.log(result)
       return divDecimals(result?.total_supply,result?.decimals)
     } catch (error) {
       console.error(error)
@@ -145,7 +144,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
     console.log('Load ETH claim');
     try {
       if (props.metaMask.ethAddress) {
-        const infoErc = await claimInfoErc(props.user.address);
+        const infoErc = await claimInfoErc(props.metaMask.ethAddress);
         while (!props.user.secretjs) {
           await sleep(100);
         }
@@ -225,17 +224,15 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       const price = await getSefiPrice()
       const price_formatted = numeral(price).format('$0.00');
       
-      const totalSupply = await getTotalSupply(token.address);
-      console.log(totalSupply)
-      const totalSupply_formatted = numeral(totalSupply).format(getFloatFormat(totalSupply)).toString().toUpperCase()
+      const sefi_circulation_scrt =  parseFloat(await getTotalSupply(token.address));
+      const total_sefi_circulation_scrt = numeral(sefi_circulation_scrt).format(getFloatFormat(sefi_circulation_scrt)).toString().toUpperCase()
       
       setData({
         ...data,
         balance: balance || "—",
         sefi_price:price_formatted,
         unclaimed: unclaimed,
-        total_supply: totalSupply_formatted,
-        sefi_in_circulation: '0.0',
+        sefi_in_circulation: total_sefi_circulation_scrt,
       })
     });
   }
@@ -286,7 +283,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       console.error(error)
     }
   }
-  console.log()
+
   return(
     <Modal
       onClose={() => { 

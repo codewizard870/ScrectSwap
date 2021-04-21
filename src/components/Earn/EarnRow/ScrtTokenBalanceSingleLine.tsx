@@ -11,23 +11,25 @@ const ScrtTokenBalanceSingleLine = (props: {
   balanceText: string;
   popupText: string;
   price?: string;
+  createKey: Function;
 }) => {
   if (!props.value) {
     return <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />;
   } else if (props.value.includes(unlockToken)) {
-    return (
-      <div>
-        <Popup
-          content={props.popupText}
-          trigger={
-            <div>
-              <Icon name="question circle outline" />
-              {props.currency}
-            </div>
-          }
-        />
-      </div>
-    );
+    return props.createKey() 
+    // (
+    //   <div>
+    //     <Popup
+    //       content={props.popupText}
+    //       trigger={
+    //         <div>
+    //           <Icon name="question circle outline" />
+    //           {props.currency}
+    //         </div>
+    //       }
+    //     />
+    //   </div>
+    // );
   } else {
     const valueBN = new BigNumber(props.value.replace(/,/g, '')).toFixed(6, BigNumber.ROUND_DOWN);
     return (

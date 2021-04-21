@@ -25,7 +25,7 @@ import axios from 'axios'
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
 import numeral from 'numeral'
 import { UserStoreMetamask } from 'stores/UserStoreMetamask';
-
+import { web3 } from '../../blockchain-bridge/eth';
 export const SefiModal = (props: {
   user: UserStoreEx;
   tokens: Tokens;
@@ -110,7 +110,20 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
     });
     return parseFloat(statsData.data.price);
   }
-  async function getTotalSupply(SefiAddress : string) {
+  async function getCirculationSEFI(sefiAddress : string){
+    const INITIAL_SEFI = 100000000;
+    const CURRENT_BLOCK = await web3.eth.getBlockNumber();;
+    const INITIAL_BLOCK = 2800000;
+    const SEFI_PER_BLOCK = 94.368341;
+    let totalSEFIInETH = INITIAL_SEFI + ((CURRENT_BLOCK - INITIAL_BLOCK) * SEFI_PER_BLOCK)
+    const totalSEFIInSCRT = await getCirculatinSEFIInSCRT(sefiAddress);
+    if(totalSEFIInSCRT){
+      return parseFloat(totalSEFIInSCRT+totalSEFIInETH);
+    }else{
+      return 0;
+    }
+  }
+  async function getCirculatinSEFIInSCRT(SefiAddress : string) {
     try {
       const result = await GetSnip20Params({
         address: SefiAddress,
@@ -224,15 +237,15 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       const price = await getSefiPrice()
       const price_formatted = numeral(price).format('$0.00');
       
-      const sefi_circulation_scrt =  parseFloat(await getTotalSupply(token.address));
-      const total_sefi_circulation_scrt = numeral(sefi_circulation_scrt).format(getFloatFormat(sefi_circulation_scrt)).toString().toUpperCase()
+      const sefi_circulation =  await getCirculationSEFI(token.address);
+      const total_sefi_circulation = numeral(sefi_circulation).format(getFloatFormat(sefi_circulation)).toString().toUpperCase()
       
       setData({
         ...data,
         balance: balance || "—",
         sefi_price:price_formatted,
         unclaimed: unclaimed,
-        sefi_in_circulation: total_sefi_circulation_scrt,
+        sefi_in_circulation: total_sefi_circulation,
       })
     });
   }

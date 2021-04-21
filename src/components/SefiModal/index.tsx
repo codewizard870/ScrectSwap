@@ -117,7 +117,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         secretjs: props.user.secretjsSend,
       }); 
       console.log(result)
-      return parseInt(result?.total_supply) / 10^result?.decimals || 0;
+      return divDecimals(result?.total_supply,result?.decimals)
     } catch (error) {
       console.error(error)
       return undefined;
@@ -226,6 +226,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       const price_formatted = numeral(price).format('$0.00');
       
       const totalSupply = await getTotalSupply(token.address);
+      console.log(totalSupply)
       const totalSupply_formatted = numeral(totalSupply).format(getFloatFormat(totalSupply)).toString().toUpperCase()
       
       setData({

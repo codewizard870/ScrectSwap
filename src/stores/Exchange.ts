@@ -235,6 +235,19 @@ export class Exchange extends StoreConstructor {
             this.operation.image = token.display_props.image;
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.SCRT_TO_ETH, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+          } else {
+            // todo: fix this up - proxy token
+            if (swap.src_coin === process.env.SIENNA_PROXY_CONTRACT) {
+              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SIENNA');
+              this.operation.image = token.display_props.image;
+              this.operation.symbol = formatSymbol(EXCHANGE_MODE.SCRT_TO_ETH, token.display_props.symbol);
+              this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+            } else if (swap.src_coin === process.env.WSCRT_PROXY_CONTRACT) {
+              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT');
+              this.operation.image = token.display_props.image;
+              this.operation.symbol = formatSymbol(EXCHANGE_MODE.SCRT_TO_ETH, token.display_props.symbol);
+              this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+            }
           }
         }
 
@@ -456,10 +469,17 @@ export class Exchange extends StoreConstructor {
         decimals = token.decimals;
         price = token.price;
         this.transaction.snip20Address = token.dst_address;
+        // todo: fix this up - proxy token
         if (token.display_props.proxy) {
-          proxyContract = process.env.WSCRT_PROXY_CONTRACT;
-          recipient = process.env.WSCRT_PROXY_CONTRACT;
-          this.transaction.snip20Address = process.env.SSCRT_CONTRACT;
+          if (token.display_props.symbol === 'WSCRT') {
+            proxyContract = process.env.WSCRT_PROXY_CONTRACT;
+            recipient = process.env.WSCRT_PROXY_CONTRACT;
+            this.transaction.snip20Address = process.env.SSCRT_CONTRACT;
+          } else if (token.display_props.symbol === 'SIENNA') {
+            proxyContract = process.env.SIENNA_PROXY_CONTRACT;
+            recipient = process.env.SIENNA_PROXY_CONTRACT;
+            this.transaction.snip20Address = process.env.SIENNA_CONTRACT;
+          }
         }
       }
     }

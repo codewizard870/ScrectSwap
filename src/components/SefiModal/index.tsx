@@ -117,11 +117,10 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
     const SEFI_PER_BLOCK = 94.368341;
     let totalSEFIInETH = INITIAL_SEFI + ((CURRENT_BLOCK - INITIAL_BLOCK) * SEFI_PER_BLOCK)
     const totalSEFIInSCRT = await getCirculatinSEFIInSCRT(sefiAddress);
-    if(totalSEFIInSCRT){
-      return parseFloat(totalSEFIInSCRT+totalSEFIInETH);
-    }else{
-      return 0;
-    }
+    console.log(`Circulating SEFI in ETH : ${totalSEFIInETH}`)
+    console.log(`Circulating SEFI in SCRT : ${totalSEFIInSCRT}`)
+    
+    return totalSEFIInSCRT+totalSEFIInETH;
   }
   async function getCirculatinSEFIInSCRT(SefiAddress : string) {
     try {
@@ -129,10 +128,14 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         address: SefiAddress,
         secretjs: props.user.secretjsSend,
       }); 
-      return divDecimals(result?.total_supply,result?.decimals)
+      const circulatingInSCRT = divDecimals(result?.total_supply,result?.decimals)
+      if(typeof circulatingInSCRT === 'number'){
+        return circulatingInSCRT;
+      }
+      return 0;
     } catch (error) {
       console.error(error)
-      return undefined;
+      return 0;
     }
   }
   const loadSRCTClaimInfo = async () => {
@@ -238,6 +241,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       const price_formatted = numeral(price).format('$0.00');
       
       const sefi_circulation =  await getCirculationSEFI(token.address);
+      console.log(`Total SEFI in circulation :${sefi_circulation}`)
       const total_sefi_circulation = numeral(sefi_circulation).format(getFloatFormat(sefi_circulation)).toString().toUpperCase()
       
       setData({

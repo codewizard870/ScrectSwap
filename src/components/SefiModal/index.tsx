@@ -128,7 +128,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         address: SefiAddress,
         secretjs: props.user.secretjsSend,
       }); 
-      const circulatingInSCRT = divDecimals(result?.total_supply,result?.decimals)
+      const circulatingInSCRT = parseFloat(divDecimals(result?.total_supply,result?.decimals))
       if(typeof circulatingInSCRT === 'number'){
         return circulatingInSCRT;
       }

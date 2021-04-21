@@ -116,6 +116,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         address: SefiAddress,
         secretjs: props.user.secretjsSend,
       }); 
+      console.log(result)
       return parseInt(result?.total_supply) / 10^result?.decimals || 0;
     } catch (error) {
       console.error(error)
@@ -284,6 +285,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       console.error(error)
     }
   }
+  console.log()
   return(
     <Modal
       onClose={() => { 

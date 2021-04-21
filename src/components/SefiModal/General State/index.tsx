@@ -51,7 +51,7 @@ const GeneralState = (props:{
           <span className='item left'>SEFI in circulation </span>
           <strong className='item right'> {props.data.sefi_in_circulation} </strong>
           <span className='item left'>Total Supply </span>
-          <strong className='item right'> {props.data.total_supply} </strong>
+          <strong className='item right'> 1bn </strong>
         </div>
         <div className="sefi-grid__container links background_free">
               <strong className='item left'><a href="https://secretanalytics.xyz/secretswap" target='_blank'>View Analytics</a></strong>

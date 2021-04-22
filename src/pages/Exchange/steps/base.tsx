@@ -618,7 +618,7 @@ export const Base = observer(() => {
                 selectedToken.symbol !== '' &&
                 selectedToken.symbol !== 'ETH' && (
                   <Button
-                    disabled={/*exchange.tokenApprovedLoading || !toApprove*/ true}
+                    disabled={exchange.tokenApprovedLoading || !toApprove}
                     bgColor={'#00ADE8'}
                     color={'white'}
                     style={{ minWidth: 180, height: 48 }}
@@ -641,7 +641,7 @@ export const Base = observer(() => {
                 )}
 
               <Button
-                disabled={/*!readyToSend*/ true}
+                disabled={!readyToSend}
                 margin={{ left: 'medium' }}
                 bgColor={!toApprove ? '#00ADE8' : '#E4E4E4'}
                 color={!toApprove ? 'white' : '#748695'}

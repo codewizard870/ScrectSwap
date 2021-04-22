@@ -47,7 +47,7 @@ export const EthBridge = observer((props: any) => {
             <Message.Header>
               The bridge is down for maintenance! 🛠
             </Message.Header>
-            Only the bridge functionality is affected. All other products (including SecretSwap and liquidity mining) still work.<br></br>
+            Only the bridge functionality is affected. All other products (including SecretSwap and liquidity mining) are still available.<br></br>
             We'll be back soon 🤫
               {/* <Message.Header>The
               <a href="https://scrt.network/blog/sefi-is-live-on-mainnet" style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer"> SEFI governance token </a>

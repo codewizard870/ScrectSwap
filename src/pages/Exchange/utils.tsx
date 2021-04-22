@@ -81,13 +81,13 @@ export const NetworkTemplate = (props: {
             <Box direction="row" align={"start"} margin={{ top: 'xxsmall' }}>
                 <Box direction="column" style={{ marginRight: 7 }} align="center">
                     <img style={{ marginBottom: 5 }} height="37" src={props.template.name === "Ethereum" ? "/static/eth.svg" : "/static/scrt.svg"} />
-                    <IconUI style={{ margin: 0 }} className={'circle'} color={props.template.health ? 'green' : 'red'} />
+                    <IconUI style={{ margin: 0 }} className={'circle'} color={/*props.template.health*/ false ? 'green' : 'red'} />
                 </Box>
 
                 <Box direction="column" >
                     <Title bold color={"#30303D"} margin={{ bottom: 'xxsmall' }}>{props.template.name}</Title>
                     <Text size="medium" bold color={"#748695"}>{props.template.wallet}</Text>
-                    <Text size="xsmall" color={"#748695"}>{props.template.health ? 'Live' : 'Down'}</Text>
+                    <Text size="xsmall" color={"#748695"}>{/*props.template.health*/ false ? 'Live' : 'Down'}</Text>
                 </Box>
 
             </Box>

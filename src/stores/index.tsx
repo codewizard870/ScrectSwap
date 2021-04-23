@@ -24,7 +24,7 @@ export interface IStores {
   secretSwapPairs?: SecretSwapPairs;
   secretSwapPools?: SecretSwapPools;
   signerHealth?: SignerHealthStore;
-  theme?: any;
+  theme?: Theme;
 }
 
 const stores: IStores = {};

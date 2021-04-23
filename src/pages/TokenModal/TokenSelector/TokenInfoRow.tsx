@@ -71,21 +71,22 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
   //   return userBalancePromise ;
   // }
   // getBalance();
+  const {theme} = useStores();
   return (
     <div style={{ display: 'flex' }}>
       <div className={cn(styles.tokenInfoRow)} onClick={props.onClick}>
         <div className={cn(styles.tokenInfoItemsLeft)}>
-          <Image src={props.token.logo} avatar style={{ boxShadow: 'rgba(0, 0, 0, 0.075) 0px 6px 10px' }} />
-          <p className={cn(styles.tokenTitle)}>{props.token.symbol}</p>
+          <Image  src={props.token.logo} avatar style={{ boxShadow: 'rgba(0, 0, 0, 0.075) 0px 6px 10px' }} />
+          <p className={`${styles.tokenTitle} ${styles[theme.currentTheme]}`}>{props.token.symbol}</p>
         </div>
         <FlexRowSpace />
-        <div className={cn(styles.tokenInfoItemsRight)}>
+        <div className={`${styles.tokenInfoItemsRight} ${styles[theme.currentTheme]}`}>
           {(props.token.identifier !== 'uscrt')? props.token.address:'native'}
         </div>
-        <h3 className={cn(styles.CopyWithFeedback)} hidden={!props.token.address}>
-          <CopyWithFeedback text={props.token.address} />
-        </h3>
       </div>
+      <h3 className={cn(styles.CopyWithFeedback)} hidden={!props.token.address}>
+        <CopyWithFeedback text={props.token.address} />
+      </h3>
     </div>
   );
 };

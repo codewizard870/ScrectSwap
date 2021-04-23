@@ -11,6 +11,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
   ({ theme, children, ...props }: IStyledChildrenProps<BoxProps>) => {
     const { palette, container } = theme;
     const { minWidth, maxWidth } = container;
+    const [ignored, forceUpdate] = React.useReducer(x => x + 1, 0);
     return (
       <>
         {/*<div className={styles.backgroundImage} />*/}
@@ -22,7 +23,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
             overflow:'auto',
           }}
         >
-          <Header />
+          <Header forceUpdate={forceUpdate} />
           <Box
             style={{
               width:'100%',

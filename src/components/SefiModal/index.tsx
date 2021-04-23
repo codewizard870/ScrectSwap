@@ -110,34 +110,16 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
     });
     return parseFloat(statsData.data.price);
   }
-  async function getCirculationSEFI(sefiAddress : string){
+  async function getCirculationSEFI(){
     const INITIAL_SEFI = 100000000;
-    const CURRENT_BLOCK = await web3.eth.getBlockNumber();;
-    const INITIAL_BLOCK = 2800000;
+    const CURRENT_BLOCK = await props.user.secretjs.getHeight()
+    const INITIAL_BLOCK = 2830000;
     const SEFI_PER_BLOCK = 94.368341;
-    let totalSEFIInETH = INITIAL_SEFI + ((CURRENT_BLOCK - INITIAL_BLOCK) * SEFI_PER_BLOCK)
-    const totalSEFIInSCRT = await getCirculatinSEFIInSCRT(sefiAddress);
-    console.log(`Circulating SEFI in ETH : ${totalSEFIInETH}`)
-    console.log(`Circulating SEFI in SCRT : ${totalSEFIInSCRT}`)
+    let totalSefi = INITIAL_SEFI + ((CURRENT_BLOCK - INITIAL_BLOCK) * SEFI_PER_BLOCK) 
     
-    return totalSEFIInSCRT+totalSEFIInETH;
+    return totalSefi;
   }
-  async function getCirculatinSEFIInSCRT(SefiAddress : string) {
-    try {
-      const result = await GetSnip20Params({
-        address: SefiAddress,
-        secretjs: props.user.secretjsSend,
-      }); 
-      const circulatingInSCRT = parseFloat(divDecimals(result?.total_supply,result?.decimals))
-      if(typeof circulatingInSCRT === 'number'){
-        return circulatingInSCRT;
-      }
-      return 0;
-    } catch (error) {
-      console.error(error)
-      return 0;
-    }
-  }
+
   const loadSRCTClaimInfo = async () => {
     console.log('Load SRCT claim');
     try {
@@ -240,7 +222,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       const price = await getSefiPrice()
       const price_formatted = numeral(price).format('$0.00');
       
-      const sefi_circulation =  await getCirculationSEFI(token.address);
+      const sefi_circulation =  await getCirculationSEFI();
       console.log(`Total SEFI in circulation :${sefi_circulation}`)
       const total_sefi_circulation = numeral(sefi_circulation).format(getFloatFormat(sefi_circulation)).toString().toUpperCase()
       

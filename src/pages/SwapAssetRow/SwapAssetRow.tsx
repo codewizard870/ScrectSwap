@@ -9,6 +9,8 @@ import { SigningCosmWasmClient } from 'secretjs';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
 import { CosmWasmClient } from 'secretjs';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
+import { useStores } from 'stores';
+import * as styles from './styles.styl'
 
 export const SwapAssetRow = ({
   tokens,
@@ -35,10 +37,11 @@ export const SwapAssetRow = ({
   secretjs: CosmWasmClient;
   disabled?: boolean;
 }) => {
+  const {theme} = useStores()
   const font = {
     fontWeight: 400,
     fontSize: '16px',
-    color: '#5F5F6B',
+    color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE',
     fontFamily:'Poppins,Arial, Helvetica, sans-serif'
   };
   const balanceStyle ={
@@ -53,7 +56,6 @@ export const SwapAssetRow = ({
         padding: '1rem',
         borderRadius: '20px',
         border: '1px solid rgb(247, 248, 250)',
-        backgroundColor: 'white',
       }}
     >
       <div
@@ -65,7 +67,7 @@ export const SwapAssetRow = ({
           style={{
             fontWeight: 500,
             fontSize: '14px',
-            color: 'rgb(86, 90, 105)',
+            color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE',
           }}
         >
           {label}
@@ -80,7 +82,7 @@ export const SwapAssetRow = ({
                 return (
                   <>
                     <span style={balanceStyle} />
-                    <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />
+                    <Loader type="ThreeDots" color="#ff726e" height="1em" width="1em" style={{ margin: 'auto' }} />
                   </>
                 );
               }
@@ -120,18 +122,8 @@ export const SwapAssetRow = ({
         {maxButton && token && (
           <Button
             basic
-            disabled={new BigNumber(balance as any).isNaN()}
-            style={{
-              marginRight:'2rem',
-              color:'#5F5F6B' ,
-              border:'1px solid #5F5F6B' ,
-              borderRadius: '15px',
-              fontSize: '12px',
-              fontWeight: 700,
-              width:'63px',
-              height: '26px',
-              padding: '4px 12px',
-            }}
+            className={`${styles[theme.currentTheme]} ${styles.max_button}`}
+            disabled={new BigNumber(balance as any).isNaN()} 
             onClick={() => {
               const { decimals } = tokens.get(token);
 
@@ -147,7 +139,7 @@ export const SwapAssetRow = ({
               );
             }}
           >
-            MAX
+            <span>MAX</span>
           </Button>
         )}
         <TokenSelector

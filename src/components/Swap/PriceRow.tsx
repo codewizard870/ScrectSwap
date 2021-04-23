@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import * as style from './style.styl';
 import { FlexRowSpace } from './FlexRowSpace';
+import { useStores } from 'stores';
 
 const numberFormat = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 6,
@@ -35,11 +36,11 @@ export const PriceRow = ({
       priceInvert: numberFormat.format(price),
     });
   }, [fromToken, toToken, price]);
-
+  const {theme} = useStores();
   return (
     <>
       <div
-        className={style.priceRow_container}
+        className={`${style.priceRow_container} ${style[theme.currentTheme]}`}
       >
         {labelPrefix}Price
         <FlexRowSpace />
@@ -50,7 +51,7 @@ export const PriceRow = ({
           name="exchange"
           style={{
             margin: '0 0 0 0.3em',
-            background: iconBackground,
+            background: (theme.currentTheme == 'light')?'whitesmoke':'rgba(255, 255, 255, 0.1)',
             cursor: 'pointer',
           }}
           onMouseEnter={() => setIconBackground('rgb(237, 238, 242)')}

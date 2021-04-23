@@ -1,16 +1,16 @@
 #notifications_container .ct-group .ct-toast-success {
   background: #79cc81;
-  border: none !important; 
+  border: none !important;
 }
 #notifications_container .ct-group .ct-toast-warn {
   background: #ec3933;
-  border: none !important; 
+  border: none !important;
 }
 #notifications_container .ct-group .ct-toast svg path {
   stroke: white;
   fill: white;
 }
-#notifications_container .ct-group{
+#notifications_container .ct-group {
   margin: 0;
 }
 #notifications_container .ct-group .ct-toast {

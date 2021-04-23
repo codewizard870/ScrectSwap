@@ -5,6 +5,7 @@ import { FlexRowSpace } from './FlexRowSpace';
 import Loader from 'react-loader-spinner';
 import BigNumber from 'bignumber.js';
 import { displayHumanizedBalance } from 'utils';
+import { useStores } from 'stores';
 
 const routeLink = (
   <svg
@@ -42,7 +43,7 @@ export const RouteRow = ({
 }) => {
   const [iconBackground, setIconBackground] = useState<string>('whitesmoke');
   const [loadingProgress, setLoadingProgress] = useState<string>(null);
-
+  const {theme} = useStores();
   useEffect(() => {
     setLoadingProgress(loadingCount);
   }, [loadingCount]);
@@ -73,6 +74,7 @@ export const RouteRow = ({
         paddingTop: isLoading ? '1em' : '0.5em',
         display: 'flex',
         alignItems: 'center',
+        color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE',
       }}
     >
       Route
@@ -84,7 +86,7 @@ export const RouteRow = ({
             size="tiny"
             style={{
               marginLeft: '0.5rem',
-              background: iconBackground,
+              background: (theme.currentTheme == 'light')?'whitesmoke':'rgba(255, 255, 255, 0.1)',
               verticalAlign: 'middle',
             }}
             onMouseEnter={() => setIconBackground('rgb(237, 238, 242)')}
@@ -121,7 +123,7 @@ export const RouteRow = ({
                         ({displayHumanizedBalance(r.fromOutput, BigNumber.ROUND_UP, outputToken.decimals)})
                       </span>
                     )}
-                    <Route route={r.route} tokens={tokens} />
+                    <Route theme={theme} route={r.route} tokens={tokens} />
                     {r.toOutput && (
                       <span style={{ marginLeft: '0.3em' }}>
                         ({displayHumanizedBalance(r.toOutput, BigNumber.ROUND_DOWN, outputToken.decimals)})
@@ -138,13 +140,13 @@ export const RouteRow = ({
       {isLoading ? (
         <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
       ) : (
-        <Route route={route} tokens={tokens} />
+        <Route theme={theme} route={route} tokens={tokens} />
       )}
     </div>
   );
 };
 
-const Route = ({ route, tokens }: { route: string[]; tokens: SwapTokenMap }) => {
+const Route = ({ route, tokens,theme }: { route: string[]; tokens: SwapTokenMap,theme:any }) => {
   return (
     <>
       {route.map((node, idx) => {
@@ -154,6 +156,7 @@ const Route = ({ route, tokens }: { route: string[]; tokens: SwapTokenMap }) => 
             style={{
               display: 'flex',
               alignItems: 'center',
+              color: (theme?.currentTheme == 'light')?'#5F5F6B':'#DEDEDE',
             }}
             key={token.identifier}
           >

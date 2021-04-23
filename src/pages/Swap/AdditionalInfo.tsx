@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import React, { useState } from 'react';
 import { Container, Popup, Icon } from 'semantic-ui-react';
+import { useStores } from 'stores';
 import { PairAnalyticsLink } from '../../components/Swap/PairAnalyticsLink';
 import style from './styles.styl';
 export const AdditionalInfo = ({
@@ -23,7 +24,7 @@ export const AdditionalInfo = ({
   const [minReceivedIconBackground, setMinReceivedIconBackground] = useState<string>('whitesmoke');
   const [liqProvFeeIconBackground, setLiqProvFeeIconBackground] = useState<string>('whitesmoke');
   const [priceImpactIconBackground, setPriceImpactIconBackground] = useState<string>('whitesmoke');
-
+  const {theme} = useStores();
   let priceImpactColor = 'green'; // Less than 1% - Awesome
   if (priceImpact > 0.05) {
     priceImpactColor = 'red'; // High
@@ -36,10 +37,14 @@ export const AdditionalInfo = ({
   return (
     <div style={{ maxWidth: '400px', minWidth: '400px' }}>
       <Container
-        className={style.additionalInfo_container}
+        className={`${style.additionalInfo_container} ${style[theme.currentTheme]}`}
       >
         <div
-          className={style.subcontainer}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingTop: '0.2rem',
+          }}
         >
           <span>
             {minimumReceived !== null ? 'Minimum Received' : 'Maximum Sold'}
@@ -51,7 +56,6 @@ export const AdditionalInfo = ({
                   size="tiny"
                   style={{
                     marginLeft: '0.5rem',
-                    background: minReceivedIconBackground,
                     verticalAlign: 'middle',
                   }}
                   onMouseEnter={() => setMinReceivedIconBackground('rgb(237, 238, 242)')}
@@ -85,7 +89,6 @@ export const AdditionalInfo = ({
                   size="tiny"
                   style={{
                     marginLeft: '0.5rem',
-                    background: priceImpactIconBackground,
                     verticalAlign: 'middle',
                   }}
                   onMouseEnter={() => setPriceImpactIconBackground('rgb(237, 238, 242)')}
@@ -107,7 +110,11 @@ export const AdditionalInfo = ({
           }%`}</strong>
         </div>
         <div
-          className={style.subcontainer}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingTop: '0.2rem',
+          }}
         >
           <span>
             Liquidity Provider Fee
@@ -119,7 +126,6 @@ export const AdditionalInfo = ({
                   size="tiny"
                   style={{
                     marginLeft: '0.5rem',
-                    background: liqProvFeeIconBackground,
                     verticalAlign: 'middle',
                   }}
                   onMouseEnter={() => setLiqProvFeeIconBackground('rgb(237, 238, 242)')}

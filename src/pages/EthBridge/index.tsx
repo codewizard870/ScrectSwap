@@ -66,11 +66,8 @@ export const EthBridge = observer((props: any) => {
                 to claim your genesis tokens (if eligible) and to stake your SEFI and LP tokens.
               </p>
             </Message>
-            <Message warning>
-              <p>
-                SSCRT{'->'}WSCRT swaps are experiencing issues. Failed transactions will not cause fund loss. Thank you
-                for your patience!
-              </p>
+            <Message success>
+              <p>SSCRT{'->'}WSCRT swap issues have been resolved. Happy swapping!</p>
             </Message>
             <Box fill direction="row" justify="between" align="end" margin={{ bottom: 'medium', top: 'large' }}>
               <Title bold>Secret Bridge</Title>

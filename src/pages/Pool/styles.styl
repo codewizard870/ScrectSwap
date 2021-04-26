@@ -1,9 +1,14 @@
 .swapContainerStyle {
   z-index: 10;
-  border-radius: 16px;
-  background-color: white;
+  border-radius: 16px; 
   padding: 1.625em;
-  box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+  &.light{
+    background-color: white;
+    box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+  }
+  &.dark{
+    background: #0E0E10;
+  }
 }
 
 .tokenInfoRow {
@@ -62,22 +67,28 @@ input {
 }
 .withdrawLiquiditySearch {
   flex: 1;
-  border-radius: 4px;
-  border: 1px solid#5F5F6B;
-  background-color: #F9FAFA;
+  border-radius: 4px;  
   width: 100%;
   height: 46px;
   padding: 16px;
   font-size: 18px;
   outline: none;
-  margin-bottom: 0.2em;
+  margin-bottom: 0.2em; 
+  &.light{
+    color: #5F5F6B;
+    background-color: #F9FAFA;
+    border: 1px solid#5F5F6B;
+  }
+  &.dark{
+    color: white;
+    border: 1px solid white;
+  }
 
   &:focus {
     border: 1px solid rgba(255,114,110,1);
   }
   &::placeholder{
     font-family: 'Poppins',Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    color: #5F5F6B;
+    font-size: 16px; 
   }
 }

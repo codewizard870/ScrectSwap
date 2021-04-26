@@ -11,6 +11,7 @@ import * as styles from './styles.styl';
 import { PairMap } from '../TokenModal/types/SwapPair';
 import Loader from 'react-loader-spinner';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
+import Theme from 'themes';
 
 export class WithdrawTab extends React.Component<
   {
@@ -23,6 +24,7 @@ export class WithdrawTab extends React.Component<
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     updateToken: CallableFunction;
     onCloseTab: CallableFunction;
+    theme: Theme;
   },
   { searchText: string }
 > {
@@ -37,23 +39,23 @@ export class WithdrawTab extends React.Component<
 
     if (pairs.length === 0) {
       return (
-        <Container className={cn(styles.swapContainerStyle)}>
+        <Container className={`${styles.swapContainerStyle} ${styles[this.props.theme.currentTheme]}`}>
           <TabsHeader />
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Loader type="ThreeDots" color="#00BFFF" height="0.5em" />
+            <Loader type="ThreeDots" color="#ff726e" height="0.5em" />
           </div>
         </Container>
       );
     }
 
     return (
-      <Container className={cn(styles.swapContainerStyle)}>
+      <Container className={`${styles.swapContainerStyle} ${styles[this.props.theme.currentTheme]}`}>
         <TabsHeader />
         {pairs.length > 0 ? (
           <div style={{ display: 'flex' }}>
             <input
               autoFocus
-              className={cn(styles.withdrawLiquiditySearch)}
+              className={`${styles.withdrawLiquiditySearch} ${styles[this.props.theme.currentTheme]}`}
               placeholder="Search symbol or paste address"
               onChange={e => this.setState({ searchText: e.target.value.trim().toLowerCase() })}
             />
@@ -111,6 +113,7 @@ export class WithdrawTab extends React.Component<
                   notify={this.props.notify}
                   getBalance={this.props.updateToken}
                   onCloseTab={this.props.onCloseTab}
+                  theme={this.props.theme}
                 />
               </span>
             );

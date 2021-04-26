@@ -84,7 +84,7 @@ interface RewardData {
 }
 
 export const SeFiPage = observer(() => {
-  const { user, tokens, rewards, userMetamask } = useStores();
+  const { user, tokens, rewards, userMetamask,theme } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
   const [earnings,setEarnings] = useState('0');
@@ -365,6 +365,7 @@ export const SeFiPage = observer(() => {
                     userStore={user}
                     token={rewardsToken}
                     callToAction="Sefi Earnings"
+                    theme={theme}
                   />
                 );
               })}

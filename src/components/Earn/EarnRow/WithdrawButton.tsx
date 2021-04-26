@@ -4,15 +4,16 @@ import { valueToDecimals } from '../../../utils';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
+import { useStores } from 'stores';
 
 const WithdrawButton = ({ props, value, changeValue }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
-
+  const {theme}= useStores();
   return (
     <Button
       loading={loading}
-      className={cn(styles.button)}
+      className={`${styles.button} ${styles[theme.currentTheme]}`}
       disabled={Number(value) === 0 || isNaN(value)}
       onClick={async () => {
         setLoading(true);

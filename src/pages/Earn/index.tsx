@@ -35,7 +35,7 @@ export const notify = (type: 'success' | 'error', msg: string, hideAfterSec: num
 };
 
 export const EarnRewards = observer((props: any) => {
-  const { user, tokens, rewards } = useStores();
+  const { user, tokens, rewards,theme } = useStores();
   const [sushiAPY, setSushiAPY] = useState<Number>(-1);
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
@@ -221,6 +221,7 @@ export const EarnRewards = observer((props: any) => {
                     userStore={user}
                     token={rewardsToken}
                     callToAction="Earn sSCRT"
+                    theme={theme}
                   />
                 );
               })}

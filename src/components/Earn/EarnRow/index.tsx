@@ -13,6 +13,8 @@ import WithdrawButton from './WithdrawButton';
 import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
 import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
+import { useStores } from 'stores';
+import Theme from 'themes';
 
 interface RewardsToken {
   name: string;
@@ -70,6 +72,7 @@ class EarnRow extends Component<
     token: RewardsToken;
     notify: Function;
     callToAction: string;
+    theme: Theme;
   },
   {
     activeIndex: Number;
@@ -120,7 +123,8 @@ class EarnRow extends Component<
 
   setPulseInterval = interval => this.setState({ pulseInterval: interval });
   render() {
-    const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : styles.accordion;
+    // const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
+    const style =`${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     //this.props.userStore.keplrWallet.suggestToken(this.props.userStore.chainId, );
     const { activeIndex } = this.state;
     const images = [
@@ -156,7 +160,7 @@ class EarnRow extends Component<
     const _symbols = this.props.token.lockedAsset?.split('-');
     const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());
     const image_secondaryToken = images.filter((img)=>img.symbol === _symbols[2]?.toLowerCase());
-    
+
     return (
       <Accordion
         className={cn(style)}
@@ -208,9 +212,11 @@ class EarnRow extends Component<
             </div> */}
             
           </div>
-          <Icon name="dropdown" />
+          <Icon style={{
+            color:(this.props.theme.currentTheme == 'dark')?'white':''
+          }} name="dropdown" />
         </Accordion.Title>
-        <Accordion.Content className={cn(styles.content)} active={activeIndex === 0}>
+        <Accordion.Content className={`${styles.content} ${styles[this.props.theme.currentTheme]}`} active={activeIndex === 0}>
           {/* <div
             style={{
               display: 'flex',
@@ -311,6 +317,7 @@ class EarnRow extends Component<
                     unlockPopupText='In order to view your available assets, click on "View Balance" above'
                     tokenAddress={this.props.token.lockedAssetAddress} 
                     userStore={this.props.userStore}
+                    theme={this.props.theme}
                   />
                 </Grid.Column>
                 <Grid.Column>
@@ -341,6 +348,7 @@ class EarnRow extends Component<
                     unlockPopupText='In order to view your locked assets, click on "View Balance" below'
                     tokenAddress={this.props.token.rewardsContract} 
                     userStore={this.props.userStore}
+                    theme={this.props.theme}
                   />
                 </Grid.Column>
               </Grid>

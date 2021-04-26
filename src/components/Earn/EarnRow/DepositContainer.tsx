@@ -5,7 +5,7 @@ import React from 'react';
 import { unlockToken } from '../../../utils';
 import ScrtTokenBalanceSingleLine from './ScrtTokenBalanceSingleLine';
 import BigNumber from 'bignumber.js';
-import { unlockJsx } from 'pages/Pool/utils';
+import { unlockJsx } from 'pages/Swap/utils';
 import { useStores } from 'stores';
 
 const buttonStyle = {
@@ -55,9 +55,9 @@ const DepositContainer = props => {
       }
     })
   }
-  
+
   return (
-    <div className={cn(styles.changeBalance)}>
+    <div className={`${styles.changeBalance} ${styles[props.theme.currentTheme]}`}>
       <div className={cn(styles.deposit_content)}>
         <div className={cn(styles.balanceRow)}>
           <div className={cn(styles.title)}> 
@@ -86,7 +86,7 @@ const DepositContainer = props => {
           />
         </div>
         <div>
-          <Input placeholder="0.0" className={cn(styles.form)} value={props.value} onChange={props.onChange}>
+          <Input placeholder="0.0" className={`${styles.form} ${styles[props.theme.currentTheme]}`} value={props.value} onChange={props.onChange}>
             <input style={{ borderRadius: '4px', height: '40px' }} />
           </Input>
         </div>

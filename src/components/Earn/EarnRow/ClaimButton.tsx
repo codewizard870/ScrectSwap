@@ -18,11 +18,11 @@ const ClaimButton = (props: {
   rewardsToken?: string;
 }) => {
   
-  const { user } = useStores();
+  const { user,theme } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
   const displayAvailable = ()=>{
     if (props.available === unlockToken) {
-      return (<div className={cn(styles.create_viewingkey)}>
+      return (<div className={`${styles.create_viewingkey} ${styles[theme.currentTheme]}`}>
         {
           unlockJsx({
           onClick: async () => {
@@ -41,13 +41,13 @@ const ClaimButton = (props: {
   return (
     <>
     <span 
-      className={cn(styles.claim_label)}
+      className={`${styles.claim_label} ${styles[theme.currentTheme]}`}
     >
       {displayAvailable()}{props.rewardsToken}
     </span>
     <Button
       loading={loading}
-      className={cn(styles.button)}
+      className={`${styles.button} ${styles[theme.currentTheme]}`}
       disabled={typeof props.available === 'undefined' || props.available === '0'}
       onClick={async () => {
         setLoading(true);

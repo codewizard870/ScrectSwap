@@ -3,6 +3,7 @@ import {SefiData} from '../types/SefiData'
 import '../styles.scss';
 import { divDecimals } from 'utils';
 import { CopyWithFeedback } from 'components/Swap/CopyWithFeedback';
+import { useStores } from 'stores';
 
 const Claim = (props:{
   data:SefiData,
@@ -16,15 +17,15 @@ const Claim = (props:{
   const ethAddress  = props.claimInfo?.eth?.address.substring(0,10)+ '...'+ props.claimInfo?.eth?.address.substring( props.claimInfo?.eth?.address?.length - 10, props.claimInfo?.eth?.address?.length)
   const scrtBalance = parseFloat(divDecimals(props.claimInfo.scrt?.amount?.toString(), 6));
   const ethBalance = parseFloat(divDecimals(props.claimInfo.eth?.amount?.toString(), 8));
-  
+  const {theme} =useStores();
   return(
     <>
       <div className="sefi-grid__container background_free claim-sefi__item">
         <div className="item left">
-          <span>
+          <span className={theme.currentTheme}>
             {scrtAddress} 
           </span>
-          <span style={{margin:'0 .5rem'}}>
+          <span className={theme.currentTheme} style={{margin:'0 .5rem'}}>
             <CopyWithFeedback text={props.claimInfo.scrt?.address} />
           </span>
         </div>
@@ -36,8 +37,8 @@ const Claim = (props:{
       <div className="sefi-grid__container background_free claim-sefi__item">
         <div className="item left">
           <img src="/static/address-icon.svg" alt="" />
-          <span>{ethAddress}</span>
-          <span style={{margin:'0 .5rem'}}>
+          <span className={theme.currentTheme}>{ethAddress}</span>
+          <span className={theme.currentTheme} style={{margin:'0 .5rem'}}>
               <CopyWithFeedback text={props.claimInfo.scrt?.address} />
           </span>
         </div>
@@ -54,7 +55,7 @@ const Claim = (props:{
           <div className="claim-srct">
             <img src="/static/tokens/scrt.svg" alt=""/>
             <h4 style={{margin: '.5rem 0'}}>{scrtBalance} SEFI</h4>
-            <button disabled={props.claimInfo?.scrt?.isClaimed || scrtBalance == 0} onClick={()=>{props.onClaimSCRT()}} className="claim-button"> Claim SEFI</button>
+            <button disabled={props.claimInfo?.scrt?.isClaimed || scrtBalance == 0}  onClick={()=>{props.onClaimSCRT()}} className="claim-button"> Claim SEFI</button>
           </div>
           <div className="claim-eth">
             <img src="/static/eth.png" alt=""/>
@@ -64,7 +65,7 @@ const Claim = (props:{
 
         </div>
         <span className="displayed-center__item">Claim your SEFI to participate in governance and yield opportunities</span>
-        <a className="displayed-center__item" href="#">Read more about SEFI</a>
+        <a className={`displayed-center__item ${theme.currentTheme}`} href="#">Read more about SEFI</a>
         
       </div>
     </>

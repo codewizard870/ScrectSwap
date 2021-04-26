@@ -23,6 +23,7 @@ const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 import stores from '../../stores';
+import { observer } from 'mobx-react';
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_ROUTE = 'Cannot find a route';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
@@ -150,7 +151,7 @@ function storeResult(result: any, fromAmount: string, fromDecimals: number, best
 }
 
 const DEFAULT_SLIPPAGE = 0.5 / 100;
-
+@observer
 export class SwapTab extends React.Component<
   {
     user: UserStoreEx;

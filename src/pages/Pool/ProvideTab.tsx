@@ -24,6 +24,7 @@ import { NewPoolWarning } from '../../components/Swap/NewPoolWarning';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { useStores } from 'stores';
 import Theme from 'themes';
+import { observer } from 'mobx-react';
 
 const buttonStyle = {
   margin: '1em 0 0 0',
@@ -85,7 +86,7 @@ const ButtonMessage = (state: ProvideState): string => {
       return 'Provide';
   }
 };
-
+@observer
 export class ProvideTab extends React.Component<
   {
     user: UserStoreEx;

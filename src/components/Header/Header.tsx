@@ -48,7 +48,8 @@ const Header = (props) =>{
     }
     function switchTheme(){  
         theme.switchTheme();
-        window.location.reload();
+        props.forceUpdate();
+        // window.location.reload();
     }
 
     displayBalanceSRCT();

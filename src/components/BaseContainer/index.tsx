@@ -13,6 +13,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
   ({ theme, children, ...props }: IStyledChildrenProps<BoxProps>) => {
     // const { palette, container } = theme;
     // const { minWidth, maxWidth } = container;
+      const [ignored, forceUpdate] = React.useReducer(x => x + 1, 0);
     const {theme:Theme}=useStores();
     
     return (
@@ -28,7 +29,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
           }}
           
         >
-          <Header />
+          <Header forceUpdate={forceUpdate}/>
           <div
             className={`${styles[Theme.currentTheme]}`} 
             {...props}

@@ -12,7 +12,9 @@ import { PairMap } from '../TokenModal/types/SwapPair';
 import Loader from 'react-loader-spinner';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import Theme from 'themes';
+import { observer } from 'mobx-react';
 
+@observer
 export class WithdrawTab extends React.Component<
   {
     user: UserStoreEx;

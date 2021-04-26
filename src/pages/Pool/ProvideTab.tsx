@@ -22,6 +22,9 @@ import { ApproveButton } from '../../components/Swap/ApproveButton';
 import { SwapPlus } from '../../components/Swap/SwapPlus';
 import { NewPoolWarning } from '../../components/Swap/NewPoolWarning';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
+import { useStores } from 'stores';
+import Theme from 'themes';
+import { observer } from 'mobx-react';
 
 const buttonStyle = {
   margin: '1em 0 0 0',
@@ -83,7 +86,7 @@ const ButtonMessage = (state: ProvideState): string => {
       return 'Provide';
   }
 };
-
+@observer
 export class ProvideTab extends React.Component<
   {
     user: UserStoreEx;
@@ -99,6 +102,7 @@ export class ProvideTab extends React.Component<
     selectedToken1: string;
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     onSetTokens: CallableFunction;
+    theme: Theme;
   },
   {
     tokenA: string;
@@ -415,9 +419,9 @@ export class ProvideTab extends React.Component<
       amountA.dividedBy(poolA.plus(amountA)),
       amountB.dividedBy(poolB.plus(amountB)),
     );
-
+    
     return (
-      <Container className={cn(styles.swapContainerStyle)}>
+      <Container className={`${styles.swapContainerStyle} ${styles[this.props.theme.currentTheme]}`}>
         <TabsHeader />
         <SwapAssetRow
           secretjs={this.props.secretjs}
@@ -476,6 +480,7 @@ export class ProvideTab extends React.Component<
             style={{
               display: 'flex',
               paddingTop: '0.5rem',
+              color: (this.props.theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'
             }}
           >
             Your Current Share of Pool
@@ -484,6 +489,7 @@ export class ProvideTab extends React.Component<
               if (JSON.stringify(lpTokenBalance).includes('View')) {
                 return lpTokenBalance;
               } else {
+                console.log(currentShareOfPool)
                 return `${shareOfPoolNumberFormat.format(currentShareOfPool.multipliedBy(100).toNumber())}%`;
               }
             })()}
@@ -494,6 +500,7 @@ export class ProvideTab extends React.Component<
             style={{
               display: 'flex',
               paddingTop: '0.5rem',
+              color: (this.props.theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'
             }}
           >
             Expected Gain in Your Share of Pool

@@ -14,7 +14,7 @@ const ScrtTokenBalanceSingleLine = (props: {
   createKey: Function;
 }) => {
   if (!props.value) {
-    return <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />;
+    return <Loader type="ThreeDots" color="#ff726e" height="1em" width="1em" />;
   } else if (props.value.includes(unlockToken)) {
     return props.createKey() 
     // (

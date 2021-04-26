@@ -1,4 +1,3 @@
-@import '../../../Vars.stylus'
 .tokenButton {
   align-items: center;
   display: flex;
@@ -47,54 +46,34 @@
 
 .selectATokenButton {
   border-radius: 10px;
-  font-family: currentFont;
-  height: 44px;
-  color:#5F5F6B;
+  font-family: 'Poppins',Arial, Helvetica, sans-serif;
+  height: 44px; 
   font-size: 16px;
-  width: 200px;
-  background: rgba(255,114,110,.10); 
+  width: 200px; 
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   border: none;
   cursor: pointer;
   transition: all 0.8s ease;
-  outline: none;
+  outline: none; 
 
-  &:hover {
-    background-color: rgba(255,114,110,.5);
-  }
-
-  &:disabled {
-    color: #848484;
-    // border 1px solid #848484
-    background-color: transparent;
+  &:disabled {  
     cursor: default;
   }
 }
 
 .clearTokenButton {
-  @extend .selectATokenButton;
-  background-color: rgba(255, 0, 0, 0.1);
-  border: 1px solid rgba(255, 0, 0, 0.9);
-
-  &:hover {
-    background-color: rgba(255, 0, 0, 0.3);
-  }
-
+  @extend .selectATokenButton;  
   width: 300px;
 }
 .addCustomToken__button{
-  @extend .selectATokenButton;
-    background: #cccccc;
-  &:hover{
-    background-color: #aaaaaa;
-  }
-
+  @extend .selectATokenButton;  
 }
 .tokenSelectorSearch {
   flex: 1;
   border-radius: 4px;
   border: 1px solid rgb(237, 238, 242);
+  background: transparent;
   width: 100%;
   height: 46px;
   padding: 16px;
@@ -112,8 +91,7 @@
   }
 }
 
-.listTokens__container{
-  background: #F9FAFA;
+.listTokens__container{  
   height: 60vh;
   border-radius: 6px;
   width: 100%;
@@ -128,4 +106,41 @@
   padding: .5rem .5rem;
   height: 100% 
   margin: 0;
+}
+.light {
+  &.selectATokenButton{
+    background: rgba(255, 114, 110, 0.1);;
+    color:#5F5F6B;
+  }
+  &.listTokens__container{
+    background: #F9FAFA;
+  }
+  &.tokenButton{
+    color: #5F5F6B
+  }
+  &.clearTokenButton{
+    background: rgba(255, 255, 255, 0.5);
+  }
+  &.addCustomToken__button{
+    background: #D6D6D6;
+  }
+}
+
+.dark {
+  &.selectATokenButton{
+    background: rgba(255, 255, 255, 0.1);
+    color:#DEDEDE;
+  }
+  &.listTokens__container{
+    background: rgba(255, 255, 255, 0.02);
+  }
+  &.tokenButton{
+    color: #dedede
+  }
+  &.clearTokenButton{
+    background: rgba(255, 255, 255, 0.1);
+  }
+  &.addCustomToken__button{
+    background: rgba(255, 255, 255, 0.1);
+  }
 }

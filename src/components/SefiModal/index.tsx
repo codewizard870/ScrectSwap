@@ -26,6 +26,7 @@ import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } f
 import numeral from 'numeral'
 import { UserStoreMetamask } from 'stores/UserStoreMetamask';
 import { web3 } from '../../blockchain-bridge/eth';
+import { useStores } from 'stores';
 export const SefiModal = (props: {
   user: UserStoreEx;
   tokens: Tokens;
@@ -243,9 +244,9 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
   const onClaimSCRT = async()=>{
     console.log('Claiming SEFI...')
     try {
-      setUnclaimedAmout(parseFloat(claimInfo.scrt?.amount))
-      const result = await claimScrt(props.user.secretjsSend, props.user.address);
-      console.log('success', 'Claimed SeFi successfully!');
+      // setUnclaimedAmout(parseFloat(claimInfo.scrt?.amount))
+      // const result = await claimScrt(props.user.secretjsSend, props.user.address);
+      // console.log('success', 'Claimed SeFi successfully!');
       setStatus(SefiModalState.CONFIRMATION);
     } catch (e) {
       console.error(`failed to claim ${e}`);
@@ -282,7 +283,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       console.error(error)
     }
   }
-
+  const {theme} = useStores();
   return(
     <Modal
       onClose={() => { 
@@ -297,9 +298,10 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         <a>SEFI</a>
       </button>}
       className="sefi-modal"
+      style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}
     >
-      <Modal.Header>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Modal.Header style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
+        <div style={{ display: 'flex', justifyContent: 'space-between'}}>
           {(status === SefiModalState.GENERAL)&& <span>Your SEFI Breakdown</span>}
           {(status === SefiModalState.CLAIM || status === SefiModalState.CLAIM_CASH_BACK)&& <span>Claim your SEFI tokens</span>}
           {(status === SefiModalState.LOADING)&& <span>Claiming</span>}
@@ -312,7 +314,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
           </span>
         </div>
       </Modal.Header>
-      <Modal.Content>
+      <Modal.Content style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
         {(status === SefiModalState.GENERAL) && <General createViewingKey={createViewingKey} hasViewingKey={hasViewingKey} onClaimSefi={onClaimSefi} data={data}/>}
         {(status === SefiModalState.CLAIM) && <Claim onKeplrIcon={loginKeplr} onMetaMaskIcon={loginMetaMask} claimInfo={claimInfo} onClaimSCRT={onClaimSCRT} onClaimErc={onClaimErc} data={data}/>}
         {(status === SefiModalState.CLAIM_CASH_BACK) && <ClaimCashback data={data}/>}

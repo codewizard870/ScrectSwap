@@ -8,11 +8,13 @@ import { validateBech32Address } from '../../../blockchain-bridge';
 import { Text } from '../../../components/Base';
 import { ExitIcon } from '../../../ui/Icons/ExitIcon';
 import { SwapToken } from '../types/SwapToken';
+import { useStores } from 'stores';
 
 const AddTokenButton = (props: { onClick?: any }) => {
+  const {theme} = useStores();
   return (
-    <button className={cn(styles.addCustomToken__button)} onClick={props.onClick}>
-      <Text size="medium">Add custom token</Text>
+    <button className={`${styles.addCustomToken__button} ${styles[theme.currentTheme]}`} onClick={props.onClick}>
+      <Text size="medium" color={(theme.currentTheme == 'light')?'dark':'#DEDEDE'}>Add custom token</Text>
     </button>
   );
 };

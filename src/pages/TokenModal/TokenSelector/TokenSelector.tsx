@@ -13,6 +13,7 @@ import { SwapToken, SwapTokenFromSnip20Params } from '../types/SwapToken';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { BigNumber } from 'bignumber.js';
+import { useStores } from 'stores';
 
 export const TokenSelector = (props: {
   secretjs: CosmWasmClient;
@@ -46,7 +47,7 @@ export const TokenSelector = (props: {
   const filteredTokens = props.tokens.filter(t => {
     return (t.symbol + String(t.address)).toLowerCase().includes(searchText);
   });
-
+  const {theme} =useStores();
   return (
     <Modal
       onClose={() => setOpen(false)}
@@ -56,7 +57,7 @@ export const TokenSelector = (props: {
       style={{ width: '700px' }}
       dimmer={'blurring'}
     >
-      <Modal.Header>
+      <Modal.Header style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>Select a token</span>
           <span style={{ cursor: 'pointer' }} onClick={() => setOpen(false)}>
@@ -64,7 +65,7 @@ export const TokenSelector = (props: {
           </span>
         </div>
       </Modal.Header>
-      <Modal.Content>
+      <Modal.Content style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
         {props.tokens.length > 0 ? (
           <div style={{ display: 'flex' }}>
             <input
@@ -85,12 +86,12 @@ export const TokenSelector = (props: {
         {props.tokens.length > 0 ? (
           filteredTokens.length === 0 ? (
             <div
-              className={styles.listTokens__container}
+              className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}
             >
               <h4>No results found.</h4>
             </div>
           ) : (
-            <div className={styles.listTokens__container}>
+            <div className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}>
               <div className={styles.listTokens__subcontainer}>
                 {
                   filteredTokens
@@ -143,7 +144,7 @@ export const TokenSelector = (props: {
           </div>
         )}
       </Modal.Content>
-      <Modal.Actions style={{ display: 'flex' }}>
+      <Modal.Actions style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE', display: 'flex' }}>
         <ClearCustomTokensButton />
         <div style={{ width: '700px', justifyContent: 'flex-start' }}>
           <AddTokenModal tokens={props.tokens} token={props.token} addToken={address => setLocalToken(address)} />

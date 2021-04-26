@@ -1,6 +1,7 @@
 import { Input } from 'semantic-ui-react';
 import React from 'react';
 import * as styles from './style.styl';
+import { useStores } from 'stores';
 
 export const SwapInput = (props: {
   value: string;
@@ -9,14 +10,16 @@ export const SwapInput = (props: {
   width?: string;
   disabled?: boolean;
 }) => {
+  const {theme} =useStores();
   return (
     <Input
       disabled={props.disabled === true}
       style={{
         padding: 0,
         width: props.width || '180px',
+        
       }}
-      className={styles.customInput}
+      className={`${styles.customInput} ${styles[theme.currentTheme]}`}
       transparent
       size="massive"
       placeholder={props.placeholder || '0.0'}

@@ -28,10 +28,11 @@ import { NativeToken, Token } from '../TokenModal/types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { HistoryTab } from './HistoryTab';
+import Theme from 'themes';
 
 export const SwapPagePool = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
-  let { user, tokens, secretSwapPairs } = useStores();
+  let { user, tokens, secretSwapPairs,theme} = useStores();
   secretSwapPairs.init({
     isLocal: true,
     sorter: 'none',
@@ -46,7 +47,7 @@ export const SwapPagePool = observer(() => {
     tokens.init();
   }
 
-  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} />;
+  return <SwapRouter theme={theme} user={user} tokens={tokens} pairs={secretSwapPairs} />;
 });
 
 export class SwapRouter extends React.Component<
@@ -54,6 +55,7 @@ export class SwapRouter extends React.Component<
     user: UserStoreEx;
     tokens: Tokens;
     pairs: SecretSwapPairs;
+    theme: Theme;
   },
   {
     allTokens: SwapTokenMap;
@@ -71,7 +73,7 @@ export class SwapRouter extends React.Component<
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
   private ws: WebSocket;
 
-  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs }) {
+  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; theme:Theme }) {
     super(props);
     window.onhashchange = this.onHashChange;
     this.state = {
@@ -812,6 +814,7 @@ export class SwapRouter extends React.Component<
                   selectedToken1={this.state.selectedToken1}
                   notify={this.notify}
                   onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
+                  theme={this.props.theme}
                 />
               )}
               {isWithdraw && (
@@ -833,6 +836,7 @@ export class SwapRouter extends React.Component<
                   onCloseTab={pair => {
                     this.unSubscribePair(pair);
                   }}
+                  theme={this.props.theme}
                 />
               )}
               {/* {isHistory && (

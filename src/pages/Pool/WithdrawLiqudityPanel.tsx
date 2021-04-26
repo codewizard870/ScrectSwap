@@ -14,6 +14,7 @@ import { PairAnalyticsLink } from '../../components/Swap/PairAnalyticsLink';
 import Loader from 'react-loader-spinner';
 import { shareOfPoolNumberFormat, storeTxResultLocally } from './utils';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
+import Theme from 'themes';
 
 export class WithdrawLiquidityPanel extends React.Component<
   {
@@ -26,6 +27,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     notify: (type: 'success' | 'error', msg: string, closesAfterMs?: number) => void;
     getBalance: CallableFunction;
     onCloseTab: CallableFunction;
+    theme: Theme;
   },
   {
     isLoading: boolean;
@@ -130,7 +132,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     const rowStyle: CSSProperties = {
       display: 'flex',
       padding: '0.5em 0 0 0',
-      color:'#5F5F6B'
+      color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE"
     };
 
     const poolA = new BigNumber(this.props.balances[`${tokenA}-${pairSymbol}`] as any);
@@ -150,9 +152,9 @@ export class WithdrawLiquidityPanel extends React.Component<
         style={{
           padding: '.5rem 1rem',
           margin:'.5rem 0',
-          borderRadius: '16px',
-          border:'1px solid #DEDEDE',
-          backgroundColor: 'white',
+          borderRadius: '16px', 
+          border:(this.props.theme.currentTheme  == 'light')?'1px solid #DEDEDE':'1px solid white', 
+          backgroundColor:(this.props.theme.currentTheme  == 'light')?'white':'', 
         }}
       >
         <Accordion fluid>
@@ -182,6 +184,7 @@ export class WithdrawLiquidityPanel extends React.Component<
               <strong
                 style={{
                   margin: 'auto',
+                  color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE"
                 }}
               >
                 {selectedPair.humanizedSymbol()}
@@ -192,7 +195,7 @@ export class WithdrawLiquidityPanel extends React.Component<
           <Accordion.Content active={this.state.isActive}>
             {this.state.isLoadingBalance ? (
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Loader type="ThreeDots" color="#00BFFF" height="0.5em" />
+                <Loader type="ThreeDots" color="#ff726e" height="0.5em" />
               </div>
             ) : null}
             <div hidden={this.state.isLoadingBalance}>

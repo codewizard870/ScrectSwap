@@ -27,11 +27,9 @@
     h1,
     p {
       font-weight: 600;
-      color: #5f5f6b;
     }
   }
   .content {
-    color: #5f5f6b;
     padding: 0 1.5rem 1.5rem 1.5rem !important;
     border-bottom-left-radius: 16px !important;
     border-bottom-right-radius: 16px !important;
@@ -40,22 +38,29 @@
     h1,
     p {
       font-weight: 400;
-      color: #5f5f6b;
     }
     button {
       background: #ff726e;
-      font-weight: 400;
+      font-weight: 500;
       color: #fcf9f3;
       font-family: Poppins, Arial, Helvetica, sans-serif;
     }
   }
 }
-
+.light {
+  &.sefi-grid__container {
+    background: #fcf9f3;
+  }
+}
+.dark {
+  &.sefi-grid__container {
+    background: #303036;
+  }
+}
 .sefi-grid__container {
   display: grid;
   grid-template-columns: repeat(2, 50%);
   grid-template-rows: auto;
-  background: #fcf9f3;
   border-radius: 8px;
   padding: 10px;
   margin: 16px 0;
@@ -83,12 +88,10 @@
     text-align: start;
   }
   strong {
-    color: #1b1b1b;
     font-weight: 600;
   }
   &.links {
     a {
-      color: #1b1b1b;
       text-decoration: underline;
     }
   }
@@ -117,7 +120,9 @@
     }
     h1 {
       font-size: 36px;
-      color: #1b1b1b;
+      &.light {
+        color: #1b1b1b;
+      }
     }
   }
 }
@@ -232,13 +237,23 @@ a {
 }
 .loading-sefi {
   h1 {
-    color: #1b1b1b !important;
+    &.dark {
+      color: white !important;
+    }
+    &.light {
+      color: #1b1b1b !important;
+    }
     font-weight: 600 !important;
     font-size: 36px;
   }
   span {
     grid-column: 1 / span 2;
-    color: #0d1017 !important ;
+    &.dark {
+      color: white !important;
+    }
+    &.light {
+      color: #0d1017 !important ;
+    }
   }
 }
 .loader-container {
@@ -257,23 +272,40 @@ a {
   }
 }
 .congrats_msg {
-  color: #1b1b1b !important;
+  .light {
+    color: #1b1b1b !important;
+  }
+  .dark {
+    color: white !important;
+  }
 }
 .earn-sefi__btn {
   padding: 11px 30px;
-  background: #1b1b1b !important;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
+  &.dark {
+    background: white !important;
+    color: black !important;
+  }
+  &.light {
+    background: #1b1b1b !important;
+  }
 }
 .sefi-grid__container-confirm {
   display: grid;
   grid-template-columns: repeat(3, 33%);
   grid-template-rows: auto;
-  background: #fcf9f3;
   border: 1px solid #ff726e;
   border-radius: 4px;
   padding: 1rem;
   margin: 1.5rem 0;
+  &.dark {
+    background: #303036;
+  }
+  &.light {
+    background: #fcf9f3;
+  }
 }
 .confirm-card__content {
   grid-column: 1 / span 3;
@@ -298,4 +330,19 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-around;
+}
+
+a {
+  &.dark {
+    color: white;
+  }
+  &.light {
+    color: black;
+  }
+}
+
+span {
+  &.dark {
+    color: white;
+  }
 }

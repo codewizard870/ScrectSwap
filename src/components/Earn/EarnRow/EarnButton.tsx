@@ -5,16 +5,17 @@ import cn from 'classnames';
 import * as styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { unlockToken } from '../../../utils';
+import { useStores } from 'stores';
 
 // todo: add failed toast or something
 const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
-
+  const {theme}= useStores();
   return (
     <Button
       loading={loading}
-      className={cn(styles.button)}
+      className={`${styles.button} ${styles[theme.currentTheme]}`}
       disabled={Number(value) === 0 || isNaN(value)}
       onClick={async () => {
         setLoading(true);

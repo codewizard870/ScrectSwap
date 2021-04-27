@@ -16,13 +16,14 @@ const Claim = (props:{
   const scrtAddress  = props.claimInfo?.scrt?.address.substring(0,10)+ '...'+ props.claimInfo?.scrt?.address.substring( props.claimInfo?.scrt?.address?.length - 10, props.claimInfo?.scrt?.address?.length)
   const ethAddress  = props.claimInfo?.eth?.address.substring(0,10)+ '...'+ props.claimInfo?.eth?.address.substring( props.claimInfo?.eth?.address?.length - 10, props.claimInfo?.eth?.address?.length)
   const scrtBalance = parseFloat(divDecimals(props.claimInfo.scrt?.amount?.toString(), 6));
-  const ethBalance = parseFloat(divDecimals(props.claimInfo.eth?.amount?.toString(), 8));
+  const ethBalance = parseFloat(divDecimals(props.claimInfo.eth?.amount?.toString(), 6));
   const {theme} =useStores();
   return(
     <>
       <div className="sefi-grid__container background_free claim-sefi__item address_container">
         <div className="item left">
-          <span className={theme.currentTheme}>
+          <img src="/static/scrt.svg" style={{margin: '0 5px'}} alt="" />
+          <span className={`${theme.currentTheme}`}>
             {(scrtAddress.includes("undefined"))
               ?"Connect your MetaMask"
               :scrtAddress
@@ -38,8 +39,8 @@ const Claim = (props:{
         </div>
       </div>
       <div className="sefi-grid__container background_free claim-sefi__item address_container">
-        <div className="item left">
-          <img src="/static/address-icon.svg" alt="" />
+        <div className="item left" style={{display: "flex",alignItems: "center"}}>
+          <img src="/static/address-icon.svg" style={{margin: '0 5px'}} alt="" />
           <span className={theme.currentTheme}>
             {(ethAddress.includes("undefined"))
               ?"Connect your MetaMask"

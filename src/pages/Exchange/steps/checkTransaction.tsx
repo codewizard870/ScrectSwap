@@ -25,6 +25,7 @@ export const CheckTransaction = observer(() => {
   const [progressBar, setProgressBar] = useState<number>(0);
 
   useEffect(() => {
+    if (!exchange.operation) return
     if (exchange.operation.type === EXCHANGE_MODE.SCRT_TO_ETH) {
       setConfirmationsMessage(
         'You will have your Ethereum Tokens in your Metamask wallet within 6 network confirmations',

@@ -22,8 +22,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
         {/*<div className={styles.blur} />*/}
         <div
           style={{
-            minHeight: '100%',
-            width: '100vw',
+            // minHeight: '100%',
             overflowY: "auto",
             overflowX: 'hidden',
           }}
@@ -36,6 +35,9 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
           >
             <div id="notifications_container"></div>
             {children}
+            <div className={`${styles.secured_container}`}>
+              <img src="/static/securedby.svg" alt=""/>
+            </div>
           </div>
           {/* <MainFooter /> */}
         </div>

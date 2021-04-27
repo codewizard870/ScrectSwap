@@ -7,9 +7,6 @@ export const PageContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
   ({ children, theme, ...props }: IStyledChildrenProps<BoxProps>) => {
     return (
       <Box
-        style={{
-          height: '100%',
-        }}
         {...props}
       >
         <div

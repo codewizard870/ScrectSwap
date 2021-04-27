@@ -1,14 +1,29 @@
 .light{
   background: linear-gradient(180deg, #FFFFFF 0%, #F8EC99 180.99%);
   width:100%;
-  min-height: calc(100vh - 116px);
+  min-height: calc(100vh - 74px);
   padding-top:42px;
+  .secured_container{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    padding:2rem 0;
+  }
 }
 
 .dark{
   background: linear-gradient(180deg, #363636 0%, #000000 180.99%);
   width:100%;
-  min-height: calc(100vh - 116px);
+  min-height: calc(100vh - 74px);
   padding-top:42px;
   scrollbar-color: dark;
+  .secured_container{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    padding:2rem 0;
+    img{
+      filter: invert(1)
+    }
+  }
 }

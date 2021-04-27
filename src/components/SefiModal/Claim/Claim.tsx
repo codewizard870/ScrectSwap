@@ -25,7 +25,7 @@ const Claim = (props:{
           <img src="/static/scrt.svg" style={{margin: '0 5px'}} alt="" />
           <span className={`${theme.currentTheme}`}>
             {(scrtAddress.includes("undefined"))
-              ?"Connect your MetaMask"
+              ?"Connect your Keplr"
               :scrtAddress
             }
           </span>

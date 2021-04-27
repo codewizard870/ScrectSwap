@@ -58,6 +58,7 @@ export class Exchange extends StoreConstructor {
       image: '',
       value: '',
       src_coin: '',
+      src_address: '',
     },
   };
 
@@ -342,7 +343,7 @@ export class Exchange extends StoreConstructor {
         if (this.token === TOKEN.ERC20) {
           await this.checkTokenApprove(this.transaction.erc20Address);
           if (!this.isTokenApproved) {
-            await this.approveEcr20();
+            await this.approveErc20();
           } else {
             await this.swapErc20ToScrt();
           }
@@ -363,7 +364,7 @@ export class Exchange extends StoreConstructor {
     }
   }
 
-  async approveEcr20() {
+  async approveErc20() {
     this.operation = this.defaultOperation;
     //await this.createOperation();
     //this.stores.routing.push('/operations/' + this.operation.id);

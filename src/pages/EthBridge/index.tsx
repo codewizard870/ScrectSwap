@@ -27,7 +27,7 @@ export const networkFromToken = (token: { src_network: string; dst_network?: str
     case 'plasm':
       return NETWORKS.PLSM;
     case 'secret':
-      if (token?.dst_network !== 'secret') {
+      if (token?.dst_network && token?.dst_network !== 'secret') {
         return networkFromToken({ src_network: token.dst_network });
       } else {
         return undefined;

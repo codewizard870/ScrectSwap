@@ -59,7 +59,9 @@ const Header = (props) =>{
             <div className={theme.currentTheme}>
                     <nav className={`menu`} > 
                     <div className="menu-left">
-                        <img src='/static/secret-swap.svg' alt="brand logo"/>
+                        <a href="https://www.secretswap.io/">
+                            <img src='/static/secret-swap.svg' alt="brand logo"/> 
+                        </a>
 
                         <ul className='nav_menu__items'>
                             <li className={(isSwap) ? 'active':''}><Link  to={"/swap"}>Swap</Link></li>

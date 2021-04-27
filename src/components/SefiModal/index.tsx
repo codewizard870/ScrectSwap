@@ -211,7 +211,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       //Load unclaimed 
       try {
         const {scrtClaimInfo,ethClaimInfo} = await getClaimInfo();
-        const totalUnclaimed = parseFloat(divDecimals(scrtClaimInfo?.amount?.toString() || 0, 6)) + parseFloat(divDecimals(ethClaimInfo?.amount?.toString() || 0, 8));
+        const totalUnclaimed = parseFloat(divDecimals(scrtClaimInfo?.amount?.toString() || 0, 6)) + parseFloat(divDecimals(ethClaimInfo?.amount?.toString() || 0, 6));
         unclaimed = numeral(totalUnclaimed).format(getFloatFormat(totalUnclaimed)).toString().toUpperCase()
         setClaimInfo({
           eth:ethClaimInfo,

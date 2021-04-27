@@ -15,7 +15,7 @@ const GeneralState = (props:{
        <div className={`sefi-grid__container background_free claim-sefi__container` }>
           <div className="align-center">
             {
-              (props.data.sefi_in_circulation !== '—')&&<button  onClick={()=>{props.onClaimSefi()}} className="sefi-claim__button">Claim Sefi</button>
+              (props.data.sefi_in_circulation !== '—')&&<button  onClick={()=>{props.onClaimSefi()}} className="sefi-claim__button">Claim Genesis Sefi</button>
             }
           </div>
           <div className="item right sefi-balance">
@@ -28,7 +28,7 @@ const GeneralState = (props:{
           <span className='item left'>Balance</span>
           <strong className='item right'>{props.data.balance} </strong>
           <span className='item left'>Unclaimed
-            <Popup 
+            {/* <Popup 
               className="icon-info__popup" 
               position='top center'
               on='click'
@@ -43,7 +43,7 @@ const GeneralState = (props:{
             >
               <p>When users trade, they acquire cashback tokens. These cashback tokens can be burned to claim SEFI.</p>
               <a href="#">Learn more about cashback tokens</a>
-            </Popup>
+            </Popup> */}
           </span>
           <strong className='item right'> {props.data.unclaimed} </strong>
         </div>

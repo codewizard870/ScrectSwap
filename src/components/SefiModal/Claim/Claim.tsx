@@ -20,10 +20,13 @@ const Claim = (props:{
   const {theme} =useStores();
   return(
     <>
-      <div className="sefi-grid__container background_free claim-sefi__item">
+      <div className="sefi-grid__container background_free claim-sefi__item address_container">
         <div className="item left">
           <span className={theme.currentTheme}>
-            {scrtAddress} 
+            {(scrtAddress.includes("undefined"))
+              ?"Connect your MetaMask"
+              :scrtAddress
+            }
           </span>
           <span className={theme.currentTheme} style={{margin:'0 .5rem'}}>
             <CopyWithFeedback text={props.claimInfo.scrt?.address} />
@@ -34,10 +37,15 @@ const Claim = (props:{
           <img onClick={()=>{props.onKeplrIcon()}} className="small-icon" src="/static/keplr.svg" alt="keplr"/>
         </div>
       </div>
-      <div className="sefi-grid__container background_free claim-sefi__item">
+      <div className="sefi-grid__container background_free claim-sefi__item address_container">
         <div className="item left">
           <img src="/static/address-icon.svg" alt="" />
-          <span className={theme.currentTheme}>{ethAddress}</span>
+          <span className={theme.currentTheme}>
+            {(ethAddress.includes("undefined"))
+              ?"Connect your MetaMask"
+              :ethAddress
+            }
+          </span>
           <span className={theme.currentTheme} style={{margin:'0 .5rem'}}>
               <CopyWithFeedback text={props.claimInfo.scrt?.address} />
           </span>
@@ -54,13 +62,28 @@ const Claim = (props:{
         <div className="displayed-center__item claiming_section">
           <div className="claim-srct">
             <img src="/static/tokens/scrt.svg" alt=""/>
-            <h4 style={{margin: '.5rem 0'}}>{scrtBalance} SEFI</h4>
-            <button disabled={props.claimInfo?.scrt?.isClaimed || scrtBalance == 0}  onClick={()=>{props.onClaimSCRT()}} className="claim-button"> Claim SEFI</button>
+            <h4 style={{margin: '.5rem 0'}}>
+              {
+                (isNaN(scrtBalance)
+                  ?"0"
+                  :scrtBalance)
+              } SEFI</h4>
+            <button 
+              disabled={isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0}  
+              onClick={()=>{props.onClaimSCRT()}} 
+              className="claim-button"> 
+                Claim SEFI
+            </button>
           </div>
           <div className="claim-eth">
             <img src="/static/eth.png" alt=""/>
-            <h4 style={{margin: '.5rem 0'}} >{ethBalance} SEFI</h4>
-            <button disabled={props.claimInfo?.eth?.isClaimed || ethBalance == 0} onClick={()=>{props.onClaimErc()}} className="claim-button"> Claim SEFI</button>
+            <h4 style={{margin: '.5rem 0'}} >{(isNaN(ethBalance)?"0":ethBalance)} SEFI</h4>
+            <button 
+              disabled={isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0} 
+              onClick={()=>{props.onClaimErc()}} 
+              className="claim-button">
+                 Claim SEFI
+            </button>
           </div>
 
         </div>

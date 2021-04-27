@@ -16,6 +16,7 @@ import { SwapStatus } from '../../../constants';
 import { CopyRow } from '../utils';
 import { EXCHANGE_MODE } from 'stores/interfaces';
 import HeadShake from 'react-reveal/HeadShake';
+import { messages, messageToString } from "../../EthBridge/messages";
 
 export const CheckTransaction = observer(() => {
   const { exchange } = useStores();
@@ -156,7 +157,7 @@ export const CheckTransaction = observer(() => {
                   <Text size="small" bold>
                     {' '}
                     <a
-                      href={`${process.env.ETH_EXPLORER_URL}/tx/${exchange.operation.transactionHash}`}
+                      href={`${messageToString(messages.explorerUrl, exchange.network)}/tx/${exchange.operation.transactionHash}`}
                       style={{ textDecoration: 'none', color: '#00BFFF' }}
                       target="_blank"
                       rel="noreferrer"

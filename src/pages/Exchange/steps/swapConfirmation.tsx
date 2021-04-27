@@ -16,6 +16,7 @@ import { useStores } from '../../../stores';
 import { createNotification, TokenLocked } from '../utils';
 import HeadShake from 'react-reveal/HeadShake';
 import Jump from 'react-reveal/Jump';
+import { messages, messageToString } from "../../EthBridge/messages";
 
 type NetworkTemplateInterface = {
   image: string;
@@ -91,7 +92,7 @@ export const SwapConfirmation = observer(() => {
 
   useEffect(() => {
     if (exchange.mode === EXCHANGE_MODE.TO_SCRT) {
-      setHash(`${process.env.ETH_EXPLORER_URL}/tx/${exchange.txHash}`);
+      setHash(`${messageToString(messages.explorerUrl, exchange.network)}/tx/${exchange.txHash}`);
     }
 
     if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {

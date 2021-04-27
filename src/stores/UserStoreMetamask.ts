@@ -105,6 +105,10 @@ export class UserStoreMetamask extends StoreConstructor {
     return messageToString(messages.image_logo, this.network || NETWORKS.ETH);
   }
 
+  getNativeDecimals() {
+    return messageToString(messages.decimals, this.network || NETWORKS.ETH);
+  }
+
   getNetworkName(id: string) {
     switch (id) {
       case '0x1':

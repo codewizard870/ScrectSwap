@@ -314,7 +314,7 @@ export const Base = observer(() => {
   ]);
 
   const onSelectedToken = async value => {
-    const token = tokens.allData.find(t => t.src_address === value);
+    const token = (await tokens.tokensUsage('BRIDGE', userMetamask.network)).find(t => t.src_address === value);
     setProgress(0);
     const newerrors = errors;
     setBalance({
@@ -360,7 +360,7 @@ export const Base = observer(() => {
     setTokenLocked(false);
 
     try {
-      if (token.display_props.symbol !== 'ETH') await userMetamask.setToken(value, tokens);
+      if (token.src_address !== 'native') await userMetamask.setToken(value, tokens);
       await user.updateBalanceForSymbol(token.display_props.symbol);
       update();
     } catch (e) {
@@ -494,8 +494,7 @@ export const Base = observer(() => {
                       onClick={() => {
                         if (maxAmount === unlockToken) return;
                         if (validateAmountInput(maxAmount, minAmount, maxAmount)) return;
-                        const value = maxAmount;
-                        exchange.transaction.amount = value;
+                        exchange.transaction.amount = maxAmount;
                       }}
                     >
                       <Text size="xxsmall" bold>
@@ -575,7 +574,9 @@ export const Base = observer(() => {
 
               <Input
                 label={
-                  exchange.mode === EXCHANGE_MODE.FROM_SCRT ? 'Destination ETH Address' : 'Destination Secret Address'
+                  exchange.mode === EXCHANGE_MODE.FROM_SCRT
+                    ? `Destination ${userMetamask.getCurrencySymbol()} Address`
+                    : 'Destination Secret Address'
                 }
                 name={exchange.mode === EXCHANGE_MODE.FROM_SCRT ? 'ethAddress' : 'scrtAddress'}
                 style={{ width: '100%' }}

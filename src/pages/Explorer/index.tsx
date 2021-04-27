@@ -14,12 +14,22 @@ import { SwapStatus } from '../../constants';
 import { getScrtAddress } from '../../blockchain-bridge';
 import { SearchInput } from '../../components/Search';
 import { messages, messageToString } from '../EthBridge/messages';
-import { NETWORKS } from '../EthBridge';
+import { networkFromToken, NETWORKS } from '../EthBridge';
 
-const ethAddress = value => (
+const ethAddress = (value, network?: NETWORKS) => (
   <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
-    <img className={styles.imgToken} style={{ height: 20 }} src="/static/eth.svg" />
-    <a className={styles.addressLink} href={`${process.env.ETH_EXPLORER_URL}/address/${value}`} target="_blank">
+    <img
+      className={styles.imgToken}
+      style={{ height: 20 }}
+      src={messageToString(messages.image_logo, network)}
+      alt={'token logo'}
+    />
+    <a
+      className={styles.addressLink}
+      href={`${messageToString(messages.explorerUrl, network)}/address/${value}`}
+      target="_blank"
+      rel="noreferrer"
+    >
       {truncateAddressString(value, 5)}
     </a>
   </Box>
@@ -53,7 +63,8 @@ const getColumns = (): IColumn<ISwap>[] => [
     key: 'dst_address',
     dataIndex: 'dst_address',
     width: 200,
-    render: (value, data) => (data.src_network !== 'Secret' ? secretAddress(value) : ethAddress(value)),
+    render: (value, data) =>
+      data.src_network !== 'Secret' ? secretAddress(value) : ethAddress(value, networkFromToken(data)),
   },
   {
     title: 'Status',
@@ -72,7 +83,7 @@ const getColumns = (): IColumn<ISwap>[] => [
     width: 180,
     render: (value, data) => {
       return data.dst_network === 'secret20' ? (
-        <ERC20Token value={TOKEN.ERC20} erc20Address={data.src_coin} />
+        <ERC20Token value={TOKEN.ERC20} erc20Address={data.src_coin} network={networkFromToken(data)} />
       ) : (
         <SecretToken value={TOKEN.S20} secretAddress={data.src_coin} />
       );
@@ -85,7 +96,7 @@ const getColumns = (): IColumn<ISwap>[] => [
     width: 180,
     render: (value, data) => {
       return data.dst_network !== 'secret20' ? (
-        <ERC20Token value={TOKEN.ERC20} erc20Address={data.dst_coin} />
+        <ERC20Token value={TOKEN.ERC20} erc20Address={data.dst_coin} network={networkFromToken(data)} />
       ) : (
         <SecretToken value={TOKEN.S20} secretAddress={data.dst_coin} />
       );

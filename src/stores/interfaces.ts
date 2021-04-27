@@ -145,7 +145,7 @@ export const tokenFromSecretToken = (sToken: ISecretToken): ITokenInfo => {
     dst_coin: undefined,
     dst_network: '',
     src_address: '',
-    src_network: '',
+    src_network: 'Secret',
     symbol: sToken.id,
     totalLocked: '',
     totalLockedNormal: '',

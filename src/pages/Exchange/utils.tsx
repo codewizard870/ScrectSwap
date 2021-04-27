@@ -86,7 +86,7 @@ export const NetworkTemplate = (props: { template: NetworkTemplateInterface; onS
     <Box direction="column" style={{ minWidth: 230 }}>
       <Box direction="row" align={'start'} margin={{ top: 'xxsmall' }}>
         <Box direction="column" style={{ marginRight: 7 }} align="center">
-          <img style={{ marginBottom: 5 }} height="37" src={props.template.networkImage} />
+          <img style={{ marginBottom: 5 }} height="37" src={props.template.networkImage} alt="network image" />
           <IconUI style={{ margin: 0 }} className={'circle'} color={props.template.health ? 'green' : 'red'} />
         </Box>
 

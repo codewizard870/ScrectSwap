@@ -42,6 +42,7 @@ export class Exchange extends StoreConstructor {
   @observable isFeeLoading = false;
   @observable isTokenApproved = false;
   @observable tokenApprovedLoading = false;
+  @observable tokens: ITokenInfo[] = [];
 
   defaultTransaction = {
     scrtAddress: '',
@@ -132,9 +133,9 @@ export class Exchange extends StoreConstructor {
             this.ethSwapFee = await getNetworkFee(Number(process.env.SWAP_FEE));
             let token: ITokenInfo;
             if (this.token === TOKEN.NATIVE) {
-              token = this.stores.tokens.allData.find(t => t.src_address === 'native');
+              token = this.tokens.find(t => t.src_address === 'native');
             } else {
-              token = this.stores.tokens.allData.find(t => t.dst_address === this.transaction.snip20Address);
+              token = this.tokens.find(t => t.dst_address === this.transaction.snip20Address);
             }
             this.swapFeeUsd = this.ethSwapFee * this.stores.user.ethRate;
             this.swapFeeToken = this.swapFeeUsd / Number(token.price);
@@ -204,12 +205,14 @@ export class Exchange extends StoreConstructor {
   }
 
   @action.bound
-  setNetwork(network: NETWORKS) {
+  async setNetwork(network: NETWORKS) {
     this.network = network;
-    this.stores.tokens.filters = {
-      src_network: messageToString(messages.full_name, network),
-    };
-    this.stores.tokens.fetch();
+    await this.stores.tokens.fetch();
+    await this.setTokens(network);
+  }
+
+  async setTokens(network: NETWORKS) {
+    this.tokens = await this.stores.tokens.tokensUsage('BRIDGE', network);
   }
 
   @action.bound
@@ -242,14 +245,14 @@ export class Exchange extends StoreConstructor {
         this.operation.type = swap.src_network !== 'Secret' ? EXCHANGE_MODE.TO_SCRT : EXCHANGE_MODE.FROM_SCRT;
 
         if (this.operation.type === EXCHANGE_MODE.TO_SCRT) {
-          const token = this.stores.tokens.allData.find(t => t.dst_address === swap.dst_address);
+          const token = this.tokens.find(t => t.dst_address === swap.dst_address);
           if (token) {
             this.operation.image = token.display_props.image;
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           }
         } else {
-          const token = this.stores.tokens.allData.find(t => t.dst_address === swap.src_coin);
+          const token = this.tokens.find(t => t.dst_address === swap.src_coin);
           if (token) {
             this.operation.image = token.display_props.image;
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
@@ -395,7 +398,7 @@ export class Exchange extends StoreConstructor {
   async swapErc20ToScrt() {
     this.operation = this.defaultOperation;
 
-    contract.fromScrtMethods[this.network][this.token].swapToken(
+    contract.fromScrtMethods[this.network][TOKEN.ERC20].swapToken(
       this.transaction.erc20Address,
       this.transaction.scrtAddress,
       this.transaction.amount,
@@ -430,7 +433,7 @@ export class Exchange extends StoreConstructor {
     this.operation = this.defaultOperation;
 
     try {
-      contract.fromScrtMethods[this.network][this.token].swapEth(
+      contract.fromScrtMethods[this.network][TOKEN.NATIVE].swapEth(
         this.transaction.scrtAddress,
         this.transaction.amount,
         async result => {
@@ -466,19 +469,20 @@ export class Exchange extends StoreConstructor {
 
     let proxyContract: string;
     let decimals: number | string;
-    let recipient = swapContractAddress[this.network];
+    let recipient = swapContractAddress(this.network);
     let price: string;
     if (isNative) {
-      const token = this.stores.tokens.allData.find(t => t.src_address === 'native');
+      const token = this.tokens.find(t => t.src_address === 'native');
       decimals = token.decimals;
       price = token.price;
       this.transaction.snip20Address = token.dst_address;
     } else {
-      const token = this.stores.tokens.allData.find(t => t.dst_address === this.transaction.snip20Address);
+      const token = this.tokens.find(t => t.dst_address === this.transaction.snip20Address);
       if (token) {
         decimals = token.decimals;
         price = token.price;
         this.transaction.snip20Address = token.dst_address;
+
         if (token.display_props.proxy) {
           proxyContract = process.env.WSCRT_PROXY_CONTRACT;
           recipient = process.env.WSCRT_PROXY_CONTRACT;

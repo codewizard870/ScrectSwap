@@ -10,6 +10,8 @@ export enum messages {
   destination_network_address,
   full_name,
   token_name,
+  explorerUrl,
+  decimals,
 }
 
 const message_map: Record<messages, Record<NETWORKS, string>> = {
@@ -57,6 +59,16 @@ const message_map: Record<messages, Record<NETWORKS, string>> = {
     [NETWORKS.ETH]: 'ERC20',
     [NETWORKS.BSC]: 'BEP20',
     [NETWORKS.PLSM]: 'Parachain',
+  },
+  [messages.explorerUrl]: {
+    [NETWORKS.ETH]: process.env.ETH_EXPLORER_URL,
+    [NETWORKS.BSC]: process.env.BSC_EXPLORER_URL,
+    [NETWORKS.PLSM]: process.env.ETH_EXPLORER_URL,
+  },
+  [messages.decimals]: {
+    [NETWORKS.ETH]: '18',
+    [NETWORKS.BSC]: '18',
+    [NETWORKS.PLSM]: '18',
   },
 };
 

@@ -7,7 +7,7 @@ import { EXCHANGE_MODE, TOKEN } from 'stores/interfaces';
 import { observer } from 'mobx-react';
 import { useStores } from '../../stores';
 import { divDecimals, formatWithSixDecimals } from '../../utils';
-import { NETWORKS } from '../EthBridge';
+import { networkFromToken, NETWORKS } from '../EthBridge';
 import { messages, messageToString } from '../EthBridge/messages';
 
 export const OperationType = (props: { type: EXCHANGE_MODE }) => {
@@ -51,6 +51,7 @@ export const Price = observer(
 );
 
 interface IERC20TokenProps {
+  network: NETWORKS;
   value: TOKEN;
   erc20Address?: string;
 }
@@ -67,17 +68,17 @@ interface ITokenParams {
 }
 
 export const FormatWithDecimals = observer((props: ITokenParams) => {
-  const { tokens } = useStores();
+  const { tokens, userMetamask } = useStores();
   const { type, amount, address } = props;
 
   if (type === TOKEN.ERC20 || type === TOKEN.S20) {
-    const token = tokens.data.find(t => t.src_address.toLowerCase() === address.toLowerCase());
+    const token = tokens.allData.find(t => t.src_address.toLowerCase() === address.toLowerCase());
 
     if (token) {
       return <Box>{divDecimals(amount, token.decimals)}</Box>;
     }
   } else if (type === TOKEN.NATIVE) {
-    return <Box>{formatWithSixDecimals(amount)}</Box>;
+    return <Box>{divDecimals(amount, Number(userMetamask.getNativeDecimals()))}</Box>;
   }
 
   return <Box>{amount}</Box>;
@@ -87,29 +88,38 @@ export const ERC20Token = observer((props: IERC20TokenProps) => {
   const { tokens, userMetamask } = useStores();
   const { value, erc20Address } = props;
 
+  let tokenName = '';
+
   if (value === TOKEN.ERC20) {
-    const token = tokens.data.find(t => t.src_address.toLowerCase() === erc20Address.toLowerCase());
+    const token = tokens.allData.find(
+      t => t.src_address.toLowerCase() === erc20Address.toLowerCase() && networkFromToken(t) === props.network,
+    );
 
     if (token && token.display_props) {
-      return token.display_props.proxy_symbol ? (
-        <Box>{token.display_props.proxy_symbol}</Box>
-      ) : (
-        <Box>{token.display_props.symbol}</Box>
-      );
+      token.display_props.proxy_symbol
+        ? (tokenName = token.display_props.proxy_symbol)
+        : (tokenName = token.display_props.symbol);
     }
   } else if (value === TOKEN.NATIVE) {
-    return <Box>{userMetamask.getCurrencySymbol()}</Box>;
+    tokenName = userMetamask.getCurrencySymbol();
   }
 
-  return <Box>{value ? value.toUpperCase() : '--'}</Box>;
+  return (
+    <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
+      <img className={styles.imgToken} src={userMetamask.getNetworkImage()} />
+      {tokenName}
+    </Box>
+  );
 });
 
 export const SecretToken = observer((props: ISecretTokenProps) => {
   const { tokens, userMetamask } = useStores();
   const { value, secretAddress } = props;
 
+  let tokenName = '';
+
   if (value === TOKEN.ERC20 || value === TOKEN.S20) {
-    const token = tokens.data.find(
+    const token = tokens.allData.find(
       t =>
         t.dst_address.toLowerCase() === secretAddress.toLowerCase() ||
         t.dst_coin?.toLowerCase() === secretAddress.toLowerCase() ||
@@ -118,15 +128,18 @@ export const SecretToken = observer((props: ISecretTokenProps) => {
     );
 
     if (token && token.display_props) {
-      return token.display_props.proxy_symbol ? (
-        <Box>{token.display_props.symbol}</Box>
-      ) : (
-        <Box>secret{token.display_props.symbol}</Box>
-      );
+      token.display_props.proxy_symbol
+        ? (tokenName = token.display_props.symbol)
+        : (tokenName = `secret${token.display_props.symbol}`);
     }
   } else if (value === TOKEN.NATIVE) {
-    return <Box>{userMetamask.getCurrencySymbol()}</Box>;
+    tokenName = userMetamask.getCurrencySymbol();
   }
 
-  return <Box>{value ? value.toUpperCase() : '--'}</Box>;
+  return (
+    <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
+      <img className={styles.imgToken} src="/static/scrt.svg" />
+      {tokenName}
+    </Box>
+  );
 });

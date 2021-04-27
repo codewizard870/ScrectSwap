@@ -10,7 +10,7 @@ import { Title } from 'components/Base';
 import { WalletBalances } from './WalletBalances';
 import { EXCHANGE_STEPS } from 'stores/Exchange';
 import { Message } from 'semantic-ui-react';
-import { ITokenInfo } from '../../stores/interfaces';
+import { ISwap, ITokenInfo } from '../../stores/interfaces';
 
 export const enum NETWORKS {
   ETH = 'ETH',
@@ -18,7 +18,7 @@ export const enum NETWORKS {
   PLSM = 'PLSM',
 }
 
-export const networkFromToken = (token: ITokenInfo): NETWORKS => {
+export const networkFromToken = (token: { src_network: string; dst_network?: string }): NETWORKS => {
   switch (token.src_network.toLowerCase().replace(/\s/g, '')) {
     case 'ethereum':
       return NETWORKS.ETH;
@@ -26,6 +26,12 @@ export const networkFromToken = (token: ITokenInfo): NETWORKS => {
       return NETWORKS.BSC;
     case 'plasm':
       return NETWORKS.PLSM;
+    case 'secret':
+      if (token?.dst_network !== 'secret') {
+        return networkFromToken({ src_network: token.dst_network });
+      } else {
+        return undefined;
+      }
     default:
       throw new Error(`Invalid network: ${token.src_network}`);
   }

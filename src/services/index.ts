@@ -76,13 +76,24 @@ export const getSwap = async (network: NETWORKS, id: string): Promise<IOperation
 };
 
 export const getOperations = async (params: any): Promise<{ content: ISwap[] }> => {
-  const url = backendUrl(params.network, '/swaps/');
+  //const url = backendUrl(params.network, '/swaps/');
 
-  const res = await agent.get<{ body: ISwap[] }>(url, params);
+  const urls = [];
+  for (const network of availableNetworks) {
+    urls.push(backendUrl(network, '/swaps/'));
+  }
 
-  const content = res.body.swaps;
+  let res = await Promise.all([
+    ...urls.map(url => {
+      return agent.get<{ body: { swaps: ISwap[] } }>(url, params);
+    }),
+  ]);
 
-  return { content: content };
+  //const res = await agent.get<{ body: ISwap[] }>(url, params);
+  const swapArray: ISwap[] = res.flatMap(t => t.body.swaps);
+  // const content = res.body.swaps;
+
+  return { content: swapArray };
 };
 
 export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[] }> => {
@@ -93,8 +104,8 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
     urls.push(backendUrl(network, '/tokens/'));
   }
   secretTokenUrls.push(backendUrl(NETWORKS.ETH, '/secret_tokens/'));
-  console.log(`urls: ${JSON.stringify(urls)}`);
-  console.log(`secretTokenUrls: ${JSON.stringify(secretTokenUrls)}`);
+  //console.log(`urls: ${JSON.stringify(urls)}`);
+  //console.log(`secretTokenUrls: ${JSON.stringify(secretTokenUrls)}`);
   //const secretTokenListUrl = backendUrl('/secret_tokens/');
 
   let tokens = await Promise.all([

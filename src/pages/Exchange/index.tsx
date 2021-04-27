@@ -12,20 +12,21 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { useStores } from '../../stores';
 
 export const Exchange = observer(() => {
+  const { exchange, userMetamask } = useStores();
 
+  useEffect(() => {
+    if (exchange) {
+      exchange.setNetwork(userMetamask.network);
+      exchange.setMainnet(userMetamask.mainnet);
+    }
+  }, [userMetamask.network, userMetamask.mainnet]);
 
-    const { exchange } = useStores();
-
-    return (
-      <Box fill direction="column">
-
-        <Base />
-        {exchange.step.id === EXCHANGE_STEPS.APPROVE_CONFIRMATION && <ERC20ApprovalModal />}
-        {exchange.step.id === EXCHANGE_STEPS.CONFIRMATION && <SwapConfirmation />}
-        {exchange.step.id === EXCHANGE_STEPS.CHECK_TRANSACTION && <CheckTransaction />}
-
-      </Box>
-
-    )
-  }
-)
+  return (
+    <Box fill direction="column">
+      <Base />
+      {exchange.step.id === EXCHANGE_STEPS.APPROVE_CONFIRMATION && <ERC20ApprovalModal />}
+      {exchange.step.id === EXCHANGE_STEPS.CONFIRMATION && <SwapConfirmation />}
+      {exchange.step.id === EXCHANGE_STEPS.CHECK_TRANSACTION && <CheckTransaction />}
+    </Box>
+  );
+});

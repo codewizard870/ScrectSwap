@@ -15,6 +15,20 @@ import { isMobile } from 'react-device-detect';
 import { messages, messageToString } from '../EthBridge/messages';
 import { NETWORKS, networkFromToken } from '../EthBridge';
 
+const nativeWithLogo = (network?: NETWORKS) => {
+  return (
+    <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
+      <img
+        className={styles.imgToken}
+        style={{ height: 20 }}
+        src={messageToString(messages.image_logo, network || NETWORKS.ETH)}
+        alt={'scrt'}
+      />
+      native
+    </Box>
+  );
+};
+
 const ethAddress = (value, num = 10, network?: NETWORKS) => (
   <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
     <img
@@ -25,7 +39,7 @@ const ethAddress = (value, num = 10, network?: NETWORKS) => (
     />
     <a
       className={styles.addressLink}
-      href={`${process.env.ETH_EXPLORER_URL}/token/${value}`}
+      href={`${messageToString(messages.explorerUrl, network)}/token/${value}`}
       target="_blank"
       rel={'noreferrer'}
     >
@@ -75,7 +89,8 @@ const getColumns = (): IColumn<ITokenInfo>[] => [
     key: 'src_address',
     dataIndex: 'src_address',
     width: 220,
-    render: (value, data) => (value === 'native' ? 'native' : ethAddress(value, 8, networkFromToken(data))),
+    render: (value, data) =>
+      value === 'native' ? nativeWithLogo(networkFromToken(data)) : ethAddress(value, 8, networkFromToken(data)),
   },
   {
     title: 'Secret Network Address',

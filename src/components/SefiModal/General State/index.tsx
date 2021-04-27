@@ -21,12 +21,12 @@ const GeneralState = (props:{
           <div className="item right sefi-balance">
             <div><img src="/static/tokens/sefi.png" alt=""/></div>
             <span>SEFI</span>
-            <h1 className={theme.currentTheme}>{props.data.balance}</h1>
+            <h1 className={theme.currentTheme}>{(isNaN(parseFloat(props.data.balance))?"0.0":props.data.balance)}</h1>
           </div>
         </div>
         <div className={`sefi-grid__container ${theme.currentTheme}`}>
           <span className='item left'>Balance</span>
-          <strong className='item right'>{props.data.balance} </strong>
+          <strong className='item right'>{(isNaN(parseFloat(props.data.balance))?"0.0":props.data.balance)} </strong>
           <span className='item left'>Unclaimed
             {/* <Popup 
               className="icon-info__popup" 
@@ -45,7 +45,7 @@ const GeneralState = (props:{
               <a href="#">Learn more about cashback tokens</a>
             </Popup> */}
           </span>
-          <strong className='item right'> {props.data.unclaimed} </strong>
+          <strong className='item right'> {(isNaN(parseFloat(props.data.unclaimed))?"0.0":props.data.unclaimed)} </strong>
         </div>
         <div className={`sefi-grid__container ${theme.currentTheme}`}>
           <span className='item left'>SEFI price</span>

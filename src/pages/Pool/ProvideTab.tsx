@@ -488,8 +488,9 @@ export class ProvideTab extends React.Component<
             {(() => {
               if (JSON.stringify(lpTokenBalance).includes('View')) {
                 return lpTokenBalance;
-              } else {
-                console.log(currentShareOfPool)
+              } else if(isNaN(currentShareOfPool.multipliedBy(100).toNumber())) {
+                return '-'
+              }else{
                 return `${shareOfPoolNumberFormat.format(currentShareOfPool.multipliedBy(100).toNumber())}%`;
               }
             })()}

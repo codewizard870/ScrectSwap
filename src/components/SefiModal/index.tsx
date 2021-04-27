@@ -244,9 +244,9 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
   const onClaimSCRT = async()=>{
     console.log('Claiming SEFI...')
     try {
-      // setUnclaimedAmout(parseFloat(claimInfo.scrt?.amount))
-      // const result = await claimScrt(props.user.secretjsSend, props.user.address);
-      // console.log('success', 'Claimed SeFi successfully!');
+      setUnclaimedAmout(parseFloat(claimInfo.scrt?.amount))
+      const result = await claimScrt(props.user.secretjsSend, props.user.address);
+      console.log('success', 'Claimed SeFi successfully!');
       setStatus(SefiModalState.CONFIRMATION);
     } catch (e) {
       console.error(`failed to claim ${e}`);

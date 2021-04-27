@@ -69,7 +69,7 @@ export const EthBridge = observer((props: any) => {
             <Message success>
               <p>SSCRT{'->'}WSCRT swap issues have been resolved. Happy swapping!</p>
             </Message>
-            <Box fill direction="row" justify="between" align="end" margin={{ bottom: 'medium', top: 'large' }}>
+            <Box className={styles.headerBridge} fill  margin={{ bottom: 'medium', top: 'large' }}>
               <Title bold>Secret Bridge</Title>
               <WalletBalances />
             </Box>

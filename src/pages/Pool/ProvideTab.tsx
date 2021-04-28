@@ -26,16 +26,7 @@ import { useStores } from 'stores';
 import Theme from 'themes';
 import { observer } from 'mobx-react';
 
-const buttonStyle = {
-  margin: '1em 0 0 0',
-  borderRadius: '4px',
-  padding: '11px 42px',
-  fontSize: '16px',
-  fontWeight: '600',
-  color: '#5F5F6B',
-  background: '#DEDEDE',
-  height: '46px',
-};
+
 
 enum TokenSelector {
   TokenA,
@@ -555,7 +546,7 @@ export class ProvideTab extends React.Component<
             !showApproveBButton
           }
           fluid
-          style={buttonStyle}
+          className={styles.provide_button}
           onClick={async () => {
             if (this.isReadyForProvide()) {
               await this.provideLiquidityAction(this.props.selectedPair);

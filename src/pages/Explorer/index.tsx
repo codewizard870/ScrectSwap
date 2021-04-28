@@ -131,17 +131,18 @@ export const Explorer = observer((props: any) => {
 
   useEffect(() => {
     tokens.init();
-    tokens.filters = {
-      src_network: userMetamask.getNetworkFullName(),
-    };
+    // tokens.filters = {
+    //   src_network: userMetamask.getNetworkFullName(),
+    // };
     tokens.fetch();
     operations.init({
       isLocal: true,
       sorter: 'created_on, desc',
+      paginationData: {pageSize: 10},
       pollingInterval: 20000,
-      filters: {
-        src_network: userMetamask.getNetworkFullName(),
-      },
+      // filters: {
+      //   src_network: userMetamask.getNetworkFullName(),
+      // },
     });
     operations.fetch();
   }, []);
@@ -154,7 +155,9 @@ export const Explorer = observer((props: any) => {
     operations.onChangeDataFlow(props);
   };
 
-  const filteredData = operations.allData;
+  const filteredData = operations.allData.sort(
+    (opA, opB) => opA.created_on > opB.created_on ? -1 : 1
+  );
 
   // search filter by network (if we want to make this work)
     // .filter(value => {

@@ -85,7 +85,7 @@ export const FormatWithDecimals = observer((props: ITokenParams) => {
 });
 
 export const ERC20Token = observer((props: IERC20TokenProps) => {
-  const { tokens, userMetamask } = useStores();
+  const { tokens } = useStores();
   const { value, erc20Address } = props;
 
   let tokenName = '';
@@ -101,12 +101,12 @@ export const ERC20Token = observer((props: IERC20TokenProps) => {
         : (tokenName = token.display_props.symbol);
     }
   } else if (value === TOKEN.NATIVE) {
-    tokenName = userMetamask.getCurrencySymbol();
+    tokenName = messageToString(messages.currency_symbol, props.network);
   }
 
   return (
     <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
-      <img className={styles.imgToken} src={userMetamask.getNetworkImage()} />
+      <img className={styles.imgToken} src={messageToString(messages.image_logo, props.network)} />
       {tokenName}
     </Box>
   );

@@ -10,7 +10,7 @@ export class Operations extends ListStoreConstructor<ISwap> {
       pollingInterval: 20000,
       isLocal: true,
       paginationData: { pageSize: 10 },
-      // sorter: 'created_on, asc',
+      sorter: 'created_on, desc',
     });
   }
 }

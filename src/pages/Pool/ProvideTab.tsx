@@ -405,7 +405,7 @@ export class ProvideTab extends React.Component<
     const currentShareOfPool = lpTokenTotalSupply.isZero()
       ? lpTokenTotalSupply
       : new BigNumber(lpTokenBalance as BigNumber).dividedBy(lpTokenTotalSupply);
-
+    
     const gainedShareOfPool = BigNumber.minimum(
       amountA.dividedBy(poolA.plus(amountA)),
       amountB.dividedBy(poolB.plus(amountB)),

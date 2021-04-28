@@ -153,8 +153,12 @@ class EarnRow extends Component<
         src:'/static/tokens/susdt.png'
       },
       {
-        symbol:'swbtc',
-        src:'/static/tokens/swbtc.png'
+        symbol:'srune',
+        src:'/static/tokens/srune.png'
+      },
+      {
+        symbol:'srsr',
+        src:'/static/tokens/srsr.png'
       },
     ]
     const _symbols = this.props.token.lockedAsset?.split('-');

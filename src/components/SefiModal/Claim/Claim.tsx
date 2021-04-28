@@ -89,7 +89,7 @@ const Claim = (props:{
 
         </div>
         <span className="displayed-center__item">Claim your SEFI to participate in governance and yield opportunities</span>
-        <a className={`displayed-center__item ${theme.currentTheme}`} href="#">Read more about SEFI</a>
+        <a className={`displayed-center__item ${theme.currentTheme}`} href="https://www.secretswap.io/faq">Read more about SEFI</a>
         
       </div>
     </>

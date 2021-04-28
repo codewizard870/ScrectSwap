@@ -322,7 +322,7 @@ class EarnRow extends Component<
                     currency={this.props.token.lockedAsset}
                     price={this.props.token.price}
                     balanceText="Available"
-                    unlockPopupText='In order to view your available assets, click on "View Balance" above'
+                    unlockPopupText='Please create a viewing key to see your SNIP-20 token balance'
                     tokenAddress={this.props.token.lockedAssetAddress} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}
@@ -352,8 +352,8 @@ class EarnRow extends Component<
                     balance={this.props.token.deposit}
                     currency={this.props.token.rewardsSymbol}
                     price={this.props.token.price}
-                    balanceText="Locked"
-                    unlockPopupText='In order to view your locked assets, click on "View Balance" below'
+                    balanceText="Staked"
+                    unlockPopupText='Please create a viewing key to see your SNIP-20 token balance'
                     tokenAddress={this.props.token.rewardsContract} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}
@@ -370,16 +370,17 @@ class EarnRow extends Component<
             notify={this.props.notify}
             rewardsToken={this.props.token.rewardsSymbol || 'sSCRT'}
           />
-          {/* <Text
+          <Text
             size="medium"
             style={{
               padding: '20 20 0 20',
               cursor: 'auto',
               textAlign: 'center',
+              color:(this.props.theme.currentTheme == 'dark')?'white':''
             }}
           >
             * Every time you deposit, withdraw or claim the contract will automagically claim your rewards for you!
-          </Text> */}
+          </Text>
         </Accordion.Content>
       </Accordion>
     );

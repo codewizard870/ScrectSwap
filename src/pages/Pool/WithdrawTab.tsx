@@ -63,7 +63,7 @@ export class WithdrawTab extends React.Component<
             />
           </div>
         ) : null}
-        <div className={styles.withdrawLiquitityContent}>
+        {/* <div className={styles.withdrawLiquitityContent}> */}
           {pairs
           .filter(p => {
             return (
@@ -120,7 +120,7 @@ export class WithdrawTab extends React.Component<
               </span>
             );
           })}
-        </div>
+        {/* </div> */}
       </Container>
     );
   }

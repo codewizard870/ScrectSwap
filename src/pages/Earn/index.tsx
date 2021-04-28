@@ -25,7 +25,7 @@ export const notify = (type: 'success' | 'error', msg: string, hideAfterSec: num
   }
 
   const { hide } = cogoToast[type](msg, {
-    position: 'top-right',
+    toastContainerID:'notifications_container',
     hideAfter: hideAfterSec,
     onClick: () => {
       hide();

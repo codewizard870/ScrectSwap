@@ -162,7 +162,7 @@ export const CheckTransaction = observer(() => {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      View on Etherscan
+                      View in Explorer
                     </a>
                   </Text>
                 </Box>

@@ -8,28 +8,28 @@ import { observer } from 'mobx-react';
 import { useStores } from '../../stores';
 import { formatWithSixDecimals } from '../../utils';
 
-export const OperationType = (props: { type: EXCHANGE_MODE }) => {
-  return (
-    <Box
-      direction={props.type === EXCHANGE_MODE.TO_SCRT ? 'row' : 'row-reverse'}
-      align="center"
-      className={cn(styles.operationType)}
-      margin={{ left: '20px' }}
-    >
-      <Box direction="row" align="center">
-        <img className={styles.imgToken} style={{ height: 20 }} src="/static/eth.svg" />
-        <Text size="medium">ETH</Text>
-      </Box>
-      <Box direction="row" margin={{ horizontal: 'xsmall' }} align="center">
-        <img src="/static/right.svg" />
-      </Box>
-      <Box direction="row" align="center">
-        <img className={styles.imgToken} style={{ height: 18 }} src="/static/scrt.svg" />
-        <Text size="medium">ONE</Text>
-      </Box>
-    </Box>
-  );
-};
+// export const OperationType = (props: { type: EXCHANGE_MODE }) => {
+//   return (
+//     <Box
+//       direction={props.type === EXCHANGE_MODE.TO_SCRT ? 'row' : 'row-reverse'}
+//       align="center"
+//       className={cn(styles.operationType)}
+//       margin={{ left: '20px' }}
+//     >
+//       <Box direction="row" align="center">
+//         <img className={styles.imgToken} style={{ height: 20 }} src="/static/eth.svg" />
+//         <Text size="medium">ETH</Text>
+//       </Box>
+//       <Box direction="row" margin={{ horizontal: 'xsmall' }} align="center">
+//         <img src="/static/right.svg" />
+//       </Box>
+//       <Box direction="row" align="center">
+//         <img className={styles.imgToken} style={{ height: 18 }} src="/static/scrt.svg" />
+//         <Text size="medium">ONE</Text>
+//       </Box>
+//     </Box>
+//   );
+// };
 
 export const Price = observer((props: { value: number; isEth: boolean; boxProps?: BoxProps }) => {
   const { user } = useStores();

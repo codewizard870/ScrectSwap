@@ -67,14 +67,14 @@ export const ERC20ApprovalModal = observer(() => {
               {exchange.txHash && (
                 <HeadShake bottom>
                   <Text>
-                    View on{' '}
+                    View in{' '}
                     <a
                       href={`${messageToString(messages.explorerUrl, exchange.network)}/tx/${exchange.txHash}`}
                       style={{ textDecoration: 'none' }}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      Etherscan
+                      Explorer
                     </a>
                   </Text>
                 </HeadShake>

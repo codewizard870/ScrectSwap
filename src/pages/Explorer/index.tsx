@@ -154,13 +154,16 @@ export const Explorer = observer((props: any) => {
     operations.onChangeDataFlow(props);
   };
 
-  const filteredData = operations.allData.filter(value => {
-    return !(
-      value.dst_network !== userMetamask.getNetworkFullName() && value.src_network !== userMetamask.getNetworkFullName()
-    );
-  });
+  const filteredData = operations.allData;
 
+  // search filter by network (if we want to make this work)
+    // .filter(value => {
+  //     return !(
+  //       value.dst_network !== userMetamask.getNetworkFullName() && value.src_network !== userMetamask.getNetworkFullName()
+  //     );
+  //   });
   // todo: make this a button.. it's too slow as a live search
+
   const filteredDataSearch = filteredData
     .filter(value => {
       if (search) {

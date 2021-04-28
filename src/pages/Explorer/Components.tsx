@@ -10,34 +10,34 @@ import { divDecimals, formatWithSixDecimals } from '../../utils';
 import { networkFromToken, NETWORKS } from '../EthBridge';
 import { messages, messageToString } from '../EthBridge/messages';
 
-export const OperationType = (props: { type: EXCHANGE_MODE }) => {
-  return (
-    <Box
-      direction={props.type === EXCHANGE_MODE.TO_SCRT ? 'row' : 'row-reverse'}
-      align="center"
-      className={cn(styles.operationType)}
-      margin={{ left: '20px' }}
-    >
-      <Box direction="row" align="center">
-        <img className={styles.imgToken} style={{ height: 20 }} src="/static/eth.svg" />
-        <Text size="medium">ETH</Text>
-      </Box>
-      <Box direction="row" margin={{ horizontal: 'xsmall' }} align="center">
-        <img src="/static/right.svg" />
-      </Box>
-      <Box direction="row" align="center">
-        <img className={styles.imgToken} style={{ height: 18 }} src="/static/scrt.svg" />
-        <Text size="medium">ONE</Text>
-      </Box>
-    </Box>
-  );
-};
+// export const OperationType = (props: { type: EXCHANGE_MODE }) => {
+//   return (
+//     <Box
+//       direction={props.type === EXCHANGE_MODE.TO_SCRT ? 'row' : 'row-reverse'}
+//       align="center"
+//       className={cn(styles.operationType)}
+//       margin={{ left: '20px' }}
+//     >
+//       <Box direction="row" align="center">
+//         <img className={styles.imgToken} style={{ height: 20 }} src="/static/eth.svg" />
+//         <Text size="medium">ETH</Text>
+//       </Box>
+//       <Box direction="row" margin={{ horizontal: 'xsmall' }} align="center">
+//         <img src="/static/right.svg" />
+//       </Box>
+//       <Box direction="row" align="center">
+//         <img className={styles.imgToken} style={{ height: 18 }} src="/static/scrt.svg" />
+//         <Text size="medium">ONE</Text>
+//       </Box>
+//     </Box>
+//   );
+// };
 
 export const Price = observer(
   (props: { value: number; valueUsd?: number; isEth?: boolean; boxProps?: BoxProps; token?: string }) => {
-    const { user } = useStores();
+    const { user, userMetamask } = useStores();
 
-    const tokenName = props.token || (props.isEth ? 'ETH' : 'SCRT');
+    const tokenName = props.token || (props.isEth ? userMetamask.getCurrencySymbol() : 'SCRT');
     const valueUsd = props.valueUsd ? props.valueUsd : props.value * (props.isEth ? user.ethRate : user.scrtRate);
     return (
       <Box direction="column" align="end" justify="center" pad={{ right: 'medium' }} {...props.boxProps}>

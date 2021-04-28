@@ -77,7 +77,7 @@ export const TokenSelector = (props: {
                 }
               }}
               autoFocus
-              className={cn(styles.tokenSelectorSearch)}
+              className={`${styles.tokenSelectorSearch} ${styles[theme.currentTheme]}`}
               placeholder="Search symbol or paste address"
               onChange={e => setSearchText(e.target.value.trim().toLowerCase())}
             />

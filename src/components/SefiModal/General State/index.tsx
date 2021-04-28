@@ -24,11 +24,11 @@ const GeneralState = (props:{
             <h1 className={theme.currentTheme}>{(isNaN(parseFloat(props.data.balance))?"0.0":props.data.balance)}</h1>
           </div>
         </div>
-        <div className={`sefi-grid__container ${theme.currentTheme}`}>
+        {/* <div className={`sefi-grid__container ${theme.currentTheme}`}>
           <span className='item left'>Balance</span>
           <strong className='item right'>{(isNaN(parseFloat(props.data.balance))?"0.0":props.data.balance)} </strong>
           <span className='item left'>Unclaimed
-            {/* <Popup 
+             <Popup 
               className="icon-info__popup" 
               position='top center'
               on='click'
@@ -43,10 +43,11 @@ const GeneralState = (props:{
             >
               <p>When users trade, they acquire cashback tokens. These cashback tokens can be burned to claim SEFI.</p>
               <a href="#">Learn more about cashback tokens</a>
-            </Popup> */}
+            </Popup> 
           </span>
           <strong className='item right'> {(isNaN(parseFloat(props.data.unclaimed))?"0.0":props.data.unclaimed)} </strong>
         </div>
+         */}
         <div className={`sefi-grid__container ${theme.currentTheme}`}>
           <span className='item left'>SEFI price</span>
           <strong className='item right'> {props.data.sefi_price}</strong>

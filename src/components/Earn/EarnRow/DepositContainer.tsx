@@ -78,18 +78,21 @@ const DepositContainer = props => {
           </div>
           <div className={cn(styles.subtitle)}>
             {props.balanceText} 
-            <Popup
-              content={props.unlockPopupText}
-              className={styles.iconinfo__popup}
-              trigger={ 
-                <Icon
-                    className={styles.icon_info}
-                    name="info"
-                    circular
-                    size="tiny"
-                  />
-              }
-            />
+            {
+              (props.balance?.includes(unlockToken))&&
+              <Popup
+                content={props.unlockPopupText}
+                className={styles.iconinfo__popup}
+                trigger={ 
+                  <Icon
+                      className={styles.icon_info}
+                      name="info"
+                      circular
+                      size="tiny"
+                    />
+                }
+              />
+            }
           </div>
         </div>
         <div>

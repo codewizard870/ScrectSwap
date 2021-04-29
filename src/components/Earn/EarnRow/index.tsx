@@ -350,7 +350,7 @@ class EarnRow extends Component<
                       </Grid>
                     } //({props: this.props, value: this.state.withdrawValue})}
                     balance={this.props.token.deposit}
-                    currency={this.props.token.rewardsSymbol}
+                    currency={this.props.token.lockedAsset}
                     price={this.props.token.price}
                     balanceText="Staked"
                     unlockPopupText='Please create a viewing key to see your SNIP-20 token balance'

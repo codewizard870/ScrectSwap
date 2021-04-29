@@ -294,7 +294,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       onOpen={() =>{ setOpen(true);getData()}}
       open={open}
       trigger={
-      <button className="btn-secondary">
+      <button className={`btn-secondary`}>
         <a>SEFI</a>
       </button>}
       className="sefi-modal"

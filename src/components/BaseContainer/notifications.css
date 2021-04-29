@@ -6,6 +6,10 @@
   background: #ec3933;
   border: none !important;
 }
+#notifications_container .ct-group .ct-toast-error {
+  background: #ec3933;
+  border: none !important;
+}
 #notifications_container .ct-group .ct-toast svg path {
   stroke: white;
   fill: white;

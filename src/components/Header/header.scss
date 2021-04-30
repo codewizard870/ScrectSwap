@@ -144,9 +144,13 @@
   }
 
   .kpl_images__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 47px;
     img {
       width: 35px;
-      height: 35px;
+      height: 31px;
       margin: 0 5px;
       cursor: pointer;
     }
@@ -311,10 +315,14 @@
   }
 
   .kpl_images__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 47px;
     img {
       filter: none !important;
-      width: 35px;
-      height: 35px;
+      width: auto;
+      height: 31px;
       margin: 0 5px;
       cursor: pointer;
     }
@@ -328,5 +336,18 @@
       margin: 0 5px;
       cursor: pointer;
     }
+  }
+}
+.keplr__status {
+  width: 12px;
+  height: 12px;
+  margin-left: 26px;
+  margin-bottom: 22px;
+  border-radius: 6px;
+  position: absolute;
+  background-color: #da2f4f;
+
+  &--online {
+    background-color: #03c076;
   }
 }

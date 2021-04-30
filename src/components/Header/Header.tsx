@@ -53,7 +53,7 @@ const Header = (props) =>{
     }
 
     displayBalanceSRCT();
-
+    console.log(user)
     return(
         <>
             <div className={theme.currentTheme}>
@@ -82,7 +82,7 @@ const Header = (props) =>{
                             metaMask={userMetamask}
                         />
                         <div className="btn-main">
-                            <div className="wallet-icon">
+                            <div className="wallet-icon"> 
                                 <img src="/static/wallet-icon.svg" alt="wallet icon"/>
                             </div>
                             <p>{getAddress()}</p>
@@ -93,6 +93,7 @@ const Header = (props) =>{
                             </div>
                         </div>
                     <div className="kpl_images__container">
+                        <div className={(!user.address || !user.isAuthorized)? 'keplr__status':'keplr__status keplr__status--online'}></div>
                         <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>
                     </div>
                         <div className="theme__container">

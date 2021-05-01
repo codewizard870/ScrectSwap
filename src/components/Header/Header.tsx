@@ -17,21 +17,7 @@ const Header = (props) =>{
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
     const isSeFi = history.location.pathname === '/sefi';
-    const [balance,setBalance] = useState('0.0');
     
-    async function getBalanceSRCT() {
-        const balanceSCRT  = await getNativeBalance(user.address, user.secretjsSend); 
-        const _balance = displayHumanizedBalance(
-            humanizeBalance(new BigNumber(balanceSCRT as BigNumber), 6),
-            BigNumber.ROUND_DOWN,
-        ) 
-        return _balance;
-    };
-    function displayBalanceSRCT(){
-        getBalanceSRCT().then((res)=>{
-            setBalance(res)
-        })
-    }
 
     const handleSignIn = async()=>{
         if(user.isKeplrWallet){
@@ -52,8 +38,6 @@ const Header = (props) =>{
         // window.location.reload();
     }
 
-    displayBalanceSRCT();
-    console.log(user)
     return(
         <>
             <div className={theme.currentTheme}>
@@ -88,7 +72,7 @@ const Header = (props) =>{
                             <p>{getAddress()}</p>
                             <span>|</span>
                             <div>
-                                <p className="balance">{balance}</p>
+                                <p className="balance">{user.balanceSCRT}</p>
                                 <p>SCRT</p>
                             </div>
                         </div>

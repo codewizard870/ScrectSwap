@@ -28,6 +28,7 @@ import { NativeToken, Token } from './types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
+import { Cashback } from './Cashback';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
@@ -80,6 +81,8 @@ export class SwapRouter extends React.Component<
     routerSupportedTokens: Set<string>;
     routingGraph: { [token0: string]: { [token1: string]: number } };
     selectedPairRoutes: string[][];
+    cashback: string;
+    sefi: string;
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
@@ -99,6 +102,8 @@ export class SwapRouter extends React.Component<
       routerSupportedTokens: new Set(),
       routingGraph: {},
       selectedPairRoutes: [],
+      cashback: 'secret1yj842qfez8fyajam885q4n5yhnjum8879u7pjn',
+      sefi: 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm',
     };
   }
 
@@ -142,6 +147,9 @@ export class SwapRouter extends React.Component<
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
     }
 
+    newBalances[this.state.cashback] = await this.refreshTokenBalance(this.state.cashback);
+    newBalances[this.state.sefi] = await this.refreshTokenBalance(this.state.sefi);
+
     if (updateState) {
       console.log('updated state');
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
@@ -168,6 +176,9 @@ export class SwapRouter extends React.Component<
     }
 
     const sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
+
+    sScrtBalance[this.state.cashback] = await this.refreshTokenBalance(this.state.cashback);
+    sScrtBalance[this.state.sefi] = await this.refreshTokenBalance(this.state.sefi);
 
     this.setState({ balances: { ...this.state.balances, ...sScrtBalance } });
 
@@ -260,6 +271,7 @@ export class SwapRouter extends React.Component<
     const tokenBalances = (
       await Promise.all(
         tokens.map(async s => {
+          console.log(`$$$$$$$$$$ refreshing ${s}`);
           return { [s]: await this.refreshTokenBalance(s, height) };
         }),
       )
@@ -711,6 +723,14 @@ export class SwapRouter extends React.Component<
                 />
               )} */}
             </Box>
+            <Cashback
+              user={this.props.user}
+              secretjsSender={this.props.user.secretjsSend}
+              refreshBalances={this.refreshBalances}
+              balances={this.state.balances}
+              tokens={this.state.allTokens}
+              notify={this.notify}
+            />
             <SwapFooter />
             <BetaWarning secretjs={this.props.user.secretjsSend} />
           </Box>

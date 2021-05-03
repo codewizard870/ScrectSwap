@@ -502,7 +502,7 @@ export class SwapRouter extends React.Component<
       selectedPairRoutes: routes,
     });
 
-    this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
+    //this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
   };
 
   updatePairs = async () => {

@@ -8,8 +8,9 @@ import * as styles from '../EthBridge/styles.styl';
 // import { IColumn, Table } from '../../components/Table';
 // import { ERC20Select } from '../Exchange/ERC20Select';
 import EarnRow from '../../components/Earn/EarnRow';
+import { calculateAPY } from '../../components/Earn/EarnRow';
 import { rewardsDepositKey, rewardsKey } from '../../stores/UserStore';
-import { divDecimals, sleep } from '../../utils';
+import { divDecimals, sleep, zeroDecimalsFormatter } from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
 import { Icon } from 'components/Base/components/Icons';
 import cogoToast from 'cogo-toast';
@@ -46,7 +47,7 @@ export const EarnRewards = observer((props: any) => {
       }
       setFilteredTokens(await tokens.tokensUsage('REWARDS'));
     };
-    asyncWrapper().then(() => {});
+    asyncWrapper().then(() => { });
   }, [tokens, tokens.data]);
 
   useEffect(() => {
@@ -71,7 +72,7 @@ export const EarnRewards = observer((props: any) => {
       }
     };
 
-    resolveSushiAPY().then(() => {});
+    resolveSushiAPY().then(() => { });
     //refreshAllTokens().then(() => {});
   }, [filteredTokens]);
 
@@ -175,14 +176,6 @@ export const EarnRewards = observer((props: any) => {
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData
               .slice()
-              .sort((a, b) => {
-                /* ETH first */
-                if (a.inc_token.symbol === 'sETH') {
-                  return -1;
-                }
-
-                return 0;
-              })
               .map(rewardToken => {
                 if (Number(rewardToken.deadline) < 2_000_000) {
                   return null;
@@ -192,7 +185,7 @@ export const EarnRewards = observer((props: any) => {
                   return null;
                 }
 
-                const rewardsToken = {
+                return {
                   rewardsContract: rewardToken.pool_address,
                   lockedAsset: rewardToken.inc_token.symbol,
                   lockedAssetAddress: token.dst_address,
@@ -212,13 +205,22 @@ export const EarnRewards = observer((props: any) => {
                   remainingLockedRewards: rewardToken.pending_rewards,
                   deadline: Number(rewardToken.deadline),
                 };
+              }).filter(function (el) {
+                return el != null;
+              })
+              .sort((a, b) => {
+                const rewards_a = zeroDecimalsFormatter.format(Number(calculateAPY(a, Number(a.rewardsPrice), Number(a.price))));
+                const rewards_b = zeroDecimalsFormatter.format(Number(calculateAPY(b, Number(b.rewardsPrice), Number(b.price))));
+                return Number(rewards_b) - Number(rewards_a);
+              })
+              .map(rewardToken => {
 
                 return (
                   <EarnRow
                     notify={notify}
-                    key={rewardToken.inc_token.symbol}
+                    key={rewardToken.lockedAsset}
                     userStore={user}
-                    token={rewardsToken}
+                    token={rewardToken}
                     callToAction="Earn sSCRT"
                     theme={theme}
                   />

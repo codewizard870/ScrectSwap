@@ -322,13 +322,14 @@ export const SeFiPage = observer(() => {
             {rewardsData
               .slice()
               .sort((a, b) => {
-                /* ETH first */
+                /* SEFI first */
                 if (a.reward.inc_token.symbol === 'SEFI') {
                   return -1;
                 }
 
                 return 0;
               })
+              .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
               .map(rewardToken => {
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;

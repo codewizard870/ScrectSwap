@@ -58,7 +58,7 @@ const ButtonMessage = (state: ProvideState): string => {
     case ProvideState.INSUFFICIENT_B_BALANCE:
       return 'Insufficient Balance';
     case ProvideState.LOADING:
-      return 'Loading tokens';
+      return 'Select a token';
     case ProvideState.PAIR_LIQUIDITY_ZERO:
       return 'Add Initial Liquidity';
     case ProvideState.PAIR_NOT_EXIST:

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { withTheme } from 'styled-components';
 import { Box, BoxProps, Text } from 'grommet';
 import { useHistory } from 'react-router';
@@ -9,6 +10,7 @@ import { useStores } from '../../stores';
 import * as styles from './styles.styl';
 import cn from 'classnames';
 import { TOKEN } from '../../stores/interfaces';
+import { Icon } from 'components/Base';
 
 export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
   observer(({ theme, ...props }: IStyledChildrenProps<BoxProps>) => {
@@ -16,6 +18,9 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
     const { routing, exchange } = useStores();
     const { palette, container } = theme;
     const { minWidth, maxWidth } = container;
+
+    const [mobileMenu, setMobileMenu] = useState<boolean>(false);
+
 
     const isExplorer = history.location.pathname === '/explorer';
     const isSwap = history.location.pathname === '/swap';
@@ -44,20 +49,13 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
           // boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)',
         }}
       >
-        <Box
-          direction="row"
-          align="center"
-          justify="between"
-          style={{
-            minWidth,
-            maxWidth,
-            margin: '0 auto',
-            padding: '0px 30px',
-            height: 100,
-            minHeight: 100,
-            width: '100%',
-          }}
-        >
+
+        <Box className={styles.headerContainer} style={{ minWidth, maxWidth }}>
+
+          <Box className={styles.mobileMenuButton} margin={{ right: 'large' }} onClick={() => setMobileMenu(true)}>
+            <Icon glyph="Menu" size="medium" color={'rgb(33, 45, 94)'} />
+          </Box>
+
           <Box direction="row" align="center">
             {/* <Box
               align="center"
@@ -74,7 +72,13 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
               </Box>
             </a>
           </Box>
-          <Box direction="row" align="center" gap="15px">
+
+          <Box className={cn(mobileMenu ? styles.mobileMenu : styles.menu)} gap="15px">
+
+            <Box style={{ display: mobileMenu ? 'flex' : 'none' }} onClick={() => setMobileMenu(false)}>
+              <Icon glyph="Close" size="medium" color={'rgb(33, 45, 94)'} />
+            </Box>
+
             <Box
               className={cn(
                 styles.itemToken,

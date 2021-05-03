@@ -35,7 +35,8 @@ export const EthBridge = observer((props: any) => {
   }, []);
 
   useEffect(() => {
-    if (exchange.step === EXCHANGE_STEPS.CHECK_TRANSACTION && exchange.operation) exchange.fetchStatus(exchange.operation.id)
+    if (exchange.step === EXCHANGE_STEPS.CHECK_TRANSACTION && exchange.operation)
+      exchange.fetchStatus(exchange.operation.id);
   }, [exchange.step]);
 
   return (
@@ -44,15 +45,31 @@ export const EthBridge = observer((props: any) => {
         <Box direction="row" wrap={true} fill justify="between" align="start">
           <Box fill direction="column" align="center" justify="center" className={styles.base}>
             <Message info>
-              <Message.Header>The
-              <a href="https://scrt.network/blog/sefi-is-live-on-mainnet" style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer"> SEFI governance token </a>
-                is now LIVE!</Message.Header>
-              <p>{'Click '}
-                <a href="/sefi" style={{ textDecoration: 'underline' }} rel="noreferrer">HERE</a>
-                {' '} to claim your genesis tokens (if eligible) and to stake your SEFI and LP tokens.
-            </p>
+              <Message.Header>
+                The
+                <a
+                  href="https://scrt.network/blog/sefi-is-live-on-mainnet"
+                  style={{ textDecoration: 'none' }}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {' '}
+                  SEFI governance token{' '}
+                </a>
+                is now LIVE!
+              </Message.Header>
+              <p>
+                {'Click '}
+                <a href="/sefi" style={{ textDecoration: 'underline' }} rel="noreferrer">
+                  HERE
+                </a>{' '}
+                to claim your genesis tokens (if eligible) and to stake your SEFI and LP tokens.
+              </p>
             </Message>
-            <Box fill direction="row" justify="between" align="end" margin={{ bottom: 'medium', top: 'large' }}>
+            <Message success>
+              <p>SSCRT{'->'}WSCRT swap issues have been resolved. Happy swapping!</p>
+            </Message>
+            <Box className={styles.headerBridge} fill  margin={{ bottom: 'medium', top: 'large' }}>
               <Title bold>Secret Bridge</Title>
               <WalletBalances />
             </Box>

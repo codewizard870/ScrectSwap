@@ -100,7 +100,7 @@ export const WalletBalances = observer(() => {
           <Flip spy={userMetamask.network} bottom>
             <WalletTemplate
               address={userMetamask.ethAddress}
-              amount={userMetamask.ethBalance}
+              amount={userMetamask.nativeBalance}
               symbol={userMetamask.getCurrencySymbol()}
             />
           </Flip>

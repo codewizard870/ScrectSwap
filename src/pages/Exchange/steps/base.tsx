@@ -6,7 +6,7 @@ import * as styles from '../styles.styl';
 import { Box } from 'grommet';
 import Web3 from 'web3';
 import * as bech32 from 'bech32';
-import { unlockToken } from 'utils';
+import { divDecimals, unlockToken } from 'utils';
 import { EXCHANGE_MODE, ITokenInfo, TOKEN } from 'stores/interfaces';
 import { Form, Input, NumberInput } from 'components/Form';
 import { ERC20Select } from '../ERC20Select';
@@ -101,37 +101,16 @@ const getBalance = async (
   const swapFeeToken = ((swapFeeUsd / Number(token.price)) * 0.9).toFixed(`${toInteger(token.price)}`.length);
 
   const src_coin = exchange.transaction.tokenSelected.src_coin;
-  if (exchange.token === TOKEN.ERC20) {
-    if (!userMetamask.erc20TokenDetails) {
-
-      eth.maxAmount = '0';
-      eth.minAmount = '0';
-    }
-    scrt.maxAmount = user.balanceToken[src_coin] ? user.balanceToken[src_coin] : '0';
-    scrt.minAmount = `${Math.max(Number(swapFeeToken), Number(token.display_props.min_from_scrt))}` || '0';
-    eth.maxAmount = exchange.network === NETWORKS.BSC ? userMetamask.balanceToken[src_coin] : userMetamask.erc20Balance || '0';
-    eth.minAmount = exchange.network === NETWORKS.BSC ? userMetamask.balanceTokenMin[src_coin] : userMetamask.erc20BalanceMin || '0';
-  } else {
-    scrt.maxAmount =
-      !user.balanceToken[userMetamask.getNetworkFullName()] ||
-        user.balanceToken[userMetamask.getNetworkFullName()].includes(unlockToken)
-        ? '0'
-        : user.balanceToken[userMetamask.getNetworkFullName()];
-    scrt.minAmount = `${Math.max(Number(swapFeeToken), Number(token.display_props.min_from_scrt))}` || '0';
-
-    if (exchange.network === NETWORKS.BSC) {
-      scrt.maxAmount = user.balanceToken[src_coin] ? user.balanceToken[src_coin] : '0';
-    }
-
-    eth.maxAmount =
-      exchange.transaction.tokenSelected.symbol === userMetamask.getCurrencySymbol() ? userMetamask.ethBalance : '0';
-
-
-    eth.minAmount =
-      exchange.transaction.tokenSelected.symbol === userMetamask.getCurrencySymbol()
-        ? userMetamask.ethBalanceMin || '0'
-        : '0';
+  const src_address = exchange.transaction.tokenSelected.src_address;
+  eth.maxAmount = divDecimals(userMetamask.balanceToken[src_coin], token.decimals) || '0';
+  eth.minAmount = userMetamask.balanceTokenMin[src_coin] || '0';
+  scrt.maxAmount = user.balanceToken[src_coin] || '0';
+  scrt.minAmount = `${Math.max(Number(swapFeeToken), Number(token.display_props.min_from_scrt))}` || '0';
+  if (src_address === 'native') {
+    eth.maxAmount = userMetamask.nativeBalance || '0';
+    eth.minAmount = userMetamask.nativeBalanceMin || '0';
   }
+
 
   if (isLocked) {
     scrt.maxAmount = unlockToken;

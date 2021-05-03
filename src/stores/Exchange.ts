@@ -199,17 +199,17 @@ export class Exchange extends StoreConstructor {
   }
 
   @action.bound
-  setToken(token: TOKEN) {
-    // this.clear();
-    this.token = token;
-    // this.setAddressByMode();
-  }
-
-  @action.bound
   async setNetwork(network: NETWORKS) {
     this.network = network;
     await this.stores.tokens.fetch();
     await this.setTokens(network);
+  }
+
+  @action.bound
+  setToken(token: TOKEN) {
+    // this.clear();
+    this.token = token;
+    // this.setAddressByMode();
   }
 
   async setTokens(network: NETWORKS) {
@@ -267,7 +267,7 @@ export class Exchange extends StoreConstructor {
           const tx = await web3.eth.getTransaction(etherHash);
           if (tx.blockNumber) this.confirmations = blockNumber - tx.blockNumber;
           if (this.confirmations < 0) this.confirmations = 0;
-        } catch (error) {}
+        } catch (error) { }
       }
     };
 
@@ -523,10 +523,5 @@ export class Exchange extends StoreConstructor {
 
   clear() {
     this.transaction = this.defaultTransaction;
-    this.operation = null;
-    this.txHash = '';
-    this.actionStatus = 'init';
-    this.stepNumber = EXCHANGE_STEPS.BASE;
-    this.stores.routing.push(`/`);
   }
 }

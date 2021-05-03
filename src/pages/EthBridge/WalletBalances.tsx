@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import { observer } from 'mobx-react-lite';
 import { Button, Text } from 'components/Base';
@@ -10,30 +9,9 @@ import { AuthWarning } from '../../components/AuthWarning';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import UnlockToken from 'components/Earn/EarnRow/UnlockToken';
-import { messages, messageToString } from './messages';
 import { createNotification } from '../Exchange/utils';
-import { NETWORKS } from './index';
+import Flip from 'react-reveal/Flip';
 
-// const getTokenName = (tokenType: TOKEN, token: ITokenInfo) => {
-//   switch (tokenType) {
-//     case TOKEN.ERC20:
-//       if (!token.display_props.proxy) {
-//         return token.display_props.symbol;
-//       } else {
-//         return token.name;
-//       }
-//     case TOKEN.S20:
-//       if (!token.display_props.proxy) {
-//         return `secret${token.display_props.symbol}`;
-//       } else {
-//         return token.name;
-//       }
-//     case TOKEN.NATIVE:
-//     default:
-//       return `ETH`;
-//   }
-// };
 const WalletTemplate = observer((props: { address: string; symbol: string; amount: string }) => {
   return (
     <Box direction="row" background="white" style={{ borderRadius: 4 }}>
@@ -119,11 +97,14 @@ export const WalletBalances = observer(() => {
             </Box>
           </Button>
         ) : (
-          <WalletTemplate
-            address={userMetamask.ethAddress}
-            amount={userMetamask.ethBalance}
-            symbol={userMetamask.getCurrencySymbol()}
-          />
+          <Flip spy={userMetamask.network} bottom>
+            <WalletTemplate
+              address={userMetamask.ethAddress}
+              amount={userMetamask.ethBalance}
+              symbol={userMetamask.getCurrencySymbol()}
+            />
+          </Flip>
+
         )}
       </Box>
     </Box>

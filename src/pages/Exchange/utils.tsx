@@ -8,6 +8,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { unlockToken } from 'utils';
 import { Icon as IconUI } from 'semantic-ui-react';
 import cogoToast from 'cogo-toast';
+import { NETWORKS } from 'pages/EthBridge';
 
 export const createNotification = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
@@ -71,7 +72,29 @@ export const TokenLocked = (props: { user: any; onFinish: Function }) => {
   );
 };
 
+export const WrongNetwork = (props: { networkSelected: NETWORKS }) => {
+  return (
+    <HeadShake bottom>
+      <Box direction="column">
+        <Text bold color="#c5bb2e">
+          Wrong Network
+        </Text>
+        <Text margin={{ top: 'xxsmall', bottom: 'xxsmall' }}>
+          It seems your Metamask Wallet is connected to the wrong network! {props.networkSelected === NETWORKS.BSC && <span>If you are trying to use Binance Smart Chain please make sure you have it added on your wallet as explained
+          <a
+              style={{ textDecoration: 'none', color: '#00BFFF', marginLeft: 5 }}
+              href="https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain" target="_blank">
+              here
+            </a>
+          </span>}
+        </Text>
+      </Box>
+    </HeadShake>
+  );
+};
+
 export type NetworkTemplateInterface = {
+  id?: NETWORKS,
   name: string;
   wallet: string;
   image: string;
@@ -81,57 +104,55 @@ export type NetworkTemplateInterface = {
   networkImage: string;
 };
 
-export const NetworkTemplate = (props: { template: NetworkTemplateInterface; onSwap: boolean; user: any }) => (
-  <HeadShake spy={props.onSwap} delay={0}>
-    <Box direction="column" style={{ minWidth: 230 }}>
-      <Box direction="row" align={'start'} margin={{ top: 'xxsmall' }}>
-        <Box direction="column" style={{ marginRight: 7 }} align="center">
-          <img style={{ marginBottom: 5 }} height="37" src={props.template.networkImage} alt="network image" />
-          <IconUI style={{ margin: 0 }} className={'circle'} color={props.template.health ? 'green' : 'red'} />
-        </Box>
-
-        <Box direction="column">
-          <Title bold color={'#30303D'} margin={{ bottom: 'xxsmall' }}>
-            {props.template.name}
-          </Title>
-          <Text size="medium" bold color={'#748695'}>
-            {props.template.wallet}
-          </Text>
-          <Text size="xsmall" color={'#748695'}>
-            {props.template.health ? 'Live' : 'Down'}
-          </Text>
-        </Box>
+export const NetworkTemplate = (props: { template: NetworkTemplateInterface; user: any }) => (
+  <Box direction="column">
+    <Box direction="row" align={'start'} margin={{ top: 'xxsmall' }}>
+      <Box direction="column" style={{ marginRight: 7, minWidth: 40 }} align="center">
+        <img style={{ marginBottom: 5 }} height="37" src={props.template.networkImage} alt="network image" />
+        <IconUI style={{ margin: 0 }} className={'circle'} color={props.template.health ? 'green' : 'red'} />
       </Box>
 
-      {props.template.symbol && (
-        <Box
-          pad="xsmall"
-          direction="row"
-          align={'center'}
-          margin={{ top: 'xxsmall' }}
-          className={styles.networktemplatetoken}
-        >
-          {props.template.image && (
-            <img src={props.template.image} style={{ width: 20, margin: '0 5' }} alt={props.template.symbol} />
-          )}
-          {props.template.amount === 'loading' ? (
-            <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1.5em" style={{ margin: '0 10' }} />
-          ) : props.template.amount === unlockToken ? (
-            <Box direction="row" style={{ margin: '0 5' }}>
-              <ViewingKeyIcon user={props.user} />
-            </Box>
-          ) : (
-            <Text bold color="#30303D" size="medium" style={{ margin: '0 5' }}>
-              {props.template.amount}
-            </Text>
-          )}
-          <Text bold style={{ margin: '0 5' }} color="#748695" size="medium">
-            {props.template.symbol}
-          </Text>
-        </Box>
-      )}
+      <Box direction="column">
+        <Title bold color={'#30303D'} margin={{ bottom: 'xxsmall' }}>
+          {props.template.name}
+        </Title>
+        <Text size="medium" bold color={'#748695'}>
+          {props.template.wallet}
+        </Text>
+        <Text size="xsmall" color={'#748695'}>
+          {props.template.health ? 'Live' : 'Down'}
+        </Text>
+      </Box>
     </Box>
-  </HeadShake>
+
+    {props.template.symbol && (
+      <Box
+        pad="xsmall"
+        direction="row"
+        align={'center'}
+        margin={{ top: 'xxsmall' }}
+        className={styles.networktemplatetoken}
+      >
+        {props.template.image && (
+          <img src={props.template.image} style={{ width: 20, margin: '0 5' }} alt={props.template.symbol} />
+        )}
+        {props.template.amount === 'loading' ? (
+          <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1.5em" style={{ margin: '0 10' }} />
+        ) : props.template.amount === unlockToken ? (
+          <Box direction="row" style={{ margin: '0 5' }}>
+            <ViewingKeyIcon user={props.user} />
+          </Box>
+        ) : (
+          <Text bold color="#30303D" size="medium" style={{ margin: '0 5' }}>
+            {props.template.amount}
+          </Text>
+        )}
+        <Text bold style={{ margin: '0 5' }} color="#748695" size="medium">
+          {props.template.symbol}
+        </Text>
+      </Box>
+    )}
+  </Box>
 );
 
 export const CopyRow = (props: { label: string; value: string; rawValue: string }) => (

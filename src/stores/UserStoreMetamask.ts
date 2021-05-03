@@ -130,6 +130,20 @@ export class UserStoreMetamask extends StoreConstructor {
     }
   }
 
+  isCorrectNetworkSelected() {
+    if (process.env.ENV === "MAINNET") {
+      if (this.chainId === '0x1' && this.network === NETWORKS.ETH) return true
+      if (this.chainId === '0x38' && this.network === NETWORKS.BSC) return true
+    }
+
+    if (process.env.ENV === "TESTNET") {
+      if ((this.chainId === '0x4' || this.chainId === '0x2a' || this.chainId === '0x3') && this.network === NETWORKS.ETH) return true
+      if (this.chainId === '0x61' && this.network === NETWORKS.BSC) return true
+    }
+
+    return false
+  }
+
   @action.bound
   setError(error: string) {
     this.error = error;
@@ -166,6 +180,7 @@ export class UserStoreMetamask extends StoreConstructor {
       // @ts-ignore
       provider.on('chainChanged', chainId => {
         this.chainName = this.getNetworkName(chainId);
+        this.setNetwork(chainId);
       });
 
       if (!provider) {
@@ -182,14 +197,15 @@ export class UserStoreMetamask extends StoreConstructor {
 
       this.provider.on('accountsChanged', this.handleAccountsChanged);
 
-      this.provider.on('connect', (connectInfo: ConnectInfo) => {
+      this.provider.on('connect', async (connectInfo: ConnectInfo) => {
+        this.isAuthorized = true;
+        const params = await this.provider.request({
+          method: 'eth_requestAccounts',
+        });
+        this.handleAccountsChanged(params)
         this.setNetwork(connectInfo.chainId);
       });
 
-      this.provider.on('chainChanged', (chainId: string) => {
-        this.setNetwork(chainId);
-        window.location.reload();
-      });
 
       this.provider.on('disconnect', () => {
         this.isAuthorized = false;
@@ -270,7 +286,6 @@ export class UserStoreMetamask extends StoreConstructor {
         });
         this.balanceTokenMin[token.src_coin] = token.display_props.min_to_scrt;
       }
-
       getEthBalance(this.ethAddress).then(b => {
         this.ethBalance = formatWithSixDecimals(b);
       });

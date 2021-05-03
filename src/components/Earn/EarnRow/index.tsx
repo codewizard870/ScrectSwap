@@ -373,7 +373,8 @@ class EarnRow extends Component<
               padding: '20 20 0 20',
               cursor: 'auto',
               textAlign: 'center',
-              color:(this.props.theme.currentTheme == 'dark')?'white':''
+              fontFamily:'Poppins,Arial',
+              color:(this.props.theme.currentTheme == 'dark')?'white':'#1B1B1B'
             }}
           >
             * Every time you deposit, withdraw or claim the contract will automagically claim your rewards for you!

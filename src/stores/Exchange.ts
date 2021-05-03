@@ -21,8 +21,8 @@ export enum EXCHANGE_STEPS {
   CHECK_TRANSACTION = 'CHECK_TRANSACTION',
 }
 export interface IOperationPanel {
-  id: string,
-  tokenImage: any,
+  id: string;
+  tokenImage: any;
   amount: number;
   fromToken: string;
   toToken: string;
@@ -197,30 +197,27 @@ export class Exchange extends StoreConstructor {
 
   @action.bound
   removeLocalstorageOperation(id) {
-    let tmpoperations = this.getLocalstorageOperations().filter(o => o.id !== id)
-    this.operations = tmpoperations
-    localStorage.setItem(LOCAL_STORAGE_OPERATIONS_KEY, JSON.stringify(tmpoperations))
-
+    let tmpoperations = this.getLocalstorageOperations().filter(o => o.id !== id);
+    this.operations = tmpoperations;
+    localStorage.setItem(LOCAL_STORAGE_OPERATIONS_KEY, JSON.stringify(tmpoperations));
   }
 
   @action.bound
   addLocalstorageOperation(operation) {
-    let tmpoperations = this.getLocalstorageOperations()
-    tmpoperations.push(operation)
-    this.operations = tmpoperations
-    localStorage.setItem(LOCAL_STORAGE_OPERATIONS_KEY, JSON.stringify(tmpoperations))
-
+    let tmpoperations = this.getLocalstorageOperations();
+    tmpoperations.push(operation);
+    this.operations = tmpoperations;
+    localStorage.setItem(LOCAL_STORAGE_OPERATIONS_KEY, JSON.stringify(tmpoperations));
   }
 
   @action.bound
   getLocalstorageOperations() {
     try {
-      const result = JSON.parse(localStorage.getItem(LOCAL_STORAGE_OPERATIONS_KEY)) || []
-      return result
+      const result = JSON.parse(localStorage.getItem(LOCAL_STORAGE_OPERATIONS_KEY)) || [];
+      return result;
     } catch (error) {
-      return []
+      return [];
     }
-
   }
 
   @action.bound
@@ -295,7 +292,7 @@ export class Exchange extends StoreConstructor {
           const tx = await web3.eth.getTransaction(etherHash);
           if (tx.blockNumber) this.confirmations = blockNumber - tx.blockNumber;
           if (this.confirmations < 0) this.confirmations = 0;
-        } catch (error) { }
+        } catch (error) {}
       }
     };
 
@@ -334,8 +331,8 @@ export class Exchange extends StoreConstructor {
       amount: this.transaction.amount,
       fromToken: this.transaction.tokenSelected.symbol,
       toToken: this.transaction.tokenSelected.symbol,
-      mode: this.mode
-    })
+      mode: this.mode,
+    });
     await operationService.createOperation(params);
     return this.operation;
   }
@@ -517,7 +514,10 @@ export class Exchange extends StoreConstructor {
         this.transaction.snip20Address = token.dst_address;
         // todo: fix this up - proxy token
         if (token.display_props.proxy) {
-          if (token.display_props.symbol === 'WSCRT') {
+          if (
+            token.display_props.symbol.toUpperCase() === 'WSCRT' ||
+            token.display_props.symbol.toUpperCase() === 'SSCRT'
+          ) {
             proxyContract = process.env.WSCRT_PROXY_CONTRACT;
             recipient = process.env.WSCRT_PROXY_CONTRACT;
             this.transaction.snip20Address = process.env.SSCRT_CONTRACT;

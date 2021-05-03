@@ -50,7 +50,10 @@ export class UserStoreEx extends StoreConstructor {
 
   constructor(stores) {
     super(stores);
-
+    window.addEventListener("keplr_keystorechange", () => {
+        console.log("Key store in Keplr is changed. Reloading page")
+        window.location.reload();
+    })
     // setInterval(() => this.getBalances(), 15000);
 
     this.getRates();
@@ -303,7 +306,6 @@ export class UserStoreEx extends StoreConstructor {
         features: ['secretwasm'],
       });
     }
-
     // Ask the user for permission
     await this.keplrWallet.enable(this.chainId);
 

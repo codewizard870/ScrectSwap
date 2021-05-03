@@ -1,0 +1,28 @@
+.ct-group .ct-toast-success {
+  background: #79cc81;
+  border: none !important;
+}
+.ct-group .ct-toast-warn {
+  background: #ec3933;
+  border: none !important;
+}
+.ct-group .ct-toast-error {
+  background: #ec3933;
+  border: none !important;
+}
+.ct-group .ct-toast svg path {
+  stroke: white;
+  fill: white;
+}
+.ct-group {
+  margin: 0;
+}
+.ct-group .ct-toast {
+  font-family: Poppins, Arial, Helvetica, sans-serif;
+  min-width: 500px;
+  min-height: 65px;
+  padding: 16px 1rem;
+  border: none;
+  color: #ffffff;
+  margin: 0;
+}

@@ -17,7 +17,7 @@ import { ITokenInfo } from '../../stores/interfaces';
 import * as services from 'services';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-
+import './notifications.css'
 export const notify = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
     msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
@@ -25,7 +25,6 @@ export const notify = (type: 'success' | 'error', msg: string, hideAfterSec: num
   }
 
   const { hide } = cogoToast[type](msg, {
-    toastContainerID:'notifications_container',
     hideAfter: hideAfterSec,
     onClick: () => {
       hide();

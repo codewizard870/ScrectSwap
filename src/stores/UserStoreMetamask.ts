@@ -15,20 +15,21 @@ const defaults = {};
 interface ConnectInfo {
   chainId: string;
 }
+interface NetworkProps {
+  mainnet: boolean,
+  network: NETWORKS
+}
 
-const ETH_MAINNET = '0x1';
-const BSC_MAINNET = '0x38';
-
-const chainIdMap: Record<string, NETWORKS> = {
-  '0x1': NETWORKS.ETH,
-  '0x2': NETWORKS.ETH,
-  '0x3': NETWORKS.ETH,
-  '0x4': NETWORKS.ETH,
-  '0x5': NETWORKS.ETH,
-  '0x2a': NETWORKS.ETH,
-  '0x38': NETWORKS.BSC,
-  '0x61': NETWORKS.BSC,
-  '0x50': NETWORKS.PLSM,
+const chainIdMap: Record<string, NetworkProps> = {
+  '0x1': { mainnet: true, network: NETWORKS.ETH },
+  '0x2': { mainnet: false, network: NETWORKS.ETH },
+  '0x3': { mainnet: false, network: NETWORKS.ETH },
+  '0x4': { mainnet: false, network: NETWORKS.ETH },
+  '0x5': { mainnet: false, network: NETWORKS.ETH },
+  '0x2a': { mainnet: false, network: NETWORKS.ETH },
+  '0x38': { mainnet: true, network: NETWORKS.BSC },
+  '0x61': { mainnet: false, network: NETWORKS.BSC },
+  '0x50': { mainnet: false, network: NETWORKS.PLSM },
 };
 
 export interface IERC20Token {
@@ -54,8 +55,8 @@ export class UserStoreMetamask extends StoreConstructor {
 
   @observable public chainName: string;
   @observable public ethAddress: string;
-  @observable public ethBalance: string = '';
-  @observable public ethBalanceMin: string = '';
+  @observable public nativeBalance: string = '';
+  @observable public nativeBalanceMin: string = '';
   @observable public balanceToken: { [key: string]: string } = {};
   @observable public balanceTokenMin: { [key: string]: string } = {};
 
@@ -130,6 +131,18 @@ export class UserStoreMetamask extends StoreConstructor {
     }
   }
 
+  isCorrectNetworkSelected() {
+    if (process.env.ENV === "MAINNET") {
+      return chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network
+    }
+
+    if (process.env.ENV === "TESTNET") {
+      return !chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network
+    }
+
+    return false
+  }
+
   @action.bound
   setError(error: string) {
     this.error = error;
@@ -139,8 +152,8 @@ export class UserStoreMetamask extends StoreConstructor {
   @action.bound
   public async signOut() {
     this.isAuthorized = false;
-    this.ethBalance = '';
-    this.ethBalanceMin = '';
+    this.nativeBalance = '';
+    this.nativeBalanceMin = '';
     this.ethAddress = '';
     this.balanceToken = {};
 
@@ -166,6 +179,7 @@ export class UserStoreMetamask extends StoreConstructor {
       // @ts-ignore
       provider.on('chainChanged', chainId => {
         this.chainName = this.getNetworkName(chainId);
+        this.setNetwork(chainId);
       });
 
       if (!provider) {
@@ -182,14 +196,15 @@ export class UserStoreMetamask extends StoreConstructor {
 
       this.provider.on('accountsChanged', this.handleAccountsChanged);
 
-      this.provider.on('connect', (connectInfo: ConnectInfo) => {
+      this.provider.on('connect', async (connectInfo: ConnectInfo) => {
+        this.isAuthorized = true;
+        const params = await this.provider.request({
+          method: 'eth_requestAccounts',
+        });
+        this.handleAccountsChanged(params)
         this.setNetwork(connectInfo.chainId);
       });
 
-      this.provider.on('chainChanged', (chainId: string) => {
-        this.setNetwork(chainId);
-        window.location.reload();
-      });
 
       this.provider.on('disconnect', () => {
         this.isAuthorized = false;
@@ -239,13 +254,13 @@ export class UserStoreMetamask extends StoreConstructor {
     this.chainId = chainId;
 
     try {
-      this.network = chainIdMap[chainId];
+      this.network = chainIdMap[chainId].network;
+      this.mainnet = chainIdMap[chainId].mainnet;
     } catch (e) {
       console.error('Unknown chain ID, defaulting to ETH');
       this.network = NETWORKS.ETH;
     }
 
-    this.mainnet = chainId === ETH_MAINNET || chainId === BSC_MAINNET;
   }
 
   private syncLocalStorage() {
@@ -259,22 +274,20 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   @action.bound public getBalances = async () => {
-    if (this.ethAddress) {
-      for (const token of this.stores.tokens.allData) {
-        if (token.src_coin === 'Ethereum') {
-          continue;
-        }
-        getErc20Balance(this.ethAddress, token.src_address).then(b => {
-          this.balanceToken[token.src_coin] = divDecimals(b, token.decimals);
-          // console.log(`hello from ${token.display_props.symbol} - ${JSON.stringify(this.balanceToken[token.src_coin])}`)
+    if (!this.ethAddress) return
+    for (const token of this.stores.tokens.allData) {
+      if (token.src_address === 'native') {
+        getEthBalance(this.ethAddress).then(b => {
+          this.nativeBalance = b;
         });
-        this.balanceTokenMin[token.src_coin] = token.display_props.min_to_scrt;
+        this.nativeBalanceMin = this.balanceTokenMin['Ethereum'];
+        continue;
       }
-
-      getEthBalance(this.ethAddress).then(b => {
-        this.ethBalance = formatWithSixDecimals(b);
+      getErc20Balance(this.ethAddress, token.src_address).then(b => {
+        this.balanceToken[token.src_coin] = b;
+        //console.log(`hello from ${token.display_props.symbol} - ${JSON.stringify(this.balanceToken[token.src_coin])}`)
       });
-      this.ethBalanceMin = this.balanceTokenMin['Ethereum'];
+      this.balanceTokenMin[token.src_coin] = token.display_props.min_to_scrt;
     }
   };
 

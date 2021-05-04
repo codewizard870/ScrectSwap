@@ -6,7 +6,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import Loader from 'react-loader-spinner';
 import { ExecuteResult, SigningCosmWasmClient } from 'secretjs';
-import { Button, Container, Message } from 'semantic-ui-react';
+import { Button, Container, Icon, Message, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import { canonicalizeBalance, displayHumanizedBalance, humanizeBalance } from 'utils/formatNumber';
 import { getNativeBalance, storeTxResultLocally, unlockJsx } from './utils';
@@ -49,7 +49,7 @@ export class Cashback extends React.Component<
     const sefiBalance = this.props.balances[sefiAddr];
     return (
       // <div style={{ paddingLeft: '1000px', paddingRight: '1000px' }}>
-      <div style={{ width: '500px' }}>
+      <div style={{ width: '500px', marginBottom: '1rem' }}>
         <Container
           style={{
             padding: '1rem',
@@ -63,7 +63,37 @@ export class Cashback extends React.Component<
               textAlign: 'center',
             }}
           >
-            <h4>Cashback Beta</h4>
+            <h4>
+              Cashback Beta
+              <Popup
+                trigger={
+                  <Icon
+                    name="help"
+                    circular
+                    size="tiny"
+                    style={{
+                      marginLeft: '0.5rem',
+                      verticalAlign: 'middle',
+                    }}
+                  />
+                }
+                position="top center"
+              >
+                <Popup.Content style={{ width: '500px' }}>
+                  Hello secret beta testers 🤫 This is a temporary proof of concept. Thanks for trying this out!
+                  <ul>
+                    <li>
+                      You will accumulate CSHBK just by using Secret Swap.{' '}
+                      <strong>Currently on testnet the only pair that will give you cashback is sSCRT/SCRT.</strong>
+                    </li>
+                    <li>
+                      It will work even if the swapping route takes you through the sSCRT/SCRT pair along the route.
+                    </li>
+                    <li>Once you got CSHBK, you can convert it to SEFI.</li>
+                  </ul>
+                </Popup.Content>
+              </Popup>
+            </h4>
           </div>
           <br></br>
           <div
@@ -151,57 +181,70 @@ export class Cashback extends React.Component<
               textAlign: 'center',
             }}
           >
-            <Button
-              disabled={cashbackBalance == 0}
-              loading={this.state.loadingSwap}
-              primary={true}
-              onClick={async () => {
-                this.setState({ loadingSwap: true });
-                const { decimals } = this.props.tokens.get(cashbackAddr);
-                const humanBalance = humanizeBalance(cashbackBalance, decimals);
+            <Popup
+              trigger={
+                <Button
+                  disabled={cashbackBalance == 0 || isNaN(cashbackBalance)}
+                  loading={this.state.loadingSwap}
+                  primary={true}
+                  onClick={async () => {
+                    this.setState({ loadingSwap: true });
+                    const { decimals } = this.props.tokens.get(cashbackAddr);
+                    const humanBalance = humanizeBalance(cashbackBalance, decimals);
 
-                try {
-                  const result = await this.props.secretjsSender.asyncExecute(
-                    cashbackAddr,
-                    {
-                      burn: {
-                        amount: cashbackBalance,
-                      },
-                    },
-                    '',
-                    [],
-                    getFeeForExecute(400_000),
-                  );
+                    try {
+                      const result = await this.props.secretjsSender.asyncExecute(
+                        cashbackAddr,
+                        {
+                          burn: {
+                            amount: cashbackBalance,
+                          },
+                        },
+                        '',
+                        [],
+                        getFeeForExecute(400_000),
+                      );
 
-                  if (result?.code) {
-                    const error = this.extractError(result);
-                    throw new Error(error);
-                  }
-                  console.log(result);
-                  storeTxResultLocally(result);
+                      if (result?.code) {
+                        const error = this.extractError(result);
+                        throw new Error(error);
+                      }
+                      console.log(result);
+                      storeTxResultLocally(result);
 
-                  this.props.notify('success', `Converted ${humanBalance} CSHBK to SEFI!`);
-                } catch (error) {
-                  console.error('Error', error);
-                  const txHash = error?.txHash;
-                  this.props.notify(
-                    'errorWithHash',
-                    `Error Converting ${humanBalance} CSHBK to SEFI
+                      this.props.notify('success', `Converted ${humanBalance} CSHBK to SEFI!`);
+                    } catch (error) {
+                      console.error('Error', error);
+                      const txHash = error?.txHash;
+                      this.props.notify(
+                        'errorWithHash',
+                        `Error Converting ${humanBalance} CSHBK to SEFI
                     }: ${error.message} ${txHash ? '\nTx Hash: ' + txHash : ''}`,
-                    undefined,
-                    txHash,
-                  );
-                  return;
-                } finally {
-                  this.setState({
-                    loadingSwap: false,
-                  });
-                  await this.props.refreshBalances({ tokens: [cashbackAddr, sefiAddr] });
-                }
-              }}
+                        undefined,
+                        txHash,
+                      );
+                      return;
+                    } finally {
+                      this.setState({
+                        loadingSwap: false,
+                      });
+                      await this.props.refreshBalances({ tokens: [cashbackAddr, sefiAddr] });
+                    }
+                  }}
+                >
+                  Convert CSHBK to SEFI
+                </Button>
+              }
+              position="top center"
             >
-              Convert CSHBK to SEFI
-            </Button>
+              <Popup.Content>
+                Conversion is basically burning your CSHBK to get SEFI. <br />
+                <br />
+                The conversion rate is based on CSHBK's total supply and accumulated SEFI rewards.
+              </Popup.Content>
+            </Popup>
+            <br />
+            Conversion Rate: <strong>Available Soon</strong>
           </div>
         </Container>
       </div>

@@ -262,7 +262,7 @@ export class SwapRouter extends React.Component<
     };
   }
 
-  private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
+  refreshBalances = async ({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) => {
     if (!height) {
       height = await this.props.user.secretjs.getHeight();
     }
@@ -309,7 +309,7 @@ export class SwapRouter extends React.Component<
     }));
 
     return newObject;
-  }
+  };
 
   private async refreshPoolBalance(pair: SwapPair) {
     const balances = [];

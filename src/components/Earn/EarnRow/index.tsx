@@ -319,7 +319,7 @@ class EarnRow extends Component<
                     currency={this.props.token.lockedAsset}
                     price={this.props.token.price}
                     balanceText="Available"
-                    unlockPopupText='Please create a viewing key to see your SNIP-20 token balance'
+                    unlockPopupText='Staking balance and rewards require an additional viewing key.'
                     tokenAddress={this.props.token.lockedAssetAddress} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}
@@ -350,7 +350,7 @@ class EarnRow extends Component<
                     currency={this.props.token.lockedAsset}
                     price={this.props.token.price}
                     balanceText="Staked"
-                    unlockPopupText='Please create a viewing key to see your SNIP-20 token balance'
+                    unlockPopupText='Staking balance and rewards require an additional viewing key.'
                     tokenAddress={this.props.token.rewardsContract} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}

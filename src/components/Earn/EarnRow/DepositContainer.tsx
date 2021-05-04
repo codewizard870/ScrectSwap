@@ -75,9 +75,6 @@ const DepositContainer = props => {
               popupText={props.unlockPopupText}
               createKey={createViewingKey}
             />
-          </div>
-          <div className={cn(styles.subtitle)}>
-            {props.balanceText} 
             {
               (props.balance?.includes(unlockToken))&&
               <Popup
@@ -93,6 +90,9 @@ const DepositContainer = props => {
                 }
               />
             }
+          </div>
+          <div className={cn(styles.subtitle)}>
+            {props.balanceText}
           </div>
         </div>
         <div>

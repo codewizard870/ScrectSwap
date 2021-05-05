@@ -74,7 +74,7 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
   const {theme} = useStores();
   return (
     <div style={{ display: 'flex' }}>
-      <div className={cn(styles.tokenInfoRow)} onClick={props.onClick}>
+      <div className={`${styles.tokenInfoRow} ${styles[theme.currentTheme]}`} onClick={props.onClick}>
         <div className={cn(styles.tokenInfoItemsLeft)}>
           <Image  src={props.token.logo} avatar style={{ boxShadow: 'rgba(0, 0, 0, 0.075) 0px 6px 10px' }} />
           <p className={`${styles.tokenTitle} ${styles[theme.currentTheme]}`}>{props.token.symbol}</p>

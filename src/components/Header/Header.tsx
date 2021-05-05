@@ -86,9 +86,9 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                             }
                         </div>
                         : 
-                        <div>
+                        <div className="address_container">
                             <p>{getAddress()}</p>
-                            <span>|</span>
+                            <span className="separator">|</span>
                             <div>
                                 <p className="balance">{user.balanceSCRT}</p>
                                 <p>SCRT</p>

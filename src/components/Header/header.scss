@@ -105,14 +105,11 @@
           font-size: 16px;
         }
         span {
-          padding: 0 10px;
+          padding: 0 0 0 10px;
         }
         .balance {
           font-weight: 600;
           padding-right: 3px;
-        }
-        .wallet-icon {
-          margin-right: 10px;
         }
       }
 
@@ -276,14 +273,11 @@
           font-size: 16px;
         }
         span {
-          padding: 0 10px;
+          padding: 0 0 0 10px;
         }
         .balance {
           font-weight: 600;
           padding-right: 3px;
-        }
-        .wallet-icon {
-          margin-right: 10px;
         }
       }
 
@@ -357,4 +351,10 @@
   &:hover {
     font-weight: 500;
   }
+}
+.address_container {
+  margin-left: 10px;
+}
+.separator {
+  padding: 0 10px !important;
 }

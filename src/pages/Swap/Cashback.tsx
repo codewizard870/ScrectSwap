@@ -42,6 +42,28 @@ export class Cashback extends React.Component<
     return `Unknown error`;
   }
 
+  async calcRatio(user: UserStoreEx, sefi: string, cashback: string): Promise<number> {
+    const masterAddr = '';
+
+    const secretjs = user.secretjs;
+
+    let result = await secretjs.queryContractSmart(cashback, { token_info: {} });
+    const cbTotalSuppply = result.token_info.total_supply;
+
+    result = await secretjs.queryContractSmart(cashback, { reward_balance: {} });
+    const cbRewardBalance = result.balance;
+
+    result = await secretjs.queryContractSmart(masterAddr, {
+      pending: {
+        spy_addr: '',
+        block: 0,
+      },
+    });
+    const cbPendingRewards = result.amount;
+
+    return cbTotalSuppply / (cbRewardBalance + cbPendingRewards); //////////////////////////////////////// $$$ prices
+  }
+
   render() {
     const cashbackAddr = 'secret1yj842qfez8fyajam885q4n5yhnjum8879u7pjn';
     const sefiAddr = 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm';

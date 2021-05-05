@@ -10,6 +10,7 @@ import { BigNumber } from 'bignumber.js';
 import { displayHumanizedBalance, fixUnlockToken, humanizeBalance, unlockToken } from 'utils';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { ITokenInfo } from 'stores/interfaces';
+import { notify } from 'pages/Earn';
 // Import Icons
 const Header = (props) =>{
     const history = useHistory(); 
@@ -22,6 +23,9 @@ const Header = (props) =>{
     const handleSignIn = async()=>{
         if(user.isKeplrWallet){
             user.signIn();
+        }else{
+            console.log("Not keplr extention")
+            notify("error","It seems like you don't have Keplr extention installed in your browser. Install Keplr, reload the page and try again")
         }
     }
 
@@ -65,6 +69,16 @@ const Header = (props) =>{
                             user={user}
                             metaMask={userMetamask}
                         />
+                    {(!user.address || !user.isAuthorized)?
+                        <div className="btn-main">
+                            <div className="wallet-icon"> 
+                                <img src="/static/wallet-icon.svg" alt="wallet icon"/>
+                            </div> 
+                            <div>
+                                <span onClick={handleSignIn} className="connect_btn">Click to connect</span>
+                            </div>
+                        </div> 
+                        :
                         <div className="btn-main">
                             <div className="wallet-icon"> 
                                 <img src="/static/wallet-icon.svg" alt="wallet icon"/>
@@ -76,10 +90,11 @@ const Header = (props) =>{
                                 <p>SCRT</p>
                             </div>
                         </div>
-                    <div className="kpl_images__container">
+                    }
+                    {/* <div className="kpl_images__container">
                         <div className={(!user.address || !user.isAuthorized)? 'keplr__status':'keplr__status keplr__status--online'}></div>
                         <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>
-                    </div>
+                    </div> */}
                         <div className="theme__container">
                             {(theme.currentTheme == 'light')?
                                 <img onClick={switchTheme} src='/static/moon.svg' alt="Key Icon"/>:

@@ -12,7 +12,6 @@ export const SwapInput = (props: {
   disabled?: boolean;
 }) => {
   const {theme} =useStores();
-  console.log(props.disabled)
   return (
     <Input
       disabled={props.disabled === true}

@@ -14,6 +14,7 @@ import cn from 'classnames';
 import * as styles from './styles.styl';
 import { BigNumber } from 'bignumber.js';
 import { useStores } from 'stores';
+import Scrollbar from 'react-scrollbars-custom';
 
 export const TokenSelector = (props: {
   secretjs: CosmWasmClient;
@@ -65,9 +66,9 @@ export const TokenSelector = (props: {
           </span>
         </div>
       </Modal.Header>
-      <Modal.Content style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
+      <Modal.Content style={{padding:"1.5rem 0 0 0",background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
         {props.tokens.length > 0 ? (
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex',margin:'0 1rem' }}>
             <input
               onKeyDown={event => {
                 if (event.key === 'Enter' && filteredTokens.length === 1) {
@@ -92,7 +93,7 @@ export const TokenSelector = (props: {
             </div>
           ) : (
             <div className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}>
-              <div className={styles.listTokens__subcontainer}>
+              <Scrollbar className={styles.listTokens__subcontainer}>
                 {
                   filteredTokens
                     .sort((a, b) => {
@@ -135,7 +136,7 @@ export const TokenSelector = (props: {
                       );
                     })
                 }
-              </div>
+              </Scrollbar >
             </div>
           )
         ) : (
@@ -144,7 +145,7 @@ export const TokenSelector = (props: {
           </div>
         )}
       </Modal.Content>
-      <Modal.Actions style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE', display: 'flex' }}>
+      <Modal.Actions style={{borderTop:'none',background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE', display: 'flex' }}>
         <ClearCustomTokensButton />
         <div style={{ width: '700px', justifyContent: 'flex-start' }}>
           <AddTokenModal tokens={props.tokens} token={props.token} addToken={address => setLocalToken(address)} />

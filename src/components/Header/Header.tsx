@@ -12,7 +12,7 @@ import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModa
 import { ITokenInfo } from 'stores/interfaces';
 import { notify } from 'pages/Earn';
 // Import Icons
-const Header = (props) =>{
+const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const history = useHistory(); 
     const { user, tokens,userMetamask,theme } = useStores();
     const isSwap = history.location.pathname === '/swap';
@@ -38,7 +38,7 @@ const Header = (props) =>{
     }
     function switchTheme(){  
         theme.switchTheme();
-        props.forceUpdate();
+        forceUpdate();
         // window.location.reload();
     }
 
@@ -69,20 +69,27 @@ const Header = (props) =>{
                             user={user}
                             metaMask={userMetamask}
                         />
+                        <div className="btn-main">
+                            <div className="wallet-icon"> 
+                                <img src="/static/wallet-icon.svg" alt="wallet icon"/>
+                            </div>
+                        
+                    {console.log("isUnconnected",user.isUnconnected)}
                     {(!user.address || !user.isAuthorized)?
-                        <div className="btn-main">
-                            <div className="wallet-icon"> 
-                                <img src="/static/wallet-icon.svg" alt="wallet icon"/>
-                            </div> 
-                            <div>
-                                <span onClick={handleSignIn} className="connect_btn">Click to connect</span>
-                            </div>
-                        </div> 
-                        :
-                        <div className="btn-main">
-                            <div className="wallet-icon"> 
-                                <img src="/static/wallet-icon.svg" alt="wallet icon"/>
-                            </div>
+                        <div>
+                            
+                            {
+                                (user.isUnconnected == 'true')&&
+                                    <span onClick={handleSignIn} className="connect_btn">Click to Connect</span> 
+                            }
+                            {
+                                (user.isUnconnected === 'UNINSTALLED')&&
+                                    <span onClick={handleSignIn} className="connect_btn">Install Keplr to Continue</span>
+                            }
+                        </div>
+                        : 
+                        <div>
+                            {console.log("User found",user)}
                             <p>{getAddress()}</p>
                             <span>|</span>
                             <div>
@@ -91,6 +98,7 @@ const Header = (props) =>{
                             </div>
                         </div>
                     }
+                    </div>
                     {/* <div className="kpl_images__container">
                         <div className={(!user.address || !user.isAuthorized)? 'keplr__status':'keplr__status keplr__status--online'}></div>
                         <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>
@@ -109,6 +117,6 @@ const Header = (props) =>{
         </>
     )
 
-}
+})
 
 export default Header;

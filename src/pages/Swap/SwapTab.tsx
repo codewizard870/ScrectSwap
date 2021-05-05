@@ -19,7 +19,7 @@ import { RouteRow } from 'components/Swap/RouteRow';
 import { Token } from '../TokenModal/types/trade';
 const baseButtonStyle = { margin: '1em 0 0 0', borderRadius: '4px', padding: '11px 42px', fontSize: '16px', fontWeight: '600', height: '46px', } 
 const disableButtonStyle = { ...baseButtonStyle, color: '#5F5F6B', background: '#DEDEDE', }; 
-const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#1B1B1B', };
+const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#ff726e', };
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 import stores from '../../stores';

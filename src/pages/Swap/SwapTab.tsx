@@ -518,7 +518,6 @@ export class SwapTab extends React.Component<
       this.state.buttonMessage === BUTTON_MSG_NO_ROUTE;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
     const btnError = buttonMessage == BUTTON_MSG_NO_ROUTE || buttonMessage == BUTTON_MSG_NOT_ENOUGH_LIQUIDITY
-    console.log(this.props.selectedPair)
     return (
       <>
         <Container className={`${styles.swapContainerStyle} ${styles[stores.theme.currentTheme]}`}>

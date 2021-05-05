@@ -79,10 +79,9 @@ export class UserStoreEx extends StoreConstructor {
         if (this.isKeplrWallet) {
           // Keplr is present, stop checking
           clearInterval(keplrCheckInterval)
-          console.log("Interval cleared")
           accept();
         }else{
-          console.log("iS NOT KEPLR")
+          console.log("Keplr is not installed")
           this.isUnconnected= 'UNINSTALLED';
         }
       }, 1000);
@@ -104,7 +103,8 @@ export class UserStoreEx extends StoreConstructor {
         //this.websocketInit();
       });
     }else{
-      console.log("There is not logged")
+      console.log("Couln't find a session")
+      this.isUnconnected= 'true';
     }
   }
 

@@ -73,8 +73,6 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                             <div className="wallet-icon"> 
                                 <img src="/static/wallet-icon.svg" alt="wallet icon"/>
                             </div>
-                        
-                    {console.log("isUnconnected",user.isUnconnected)}
                     {(!user.address || !user.isAuthorized)?
                         <div>
                             
@@ -89,7 +87,6 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                         </div>
                         : 
                         <div>
-                            {console.log("User found",user)}
                             <p>{getAddress()}</p>
                             <span>|</span>
                             <div>

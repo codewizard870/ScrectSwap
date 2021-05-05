@@ -20,7 +20,7 @@ import { Token } from '../TokenModal/types/trade';
 const baseButtonStyle = { margin: '1em 0 0 0', borderRadius: '4px', padding: '11px 42px', fontSize: '16px', fontWeight: '600', height: '46px', } 
 const disableButtonStyle = { ...baseButtonStyle, color: '#5F5F6B', background: '#DEDEDE', }; 
 const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#ff726e', };
-const errorButtonStyle = { ...baseButtonStyle, color: '#ff726e', background: 'transparent',opacity:'1' };
+const errorButtonStyle = { ...baseButtonStyle, color: '#ff726e', background: 'transparent',opacity:'1',cursor:'default'};
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 import stores from '../../stores';
@@ -618,17 +618,17 @@ export class SwapTab extends React.Component<
               allRoutesOutputs={this.state.allRoutesOutputs}
             />
           )}
+        {(btnError)?
+          <Button fluid style={errorButtonStyle}>
+            {buttonMessage}
+          </Button>
+          :
           <Button
             disabled={buttonMessage !== BUTTON_MSG_SWAP || this.state.loadingSwap}
             // loading={this.state.loadingSwap}
             primary={buttonMessage === BUTTON_MSG_SWAP}
             fluid
-            // style={(buttonMessage !== BUTTON_MSG_SWAP) ? disableButtonStyle : enableButtonStyle}
-            style={
-              (buttonMessage == BUTTON_MSG_SWAP)? enableButtonStyle 
-              :(btnError)? errorButtonStyle
-              :disableButtonStyle 
-            }
+            style={(buttonMessage !== BUTTON_MSG_SWAP) ? disableButtonStyle : enableButtonStyle}
             onClick={async () => {
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;
@@ -762,6 +762,8 @@ export class SwapTab extends React.Component<
           >
             {buttonMessage}
           </Button>
+        
+        }
         </Container>
         {!hidePriceRow && (
           <div style = {(this.state.loadingSwap)? {opacity:'0.4'}:{}}> 

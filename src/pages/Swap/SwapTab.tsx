@@ -20,6 +20,7 @@ import { Token } from '../TokenModal/types/trade';
 const baseButtonStyle = { margin: '1em 0 0 0', borderRadius: '4px', padding: '11px 42px', fontSize: '16px', fontWeight: '600', height: '46px', } 
 const disableButtonStyle = { ...baseButtonStyle, color: '#5F5F6B', background: '#DEDEDE', }; 
 const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#ff726e', };
+const errorButtonStyle = { ...baseButtonStyle, color: '#ff726e', background: 'transparent',opacity:'1' };
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 import stores from '../../stores';
@@ -516,6 +517,8 @@ export class SwapTab extends React.Component<
       this.state.buttonMessage === BUTTON_MSG_NOT_ENOUGH_LIQUIDITY ||
       this.state.buttonMessage === BUTTON_MSG_NO_ROUTE;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
+    const btnError = buttonMessage == BUTTON_MSG_NO_ROUTE || buttonMessage == BUTTON_MSG_NOT_ENOUGH_LIQUIDITY
+    console.log(this.props.selectedPair)
     return (
       <>
         <Container className={`${styles.swapContainerStyle} ${styles[stores.theme.currentTheme]}`}>
@@ -536,6 +539,7 @@ export class SwapTab extends React.Component<
               false /* Eventually From is the exact amount that will be sent, so even if we estimate it in updateInputs we don't show the "(estimated)" label to the user */
             }
             setAmount={amount => this.setFromAmount(amount)}
+            error={btnError}
           />
           <div
             style={{
@@ -596,6 +600,7 @@ export class SwapTab extends React.Component<
             setAmount={(value: string) => {
               this.setToAmount(value);
             }}
+            error={btnError}
           />
           {!hidePriceRow && (
             <PriceRow
@@ -618,7 +623,12 @@ export class SwapTab extends React.Component<
             // loading={this.state.loadingSwap}
             primary={buttonMessage === BUTTON_MSG_SWAP}
             fluid
-            style={(buttonMessage !== BUTTON_MSG_SWAP) ? disableButtonStyle : enableButtonStyle}
+            // style={(buttonMessage !== BUTTON_MSG_SWAP) ? disableButtonStyle : enableButtonStyle}
+            style={
+              (buttonMessage == BUTTON_MSG_SWAP)? enableButtonStyle 
+              :(btnError)? errorButtonStyle
+              :disableButtonStyle 
+            }
             onClick={async () => {
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;

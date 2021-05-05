@@ -364,9 +364,21 @@ export class SwapRouter extends React.Component<
     if (balance === unlockToken) {
       return unlockJsx({
         onClick: async () => {
-          await this.props.user.keplrWallet.suggestToken(this.props.user.chainId, tokenIdentifier);
-          // TODO trigger balance refresh if this was an "advanced set" that didn't
-          // result in an on-chain transaction
+          try {
+            await this.props.user.keplrWallet.suggestToken(this.props.user.chainId, tokenIdentifier);
+            // TODO trigger balance refresh if this was an "advanced set" that didn't
+            // result in an on-chain transaction
+            console.log('Forcing update') 
+            const a = await this.refreshTokenBalance(tokenIdentifier);
+            const b = {
+              [tokenIdentifier]:a
+            }
+            console.log('updated state',b);
+            this.setState(currentState => ({ balances: { ...currentState.balances, ...b } })); 
+            
+          } catch (error) {
+            console.error("Failed")
+          }
         },
       });
     } else if (balance === fixUnlockToken) {

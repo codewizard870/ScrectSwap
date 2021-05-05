@@ -51,7 +51,14 @@ const DepositContainer = props => {
   const createViewingKey = ()=>{
     return unlockJsx({
       onClick:async()=>{
-        await props.userStore?.keplrWallet?.suggestToken(props.userStore?.chainId, props.tokenAddress);
+        try {
+          await props.userStore?.keplrWallet?.suggestToken(props.userStore?.chainId, props.tokenAddress);
+          props.userStore.updateBalanceForSymbol(props.currency.toLowerCase());
+          props.userStore.refreshRewardsBalances(props.currency.toLowerCase());
+          
+        } catch (error) {
+          console.error("failed")
+        }
       }
     })
   }

@@ -55,6 +55,7 @@ const ClaimButton = (props: {
       return <strong>{props?.available}</strong>
     }
   }
+  
   return (
     <>
     <div 
@@ -83,7 +84,7 @@ const ClaimButton = (props: {
         await Promise.all([
           await user.updateBalanceForSymbol(props.symbol),
           await user.updateBalanceForSymbol(props.rewardsToken || 'sSCRT'),
-          await user.refreshRewardsBalances(props.rewardsToken),
+          await user.refreshRewardsBalances(props.symbol),
         ]);
         setLoading(false);
       }}

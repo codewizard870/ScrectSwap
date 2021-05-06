@@ -102,7 +102,7 @@ export class SwapRouter extends React.Component<
       routerSupportedTokens: new Set(),
       routingGraph: {},
       selectedPairRoutes: [],
-      cashback: 'secret1yj842qfez8fyajam885q4n5yhnjum8879u7pjn',
+      cashback: 'secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht',
       sefi: 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm',
     };
   }
@@ -728,7 +728,8 @@ export class SwapRouter extends React.Component<
               secretjsSender={this.props.user.secretjsSend}
               refreshBalances={this.refreshBalances}
               balances={this.state.balances}
-              tokens={this.state.allTokens}
+              allTokens={this.state.allTokens}
+              tokens={this.props.tokens}
               notify={this.notify}
             />
             <SwapFooter />

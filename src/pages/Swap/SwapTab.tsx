@@ -745,7 +745,7 @@ export class SwapTab extends React.Component<
                 isToEstimated: false,
               });
               const height = await this.props.user.secretjs.getHeight();
-              await this.props.refreshPools({ tokens: ['secret1yj842qfez8fyajam885q4n5yhnjum8879u7pjn'], height });
+              await this.props.refreshPools({ tokens: ['secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht'], height });
             }}
           >
             {buttonMessage}

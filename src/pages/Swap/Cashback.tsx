@@ -12,6 +12,7 @@ import { canonicalizeBalance, displayHumanizedBalance, humanizeBalance } from 'u
 import { getNativeBalance, storeTxResultLocally, unlockJsx } from './utils';
 import { UserStoreEx } from 'stores/UserStore';
 import { Tokens } from 'stores/Tokens';
+import { SwapTokenMap } from './types/SwapToken';
 
 export class Cashback extends React.Component<
   {
@@ -19,7 +20,8 @@ export class Cashback extends React.Component<
     secretjsSender: AsyncSender;
     refreshBalances: CallableFunction;
     balances;
-    tokens;
+    tokens: Tokens;
+    allTokens: SwapTokenMap;
     notify: (type: 'success' | 'error' | 'errorWithHash', msg: string, closesAfterMs?: number, txHash?: string) => void;
   },
   { loadingSwap: boolean; cbRatio: number | JSX.Element }
@@ -27,7 +29,7 @@ export class Cashback extends React.Component<
   constructor(props) {
     super(props);
 
-    const cashbackAddr = 'secret1yj842qfez8fyajam885q4n5yhnjum8879u7pjn';
+    const cashbackAddr = 'secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht';
     const sefiAddr = 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm';
 
     this.state = {
@@ -35,12 +37,22 @@ export class Cashback extends React.Component<
       cbRatio: undefined,
     };
 
-    this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr).then(ratio => {
-      console.log('################## ratio');
-      this.setState({
-        cbRatio: ratio,
+    setTimeout(() => {
+      this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr).then(ratio => {
+        console.log('################## ratio');
+        this.setState({
+          cbRatio: ratio,
+        });
       });
-    });
+    }, 5000);
+    setInterval(() => {
+      this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr).then(ratio => {
+        console.log('################## ratio');
+        this.setState({
+          cbRatio: ratio,
+        });
+      });
+    }, 5000);
   }
 
   extractError(result: any) {
@@ -64,21 +76,22 @@ export class Cashback extends React.Component<
       const cbTotalSuppply = parseInt(result.token_info.total_supply);
 
       result = await secretjs.queryContractSmart(cashback, { reward_balance: {} });
-      const cbRewardBalance = parseInt(result.balance);
+      const cbRewardBalance = parseInt(result.reward_balance.balance);
 
-      const block = await user.secretjs.getBlock();
+      const block = (await user.secretjs.getBlock()).header.height;
       result = await secretjs.queryContractSmart(masterAddr, {
         pending: {
-          spy_addr: 'cashback',
+          spy_addr: cashback,
           block,
         },
       });
-      const cbPendingRewards = parseInt(result.amount);
+      const cbPendingRewards = parseInt(result.pending.amount);
 
-      const sefiUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SEFI').price);
-      const scrtUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SSCRT').price);
+      // Not working on testnet
+      // const sefiUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SEFI').price);
+      // const scrtUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SSCRT').price);
 
-      return (cbTotalSuppply * scrtUSD) / ((cbRewardBalance + cbPendingRewards) * sefiUSD);
+      return (((cbRewardBalance + cbPendingRewards) * 0.2) / (cbTotalSuppply * 3.8 * 0.003)) * 100;
     } catch (e) {
       console.log(e);
       return undefined;
@@ -86,7 +99,7 @@ export class Cashback extends React.Component<
   }
 
   render() {
-    const cashbackAddr = 'secret1yj842qfez8fyajam885q4n5yhnjum8879u7pjn';
+    const cashbackAddr = 'secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht';
     const sefiAddr = 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm';
     const cashbackBalance = this.props.balances[cashbackAddr];
     const sefiBalance = this.props.balances[sefiAddr];
@@ -176,11 +189,11 @@ export class Cashback extends React.Component<
                     return cashbackBalance;
                   }
 
-                  if (this.props.tokens.size > 0) {
+                  if (this.props.allTokens.size > 0) {
                     return displayHumanizedBalance(
                       humanizeBalance(
                         new BigNumber(cashbackBalance as BigNumber),
-                        this.props.tokens.get(cashbackAddr).decimals,
+                        this.props.allTokens.get(cashbackAddr).decimals,
                       ),
                       BigNumber.ROUND_DOWN,
                     );
@@ -213,11 +226,11 @@ export class Cashback extends React.Component<
                     return sefiBalance;
                   }
 
-                  if (this.props.tokens.size > 0) {
+                  if (this.props.allTokens.size > 0) {
                     return displayHumanizedBalance(
                       humanizeBalance(
                         new BigNumber(sefiBalance as BigNumber),
-                        this.props.tokens.get(sefiAddr).decimals,
+                        this.props.allTokens.get(sefiAddr).decimals,
                       ),
                       BigNumber.ROUND_DOWN,
                     );
@@ -241,7 +254,7 @@ export class Cashback extends React.Component<
                   primary={true}
                   onClick={async () => {
                     this.setState({ loadingSwap: true });
-                    const { decimals } = this.props.tokens.get(cashbackAddr);
+                    const { decimals } = this.props.allTokens.get(cashbackAddr);
                     const humanBalance = humanizeBalance(cashbackBalance, decimals);
 
                     try {
@@ -306,7 +319,7 @@ export class Cashback extends React.Component<
                   </>
                 );
               } else {
-                return this.state.cbRatio;
+                return `${this.state.cbRatio === Infinity ? '∞' : this.state.cbRatio}%`;
               }
             })()}
             {/* {await(

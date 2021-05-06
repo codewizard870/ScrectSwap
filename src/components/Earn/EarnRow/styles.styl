@@ -20,6 +20,8 @@
 .create_viewingkey{
   font-size: 16px;
   font-weight: normal;
+  display: flex;
+  align-items: center;
   &.light{
     color: black;
   }
@@ -198,7 +200,6 @@
     color: #ff726e ;
     strong{
       color: #0D1017;
-      margin: 0 .5rem
     }
   }
   &.dark{
@@ -296,8 +297,11 @@
 .icon_info {
   color: #ff726e;
   border: 0.1px solid #ff726e;
-  margin-left: 1rem !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0 !important;
+  &::before{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;  
+  }
 }

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { SigningCosmWasmClient } from 'secretjs';
 import cn from 'classnames';
 import * as styles from './styles.styl';
-import { Button } from 'semantic-ui-react';
+import { Button, Icon, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import { AsyncSender } from '../../../blockchain-bridge/scrt/asyncSender';
 import { unlockToken } from 'utils';
@@ -11,6 +11,8 @@ import { unlockJsx } from 'pages/Swap/utils';
 
 const ClaimButton = (props: {
   secretjs: AsyncSender;
+  balance: string;
+  unlockPopupText: string;
   contract: string;
   available: string;
   symbol: string;
@@ -33,6 +35,21 @@ const ClaimButton = (props: {
           },
         })
         }
+        {
+          (props.balance?.includes(unlockToken))&&
+          <Popup
+            content={props.unlockPopupText}
+            className={styles.iconinfo__popup}
+            trigger={ 
+              <Icon
+                  className={styles.icon_info}
+                  name="info"
+                  circular
+                  size="tiny"
+                />
+            }
+          />
+        }
       </div>)
     }else{
       return <strong>{props?.available}</strong>
@@ -40,11 +57,11 @@ const ClaimButton = (props: {
   }
   return (
     <>
-    <span 
+    <div 
       className={`${styles.claim_label} ${styles[theme.currentTheme]}`}
     >
-      {displayAvailable()}{props.rewardsToken}
-    </span>
+      {displayAvailable()}<span style={{marginLeft:'10px'}}>{props.rewardsToken}</span>
+    </div>
     <Button
       loading={loading}
       className={`${styles.button} ${styles[theme.currentTheme]}`}

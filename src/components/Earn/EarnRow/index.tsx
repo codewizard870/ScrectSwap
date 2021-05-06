@@ -354,12 +354,14 @@ class EarnRow extends Component<
                     tokenAddress={this.props.token.rewardsContract} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}
-                  />
+                    />
                 </Grid.Column>
               </Grid>
             </Segment>
           </div>
           <ClaimBox
+            balance={this.props.token.deposit}
+            unlockPopupText='Staking balance and rewards require an additional viewing key.'
             available={this.props.token.rewards}
             userStore={this.props.userStore}
             rewardsContract={this.props.token.rewardsContract}

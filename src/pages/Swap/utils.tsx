@@ -22,7 +22,7 @@ export const unlockJsx = (props: { onClick: any }) =>
     `.view-token-button {
       cursor: pointer;
       border-radius: 30px;
-      padding: 0 0.6em 0 0.3em;
+      padding: 0 0.4em 0 0.3em;
       border: none;
     }
 

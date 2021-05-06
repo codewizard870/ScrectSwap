@@ -13,6 +13,7 @@ import Loader from 'react-loader-spinner';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import Theme from 'themes';
 import { observer } from 'mobx-react';
+import Scrollbars from 'react-custom-scrollbars';
 
 @observer
 export class WithdrawTab extends React.Component<
@@ -63,7 +64,7 @@ export class WithdrawTab extends React.Component<
             />
           </div>
         ) : null}
-        <div className={styles.withdrawLiquitityContent}>
+        <Scrollbars style={{ width: 455, height: 300 }}  className={styles.withdrawLiquitityContent}>
           {pairs
           .filter(p => {
             return (
@@ -120,7 +121,7 @@ export class WithdrawTab extends React.Component<
               </span>
             );
           })}
-        </div>
+        </Scrollbars >
       </Container>
     );
   }

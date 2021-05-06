@@ -6,6 +6,8 @@ import ScrtTokenBalance from '../ScrtTokenBalance';
 import { UserStoreEx } from '../../../stores/UserStore';
 
 const ClaimBox = (props: {
+  balance: string;
+  unlockPopupText: string;
   rewardsContract: string;
   userStore: UserStoreEx;
   available: string;
@@ -16,6 +18,8 @@ const ClaimBox = (props: {
   return (
     <div className={cn(styles.claimBox)}>
       <ClaimButton
+        balance={props.balance}
+        unlockPopupText={props.unlockPopupText}
         secretjs={props.userStore.secretjsSend}
         contract={props.rewardsContract}
         available={props.available}

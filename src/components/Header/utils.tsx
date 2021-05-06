@@ -32,7 +32,7 @@ export const unlockJsx = (props: { onClick: any }) =>
       background: whitesmoke;
     }`,
     <span role="img" aria-label={'view'} className="view-token-button" onClick={props.onClick}>
-      🔍 View
+      🔍 View Balance
     </span>,
   );
 

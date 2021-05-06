@@ -167,7 +167,7 @@ class EarnRow extends Component<
     const _symbols = this.props.token.lockedAsset?.split('-');
     const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());
     const image_secondaryToken = images.filter((img)=>img.symbol === _symbols[2]?.toLowerCase());
-
+    const tokenName = _symbols[0]+' - '+_symbols[1];
     return (
       <Accordion
         className={cn(style)}
@@ -194,7 +194,7 @@ class EarnRow extends Component<
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
                 title={
-                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : this.props.token.display_props.label
+                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName.toUpperCase()
                 }
                 subTitle='    '
               />

@@ -319,10 +319,11 @@ export const Base = observer(() => {
     setMetamaskNetork(network)
     userMetamask.network = network;
     exchange.clear()
+    onSelectedToken('native')
     setErrors({ token: '', address: '', amount: '' });
     setProgress(0);
     setTokenLocked(false);
-
+    exchange.stepNumber = EXCHANGE_STEPS.BASE;
   }
 
   const onClickHandler = async (callback: () => void) => {

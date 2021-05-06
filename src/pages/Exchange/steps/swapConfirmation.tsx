@@ -39,7 +39,7 @@ const renderNetworkTemplate = (template: NetworkTemplateInterface, justify: any)
         {formatWithSixDecimals(template.amount)}
       </Text>
     )}
-    <Text bold margin={{ left: 'xxsmall' }} color="#748695" size="small">
+    <Text bold margin={{ left: 'xxsmall' }} color="#235a58" size="small">
       {template.symbol}
     </Text>
   </Box>
@@ -87,7 +87,7 @@ export const SwapConfirmation = observer(() => {
         const balance = user.balanceToken[exchange.transaction.tokenSelected.src_coin];
         setTokenLocked(balance === unlockToken);
       });
-    } catch (e) {}
+    } catch (e) { }
   }, []);
 
   useEffect(() => {
@@ -232,7 +232,7 @@ export const SwapConfirmation = observer(() => {
             {exchange.mode === EXCHANGE_MODE.FROM_SCRT && (
               <Box style={{ height: 40 }} direction="row" justify="between" align="start" margin={{ top: 'xsmall' }}>
                 <Box className={styles.warningSign} direction="row" align="center">
-                  <img style={{ marginRight: 6, width: 12 }} src={userMetamask.getNetworkImage()} />
+                  <img style={{ marginRight: 6, width: 15, height: 15 }} src={userMetamask.getNetworkImage()} />
                   <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>
                     Ethereum Fee
                   </Text>
@@ -246,14 +246,15 @@ export const SwapConfirmation = observer(() => {
                     token={formatSymbol(EXCHANGE_MODE.TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                     boxProps={{ pad: {} }}
                   />
+
                 )}
               </Box>
             )}
 
             {exchange.mode === EXCHANGE_MODE.FROM_SCRT && (
               <Box style={{ height: 40 }} direction="row" align="start" margin={{ top: 'xsmall' }} justify="between">
-                <Box direction="row">
-                  <img src={exchange.transaction.tokenSelected.image} style={{ marginRight: 6 }} width="15" />
+                <Box direction="row" align="center">
+                  <img src={exchange.transaction.tokenSelected.image} style={{ marginRight: 6, width: 15, height: 15 }} />
 
                   <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>
                     You will recieve
@@ -280,6 +281,16 @@ export const SwapConfirmation = observer(() => {
                 </Box>
               </HeadShake>
             )}
+
+            {exchange.mode === EXCHANGE_MODE.FROM_SCRT && !userMetamask.isCorrectNetworkSelected() && <HeadShake bottom>
+              <Box margin={{ top: 'xsmall' }}>
+                <Text color={"#a1991d"}>
+                  Transaction fee is being calculated for the wrong network! Please change it accordingly on your metamask.
+                  </Text>
+              </Box>
+
+            </HeadShake>}
+
 
             <Box fill direction="row" align="center" style={{ width: '100%' }} margin={{ top: 'large' }}>
               {!exchange.transaction.confirmed ? (

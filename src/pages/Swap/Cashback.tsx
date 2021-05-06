@@ -11,6 +11,7 @@ import { useStores } from 'stores';
 import { canonicalizeBalance, displayHumanizedBalance, humanizeBalance } from 'utils/formatNumber';
 import { getNativeBalance, storeTxResultLocally, unlockJsx } from './utils';
 import { UserStoreEx } from 'stores/UserStore';
+import { Tokens } from 'stores/Tokens';
 
 export class Cashback extends React.Component<
   {
@@ -21,14 +22,25 @@ export class Cashback extends React.Component<
     tokens;
     notify: (type: 'success' | 'error' | 'errorWithHash', msg: string, closesAfterMs?: number, txHash?: string) => void;
   },
-  { loadingSwap: boolean }
+  { loadingSwap: boolean; cbRatio: number | JSX.Element }
 > {
   constructor(props) {
     super(props);
 
+    const cashbackAddr = 'secret1yj842qfez8fyajam885q4n5yhnjum8879u7pjn';
+    const sefiAddr = 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm';
+
     this.state = {
       loadingSwap: false,
+      cbRatio: undefined,
     };
+
+    this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr).then(ratio => {
+      console.log('################## ratio');
+      this.setState({
+        cbRatio: ratio,
+      });
+    });
   }
 
   extractError(result: any) {
@@ -42,26 +54,35 @@ export class Cashback extends React.Component<
     return `Unknown error`;
   }
 
-  async calcRatio(user: UserStoreEx, sefi: string, cashback: string): Promise<number> {
-    const masterAddr = '';
+  async calcRatio(user: UserStoreEx, tokens: Tokens, sefi: string, cashback: string): Promise<number> {
+    try {
+      const masterAddr = 'secret13hqxweum28nj0c53nnvrpd23ygguhteqggf852';
 
-    const secretjs = user.secretjs;
+      const secretjs = user.secretjs;
 
-    let result = await secretjs.queryContractSmart(cashback, { token_info: {} });
-    const cbTotalSuppply = result.token_info.total_supply;
+      let result = await secretjs.queryContractSmart(cashback, { token_info: {} });
+      const cbTotalSuppply = parseInt(result.token_info.total_supply);
 
-    result = await secretjs.queryContractSmart(cashback, { reward_balance: {} });
-    const cbRewardBalance = result.balance;
+      result = await secretjs.queryContractSmart(cashback, { reward_balance: {} });
+      const cbRewardBalance = parseInt(result.balance);
 
-    result = await secretjs.queryContractSmart(masterAddr, {
-      pending: {
-        spy_addr: '',
-        block: 0,
-      },
-    });
-    const cbPendingRewards = result.amount;
+      const block = await user.secretjs.getBlock();
+      result = await secretjs.queryContractSmart(masterAddr, {
+        pending: {
+          spy_addr: 'cashback',
+          block,
+        },
+      });
+      const cbPendingRewards = parseInt(result.amount);
 
-    return cbTotalSuppply / (cbRewardBalance + cbPendingRewards); //////////////////////////////////////// $$$ prices
+      const sefiUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SEFI').price);
+      const scrtUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SSCRT').price);
+
+      return (cbTotalSuppply * scrtUSD) / ((cbRewardBalance + cbPendingRewards) * sefiUSD);
+    } catch (e) {
+      console.log(e);
+      return undefined;
+    }
   }
 
   render() {
@@ -69,6 +90,15 @@ export class Cashback extends React.Component<
     const sefiAddr = 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm';
     const cashbackBalance = this.props.balances[cashbackAddr];
     const sefiBalance = this.props.balances[sefiAddr];
+
+    // if (this.state.cbRatio === undefined) {
+    //   this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr).then(ratio => {
+    //     this.setState({
+    //       cbRatio: ratio,
+    //     });
+    //   });
+    // }
+
     return (
       // <div style={{ paddingLeft: '1000px', paddingRight: '1000px' }}>
       <div style={{ width: '500px', marginBottom: '1rem' }}>
@@ -266,7 +296,33 @@ export class Cashback extends React.Component<
               </Popup.Content>
             </Popup>
             <br />
-            Conversion Rate: <strong>Available Soon</strong>
+            Cashback Rate:{' '}
+            {(() => {
+              if (this.state.cbRatio === undefined) {
+                return (
+                  <>
+                    <span style={{ marginRight: '0.5em' }} />
+                    <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />
+                  </>
+                );
+              } else {
+                return this.state.cbRatio;
+              }
+            })()}
+            {/* {await(
+              (async () => {
+                const ratio = await this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr);
+                if (ratio === undefined) {
+                  return (
+                    <>
+                      <span style={{ marginRight: '0.5em' }} />
+                      <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />
+                    </>
+                  );
+                }
+                return ratio.toString();
+              })(),
+            )} */}
           </div>
         </Container>
       </div>

@@ -317,7 +317,7 @@ export class UserStoreEx extends StoreConstructor {
       }
       // Ask the user for permission
       await this.keplrWallet.enable(this.chainId);
-  
+      
       // @ts-ignore
       this.keplrOfflineSigner = window.getOfflineSigner(this.chainId);
       const accounts = await this.keplrOfflineSigner.getAccounts();
@@ -326,6 +326,7 @@ export class UserStoreEx extends StoreConstructor {
       // @ts-ignore
       this.secretjsSend = this.initSecretJS(process.env.SECRET_POST_ADDRESS, true);
       this.secretjs = this.initSecretJS(process.env.SECRET_LCD, false);
+      await this.updateScrtBalance();
     } catch (error) {
       this.isUnconnected = 'true';
       console.error(error)

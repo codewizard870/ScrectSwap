@@ -10,8 +10,9 @@ import { BigNumber } from 'bignumber.js';
 import { displayHumanizedBalance, fixUnlockToken, humanizeBalance, unlockToken } from 'utils';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { ITokenInfo } from 'stores/interfaces';
+import { notify } from 'pages/Earn';
 // Import Icons
-const Header = (props) =>{
+const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const history = useHistory(); 
     const { user, tokens,userMetamask,theme } = useStores();
     const isSwap = history.location.pathname === '/swap';
@@ -22,6 +23,9 @@ const Header = (props) =>{
     const handleSignIn = async()=>{
         if(user.isKeplrWallet){
             user.signIn();
+        }else{
+            console.log("Not keplr extention")
+            notify("error","It seems like you don't have Keplr extention installed in your browser. Install Keplr, reload the page and try again")
         }
     }
 
@@ -34,7 +38,7 @@ const Header = (props) =>{
     }
     function switchTheme(){  
         theme.switchTheme();
-        props.forceUpdate();
+        forceUpdate();
         // window.location.reload();
     }
 
@@ -69,17 +73,33 @@ const Header = (props) =>{
                             <div className="wallet-icon"> 
                                 <img src="/static/wallet-icon.svg" alt="wallet icon"/>
                             </div>
+                    {(!user.address || !user.isAuthorized)?
+                        <div>
+                            
+                            {
+                                (user.isUnconnected == 'true')&&
+                                    <span onClick={handleSignIn} className="connect_btn">Click to Connect</span> 
+                            }
+                            {
+                                (user.isUnconnected === 'UNINSTALLED')&&
+                                    <span onClick={handleSignIn} className="connect_btn">Install Keplr to Continue</span>
+                            }
+                        </div>
+                        : 
+                        <div className="address_container">
                             <p>{getAddress()}</p>
-                            <span>|</span>
+                            <span className="separator">|</span>
                             <div>
                                 <p className="balance">{user.balanceSCRT}</p>
                                 <p>SCRT</p>
                             </div>
                         </div>
-                    <div className="kpl_images__container">
+                    }
+                    </div>
+                    {/* <div className="kpl_images__container">
                         <div className={(!user.address || !user.isAuthorized)? 'keplr__status':'keplr__status keplr__status--online'}></div>
                         <img onClick={handleSignIn} src='/static/keplricon.svg' alt="Key Icon"/>
-                    </div>
+                    </div> */}
                         <div className="theme__container">
                             {(theme.currentTheme == 'light')?
                                 <img onClick={switchTheme} src='/static/moon.svg' alt="Key Icon"/>:
@@ -94,6 +114,6 @@ const Header = (props) =>{
         </>
     )
 
-}
+})
 
 export default Header;

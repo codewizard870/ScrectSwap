@@ -22,16 +22,16 @@ export const unlockJsx = (props: { onClick: any }) =>
     `.view-token-button {
       cursor: pointer;
       border-radius: 30px;
-      padding: 0 0.6em 0 0.3em;
+      padding: 0 0.4em 0 0.3em;
       border: none;
     }
 
     .view-token-button:hover {
-      background: whitesmoke;
+      background: rgba(255,114,110,0.1);
       color:black;
     }`,
     <span role="img" aria-label={'view'} className="view-token-button" onClick={props.onClick}>
-      🔍 View
+      🔍 View Balance
     </span>,
   );
 
@@ -49,6 +49,7 @@ export async function getTokenBalance(
         await userStore.keplrWallet.suggestToken(userStore.chainId, tokenAddress);
         // TODO trigger balance refresh if this was an "advanced set" that didn't
         // result in an on-chain transaction
+        await userStore.updateScrtBalance();
       },
     });
   }

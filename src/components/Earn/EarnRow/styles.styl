@@ -2,15 +2,16 @@
   max-width: calc(100vw - 24px);
   min-width: 1168px;
   border: none;
-  box-shadow: 0px 2px 4px -2px rgba(24, 39, 75, 0.12), 0px 4px 4px -2px rgba(24, 39, 75, 0.08);
   margin: 13px 0;
   position: relative;
   border-radius: 16px;
   &.light{
     background: #ffffff;
+    box-shadow: 0px 0px 5px 1px rgba(24, 39, 75, 0.12);
   }
   &.dark{
     background: #0E0E10;
+    box-shadow: 0px 0px 10px 1px rgba(115, 115, 115, 0.12);
   }
 }
 
@@ -20,6 +21,8 @@
 .create_viewingkey{
   font-size: 16px;
   font-weight: normal;
+  display: flex;
+  align-items: center;
   &.light{
     color: black;
   }
@@ -198,7 +201,6 @@
     color: #ff726e ;
     strong{
       color: #0D1017;
-      margin: 0 .5rem
     }
   }
   &.dark{
@@ -296,8 +298,11 @@
 .icon_info {
   color: #ff726e;
   border: 0.1px solid #ff726e;
-  margin-left: 1rem !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0 !important;
+  &::before{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;  
+  }
 }

@@ -6,6 +6,7 @@ import { useStores } from 'stores';
 export const SwapInput = (props: {
   value: string;
   setValue: any;
+  error?: boolean;
   placeholder?: string;
   width?: string;
   disabled?: boolean;
@@ -22,7 +23,7 @@ export const SwapInput = (props: {
       className={`${styles.customInput} ${styles[theme.currentTheme]}`}
       transparent
       size="massive"
-      placeholder={props.placeholder || '0.0'}
+      placeholder={(props.error)?'-':props.placeholder || '0.0'}
       value={props.value}
       onChange={(_, { value }: { value: string }) => {
         props.setValue(value);

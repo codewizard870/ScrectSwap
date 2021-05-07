@@ -167,7 +167,7 @@ class EarnRow extends Component<
     const _symbols = this.props.token.lockedAsset?.split('-');
     const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());
     const image_secondaryToken = images.filter((img)=>img.symbol === _symbols[2]?.toLowerCase());
-
+    const tokenName = _symbols[1]+' - '+_symbols[2];
     return (
       <Accordion
         className={cn(style)}
@@ -194,7 +194,7 @@ class EarnRow extends Component<
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
                 title={
-                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : this.props.token.display_props.label
+                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName.toUpperCase()
                 }
                 subTitle='    '
               />
@@ -319,7 +319,7 @@ class EarnRow extends Component<
                     currency={this.props.token.lockedAsset}
                     price={this.props.token.price}
                     balanceText="Available"
-                    unlockPopupText='Please create a viewing key to see your SNIP-20 token balance'
+                    unlockPopupText='Staking balance and rewards require an additional viewing key.'
                     tokenAddress={this.props.token.lockedAssetAddress} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}
@@ -350,16 +350,18 @@ class EarnRow extends Component<
                     currency={this.props.token.lockedAsset}
                     price={this.props.token.price}
                     balanceText="Staked"
-                    unlockPopupText='Please create a viewing key to see your SNIP-20 token balance'
+                    unlockPopupText='Staking balance and rewards require an additional viewing key.'
                     tokenAddress={this.props.token.rewardsContract} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}
-                  />
+                    />
                 </Grid.Column>
               </Grid>
             </Segment>
           </div>
           <ClaimBox
+            balance={this.props.token.deposit}
+            unlockPopupText='Staking balance and rewards require an additional viewing key.'
             available={this.props.token.rewards}
             userStore={this.props.userStore}
             rewardsContract={this.props.token.rewardsContract}
@@ -373,7 +375,8 @@ class EarnRow extends Component<
               padding: '20 20 0 20',
               cursor: 'auto',
               textAlign: 'center',
-              color:(this.props.theme.currentTheme == 'dark')?'white':''
+              fontFamily:'Poppins,Arial',
+              color:(this.props.theme.currentTheme == 'dark')?'white':'#1B1B1B'
             }}
           >
             * Every time you deposit, withdraw or claim the contract will automagically claim your rewards for you!

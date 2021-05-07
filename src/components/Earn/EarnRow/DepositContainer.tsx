@@ -51,7 +51,22 @@ const DepositContainer = props => {
   const createViewingKey = ()=>{
     return unlockJsx({
       onClick:async()=>{
-        await props.userStore?.keplrWallet?.suggestToken(props.userStore?.chainId, props.tokenAddress);
+        try {
+          let currency;
+          if(props.currency == 'SEFI'){
+            currency=props.currency;
+          }else{
+            currency=props.currency.toLowerCase();
+          }
+          
+          await props.userStore?.keplrWallet?.suggestToken(props.userStore?.chainId, props.tokenAddress);
+          props.userStore.updateBalanceForSymbol(currency);
+          props.userStore.refreshRewardsBalances(currency);
+          props.userStore.updateScrtBalance();
+          
+        } catch (error) {
+          console.error("failed")
+        }
       }
     })
   }
@@ -75,9 +90,6 @@ const DepositContainer = props => {
               popupText={props.unlockPopupText}
               createKey={createViewingKey}
             />
-          </div>
-          <div className={cn(styles.subtitle)}>
-            {props.balanceText} 
             {
               (props.balance?.includes(unlockToken))&&
               <Popup
@@ -93,6 +105,9 @@ const DepositContainer = props => {
                 }
               />
             }
+          </div>
+          <div className={cn(styles.subtitle)}>
+            {props.balanceText}
           </div>
         </div>
         <div>

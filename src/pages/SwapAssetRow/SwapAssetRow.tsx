@@ -23,6 +23,7 @@ export const SwapAssetRow = ({
   label,
   maxButton,
   secretjs,
+  error,
   disabled,
 }: {
   tokens: SwapTokenMap;
@@ -36,6 +37,7 @@ export const SwapAssetRow = ({
   maxButton: boolean;
   secretjs: CosmWasmClient;
   disabled?: boolean;
+  error?: boolean;
 }) => {
   const {theme} = useStores()
   const font = {
@@ -110,6 +112,7 @@ export const SwapAssetRow = ({
       >
         <SwapInput
           value={amount}
+          error={error}
           disabled={disabled}
           setValue={value => {
             if (isNaN(Number(value))) {

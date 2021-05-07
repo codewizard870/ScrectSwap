@@ -733,6 +733,7 @@ export class SwapTab extends React.Component<
                     }`,
                   );
                 }
+                await this.props.user.updateScrtBalance();
               } catch (error) {
                 console.error('Swap error', error);
                 const txHash = error?.txHash;

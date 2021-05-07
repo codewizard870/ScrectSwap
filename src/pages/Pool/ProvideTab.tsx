@@ -332,7 +332,7 @@ export class ProvideTab extends React.Component<
       this.setState<never>({
         [`allowance${stateFieldSuffix}`]: new BigNumber(Infinity),
       });
-
+      await this.props.user.updateScrtBalance();
       this.props.notify(
         'success',
         `${this.props.tokens.get(tokenAddress).symbol} approved for ${this.props.selectedPair.humanizedSymbol()}`,
@@ -515,6 +515,7 @@ export class ProvideTab extends React.Component<
             loading={this.state.loadingApproveA}
             onClick={() => {
               this.approveOnClick(this.props.selectedPair, this.state.tokenA).then(() => {});
+              
             }}
             token={this.props.tokens.get(this.state.tokenA)?.symbol}
           />
@@ -559,6 +560,7 @@ export class ProvideTab extends React.Component<
               try {
                 await this.createNewPairAction(assetA, assetB);
                 window.dispatchEvent(new Event('updatePairsAndTokens'));
+                await this.props.user.updateScrtBalance();
                 this.props.notify('success', `${assetA.symbol}/${assetB.symbol} pair created successfully`);
               } catch (error) {
                 this.props.notify('error', `Error creating pair ${assetA.symbol}/${assetB.symbol}: ${error.message}`);

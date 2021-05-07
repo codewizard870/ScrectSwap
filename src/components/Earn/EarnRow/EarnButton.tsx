@@ -32,7 +32,7 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
                 value: '0.0',
               },
             });
-
+            props.userStore.updateScrtBalance();
             props.notify('success', `Staked ${amount} s${props.token.display_props.symbol} in the rewards contract`);
             if (props.token.deposit === unlockToken) {
               togglePulse();

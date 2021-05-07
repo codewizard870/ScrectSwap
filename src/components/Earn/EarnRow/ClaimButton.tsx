@@ -32,6 +32,7 @@ const ClaimButton = (props: {
             // TODO trigger balance refresh if this was an "advanced set" that didn't
             // result in an on-chain transaction
             await user.updateBalanceForSymbol(props.symbol);
+            await user.updateScrtBalance();
           },
         })
         }
@@ -85,6 +86,7 @@ const ClaimButton = (props: {
           await user.updateBalanceForSymbol(props.symbol),
           await user.updateBalanceForSymbol(props.rewardsToken || 'sSCRT'),
           await user.refreshRewardsBalances(props.symbol),
+          await user.updateScrtBalance()
         ]);
         setLoading(false);
       }}

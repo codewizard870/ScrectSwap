@@ -393,7 +393,6 @@ export class WithdrawLiquidityPanel extends React.Component<
                             getFeeForExecute(500_000),
                           );
                           storeTxResultLocally(result);
-
                           this.props.notify(
                             'success',
                             `Withdrawn ${100 * withdrawPercentage}% from your pooled ${selectedPair.humanizedSymbol()}`,

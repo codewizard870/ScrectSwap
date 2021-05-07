@@ -23,6 +23,7 @@ const WithdrawButton = ({ props, value, changeValue }) => {
           amount: valueToDecimals(amount, props.token.decimals),
         })
           .then(_ => {
+            props.userStore.updateScrtBalance();
             props.notify('success', `Removed ${amount} s${props.token.display_props.symbol} from the rewards contract`);
             changeValue({
               target: {

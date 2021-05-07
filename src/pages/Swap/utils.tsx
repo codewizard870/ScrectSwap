@@ -49,6 +49,7 @@ export async function getTokenBalance(
         await userStore.keplrWallet.suggestToken(userStore.chainId, tokenAddress);
         // TODO trigger balance refresh if this was an "advanced set" that didn't
         // result in an on-chain transaction
+        await userStore.updateScrtBalance();
       },
     });
   }

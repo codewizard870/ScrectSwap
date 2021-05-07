@@ -167,6 +167,7 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
     try {
       setOpen(false);
       await props.user.keplrWallet.suggestToken(props.user.chainId, token.address);
+      await props.user.updateScrtBalance();
       setHasViewingKey(true)
     } catch (e) {
       console.error("Error at creating new viewing key ",e)

@@ -373,7 +373,7 @@ export class SwapRouter extends React.Component<
               [tokenIdentifier]:a
             }
             this.setState(currentState => ({ balances: { ...currentState.balances, ...b } })); 
-            
+            await this.props.user.updateScrtBalance();
           } catch (error) {
             console.error("Failed")
           }
@@ -420,6 +420,7 @@ export class SwapRouter extends React.Component<
           // TODO trigger balance refresh if this was an "advanced set" that didn't
           // result in an on-chain transaction
           await this.refreshLpTokenBalance(pair);
+          await this.props.user.updateScrtBalance();
         },
       });
       lpBalance = balanceResult;

@@ -471,6 +471,7 @@ export class SwapRouter extends React.Component<
               // result in an on-chain transaction
               const a = await this.refreshTokenBalance(tokenAddress); 
               this.setState(currentState => ({ balances: { ...currentState.balances, ...a } }));
+              await this.props.user.updateScrtBalance();
           
             } catch (error) {
               console.error("Failed")    
@@ -503,6 +504,7 @@ export class SwapRouter extends React.Component<
         secretjs: this.props.user.secretjs,
       });
       lpTotalSupply = new BigNumber(result.total_supply);
+      await this.props.user.updateScrtBalance();
     } catch (error) {
       console.error(`Error trying to get LP token total supply of ${pairSymbol}`, pair, error);
       return [];
@@ -518,6 +520,7 @@ export class SwapRouter extends React.Component<
           // result in an on-chain transaction
           const a =  await this.refreshLpTokenBalance(pair);
           this.setState(currentState => ({ balances: { ...currentState.balances, ...a[0],...a[1] } }));
+          await this.props.user.updateScrtBalance();
         },
       });
       lpBalance = balanceResult;

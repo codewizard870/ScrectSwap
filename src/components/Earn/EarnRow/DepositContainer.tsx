@@ -52,9 +52,17 @@ const DepositContainer = props => {
     return unlockJsx({
       onClick:async()=>{
         try {
+          let currency;
+          if(props.currency == 'SEFI'){
+            currency=props.currency;
+          }else{
+            currency=props.currency.toLowerCase();
+          }
+          
           await props.userStore?.keplrWallet?.suggestToken(props.userStore?.chainId, props.tokenAddress);
-          props.userStore.updateBalanceForSymbol(props.currency.toLowerCase());
-          props.userStore.refreshRewardsBalances(props.currency.toLowerCase());
+          props.userStore.updateBalanceForSymbol(currency);
+          props.userStore.refreshRewardsBalances(currency);
+          props.userStore.updateScrtBalance();
           
         } catch (error) {
           console.error("failed")

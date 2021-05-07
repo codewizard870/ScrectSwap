@@ -441,8 +441,19 @@ export class SwapTab extends React.Component<
 
     this.updateInputsFromBestRoute();
   }
+  symbolFromAddress = (identifier: string) => {
+    const symbol = this.props.tokens.get(identifier)?.symbol
+    if(symbol == 'SEFI' || symbol?.includes("lp") || symbol == 'CSHBK'){
+      return symbol
+    }else{
+      return symbol?.substring(1,symbol.length);
+    }
+  };
 
   render() {
+    console.log("from",this.symbolFromAddress(this.state.fromToken))
+    console.log("to",this.symbolFromAddress(this.state.toToken))
+    // console.log(this.props.tokens)
     const pair = this.props.selectedPair;
 
     const ask_pool = pair
@@ -724,6 +735,10 @@ export class SwapTab extends React.Component<
                     }`,
                   );
                 }
+                
+                await this.props.user.updateBalanceForSymbol(this.symbolFromAddress(fromToken));
+                await this.props.user.updateBalanceForSymbol(this.symbolFromAddress(toToken));
+                await this.props.user.updateScrtBalance();
               } catch (error) {
                 console.error('Swap error', error);
                 const txHash = error?.txHash;

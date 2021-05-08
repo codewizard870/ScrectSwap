@@ -25,6 +25,7 @@ import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 import stores from '../../stores';
 import { observer } from 'mobx-react';
+import { Symbols } from 'recharts';
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_ROUTE = 'Cannot find a route';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
@@ -170,6 +171,7 @@ export class SwapTab extends React.Component<
     secretAddress: string;
     pairs: PairMap;
     isLoadingSupportedTokens: boolean;
+    updateBalances: Function;
   },
   {
     fromToken: string;
@@ -220,13 +222,14 @@ export class SwapTab extends React.Component<
     };
   }
 
-  componentDidUpdate(previousProps) {
+  async componentDidUpdate(previousProps) {
     if (
       sortedStringify({ ...previousProps.balances, ...previousProps.selectedPairRoutes }) !==
       sortedStringify({ ...this.props.balances, ...this.props.selectedPairRoutes })
-    ) {
-      this.updateInputs();
-    }
+      ) {
+        this.updateInputs();
+      }
+
   }
 
   async getOfferAndAskPools(
@@ -443,8 +446,9 @@ export class SwapTab extends React.Component<
     this.updateInputsFromBestRoute();
   }
   symbolFromAddress = (identifier: string) => {
+    const uniqueSymbols = ['SCRT','SEFI','CSHBK','sSCRT']
     const symbol = this.props.tokens.get(identifier)?.symbol
-    if(symbol == 'SEFI' || symbol?.includes("lp") || symbol == 'CSHBK'){
+    if(uniqueSymbols.includes(symbol)){
       return symbol
     }else{
       return symbol?.substring(1,symbol.length);
@@ -452,8 +456,6 @@ export class SwapTab extends React.Component<
   };
 
   render() {
-    console.log("from",this.symbolFromAddress(this.state.fromToken))
-    console.log("to",this.symbolFromAddress(this.state.toToken))
     // console.log(this.props.tokens)
     const pair = this.props.selectedPair;
 
@@ -744,10 +746,8 @@ export class SwapTab extends React.Component<
                     }`,
                   );
                 }
-                
-                await this.props.user.updateBalanceForSymbol(this.symbolFromAddress(fromToken));
-                await this.props.user.updateBalanceForSymbol(this.symbolFromAddress(toToken));
-                await this.props.user.updateScrtBalance();
+                await this.props.updateBalances()
+
               } catch (error) {
                 console.error('Swap error', error);
                 const txHash = error?.txHash;

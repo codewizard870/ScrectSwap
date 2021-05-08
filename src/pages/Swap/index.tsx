@@ -143,6 +143,19 @@ export class SwapRouter extends React.Component<
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
   }
+  async updateBalances (){
+    try {
+      console.log("Updating balances")
+      const newBalances = {};
+      const { selectedToken0, selectedToken1 } = this.state;
+      newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
+      newBalances[selectedToken0] = await this.refreshTokenBalance(selectedToken0);
+      this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
+      await this.props.user.updateScrtBalance();
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   async componentDidMount() {
     window.onhashchange = this.onHashChange;
@@ -658,6 +671,7 @@ export class SwapRouter extends React.Component<
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
                   isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
+                  updateBalances={this.updateBalances.bind(this)}
                 />
               {/* {isProvide && (
                 <ProvideTab

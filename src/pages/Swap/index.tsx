@@ -78,6 +78,7 @@ export class SwapRouter extends React.Component<
     selectedToken1: string;
     queries: string[];
     routerSupportedTokens: Set<string>;
+    routerOnline: boolean;
     routingGraph: { [token0: string]: { [token1: string]: number } };
     selectedPairRoutes: string[][];
   }
@@ -97,6 +98,7 @@ export class SwapRouter extends React.Component<
       selectedToken1: '',
       queries: [],
       routerSupportedTokens: new Set(),
+      routerOnline: false,
       routingGraph: {},
       selectedPairRoutes: [],
     };
@@ -190,7 +192,7 @@ export class SwapRouter extends React.Component<
           }),
         );
         routerSupportedTokens.add('uscrt');
-        this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
+        this.setState({ routerSupportedTokens, routerOnline: true }, this.updateRoutingGraph);
         return;
       } catch (error) {
         console.log('Retrying to get supported tokens from router');
@@ -469,6 +471,12 @@ export class SwapRouter extends React.Component<
     }
 
     this.setState({ allTokens: swapTokens });
+    if (!this.state.routerOnline) {
+      this.setState(
+        { routerSupportedTokens: new Set(swapTokens.keys()), routerOnline: false },
+        this.updateRoutingGraph,
+      );
+    }
 
     return swapTokens;
   };
@@ -651,7 +659,7 @@ export class SwapRouter extends React.Component<
                   refreshPools={this.refreshBalances}
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
-                  isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
+                  isLoadingSupportedTokens={!this.state.routerOnline}
                 />
               )}
               {isProvide && (

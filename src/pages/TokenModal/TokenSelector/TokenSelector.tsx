@@ -48,6 +48,9 @@ export const TokenSelector = (props: {
   const filteredTokens = props.tokens.filter(t => {
     return (t.symbol + String(t.address)).toLowerCase().includes(searchText);
   });
+  const renderThumbVertical=()=>{
+    return <div className={`${styles.thumb} ${styles[theme.currentTheme]}`}></div>
+  }
   const {theme} =useStores();
   return (
     <Modal
@@ -93,7 +96,7 @@ export const TokenSelector = (props: {
             </div>
           ) : (
             <div className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}>
-              <Scrollbars className={styles.listTokens__subcontainer}>
+              <Scrollbars renderThumbVertical={renderThumbVertical} className={styles.listTokens__subcontainer}>
                 {
                   filteredTokens
                     .sort((a, b) => {

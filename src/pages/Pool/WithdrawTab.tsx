@@ -36,7 +36,9 @@ export class WithdrawTab extends React.Component<
   }
 
   state = { searchText: '' };
-
+  renderThumbVertical=()=>{
+    return <div className={`${styles.thumb} ${styles[this.props.theme.currentTheme]}`}></div>
+  }
   render() {
     const pairs = Array.from(new Set(this.props.pairs.values()));
 
@@ -64,7 +66,7 @@ export class WithdrawTab extends React.Component<
             />
           </div>
         ) : null}
-        <Scrollbars style={{ width: 455, height: 300 }}  className={styles.withdrawLiquitityContent}>
+        <Scrollbars autoHide renderThumbVertical={this.renderThumbVertical} style={{ width: 455, height: 300 }}  className={styles.withdrawLiquitityContent}>
           {pairs
           .filter(p => {
             return (

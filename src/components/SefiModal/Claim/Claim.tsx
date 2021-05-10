@@ -73,7 +73,7 @@ const Claim = (props:{
               disabled={isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0}  
               onClick={()=>{props.onClaimSCRT()}} 
               className="claim-button"> 
-                Claim SEFI
+                {(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)?'Previously Claimed':'Claim SEFI'}
             </button>
           </div>
           <div className="claim-eth">
@@ -83,7 +83,7 @@ const Claim = (props:{
               disabled={isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0} 
               onClick={()=>{props.onClaimErc()}} 
               className="claim-button">
-                 Claim SEFI
+                {(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)?'Previously Claimed':'Claim SEFI'}
             </button>
           </div>
 

@@ -73,7 +73,7 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
   // getBalance();
   const {theme} = useStores();
   return (
-    <div style={{marginRight: '1.5rem', display: 'flex' }}>
+    <div className={`${styles.tokenWrapper} ${styles[theme.currentTheme]}`} style={{paddingRight: '1.5rem', display: 'flex' }}>
       <div className={`${styles.tokenInfoRow} ${styles[theme.currentTheme]}`} onClick={props.onClick}>
         <div className={cn(styles.tokenInfoItemsLeft)}>
           <Image  src={props.token.logo} avatar style={{ boxShadow: 'rgba(0, 0, 0, 0.075) 0px 6px 10px' }} />

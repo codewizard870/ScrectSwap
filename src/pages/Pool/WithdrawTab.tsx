@@ -66,8 +66,9 @@ export class WithdrawTab extends React.Component<
             />
           </div>
         ) : null}
-        <Scrollbars autoHide renderThumbVertical={this.renderThumbVertical} style={{ width: 455, height: 300 }}  className={styles.withdrawLiquitityContent}>
-          {pairs
+        <Scrollbars autoHide renderThumbVertical={this.renderThumbVertical} style={{ width: 472, height: 300 }}  className={styles.withdrawLiquitityContent}>
+          <div className={styles.lpTokensContainer}>
+            {pairs
           .filter(p => {
             return (
               p.contract_addr +
@@ -123,6 +124,7 @@ export class WithdrawTab extends React.Component<
               </span>
             );
           })}
+          </div>
         </Scrollbars >
       </Container>
     );

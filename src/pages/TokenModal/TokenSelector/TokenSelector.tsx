@@ -96,7 +96,7 @@ export const TokenSelector = (props: {
             </div>
           ) : (
             <div className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}>
-              <Scrollbars renderThumbVertical={renderThumbVertical} className={styles.listTokens__subcontainer}>
+              <Scrollbars autoHide renderThumbVertical={renderThumbVertical} className={styles.listTokens__subcontainer}>
                 {
                   filteredTokens
                     .sort((a, b) => {

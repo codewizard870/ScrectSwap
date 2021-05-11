@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { CosmWasmClient } from 'secretjs';
 import { Button, Container } from 'semantic-ui-react';
-import { canonicalizeBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
+import { canonicalizeBalance, displayHumanizedBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
 import * as styles from './styles.styl';
 import { SwapAssetRow } from '../SwapAssetRow/SwapAssetRow';
 import { TabsHeader } from './TabsHeader';
@@ -378,6 +378,8 @@ export class ProvideTab extends React.Component<
   }
 
   render() {
+    const pairSymbol = this.props.selectedPair?.lpTokenSymbol().replace('LP-', '');
+
     const buttonMessage = ButtonMessage(this.state.provideState);
 
     const [balanceA, balanceB] = this.getTokenBalances();
@@ -410,7 +412,46 @@ export class ProvideTab extends React.Component<
       amountA.dividedBy(poolA.plus(amountA)),
       amountB.dividedBy(poolB.plus(amountB)),
     );
-    
+    const rowStyle: CSSProperties = {
+      display: 'flex',
+      padding: '0.5em 0 0 0',
+      color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE",
+      fontFamily:'Poppins'
+    };
+    let lpShare = new BigNumber(0);
+    let lpShareJsxElement = lpTokenBalance; // View Balance
+    let pooledTokenA: string;
+    let pooledTokenB: string;
+
+    const lpTokenBalanceNum = new BigNumber(lpTokenBalance as BigNumber);
+    if (!lpTokenBalanceNum.isNaN()) {
+      if (lpTokenTotalSupply?.isGreaterThan(0)) {
+        console.log("lpTokenBalanceNum")
+        lpShare = lpTokenBalanceNum.dividedBy(lpTokenTotalSupply);
+
+        pooledTokenA = displayHumanizedBalance(
+          humanizeBalance(lpShare.multipliedBy(this.props.balances[`${this.state.tokenA}-${pairSymbol}`] as BigNumber), decimalsA),
+        );
+
+        pooledTokenB = displayHumanizedBalance(
+          humanizeBalance(lpShare.multipliedBy(this.props.balances[`${this.state.tokenB}-${pairSymbol}`] as BigNumber), decimalsB),
+        );
+
+        lpShareJsxElement = (
+          <span>{`${shareOfPoolNumberFormat.format(
+            lpTokenBalanceNum
+              .multipliedBy(100)
+              .dividedBy(lpTokenTotalSupply)
+              .toNumber(),
+          )}%`}</span>
+        );
+      } else {
+        pooledTokenA = '0';
+        pooledTokenB = '0';
+        lpShareJsxElement = <span>0%</span>;
+      }
+    }
+  
     return (
       <Container className={`${styles.swapContainerStyle} ${styles[this.props.theme.currentTheme]}`}>
         <TabsHeader />
@@ -467,6 +508,28 @@ export class ProvideTab extends React.Component<
           />
         )}
         {lpTokenBalance !== undefined && (
+          <>
+          <div style={rowStyle}>
+            <span>Your Total Pool Tokens</span>
+            <FlexRowSpace />
+            {lpTokenBalanceNum.isNaN()
+              ? lpTokenBalance
+              : displayHumanizedBalance(humanizeBalance(lpTokenBalanceNum, 6))}
+          </div>
+          {!lpTokenBalanceNum.isNaN() && (
+                <>
+                  <div style={rowStyle}>
+                    <span style={{ margin: 'auto' }}>{`Pooled ${this.props.tokens.get(this.state.tokenA)?.symbol}`}</span>
+                    <FlexRowSpace />
+                    <span style={{ margin: 'auto' }}>{pooledTokenA}</span>
+                  </div>
+                  <div style={rowStyle}>
+                    <span style={{ margin: 'auto' }}>{`Pooled ${this.props.tokens.get(this.state.tokenB)?.symbol}`}</span>
+                    <FlexRowSpace />
+                    <span style={{ margin: 'auto'}}>{pooledTokenB}</span>
+                  </div>
+                </>
+              )}
           <div
             style={{
               display: 'flex',
@@ -486,6 +549,7 @@ export class ProvideTab extends React.Component<
               }
             })()}
           </div>
+          </>
         )}
         {!gainedShareOfPool.isNaN() && (
           <div

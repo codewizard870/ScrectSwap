@@ -32,11 +32,11 @@ export const OperationType = (props: { type: EXCHANGE_MODE }) => {
 };
 
 export const Price = observer(
-  (props: { value: number; valueUsd?: number; isEth?: boolean; boxProps?: BoxProps; token?: string }) => {
+  (props: { value: number | string; valueUsd?: number; isEth?: boolean; boxProps?: BoxProps; token?: string }) => {
     const { user } = useStores();
 
     const tokenName = props.token || (props.isEth ? 'ETH' : 'SCRT');
-    const valueUsd = props.valueUsd ? props.valueUsd : props.value * (props.isEth ? user.ethRate : user.scrtRate);
+    const valueUsd = props.valueUsd ? props.valueUsd : Number(props.value) * (props.isEth ? user.ethRate : user.scrtRate);
     return (
       <Box direction="column" align="end" justify="center" pad={{ right: 'medium' }} {...props.boxProps}>
         <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 3 }}>{`${props.value} ${tokenName}`}</Text>
@@ -92,8 +92,8 @@ export const ERC20Token = observer((props: IERC20TokenProps) => {
       return token.display_props.proxy_symbol ? (
         <Box>{token.display_props.proxy_symbol}</Box>
       ) : (
-          <Box>{token.display_props.symbol}</Box>
-        );
+        <Box>{token.display_props.symbol}</Box>
+      );
     }
   } else if (value === TOKEN.ETH) {
     return <Box>ETH</Box>;
@@ -119,8 +119,8 @@ export const SecretToken = observer((props: ISecretTokenProps) => {
       return token.display_props.proxy_symbol ? (
         <Box>{token.display_props.symbol}</Box>
       ) : (
-          <Box>secret{token.display_props.symbol}</Box>
-        );
+        <Box>secret{token.display_props.symbol}</Box>
+      );
     }
   } else if (value === TOKEN.ETH) {
     return <Box>secretETH</Box>;

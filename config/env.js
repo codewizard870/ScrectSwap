@@ -70,6 +70,9 @@ function getClientEnvironment(publicUrl) {
         SECRET_POST_ADDRESS: process.env.SECRET_POST_ADDRESS,
         SECRET_WS: process.env.SECRET_WS,
         SSCRT_CONTRACT: process.env.SSCRT_CONTRACT,
+        SIENNA_CONTRACT: process.env.SIENNA_CONTRACT,
+
+        SIENNA_PROXY_CONTRACT: process.env.SIENNA_PROXY_CONTRACT,
         WSCRT_PROXY_CONTRACT: process.env.WSCRT_PROXY_CONTRACT,
 
         AMM_FACTORY_CONTRACT: process.env.AMM_FACTORY_CONTRACT,

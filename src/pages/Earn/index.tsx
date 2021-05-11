@@ -129,7 +129,7 @@ export const EarnRewards = observer((props: any) => {
             locked in the rewards contract and your rewards. If you can't see these figures please refresh your browser.
           </p>
         </div>
-        <div
+        {/* <div
           style={{
             display: 'flex',
             minWidth: '550px',
@@ -171,7 +171,7 @@ export const EarnRewards = observer((props: any) => {
             </a>
             . 🍣
           </p>
-        </div>
+        </div> */}
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData

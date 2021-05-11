@@ -20,7 +20,7 @@ import Jump from 'react-reveal/Jump';
 type NetworkTemplateInterface = {
   image: string;
   symbol: string;
-  amount: string;
+  amount: number;
 };
 
 const renderNetworkTemplate = (template: NetworkTemplateInterface, justify: any) => (
@@ -47,7 +47,7 @@ const renderNetworkTemplate = (template: NetworkTemplateInterface, justify: any)
 export const SwapConfirmation = observer(() => {
   const { exchange, user } = useStores();
   const [hash, setHash] = useState<string>(null);
-  const [calculated, setCalculated] = useState<string>(null);
+  const [calculated, setCalculated] = useState<number>(null);
   const [feePercentage, setFeePercentage] = useState<number>(0);
   const [isTokenLocked, setTokenLocked] = useState<boolean>(false);
 
@@ -100,9 +100,9 @@ export const SwapConfirmation = observer(() => {
   }, [exchange.txHash]);
 
   useEffect(() => {
-    let calculatedAmount = formatWithSixDecimals(Number(exchange.transaction.amount) - Number(exchange.swapFeeToken));
+    let calculatedAmount = Number(exchange.transaction.amount) - Number(exchange.swapFeeToken);
     if (Number(calculatedAmount) < 0) {
-      calculatedAmount = '0';
+      calculatedAmount = 0;
     }
     setCalculated(calculatedAmount);
     setFeePercentage(Number(exchange.swapFeeToken) / Number(exchange.transaction.amount));
@@ -113,7 +113,7 @@ export const SwapConfirmation = observer(() => {
       exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.ETH_TO_SCRT : EXCHANGE_MODE.SCRT_TO_ETH,
       exchange.transaction.tokenSelected.symbol,
     ),
-    amount,
+    amount: Number(amount),
     image: tokenImage,
   };
 
@@ -122,7 +122,7 @@ export const SwapConfirmation = observer(() => {
       exchange.mode === EXCHANGE_MODE.ETH_TO_SCRT ? EXCHANGE_MODE.SCRT_TO_ETH : EXCHANGE_MODE.ETH_TO_SCRT,
       exchange.transaction.tokenSelected.symbol,
     ),
-    amount: formatWithSixDecimals(Number(amount) * (1 - feePercentage)),
+    amount: calculated,
     image: tokenImage,
   };
 
@@ -239,7 +239,7 @@ export const SwapConfirmation = observer(() => {
                   <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
                 ) : (
                   <Price
-                    value={Number(formatWithSixDecimals(exchange.swapFeeToken))}
+                    value={formatWithSixDecimals(exchange.swapFeeToken)}
                     valueUsd={exchange.swapFeeUSD}
                     token={formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                     boxProps={{ pad: {} }}
@@ -260,8 +260,8 @@ export const SwapConfirmation = observer(() => {
                 {!calculated ? (
                   <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" />
                 ) : (
-                  <Text bold size="small" color={calculated === '0' ? '#f37373' : '#212D5E'}>
-                    {calculated} {formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
+                  <Text bold size="small" color={calculated === 0 ? '#f37373' : '#212D5E'}>
+                    {formatWithSixDecimals(calculated)} {formatSymbol(EXCHANGE_MODE.ETH_TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                   </Text>
                 )}
               </Box>
@@ -320,7 +320,7 @@ export const SwapConfirmation = observer(() => {
                 <Text color="#748695" size="xsmall">
                   You are about to move your secret tokens back to Ethereum. You will receive approximately{' '}
                   <b>
-                    {calculated} {symbol}
+                    {formatWithSixDecimals(calculated)} {symbol}
                   </b>{' '}
                   and{' '}
                   <b>

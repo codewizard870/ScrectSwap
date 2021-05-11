@@ -24,7 +24,7 @@ import { UserStoreEx } from '../../stores/UserStore';
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_ROUTE = 'Cannot find a route';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
-const BUTTON_CONNECTING_TO_CHAIN = 'Connection to Secret Network';
+const BUTTON_CONNECTING_TO_CHAIN = 'Connect Wallet to Trade';
 const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
 const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';

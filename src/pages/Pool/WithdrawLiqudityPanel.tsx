@@ -28,6 +28,8 @@ export class WithdrawLiquidityPanel extends React.Component<
     getBalance: CallableFunction;
     onCloseTab: CallableFunction;
     theme: Theme;
+    isRowOpen: boolean;
+    setIsRowOpen: Function;
   },
   {
     isLoading: boolean;
@@ -161,17 +163,18 @@ export class WithdrawLiquidityPanel extends React.Component<
           <Accordion.Title
             active={this.state.isActive}
             onClick={async () => {
-              this.setState({ isActive: !this.state.isActive }, async () => {
-                if (this.state.isActive) {
-                  this.setState({ isLoadingBalance: true });
-                  // get balances and subscribe for events for this pair
-                  await this.props.getBalance(selectedPair);
-                  this.setState({ isLoadingBalance: false });
-                } else {
-                  // unsubscribe
-                  this.props.onCloseTab(selectedPair);
-                }
-              });
+              if(this.state.isActive && this.props.isRowOpen){
+                this.setState({ isActive: false });
+                this.props.setIsRowOpen(false);
+              }else if(!this.props.isRowOpen){
+                this.setState({ isActive:true,isLoadingBalance: true });
+                // get balances and subscribe for events for this pair
+                await this.props.getBalance(selectedPair);
+                this.setState({ isLoadingBalance: false });
+                this.props.setIsRowOpen(true);
+              }else{
+                this.props.notify('error','You may not be able to open more than one row at the same time.')
+              }
             }}
           >
             <div

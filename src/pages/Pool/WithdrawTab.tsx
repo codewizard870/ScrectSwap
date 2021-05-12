@@ -29,15 +29,18 @@ export class WithdrawTab extends React.Component<
     onCloseTab: CallableFunction;
     theme: Theme;
   },
-  { searchText: string }
+  { searchText: string ,isOpen:boolean}
 > {
   constructor(props) {
     super(props);
   }
 
-  state = { searchText: '' };
+  state = { searchText: '',isOpen:false };
   renderThumbVertical=()=>{
     return <div className={`${styles.thumb} ${styles[this.props.theme.currentTheme]}`}></div>
+  }
+  setIsOpen(isRowOpen:boolean):void{
+    this.setState({isOpen:isRowOpen})
   }
   render() {
     const pairs = Array.from(new Set(this.props.pairs.values()));
@@ -120,6 +123,8 @@ export class WithdrawTab extends React.Component<
                   getBalance={this.props.updateToken}
                   onCloseTab={this.props.onCloseTab}
                   theme={this.props.theme}
+                  isRowOpen={this.state.isOpen}
+                  setIsRowOpen={(isOpen:boolean)=>{this.setIsOpen(isOpen)}}
                 />
               </span>
             );

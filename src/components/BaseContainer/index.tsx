@@ -35,6 +35,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
           >
             <div id="notifications_container"></div>
             {children}
+            <div className={`${styles.bridge_link__container}`}><a href="https://bridge.scrt.network/">Bridge your ETH assets</a></div>
             <div className={`${styles.secured_container}`}>
               <img src="/static/securedby.svg" alt=""/>
             </div>

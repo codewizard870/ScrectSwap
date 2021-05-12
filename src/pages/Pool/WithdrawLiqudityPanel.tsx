@@ -234,7 +234,7 @@ export class WithdrawLiquidityPanel extends React.Component<
               {lpTokenBalanceNum.isNaN() || lpTokenBalanceString === '0' ? null : (
                 <>
                   <Divider horizontal>
-                    <Header as="h4">Withdraw</Header>
+                    <Header as="h4" style={{color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE"}}>Withdraw</Header>
                   </Divider>
                   <div
                     style={{

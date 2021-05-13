@@ -47,29 +47,24 @@ export const EthBridge = observer((props: any) => {
             <Message info>
               <Message.Header>
                 The
-                <a
-                  href="https://scrt.network/blog/sefi-is-live-on-mainnet"
-                  style={{ textDecoration: 'none' }}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href="https://app.secretswap.io" style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer">
                   {' '}
-                  SEFI governance token{' '}
+                  New SecretSwap App{' '}
                 </a>
                 is now LIVE!
               </Message.Header>
               <p>
-                {'Click '}
-                <a href="/sefi" style={{ textDecoration: 'underline' }} rel="noreferrer">
-                  HERE
-                </a>{' '}
-                to claim your genesis tokens (if eligible) and to stake your SEFI and LP tokens.
+                {/*{'Click '}*/}
+                {/*<a href="/sefi" style={{ textDecoration: 'underline' }} rel="noreferrer">*/}
+                {/*  HERE*/}
+                {/*</a>{' '}*/}
+                {/*Check it out now!*/}
               </p>
             </Message>
-            <Message success>
-              <p>SSCRT{'->'}WSCRT swap issues have been resolved. Happy swapping!</p>
-            </Message>
-            <Box className={styles.headerBridge} fill  margin={{ bottom: 'medium', top: 'large' }}>
+            {/*<Message success>*/}
+            {/*  <p>No current issues </p>*/}
+            {/*</Message>*/}
+            <Box className={styles.headerBridge} fill margin={{ bottom: 'medium', top: 'large' }}>
               <Title bold>Secret Bridge</Title>
               <WalletBalances />
             </Box>

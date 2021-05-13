@@ -21,7 +21,6 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
 
     const [mobileMenu, setMobileMenu] = useState<boolean>(false);
 
-
     const isExplorer = history.location.pathname === '/explorer';
     const isSwap = history.location.pathname === '/swap';
     const isTokens = history.location.pathname === '/tokens';
@@ -49,9 +48,7 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
           // boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)',
         }}
       >
-
         <Box className={styles.headerContainer} style={{ minWidth, maxWidth }}>
-
           <Box className={styles.mobileMenuButton} margin={{ right: 'large' }} onClick={() => setMobileMenu(true)}>
             <Icon glyph="Menu" size="medium" color={'rgb(33, 45, 94)'} />
           </Box>
@@ -74,7 +71,6 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
           </Box>
 
           <Box className={cn(mobileMenu ? styles.mobileMenu : styles.menu)} gap="15px">
-
             <Box style={{ display: mobileMenu ? 'flex' : 'none' }} onClick={() => setMobileMenu(false)}>
               <Icon glyph="Close" size="medium" color={'rgb(33, 45, 94)'} />
             </Box>
@@ -116,7 +112,9 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             <Box
               className={cn(styles.itemToken, isSeFi ? styles.selected : '')}
               onClick={() => {
-                routing.push(`/sefi`);
+                const url = `https://app.secretswap.io`;
+                const win = window.open(url, '_blank');
+                win.focus();
               }}
             >
               <Text>SeFi</Text>
@@ -125,7 +123,9 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             <Box
               className={cn(styles.itemToken, isSwap ? styles.selected : '')}
               onClick={() => {
-                routing.push(`/swap`);
+                const url = `https://app.secretswap.io`;
+                const win = window.open(url, '_blank');
+                win.focus();
               }}
             >
               <Text>Swap</Text>

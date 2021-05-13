@@ -53,8 +53,8 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
 
                         <ul className='nav_menu__items'>
                             <li className={(isSwap) ? 'active':''}><Link  to={"/swap"}>Swap</Link></li>
-                            <li><span>|</span></li>
-                            <li  className={(isPool)  ? 'active':''}><Link  to={"/pool"}>Pool</Link></li>
+                            <li className='pool_link'><span>|</span></li>
+                            <li  className={(isPool)  ? 'active pool_link':'pool_link'}><Link  to={"/pool"}>Pool</Link></li>
                             <li><span>|</span></li>
                             <li  className={(isSeFi) ? 'active':''}><Link  to="/sefi">Earn</Link></li>
                             {/* <li><span>|</span></li> */}

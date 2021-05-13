@@ -1,3 +1,4 @@
+
 .accordion {
   max-width: calc(100vw - 24px);
   min-width: 1168px;
@@ -5,11 +6,63 @@
   margin: 13px 0;
   position: relative;
   border-radius: 16px;
-  &.light{
+  .title {
+  }
+
+  @media only screen and (max-width: 1200px) {
+    width: calc(100vw - 24px);
+    min-width: auto;  
+  }
+  
+  @media only screen and (max-width: 425px) {
+    width: calc(100vw - 24px);
+    min-width: auto;  
+  }
+  
+  .responsive_row {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: space-between;
+    grid-template-columns: 100px 1fr 1fr 1fr 1fr;
+    justify-self: center;
+    @media only screen and (max-width: 425px) {
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-flow: row;
+      gap: 16px;
+      padding: 26px 26px 26px 26px !important;
+      div {
+        padding-left: 6px;
+        padding-bottom: 6px;
+        &:nth-child(1){
+          order:0;
+        }
+        &:nth-child(2){
+          order:2;
+        }
+        &:nth-child(3){
+          order:2;
+        }
+      }
+    }
+    .arrow {
+      justify-self: end;
+      @media only screen and (max-width: 425px) {
+        position: absolute;
+        right: 16px;
+        top: 0;
+        bottom: 0;
+        margin-bottom: auto !important;
+        margin-top: auto !important;
+      }
+    }
+  }
+
+  &.light {
     background: #ffffff;
     box-shadow: 0px 0px 5px 1px rgba(24, 39, 75, 0.12);
   }
-  &.dark{
+
+  &.dark {
     background: #0E0E10;
     box-shadow: 0px 0px 10px 1px rgba(115, 115, 115, 0.12);
   }
@@ -18,15 +71,18 @@
 .accordionHaveDeposit {
   @extend .accordion;
 }
-.create_viewingkey{
+
+.create_viewingkey {
   font-size: 16px;
   font-weight: normal;
   display: flex;
   align-items: center;
-  &.light{
+
+  &.light {
     color: black;
   }
 }
+
 .assetRow {
   width: 100%;
   height: calc(100% - 48px);
@@ -35,32 +91,36 @@
   flex-wrap: nowrap;
   align-items: center;
   font-size: 10px;
-  padding:  26px 42px 26px 42px !important; 
+  padding: 26px 42px 26px 42px !important;
 }
-.balance_contianer{
-  div{
+
+.balance_contianer {
+  div {
     font-size: 16px;
-    height: 20px; 
+    height: 20px;
   }
 }
+
 .assetIcon {
   width: 100px;
   height: 40px;
   margin-right: 24px;
   display: flex;
   flex-direction: row;
-  img{
+
+  img {
     margin: 0 5px;
     width: 35px !important;
     height: 35px !important;
   }
 }
 
-.title_content__center{
-    display: grid;
-    width: 100%;
-    grid-template-columns: 33% 33% 33%;
+.title_content__center {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 33% 33% 33%;
 }
+
 .title_item__container {
   display: flex;
   align-items: center;
@@ -97,20 +157,24 @@
   flex-direction: column;
   justify-content: flex-end;
   margin: 0;
-  &.dark{
+
+  &.dark {
     color: white;
   }
-  &.light{
+
+  &.light {
     color: #1B1B1B;
   }
 }
-.deposit_content{
+
+.deposit_content {
   width: 100%;
 }
+
 .claimBox {
   display: flex;
   justify-content: flex-end;
-  padding: 16px; 
+  padding: 16px;
   border-radius: 8px;
   align-items: center;
 }
@@ -132,23 +196,27 @@
 .form {
   position: relative;
   padding-bottom: 12px;
-  width: 100%; 
-  &.light{
-    input{
+  width: 100%;
+
+  &.light {
+    input {
       color: #212529;
     }
   }
-  &.dark{
-    input{ 
+
+  &.dark {
+    input {
       background: #0E0E10;
-      color:#D6D6D6;
-      &:focus{
-        color:#D6D6D6;
+      color: #D6D6D6;
+
+      &:focus {
+        color: #D6D6D6;
         background: #0E0E10;
         border: 1px solid #D6D6D6;
       }
     }
   }
+
   // transition box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms
 }
 
@@ -167,25 +235,31 @@
 .h3 {
   padding-right: 24px;
 }
-.content{
-  &.dark{
+
+.content {
+  &.dark {
     background: #303036;
   }
-  &.light{
+
+  &.light {
     background: #FCF9F3;
   }
-   padding:  26px 42px 26px 42px !important;
+
+  padding: 26px 42px 26px 42px !important;
 }
+
 .amountRow {
   min-width: 10px;
   padding-bottom: 1rem;
   display: flex;
   justify-content: space-between;
-  .button{
-    color:#5F5F6B;
+
+  .button {
+    color: #5F5F6B;
   }
 }
-.claim_label{
+
+.claim_label {
   display: flex;
   border: 1px solid #DEDEDE;
   box-sizing: border-box;
@@ -193,20 +267,24 @@
   padding: 8.5px 8px;
   margin-top: 0.3em;
   margin-right: 1rem;
-  font-family: 'Poppins',Arial, Helvetica, sans-serif;
+  font-family: 'Poppins', Arial, Helvetica, sans-serif;
   font-size: 22px;
   font-weight: 600;
-  &.light{
+
+  &.light {
     background: white;
-    color: #ff726e ;
-    strong{
+    color: #ff726e;
+
+    strong {
       color: #0D1017;
     }
   }
-  &.dark{
+
+  &.dark {
     background: transparent;
-    color: #777 ;
-    strong{
+    color: #777;
+
+    strong {
       color: white;
       margin: 0 .5rem
     }
@@ -216,15 +294,18 @@
 .button {
   border-radius: 4px;
   font-weight: 400;
+
   // width 100%
-  &.light{
+  &.light {
     color: white !important;
     background: #0D1017 !important;
   }
-  &.dark{
+
+  &.dark {
     color: black !important;
     background: white !important;
   }
+
   white-space: nowrap;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -237,7 +318,7 @@
   padding: 11px 20px !important;
 
   &:hover {
-    background-color:rgba(13, 16, 23, .9);
+    background-color: rgba(13, 16, 23, .9);
   }
 
   &:disabled {
@@ -255,12 +336,16 @@
     background-color: rgba(255, 114, 110, .2);
   }
 }
-.title{
+
+.title {
   font-size: 16px;
   font-family: 'Poppins', BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  font-weight: 600; 
+  font-weight: 600;
   text-align: left;
 }
+
+
+
 .subtitle {
   font-size: 16px;
   font-family: 'Roboto', BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
@@ -272,6 +357,7 @@
   text-overflow: ellipsis;
   float: left;
 }
+
 .iconinfo__popup {
   background: #5f5f6b !important;
   border-radius: 4px !important;
@@ -280,14 +366,17 @@
   min-width: 350px !important;
   font-family: Poppins, Arial, Helvetica, sans-serif;
   font-weight: 400;
+
   a {
     color: #ff726e !important;
     text-decoration: underline;
     font-size: 12px;
   }
+
   p {
     font-size: 12px;
   }
+
   &::before {
     background: #5f5f6b !important;
     border-radius: 4px !important;
@@ -295,14 +384,16 @@
     display: flex;
   }
 }
+
 .icon_info {
   color: #ff726e;
   border: 0.1px solid #ff726e;
   margin: 0 !important;
-  &::before{
+
+  &::before {
     display: flex;
     justify-content: center;
     height: 100%;
-    align-items: center;  
+    align-items: center;
   }
 }

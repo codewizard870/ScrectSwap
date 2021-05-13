@@ -190,7 +190,7 @@ class EarnRow extends Component<
               </div>
             )
           }
-          <div className={cn(styles.title_content__center)}>
+
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
                 title={
@@ -218,8 +218,8 @@ class EarnRow extends Component<
               <SoftTitleValue title={formatWithTwoDecimals(this.props.token.rewards)} subTitle={this.props.callToAction} />
             </div> */}
             
-          </div>
-          <Icon style={{
+
+          <Icon className={`${styles.arrow}`} style={{
             color:(this.props.theme.currentTheme == 'dark')?'white':''
           }} name="dropdown" />
         </Accordion.Title>

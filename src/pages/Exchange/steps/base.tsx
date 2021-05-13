@@ -6,7 +6,7 @@ import * as styles from '../styles.styl';
 import { Box } from 'grommet';
 import Web3 from 'web3';
 import * as bech32 from 'bech32';
-import { divDecimals, unlockToken } from 'utils';
+import { divDecimals, sleep, unlockToken } from 'utils';
 import { EXCHANGE_MODE, ITokenInfo, TOKEN } from 'stores/interfaces';
 import { Form, Input, NumberInput } from 'components/Form';
 import { ERC20Select } from '../ERC20Select';
@@ -193,8 +193,11 @@ export const Base = observer(() => {
   }, [exchange.step.id]);
 
   useEffect(() => {
-    onSelectNetwork(userMetamask.network);
-  }, [userMetamask.network, userMetamask.chainId]);
+    const stuff = async () => {
+      await onSelectNetwork(userMetamask.network);
+    };
+    stuff();
+  }, [userMetamask.network, userMetamask.chainId, userMetamask.ethAddress]);
 
   useEffect(() => {
     if (
@@ -294,7 +297,13 @@ export const Base = observer(() => {
 
     const update = async () => {
       const amount = user.balanceToken[token.src_coin];
+      console.log(`${userMetamask.ethAddress} ${JSON.stringify(userMetamask.balanceToken)}`);
       const isLocked = amount === unlockToken;
+
+      while (userMetamask.balancesLoading) {
+        await sleep(50);
+      }
+
       const balance = await getBalance(exchange, userMetamask, user, isLocked, token);
 
       setBalance(balance);
@@ -306,27 +315,29 @@ export const Base = observer(() => {
     setTokenLocked(false);
 
     try {
-      if (token.src_address !== 'native') await userMetamask.setToken(value, tokens);
+      if (token.src_address !== 'native') {
+        await userMetamask.setToken(value, tokens);
+      }
       await user.updateBalanceForSymbol(token.display_props.symbol);
-      update();
+      await update();
     } catch (e) {
       notify(
         'error',
         `Error fetching ${token.display_props.symbol} balance, make sure you are on the right network and have it added on your Metamask!`,
       );
-      update();
+      await update();
     }
   };
 
-  const onSelectNetwork = network => {
+  const onSelectNetwork = async (network: NETWORKS) => {
+    userMetamask.setNetwork(network);
     setMetamaskNetork(network);
-    userMetamask.network = network;
     exchange.clear();
-    onSelectedToken('native');
     setErrors({ token: '', address: '', amount: '' });
     setProgress(0);
     setTokenLocked(false);
     exchange.stepNumber = EXCHANGE_STEPS.BASE;
+    await onSelectedToken('native');
   };
 
   const onClickHandler = async (callback: () => void) => {

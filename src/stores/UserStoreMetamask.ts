@@ -4,7 +4,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as contract from '../blockchain-bridge';
 import { getErc20Balance, getEthBalance } from '../blockchain-bridge';
-import { divDecimals, formatWithSixDecimals } from '../utils';
+import { divDecimals, formatWithSixDecimals, sleep } from '../utils';
 import Web3 from 'web3';
 import { TOKEN } from './interfaces';
 import { NETWORKS } from '../pages/EthBridge';
@@ -16,8 +16,8 @@ interface ConnectInfo {
   chainId: string;
 }
 interface NetworkProps {
-  mainnet: boolean,
-  network: NETWORKS
+  mainnet: boolean;
+  network: NETWORKS;
 }
 
 const chainIdMap: Record<string, NetworkProps> = {
@@ -49,7 +49,7 @@ export class UserStoreMetamask extends StoreConstructor {
   @observable public mainnet: boolean;
 
   public status: statusFetching;
-
+  public balancesLoading: boolean = false;
   @observable public isMetaMask = false;
   private provider: any;
 
@@ -68,9 +68,6 @@ export class UserStoreMetamask extends StoreConstructor {
   constructor(stores) {
     super(stores);
 
-    this.getBalances();
-    setInterval(() => this.getBalances(), 5000);
-
     const session = localStorage.getItem('metamask_session');
 
     const sessionObj = JSON.parse(session);
@@ -82,6 +79,9 @@ export class UserStoreMetamask extends StoreConstructor {
     if (sessionObj && sessionObj.erc20Address) {
       this.setToken(sessionObj.erc20Address);
     }
+
+    this.getBalances();
+    setInterval(() => this.getBalances(), 5000);
   }
 
   @action.bound
@@ -92,6 +92,7 @@ export class UserStoreMetamask extends StoreConstructor {
       this.ethAddress = Web3.utils.toChecksumAddress(accounts[0]);
       this.syncLocalStorage();
     }
+    this.getBalances();
   }
 
   getCurrencySymbol() {
@@ -132,15 +133,15 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   isCorrectNetworkSelected() {
-    if (process.env.ENV === "MAINNET") {
-      return chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network
+    if (process.env.ENV === 'MAINNET') {
+      return chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network;
     }
 
-    if (process.env.ENV === "TESTNET") {
-      return !chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network
+    if (process.env.ENV === 'TESTNET') {
+      return !chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network;
     }
 
-    return false
+    return false;
   }
 
   @action.bound
@@ -179,7 +180,7 @@ export class UserStoreMetamask extends StoreConstructor {
       // @ts-ignore
       provider.on('chainChanged', chainId => {
         this.chainName = this.getNetworkName(chainId);
-        this.setNetwork(chainId);
+        this.setNetworkFromChainId(chainId);
       });
 
       if (!provider) {
@@ -189,7 +190,7 @@ export class UserStoreMetamask extends StoreConstructor {
       this.provider = provider;
 
       if (this.provider.chainId) {
-        this.setNetwork(this.provider.chainId);
+        this.setNetworkFromChainId(this.provider.chainId);
       }
 
       this.provider.autoRefreshOnNetworkChange = false;
@@ -201,10 +202,9 @@ export class UserStoreMetamask extends StoreConstructor {
         const params = await this.provider.request({
           method: 'eth_requestAccounts',
         });
-        this.handleAccountsChanged(params)
-        this.setNetwork(connectInfo.chainId);
+        this.handleAccountsChanged(params);
+        this.setNetworkFromChainId(connectInfo.chainId);
       });
-
 
       this.provider.on('disconnect', () => {
         this.isAuthorized = false;
@@ -250,7 +250,12 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   @action.bound
-  private setNetwork(chainId: string) {
+  setNetwork(network: NETWORKS) {
+    this.network = network;
+  }
+
+  @action.bound
+  private setNetworkFromChainId(chainId: string) {
     this.chainId = chainId;
 
     try {
@@ -260,7 +265,6 @@ export class UserStoreMetamask extends StoreConstructor {
       console.error('Unknown chain ID, defaulting to ETH');
       this.network = NETWORKS.ETH;
     }
-
   }
 
   private syncLocalStorage() {
@@ -274,13 +278,19 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   @action.bound public getBalances = async () => {
-    if (!this.ethAddress) return
+    if (!this.ethAddress) return;
+
+    this.balancesLoading = true;
+
+    while (this.stores.tokens.isPending) {
+      await sleep(50);
+    }
+    // always load native balance, because why not? And this bypasses race conditions with this.stores.tokens
+    this.nativeBalance = await getEthBalance(this.ethAddress);
+    this.nativeBalanceMin = this.balanceTokenMin[this.getNetworkFullName()];
+
     for (const token of this.stores.tokens.allData) {
       if (token.src_address === 'native') {
-        getEthBalance(this.ethAddress).then(b => {
-          this.nativeBalance = b;
-        });
-        this.nativeBalanceMin = this.balanceTokenMin['Ethereum'];
         continue;
       }
       getErc20Balance(this.ethAddress, token.src_address).then(b => {
@@ -289,6 +299,8 @@ export class UserStoreMetamask extends StoreConstructor {
       });
       this.balanceTokenMin[token.src_coin] = token.display_props.min_to_scrt;
     }
+
+    this.balancesLoading = false;
   };
 
   @action.bound public setToken = async (erc20Address: string, tokens?) => {

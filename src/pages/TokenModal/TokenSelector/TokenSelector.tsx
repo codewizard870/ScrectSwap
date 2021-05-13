@@ -58,8 +58,8 @@ export const TokenSelector = (props: {
       onOpen={() => setOpen(true)}
       open={open}
       trigger={<TokenSelectorButton token={props.token} />}
-      style={{ width: '700px' }}
       dimmer={'blurring'}
+      id={styles.modal_container}
     >
       <Modal.Header style={{border:'none',background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -148,7 +148,7 @@ export const TokenSelector = (props: {
           </div>
         )}
       </Modal.Content>
-      <Modal.Actions style={{borderTop:'none',background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE', display: 'flex' }}>
+      <Modal.Actions id={styles.actions} style={{borderTop:'none',background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE', display: 'flex' }}>
         <ClearCustomTokensButton />
         <div style={{ width: '700px', justifyContent: 'flex-start' }}>
           <AddTokenModal tokens={props.tokens} token={props.token} addToken={address => setLocalToken(address)} />

@@ -14,7 +14,7 @@ export const ClearCustomTokensButton = () => {
         LocalStorageTokens.clear();
       }}
     >
-      <Text size="medium" color={(theme.currentTheme == 'light')?'red':'#DEDEDE'}>
+      <Text size="small" color={(theme.currentTheme == 'light')?'red':'#DEDEDE'}>
         Clear Custom Tokens
       </Text>
     </button>

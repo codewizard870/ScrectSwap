@@ -2,7 +2,6 @@
   align-items: center;
   display: flex;
   justify-content: space-between;
-  font-size: 16px;
   height: 30px;
   padding: 0 0.4rem;
   width: 110px;
@@ -47,8 +46,7 @@
 .selectATokenButton {
   border-radius: 10px;
   font-family: 'Poppins',Arial, Helvetica, sans-serif;
-  height: 44px; 
-  font-size: 16px;
+  height: 44px;
   width: 200px; 
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -158,4 +156,15 @@
   &.light {
     background: #ccc;
   }  
+}
+#modal_container{
+  width: 700px;
+  @media only screen and (max-width: 753px) {
+    width: 90%;  
+  }  
+}
+#actions{
+  @media only screen and (max-width: 753px) {
+    padding: 1rem !important
+  }    
 }

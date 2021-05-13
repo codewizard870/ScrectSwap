@@ -111,7 +111,6 @@ const getBalance = async (
     eth.minAmount = userMetamask.nativeBalanceMin || '0';
   }
 
-
   if (isLocked) {
     scrt.maxAmount = unlockToken;
   }
@@ -148,14 +147,18 @@ export const Base = observer(() => {
   const { signerHealth } = useStores();
 
   useEffect(() => {
-    const signers: ISignerHealth[] = signerHealth.allData;
+    const signers: ISignerHealth[] = signerHealth.allData.find(health => health.network === userMetamask.network)
+      ?.health;
 
-    if (signers.length === 0) {
+    if (!signers?.length) {
       return;
     }
 
     const parseHealth = (signers: ISignerHealth[]): boolean => {
       for (const signer of signers) {
+        // note: We don't currently support multiple leader accounts for different networks
+        // if we want to make the leader address change on a different network we need to add
+        // it here
         if (signer.signer === process.env.LEADER_ACCOUNT && signers.length >= Number(process.env.SIG_THRESHOLD)) {
           return true;
         }
@@ -190,7 +193,7 @@ export const Base = observer(() => {
   }, [exchange.step.id]);
 
   useEffect(() => {
-    onSelectNetwork(userMetamask.network)
+    onSelectNetwork(userMetamask.network);
   }, [userMetamask.network, userMetamask.chainId]);
 
   useEffect(() => {
@@ -315,16 +318,16 @@ export const Base = observer(() => {
     }
   };
 
-  const onSelectNetwork = (network) => {
-    setMetamaskNetork(network)
+  const onSelectNetwork = network => {
+    setMetamaskNetork(network);
     userMetamask.network = network;
-    exchange.clear()
-    onSelectedToken('native')
+    exchange.clear();
+    onSelectedToken('native');
     setErrors({ token: '', address: '', amount: '' });
     setProgress(0);
     setTokenLocked(false);
     exchange.stepNumber = EXCHANGE_STEPS.BASE;
-  }
+  };
 
   const onClickHandler = async (callback: () => void) => {
     if (!user.isAuthorized) {
@@ -358,16 +361,22 @@ export const Base = observer(() => {
 
   return (
     <Box fill direction="column" background="transparent">
-      <Box fill direction="row" justify="around" pad="xlarge" background="#f5f5f5" style={{ zIndex: 2, position: 'relative' }}>
+      <Box
+        fill
+        direction="row"
+        justify="around"
+        pad="xlarge"
+        background="#f5f5f5"
+        style={{ zIndex: 2, position: 'relative' }}
+      >
         <HeadShake spy={onSwap} delay={0}>
-
           <NetworkSelect
             value={metamaskNetwork}
             secret={exchange.mode === EXCHANGE_MODE.FROM_SCRT}
             balance={balance}
             toSecretHealth={toSecretHealth}
             fromSecretHealth={fromSecretHealth}
-            onChange={(network) => onSelectNetwork(network.id || network.value)}
+            onChange={network => onSelectNetwork(network.id || network.value)}
           />
         </HeadShake>
         <Box
@@ -390,14 +399,13 @@ export const Base = observer(() => {
           />
         </Box>
         <HeadShake spy={onSwap} delay={0}>
-
           <NetworkSelect
             value={metamaskNetwork}
             secret={exchange.mode === EXCHANGE_MODE.TO_SCRT}
             balance={balance}
             toSecretHealth={toSecretHealth}
             fromSecretHealth={fromSecretHealth}
-            onChange={(network) => onSelectNetwork(network.id || network.value)}
+            onChange={network => onSelectNetwork(network.id || network.value)}
           />
         </HeadShake>
       </Box>
@@ -523,28 +531,28 @@ export const Base = observer(() => {
             <Box width="50%" direction="column" style={{ position: 'relative' }}>
               {((exchange.mode === EXCHANGE_MODE.FROM_SCRT && userMetamask.isAuthorized) ||
                 (exchange.mode === EXCHANGE_MODE.TO_SCRT && user.isAuthorized)) && (
-                  <Box
-                    style={{
-                      fontWeight: 'bold',
-                      right: 0,
-                      top: 0,
-                      position: 'absolute',
-                      color: 'rgb(0, 173, 232)',
-                      textAlign: 'right',
-                    }}
-                    onClick={() => {
-                      if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
-                        exchange.transaction.ethAddress = userMetamask.ethAddress;
-                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
-                      } else {
-                        exchange.transaction.scrtAddress = user.address;
-                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
-                      }
-                    }}
-                  >
-                    Use my address
-                  </Box>
-                )}
+                <Box
+                  style={{
+                    fontWeight: 'bold',
+                    right: 0,
+                    top: 0,
+                    position: 'absolute',
+                    color: 'rgb(0, 173, 232)',
+                    textAlign: 'right',
+                  }}
+                  onClick={() => {
+                    if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
+                      exchange.transaction.ethAddress = userMetamask.ethAddress;
+                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
+                    } else {
+                      exchange.transaction.scrtAddress = user.address;
+                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
+                    }
+                  }}
+                >
+                  Use my address
+                </Box>
+              )}
 
               <Input
                 label={

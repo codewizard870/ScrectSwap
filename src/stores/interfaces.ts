@@ -1,5 +1,6 @@
 import { NativeToken, Token } from 'pages/Swap/types/trade';
 import { SwapStatus } from '../constants';
+import { NETWORKS } from '../pages/EthBridge';
 
 export enum EXCHANGE_MODE {
   TO_SCRT = 'eth_to_scrt',
@@ -207,6 +208,11 @@ export interface NativeTokenPool {
 export interface ISecretSwapPool {
   assets: Array<TokenPool | NativeTokenPool>;
   total_share: string;
+}
+
+export interface INetworkBridgeHealth {
+  network: NETWORKS;
+  health: ISignerHealth[];
 }
 
 export interface ISignerHealth {

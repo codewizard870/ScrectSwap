@@ -1,5 +1,6 @@
 import {
   IClaimProofDocument,
+  INetworkBridgeHealth,
   IOperation,
   IRewardPool,
   ISecretSwapPair,
@@ -176,12 +177,29 @@ export const getSecretSwapPools = async (params: any): Promise<{ content: ISecre
   return { content: content };
 };
 
-export const getSignerHealth = async (): Promise<{ content: ISignerHealth[] }> => {
-  const url = backendUrl(NETWORKS.ETH, '/signer_health/');
+export const getSignerHealth = async (): Promise<{ content: INetworkBridgeHealth[] }> => {
+  // const url = backendUrl(NETWORKS.ETH, '/signer_health/');
 
-  const res = await agent.get<{ body: { health: ISignerHealth[] } }>(url, {});
+  let urls = [];
 
-  const content = res.body.health;
+  for (const network of availableNetworks) {
+    urls.push({ network: network, url: backendUrl(network, '/signer_health/') });
+  }
+
+  let healthResponses = await Promise.all([
+    ...urls.map(async url => {
+      return { network: url.network, result: await agent.get<{ body: { health: ISignerHealth[] } }>(url.url, {}) };
+    }),
+  ]);
+
+  // const content = Object.assign(
+  //   {},
+  //   ...
+  // );
+
+  const content = healthResponses.map(response => {
+    return { network: response.network, health: response.result.body.health };
+  });
 
   return { content: content };
 };

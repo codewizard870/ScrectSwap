@@ -24,7 +24,7 @@ import { KeplrButton } from '../../components/Secret/KeplrButton';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
-
+import * as style from './styles.styl'
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, tokens, secretSwapPairs, secretSwapPools } = useStores();
@@ -660,13 +660,12 @@ export class SwapRouter extends React.Component<
           >
             <Box
               style={{
-                maxWidth: '500px',
-                minWidth: '500px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
               }}
               pad={{ bottom: 'medium' }}
+              className={style.box_container}
             >
               {/* <KeplrButton /> */}
                 <SwapTab

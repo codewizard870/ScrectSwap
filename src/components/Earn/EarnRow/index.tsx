@@ -176,7 +176,7 @@ class EarnRow extends Component<
           active={activeIndex === 0}
           index={0}
           onClick={this.handleClick}
-          className={cn(styles.assetRow)}
+          className={`${styles.assetRow} ${styles.responsive_row}`}
         >
           {(this.props.token.lockedAsset === "SEFI")?
               <div className={cn(styles.assetIcon)}>

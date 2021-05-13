@@ -3,11 +3,14 @@
   width:100%;
   min-height: calc(100vh - 74px);
   padding-top:42px;
+  @media only screen and (max-width: 753px) {
+    padding-top: 0;
+  }
   .secured_container{
     display: flex;
     align-items: center;
     justify-content: center; 
-    padding:2rem 0 0 0;
+    padding:2rem 0;
   }
   .bridge_link__container{
     display: flex;
@@ -25,12 +28,15 @@
   width:100%;
   min-height: calc(100vh - 74px);
   padding-top:42px;
+  @media only screen and (max-width: 753px) {
+    padding-top: 0;
+  }
   scrollbar-color: dark;
   .secured_container{
     display: flex;
     align-items: center;
     justify-content: center; 
-    padding:2rem 0 0 0;
+    padding:2rem 0;
     img{
       filter: invert(1)
     }

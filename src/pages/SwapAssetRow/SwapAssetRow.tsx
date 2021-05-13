@@ -54,11 +54,11 @@ export const SwapAssetRow = ({
 
   return (
     <Container
-      style={{
-        padding: '1rem',
+      style={{ 
         borderRadius: '20px',
         border: '1px solid rgb(247, 248, 250)',
       }}
+      id={styles.SwapAssetRow_container}
     >
       <div
         style={{
@@ -120,6 +120,7 @@ export const SwapAssetRow = ({
             }
             setAmount(value);
           }}
+          width="36%"
         />
         <FlexRowSpace />
         {maxButton && token && (

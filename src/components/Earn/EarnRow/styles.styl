@@ -26,6 +26,7 @@
     grid-template-columns: 100px 1fr 1fr 1fr 1fr;
     justify-self: center;
     @media only screen and (max-width: 768px) {
+      grid-template-columns: 100px 1fr 1fr 1fr;
       pointer-events: none;  
     }
     @media only screen and (max-width: 425px) {
@@ -90,7 +91,7 @@
 
 .assetRow {
   width: 100%;
-  height: calc(100% - 48px);
+  // height: calc(100% - 48px);
   flex: available;
   display: flex;
   flex-wrap: nowrap;

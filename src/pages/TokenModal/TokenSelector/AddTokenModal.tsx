@@ -14,7 +14,7 @@ const AddTokenButton = (props: { onClick?: any }) => {
   const {theme} = useStores();
   return (
     <button className={`${styles.addCustomToken__button} ${styles[theme.currentTheme]}`} onClick={props.onClick}>
-      <Text size="medium" color={(theme.currentTheme == 'light')?'dark':'#DEDEDE'}>Add custom token</Text>
+      <Text size='small' color={(theme.currentTheme == 'light')?'dark':'#DEDEDE'}>Add custom token</Text>
     </button>
   );
 };

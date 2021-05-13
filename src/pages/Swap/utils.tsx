@@ -28,7 +28,6 @@ export const unlockJsx = (props: { onClick: any }) =>
 
     .view-token-button:hover {
       background: rgba(255,114,110,0.1);
-      color:black;
     }`,
     <span role="img" aria-label={'view'} className="view-token-button" onClick={props.onClick}>
       🔍 View Balance

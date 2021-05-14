@@ -132,9 +132,8 @@ export class SwapRouter extends React.Component<
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances }, keplrConnected: true }));
     }
-    
+
     if (selectedToken0 !== prevState.selectedToken0 && selectedToken0 !== prevState.selectedToken1) {
-      console.log("hello world")
       updateState = true;
       newBalances[selectedToken0] = await this.refreshTokenBalance(selectedToken0);
     }

@@ -77,7 +77,7 @@ const ClaimButton = (props: {
             amount: '0',
           });
 
-          props.notify('success', `Claimed ${props.available} s${props.symbol}`);
+          props.notify('success', `Claimed ${props.available} ${props.rewardsToken}`);
         } catch (reason) {
           props.notify('error', `Failed to claim: ${reason}`);
           console.error(`Failed to claim: ${reason}`);

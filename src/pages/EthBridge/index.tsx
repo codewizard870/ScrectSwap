@@ -53,7 +53,16 @@ export const EthBridge = observer((props: any) => {
                 </a>
                 is now LIVE!
               </Message.Header>
+              <p>If you encounter any issues, you can access the legacy pages here:</p>
               <p>
+                <a href="/sefi" style={{ textDecoration: 'underline' }} rel="noreferrer">
+                  SEFI(v1)
+                </a>
+              </p>
+              <p>
+                <a href="/swap" style={{ textDecoration: 'underline' }} rel="noreferrer">
+                  Swap(v1)
+                </a>
                 {/*{'Click '}*/}
                 {/*<a href="/sefi" style={{ textDecoration: 'underline' }} rel="noreferrer">*/}
                 {/*  HERE*/}

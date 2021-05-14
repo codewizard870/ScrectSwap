@@ -194,7 +194,7 @@ class EarnRow extends Component<
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
                 title={
-                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName.toUpperCase()
+                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName
                 }
                 subTitle='    '
               />

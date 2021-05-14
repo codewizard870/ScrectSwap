@@ -37,7 +37,7 @@ export const BaseContainer: React.FC<IStyledChildrenProps<BoxProps>> = withTheme
             {children}
             <div className={`${styles.bridge_link__container}`}><a href="https://bridge.scrt.network/">Bridge your ETH assets to Secret Network</a></div>
             <div className={`${styles.secured_container}`}>
-              <img src="/static/securedby.svg" alt=""/>
+              <a href="https://scrt.network/"><img src="/static/securedby.svg" alt=""/></a>
             </div>
           </div>
           {/* <MainFooter /> */}

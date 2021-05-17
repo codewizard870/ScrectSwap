@@ -102,10 +102,18 @@ input {
   color: white !important;
   background: rgb(255, 114, 110) !important;
   height: 46px !important;
-  &:disabled{ 
-    color: black !important;
-    background: rgb(222, 222, 222) !important;
-  }  
+  &.dark{
+    &:disabled{
+      color: #d9d9d9 !important;
+      background: rgb(29 29 29) !important;
+    } 
+  }
+  &.light{
+    &:disabled{
+      color: rgb(95, 95, 107) !important;
+      background: rgb(222, 222, 222) !important;
+    } 
+  }
 }
 
 .thumb{

@@ -84,7 +84,7 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
           {(props.token.identifier !== 'uscrt')? props.token.address:'native'}
         </div>
       </div>
-      <h3 className={cn(styles.CopyWithFeedback)} hidden={!props.token.address}>
+      <h3 className={`${styles.CopyWithFeedback} ${styles[theme.currentTheme]}`} hidden={!props.token.address}>
         <CopyWithFeedback text={props.token.address} />
       </h3>
     </div>

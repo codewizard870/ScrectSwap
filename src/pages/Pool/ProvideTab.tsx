@@ -611,7 +611,7 @@ export class ProvideTab extends React.Component<
             !showApproveBButton
           }
           fluid
-          className={styles.provide_button}
+          className={`${styles.provide_button} ${styles[this.props.theme.currentTheme]}`}
           onClick={async () => {
             if (this.isReadyForProvide()) {
               await this.provideLiquidityAction(this.props.selectedPair);

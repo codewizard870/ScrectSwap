@@ -32,12 +32,17 @@
 .tokenWrapper{
   &.dark{
     &:hover{
-      background: #6B6B6B;
+      background: #ff726e;
     }
   }
   &.light{
     &:hover{
-      background: #eeeeee;
+      background: #ff726e;
+      .CopyWithFeedback{
+        &.light{
+          color: #1a1a1a;
+        }
+      }
     }
   }
 }
@@ -66,6 +71,7 @@
   display: flex;
   align-items: center;
   height: 100%;
+  
 }
 input {
   text-overflow: ellipsis;

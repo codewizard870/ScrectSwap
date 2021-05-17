@@ -639,11 +639,11 @@ export class SwapTab extends React.Component<
           </Button>
           :
           <Button
+            className={`${styles.swap_button} ${styles[stores.theme.currentTheme]}`}
             disabled={buttonMessage !== BUTTON_MSG_SWAP || this.state.loadingSwap}
             // loading={this.state.loadingSwap}
             primary={buttonMessage === BUTTON_MSG_SWAP}
             fluid
-            style={(buttonMessage !== BUTTON_MSG_SWAP) ? disableButtonStyle : enableButtonStyle}
             onClick={async () => {
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;

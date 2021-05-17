@@ -171,7 +171,12 @@ class EarnRow extends Component<
     const _symbols = this.props.token.lockedAsset?.split('-');
     const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());
     const image_secondaryToken = images.filter((img)=>img.symbol === _symbols[2]?.toLowerCase());
-    const tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
+    if(_symbols[2] != 'SEFI'){
+      const tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
+    }else{
+      const tokenName = this.unCapitalize(_symbols[1])+' - '+_symbols[2];
+
+    }
     return (
       <Accordion
         className={cn(style)}

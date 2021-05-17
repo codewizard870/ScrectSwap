@@ -121,6 +121,10 @@ class EarnRow extends Component<
   clearPulseInterval = () => clearInterval(this.state.pulseInterval);
 
   setPulseInterval = interval => this.setState({ pulseInterval: interval });
+  unCapitalize=(s)=>{
+    if(typeof s !== 'string') return '';
+    return s.charAt(0).toLowerCase()+s.slice(1)
+  }
   render() {
     // const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     const style =`${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
@@ -167,7 +171,7 @@ class EarnRow extends Component<
     const _symbols = this.props.token.lockedAsset?.split('-');
     const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());
     const image_secondaryToken = images.filter((img)=>img.symbol === _symbols[2]?.toLowerCase());
-    const tokenName = _symbols[1]+' - '+_symbols[2];
+    const tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
     return (
       <Accordion
         className={cn(style)}

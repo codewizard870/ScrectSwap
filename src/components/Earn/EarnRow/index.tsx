@@ -14,8 +14,7 @@ import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../..
 import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
 
-
-export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
+export const calculateAPR = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))
   // deadline - current time, 6 seconds per block
   const timeRemaining = (token.deadline - 3377310) * 6.22 + 1620719241 - Math.round(Date.now() / 1000);
@@ -31,12 +30,17 @@ export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying
 };
 
 export const apyString = (token: RewardsToken) => {
-  const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
-  if (isNaN(apy) || 0 > apy) {
-    return `0%`;
+  const apr = Number(calculateAPR(token, Number(token.rewardsPrice), Number(token.price)));
+  if (isNaN(apr) || 0 > apr) {
+    return '0%';
   }
 
-  const apyStr = zeroDecimalsFormatter.format(Number(apy));
+  const apy = Number((Math.pow(1 + apr / 100 / 365, 365) - 1) * 100);
+  if (isNaN(apy) || 0 > apy) {
+    return '0%';
+  }
+
+  const apyStr = zeroDecimalsFormatter.format(apy);
 
   return `${apyStr}%`;
 };

@@ -8,7 +8,7 @@ import * as styles from '../EthBridge/styles.styl';
 // import { IColumn, Table } from '../../components/Table';
 // import { ERC20Select } from '../Exchange/ERC20Select';
 import EarnRow from '../../components/Earn/EarnRow';
-import { calculateAPY } from '../../components/Earn/EarnRow';
+import { calculateAPR } from '../../components/Earn/EarnRow';
 import { rewardsDepositKey, rewardsKey } from '../../stores/UserStore';
 import { divDecimals, sleep, zeroDecimalsFormatter } from '../../utils';
 import { InfoModalEarn } from '../../components/InfoModalEarn';
@@ -210,8 +210,8 @@ export const EarnRewards = observer((props: any) => {
                 return el != null;
               })
               .sort((a, b) => {
-                const rewards_a = zeroDecimalsFormatter.format(Number(calculateAPY(a, Number(a.rewardsPrice), Number(a.price))));
-                const rewards_b = zeroDecimalsFormatter.format(Number(calculateAPY(b, Number(b.rewardsPrice), Number(b.price))));
+                const rewards_a = zeroDecimalsFormatter.format(Number(calculateAPR(a, Number(a.rewardsPrice), Number(a.price))));
+                const rewards_b = zeroDecimalsFormatter.format(Number(calculateAPR(b, Number(b.rewardsPrice), Number(b.price))));
                 return Number(rewards_b) - Number(rewards_a);
               })
               .map(rewardToken => {

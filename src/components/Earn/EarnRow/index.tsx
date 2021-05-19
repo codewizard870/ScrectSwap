@@ -167,6 +167,30 @@ class EarnRow extends Component<
         symbol:'swbtc',
         src:'/static/tokens/swbtc.png'
       },
+      {
+        symbol:'smana',
+        src:'/static/tokens/smana.png'
+      },
+      {
+        symbol:'sdai',
+        src:'/static/tokens/sdai.png'
+      },
+      {
+        symbol:'syfi',
+        src:'/static/tokens/syfi.png'
+      },
+      {
+        symbol:'socean',
+        src:'/static/tokens/socean.png'
+      },
+      {
+        symbol:'suni',
+        src:'/static/tokens/suni.png'
+      },
+      {
+        symbol:'ssienna',
+        src:'/static/sienna-token.svg'
+      },
     ]
     const _symbols = this.props.token.lockedAsset?.split('-');
     const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());

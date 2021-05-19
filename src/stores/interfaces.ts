@@ -171,6 +171,7 @@ export interface IRewardPool {
   total_locked: string;
   pending_rewards: string;
   deadline: string;
+  hidden?: boolean;
 }
 
 export interface ISecretSwapPair {

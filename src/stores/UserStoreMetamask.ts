@@ -4,7 +4,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as contract from '../blockchain-bridge';
 import { getErc20Balance, getEthBalance } from '../blockchain-bridge';
-import { divDecimals, formatWithSixDecimals, sleep } from '../utils';
+import { divDecimals, formatWithSixDecimals, sleep, wrongNetwork } from '../utils';
 import Web3 from 'web3';
 import { TOKEN } from './interfaces';
 import { NETWORKS } from '../pages/EthBridge';
@@ -286,7 +286,7 @@ export class UserStoreMetamask extends StoreConstructor {
       await sleep(50);
     }
     // always load native balance, because why not? And this bypasses race conditions with this.stores.tokens
-    this.nativeBalance = await getEthBalance(this.ethAddress);
+    this.nativeBalance = await getEthBalance(this.ethAddress)
     this.nativeBalanceMin = this.balanceTokenMin[this.getNetworkFullName()];
 
     for (const token of this.stores.tokens.allData) {
@@ -313,11 +313,13 @@ export class UserStoreMetamask extends StoreConstructor {
     this.stores.user.snip20BalanceMin = '';
 
     this.erc20TokenDetails = await contract.fromScrtMethods[this.network][TOKEN.ERC20].tokenDetails(erc20Address);
+
     this.erc20Address = erc20Address;
     this.erc20Balance = divDecimals(
       await getErc20Balance(this.ethAddress, erc20Address),
       this.erc20TokenDetails.decimals,
     );
+
     this.erc20BalanceMin = this.stores.tokens.allData.find(
       t => t.src_address === erc20Address,
     ).display_props.min_to_scrt;
@@ -326,6 +328,7 @@ export class UserStoreMetamask extends StoreConstructor {
       const token = tokens.allData.find(t => t.src_address === this.erc20Address);
       if (token.dst_address) {
         await this.stores.user.updateBalanceForSymbol(token.display_props.symbol);
+
         this.stores.user.snip20Address = token.dst_address;
         this.stores.user.snip20Balance = this.stores.user.balanceToken[token.src_coin];
         this.stores.user.snip20BalanceMin = this.stores.user.balanceTokenMin[token.src_coin];

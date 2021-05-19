@@ -54,3 +54,4 @@ export * from './Mail';
 export * from './Phone';
 export * from './ExternalLink';
 export * from './Reverse';
+export * from './Menu';

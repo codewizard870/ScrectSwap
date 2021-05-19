@@ -14,6 +14,34 @@ import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../..
 import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
 
+export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
+  // console.log(Math.round(Date.now() / 1000000))
+  // deadline - current time, 6 seconds per block
+  const timeRemaining = (token.deadline - 3377310) * 6.22 + 1620719241 - Math.round(Date.now() / 1000);
+
+  // (token.deadline - Math.round(Date.now() / 1000000) );
+  const pending = Number(divDecimals(token.remainingLockedRewards, token.rewardsDecimals)) * price;
+
+  // this is already normalized
+  const locked = Number(token.totalLockedRewards);
+
+  //console.log(`pending - ${pending}; locked: ${locked}, time remaining: ${timeRemaining}`)
+  const apr = Number((((pending * 100) / locked) * (3.154e7 / timeRemaining)).toFixed(0));
+  const apy = Number((Math.pow(1 + apr / 100 / 365, 365) - 1) * 100);
+
+  return apy;
+};
+
+export const apyString = (token: RewardsToken) => {
+  const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
+  if (isNaN(apy) || 0 > apy) {
+    return '0%';
+  }
+
+  const apyStr = zeroDecimalsFormatter.format(apy);
+
+  return `${apyStr}%`;
+};
 interface RewardsToken {
   name: string;
   decimals: string;
@@ -36,33 +64,6 @@ interface RewardsToken {
   deadline: number;
   rewardsSymbol?: string;
 }
-
-const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
-  // console.log(Math.round(Date.now() / 1000000))
-  // deadline - current time, 6 seconds per block
-  const timeRemaining = (token.deadline - 3004867) * 6.22 + 1618321783 - Math.round(Date.now() / 1000);
-
-  // (token.deadline - Math.round(Date.now() / 1000000) );
-  const pending = Number(divDecimals(token.remainingLockedRewards, token.rewardsDecimals)) * price;
-
-  // this is already normalized
-  const locked = Number(token.totalLockedRewards);
-
-  //console.log(`pending - ${pending}; locked: ${locked}, time remaining: ${timeRemaining}`)
-  return (((pending * 100) / locked) * (3.154e7 / timeRemaining)).toFixed(0);
-};
-
-const apyString = (token: RewardsToken) => {
-  const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
-  if (isNaN(apy) || 0 > apy) {
-    return `0%`;
-  }
-
-  const apyStr = zeroDecimalsFormatter.format(Number(apy));
-
-  return `${apyStr}%`;
-};
-
 @observer
 class EarnRow extends Component<
   {

@@ -8,6 +8,7 @@ import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
 import { messages, messageToString } from '../EthBridge/messages';
 import { NETWORKS } from '../EthBridge';
 
+// todo: fix this up - proxy token
 const selectTokenText = (mode: string, token: ITokenInfo) => {
   if (token.display_props.symbol === 'SEFI') {
     return `Secret Finance Token (SeFi)`;
@@ -17,6 +18,9 @@ const selectTokenText = (mode: string, token: ITokenInfo) => {
   } else if (mode !== EXCHANGE_MODE.FROM_SCRT && !token.display_props.proxy) {
     return `${token.display_props.symbol}`;
   } else if (mode === EXCHANGE_MODE.FROM_SCRT) {
+    if (token.display_props.symbol === 'SIENNA') {
+      return 'SIENNA';
+    }
     return `secret${token.display_props.label}`;
   } else {
     return `${token.name}`;

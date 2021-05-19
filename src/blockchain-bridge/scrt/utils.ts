@@ -49,12 +49,15 @@ export function getFeeForExecute(gas: number): StdFee {
   };
 }
 
+// todo: fix this up - proxy token
 export const secretTokenName = (mode: EXCHANGE_MODE, token: TOKEN, label: string): string => {
   if (label === 'SEFI') {
     return 'SEFI';
-  }
-  if (label === 'WSCRT') {
+  } else if (label === 'WSCRT') {
     return mode === EXCHANGE_MODE.FROM_SCRT ? 'SSCRT' : 'WSCRT';
+  } else if (label === 'WSIENNA') {
+    return mode === EXCHANGE_MODE.FROM_SCRT ? 'SIENNA' : 'WSIENNA';
+  } else {
+    return (mode === EXCHANGE_MODE.FROM_SCRT && token === TOKEN.ERC20 ? 'secret' : '') + label;
   }
-  return (mode === EXCHANGE_MODE.FROM_SCRT && token === TOKEN.ERC20 ? 'secret' : '') + label;
 };

@@ -38,11 +38,21 @@ export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying
 export const apyString = (token: RewardsToken) => {
   const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
   if (isNaN(apy) || 0 > apy) {
-    return `0%`;
+    return `∞%`;
   }
-
   const apyStr = zeroDecimalsFormatter.format(Number(apy));
 
+  //Hotfix of big % number
+  const apyWOCommas = apyStr.replace(/,/g,'')
+  const MAX_LENGHT = 9;
+  if(apyWOCommas.length > MAX_LENGHT){
+    const abrev = apyWOCommas?.substring(0,MAX_LENGHT)
+    const abrevFormatted = zeroDecimalsFormatter.format(Number(abrev));
+    const elevation = apyWOCommas.length - MAX_LENGHT;
+
+    return `${abrevFormatted}e${elevation} %`;
+
+  }
   return `${apyStr}%`;
 };
 interface RewardsToken {
@@ -243,7 +253,7 @@ class EarnRow extends Component<
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
-                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards))}`}
+                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards) || 0)}`}
                 subTitle={'TVL'}
               />
             </div>

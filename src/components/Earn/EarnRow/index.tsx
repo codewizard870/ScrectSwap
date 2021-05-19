@@ -243,7 +243,7 @@ class EarnRow extends Component<
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
-                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards || 0))}`}
+                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards) || 0)}`}
                 subTitle={'TVL'}
               />
             </div>

@@ -40,9 +40,19 @@ export const apyString = (token: RewardsToken) => {
   if (isNaN(apy) || 0 > apy) {
     return `∞%`;
   }
-
   const apyStr = zeroDecimalsFormatter.format(Number(apy));
 
+  //Hotfix of big % number
+  const apyWOCommas = apyStr.replace(/,/g,'')
+  const MAX_LENGHT = 9;
+  if(apyWOCommas.length > MAX_LENGHT){
+    const abrev = apyWOCommas?.substring(0,MAX_LENGHT)
+    const abrevFormatted = zeroDecimalsFormatter.format(Number(abrev));
+    const elevation = apyWOCommas.length - MAX_LENGHT;
+
+    return `${abrevFormatted}e${elevation} %`;
+
+  }
   return `${apyStr}%`;
 };
 interface RewardsToken {

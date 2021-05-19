@@ -29,7 +29,10 @@ export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying
   const locked = Number(token.totalLockedRewards);
 
   //console.log(`pending - ${pending}; locked: ${locked}, time remaining: ${timeRemaining}`)
-  return (((pending * 100) / locked) * (3.154e7 / timeRemaining)).toFixed(0);
+  const apr = Number((((pending * 100) / locked) * (3.154e7 / timeRemaining)).toFixed(0));
+  const apy = Number((Math.pow(1 + apr / 100 / 365, 365) - 1) * 100);
+
+  return apy;
 };
 
 export const apyString = (token: RewardsToken) => {

@@ -25,6 +25,8 @@ import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
 import * as style from './styles.styl'
+import { Cashback } from './Cashback';
+
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, tokens, secretSwapPairs, secretSwapPools } = useStores();
@@ -78,6 +80,8 @@ export class SwapRouter extends React.Component<
     routingGraph: { [token0: string]: { [token1: string]: number } };
     selectedPairRoutes: string[][];
     keplrConnected: boolean;
+    cashback: string;
+    sefi: string;
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
@@ -99,6 +103,8 @@ export class SwapRouter extends React.Component<
       routingGraph: {},
       selectedPairRoutes: [],
       keplrConnected: undefined,
+      cashback: 'secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht',
+      sefi: 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm',
     };
   }
 
@@ -143,6 +149,9 @@ export class SwapRouter extends React.Component<
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
     }
 
+    newBalances[this.state.cashback] = await this.refreshTokenBalance(this.state.cashback);
+    newBalances[this.state.sefi] = await this.refreshTokenBalance(this.state.sefi);
+
     if (updateState) {
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
@@ -180,12 +189,13 @@ export class SwapRouter extends React.Component<
     for (let i = 0; i < 10; i++) {
       if (this.props.user.secretjs) {
         sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
+        sScrtBalance[this.state.cashback] = await this.refreshTokenBalance(this.state.cashback);
+        sScrtBalance[this.state.sefi] = await this.refreshTokenBalance(this.state.sefi);
         keplrConnected = true;
         break;
       }
       await sleep(100);
     }
-
     this.setState({ balances: { ...this.state.balances, ...sScrtBalance }, keplrConnected });
     await this.updatePairs();
 
@@ -265,7 +275,7 @@ export class SwapRouter extends React.Component<
     };
   }
 
-  private async refreshBalances({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) {
+  refreshBalances = async ({ pair, tokens, height }: { tokens: string[]; pair?: SwapPair; height?: number }) => {
     if (!height) {
       height = await this.props.user.secretjs.getHeight();
     }
@@ -274,6 +284,7 @@ export class SwapRouter extends React.Component<
     const tokenBalances = (
       await Promise.all(
         tokens.map(async s => {
+          console.log(`$$$$$$$$$$ refreshing ${s}`);
           return { [s]: await this.refreshTokenBalance(s, height) };
         }),
       )
@@ -311,7 +322,7 @@ export class SwapRouter extends React.Component<
     }));
 
     return newObject;
-  }
+  };
 
   private async refreshPoolBalance(pair: SwapPair) {
     const balances = [];
@@ -744,6 +755,15 @@ export class SwapRouter extends React.Component<
             </Box>
             {/* <SwapFooter />
             <BetaWarning secretjs={this.props.user.secretjsSend} /> */}
+            <Cashback
+              user={this.props.user}
+              secretjsSender={this.props.user.secretjsSend}
+              refreshBalances={this.refreshBalances}
+              balances={this.state.balances}
+              allTokens={this.state.allTokens}
+              tokens={this.props.tokens}
+              notify={this.notify}
+            />
           </Box>
         </PageContainer>
       </BaseContainer>

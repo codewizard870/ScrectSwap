@@ -38,7 +38,7 @@ export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying
 export const apyString = (token: RewardsToken) => {
   const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
   if (isNaN(apy) || 0 > apy) {
-    return `0%`;
+    return `∞%`;
   }
 
   const apyStr = zeroDecimalsFormatter.format(Number(apy));
@@ -243,7 +243,7 @@ class EarnRow extends Component<
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
-                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards))}`}
+                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards || 0))}`}
                 subTitle={'TVL'}
               />
             </div>

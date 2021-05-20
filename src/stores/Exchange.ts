@@ -22,6 +22,13 @@ export enum EXCHANGE_STEPS {
   RESULT = 'RESULT',
   CHECK_TRANSACTION = 'CHECK_TRANSACTION',
 }
+
+export interface PROXY_CONTRACT {
+  contract: string;
+  symbol: string;
+}
+
+
 export interface IOperationPanel {
   id: string;
   tokenImage: any;
@@ -41,6 +48,10 @@ export interface IStepConfig {
   title?: string;
 }
 
+export const proxyContracts: PROXY_CONTRACT[] = [
+  { contract: process.env.WSCRT_PROXY_CONTRACT, symbol: 'SSCRT' },
+  { contract: process.env.SIENNA_PROXY_CONTRACT, symbol: 'SIENNA' },
+]
 export class Exchange extends StoreConstructor {
   @observable operations: Array<IOperationPanel> = [];
   @observable error = '';
@@ -286,6 +297,14 @@ export class Exchange extends StoreConstructor {
             this.operation.image = token.display_props.image;
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+          } else {
+            const proxy = proxyContracts.find(p => p.contract === swap.dst_address)
+            if (proxy) {
+              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === proxy.symbol);
+              this.operation.image = token.display_props.image;
+              this.operation.symbol = formatSymbol(EXCHANGE_MODE.FROM_SCRT, token.display_props.symbol);
+              this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+            }
           }
         } else {
           const token = this.tokens.find(t => t.dst_address === swap.src_coin);
@@ -294,14 +313,9 @@ export class Exchange extends StoreConstructor {
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           } else {
-            // todo: fix this up - proxy token
-            if (swap.src_coin === process.env.SIENNA_PROXY_CONTRACT) {
-              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SIENNA');
-              this.operation.image = token.display_props.image;
-              this.operation.symbol = formatSymbol(EXCHANGE_MODE.FROM_SCRT, token.display_props.symbol);
-              this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
-            } else if (swap.src_coin === process.env.WSCRT_PROXY_CONTRACT) {
-              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT');
+            const proxy = proxyContracts.find(p => p.contract === swap.src_coin)
+            if (proxy) {
+              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === proxy.symbol);
               this.operation.image = token.display_props.image;
               this.operation.symbol = formatSymbol(EXCHANGE_MODE.FROM_SCRT, token.display_props.symbol);
               this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));

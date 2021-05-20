@@ -44,6 +44,10 @@
       font-weight: 500;
       color: #fcf9f3;
       font-family: Poppins, Arial, Helvetica, sans-serif;
+      &:disabled {
+        background: #aaa;
+        opacity: 0.4;
+      }
     }
   }
 }
@@ -64,14 +68,7 @@
   border-radius: 8px;
   padding: 10px;
   margin: 16px 0;
-  .icon_info {
-    color: #ff726e;
-    border: 0.1px solid #ff726e;
-    margin-left: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+
   .item {
     margin: 5px 0;
     padding: 0;
@@ -153,7 +150,6 @@
 }
 .claim-sefi__item {
   margin: 15px 0;
-  color: #1b1b1b;
   border: 1px solid #d6d6d6;
   padding: 5px 8px;
   border-radius: 4px;
@@ -178,6 +174,7 @@
     background: #5f5f6b !important;
     border-radius: 4px !important;
     border: none !important;
+    box-shadow: none !important;
   }
 }
 .small-icon {
@@ -206,7 +203,6 @@
   & h1 {
     font-size: 36px;
     font-weight: 600 !important;
-    color: #1b1b1b !important;
   }
   & h1,
   & p {
@@ -217,7 +213,6 @@
     margin: 15px 0;
   }
   .claim-button {
-    background: #1b1b1b !important;
     padding: 11px 15px;
     border: none;
     cursor: pointer;
@@ -349,4 +344,67 @@ span {
 
 .address_container {
   grid-template-columns: 80% 20%;
+}
+
+.table_container {
+  .align-left {
+  }
+  text-align: start;
+  .bold_titles {
+    text-align: start;
+    font-weight: 600;
+  }
+  border-radius: 8px;
+  padding: 10px;
+  table {
+    width: 100%;
+    td {
+      padding: 10px 0;
+      text-align: -webkit-center;
+      button {
+        width: 100%;
+        padding: 1rem 0;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+    }
+  }
+  &.dark {
+    td {
+      color: #fcf9f3;
+      strong {
+        color: white;
+      }
+    }
+    background: #303036;
+  }
+  &.light {
+    td {
+      color: #5f5f6b;
+      strong {
+        color: black;
+      }
+    }
+    background: #fcf9f3;
+  }
+}
+.join_message {
+  margin: 1.5rem 0;
+}
+
+.icon_info {
+  color: #ff726e !important;
+  border: 0.1px solid #ff726e !important;
+  margin-left: 10px !important;
+  &::before {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+    color: #ff726e !important;
+  }
 }

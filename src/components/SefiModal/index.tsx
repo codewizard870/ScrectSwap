@@ -241,6 +241,10 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
     console.log("Moving to Claim");
     setStatus(SefiModalState.CLAIM);
   };
+  const onClaimCashback = ()=>{
+    console.log("Moving to Claim Cashback");
+    setStatus(SefiModalState.CLAIM_CASH_BACK);
+  };
 
   const onClaimSCRT = async()=>{
     console.log('Claiming SEFI...')
@@ -284,6 +288,9 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       console.error(error)
     }
   }
+  const burnCashback = ()=>{
+    console.log("Burning cashback")
+  }
   const {theme} = useStores();
   return(
     <Modal
@@ -316,12 +323,42 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         </div>
       </Modal.Header>
       <Modal.Content style={{background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
-        {(status === SefiModalState.GENERAL) && <General createViewingKey={createViewingKey} hasViewingKey={hasViewingKey} onClaimSefi={onClaimSefi} data={data}/>}
-        {(status === SefiModalState.CLAIM) && <Claim onKeplrIcon={loginKeplr} onMetaMaskIcon={loginMetaMask} claimInfo={claimInfo} onClaimSCRT={onClaimSCRT} onClaimErc={onClaimErc} data={data}/>}
-        {(status === SefiModalState.CLAIM_CASH_BACK) && <ClaimCashback data={data}/>}
-        {(status === SefiModalState.LOADING) && <Loading unclaimed={unclaimedAmount}/>}
-        {(status === SefiModalState.CONFIRMATION) && <Confirmation data={data}/>}
-        {(status === SefiModalState.CONFIRMATION_CASHBACK) && <ConfirmationCashback data={data}/>}
+        {
+          (status === SefiModalState.GENERAL) 
+            && <General 
+              createViewingKey={createViewingKey} 
+              hasViewingKey={hasViewingKey} 
+              onClaimSefi={onClaimSefi} 
+              onClaimCashback={onClaimCashback} 
+              data={data}
+              />
+        }
+        {
+          (status === SefiModalState.CLAIM) 
+            && <Claim 
+                onKeplrIcon={loginKeplr} 
+                onMetaMaskIcon={loginMetaMask} 
+                claimInfo={claimInfo} 
+                onClaimSCRT={onClaimSCRT} 
+                onClaimErc={onClaimErc} 
+                data={data}
+              />
+        }
+        {
+          (status === SefiModalState.CLAIM_CASH_BACK) 
+              && <ClaimCashback data={data} burnCashback={burnCashback}/>
+        }
+        {
+          (status === SefiModalState.LOADING) 
+            && <Loading unclaimed={unclaimedAmount}/>
+        }
+        {
+          (status === SefiModalState.CONFIRMATION) 
+            && <Confirmation data={data}/>}
+        {
+          (status === SefiModalState.CONFIRMATION_CASHBACK) 
+            && <ConfirmationCashback data={data}/>
+        }
        
       </Modal.Content>
     </Modal>

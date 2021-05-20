@@ -6,13 +6,81 @@ import { useStores } from 'stores';
 const GeneralState = (props:{
   data:SefiData,
   onClaimSefi: CallableFunction,
+  onClaimCashback: CallableFunction,
   createViewingKey: any,
   hasViewingKey: Boolean
 })=>{
   const {theme} = useStores();
   return(
     <>
-       <div className={`sefi-grid__container background_free claim-sefi__container` }>
+      <div className={`table_container ${theme.currentTheme}`}>
+        <table>
+            <thead>
+              <tr>
+                <td className='align-left'>Token</td>
+                <td>Balance</td>
+                <td></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr> 
+                <td className='bold_titles'>SEFI</td>
+                <td>
+                  <strong>
+                    {
+                      isNaN(parseFloat(props.data.balance))
+                        ? "0.0"
+                        : props.data.balance
+                    }
+                  </strong>
+                </td>
+                <td>
+                  {
+                    (props.data.sefi_in_circulation !== '—')&&
+                    <button  
+                      onClick={()=>{props.onClaimSefi()}}
+                    >
+                      Claim 
+                    </button>
+                  }
+                </td>
+              </tr>
+              <tr> 
+                <td className='bold_titles'> 
+                  CSHBACK 
+                    <Popup 
+                      className="icon-info__popup" 
+                      position='top center'
+                      on='click'
+                      trigger={
+                        <Icon
+                          className="icon_info"
+                          name="info"
+                          circular
+                          size="tiny"
+                        />
+                      }
+                    >
+                    </Popup>   
+                </td>
+                <td>
+                  <strong>2.00</strong>
+                </td>
+                <td>
+                  <button 
+                    onClick={()=>{props.onClaimCashback()}}
+                  >
+                      Redeem
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+      <div className="join_message">
+        <p>Join the privacy-first, front-running resistant open finance movement!</p>
+      </div>
+       {/* <div className={`sefi-grid__container background_free claim-sefi__container` }>
           <div className="align-center">
             {
               (props.data.sefi_in_circulation !== '—')&&<button  onClick={()=>{props.onClaimSefi()}} className="sefi-claim__button">Claim Genesis Sefi</button>
@@ -23,7 +91,7 @@ const GeneralState = (props:{
             <span>SEFI</span>
             <h1 className={theme.currentTheme}>{(isNaN(parseFloat(props.data.balance))?"0.0":props.data.balance)}</h1>
           </div>
-        </div>
+        </div> */}
         {/* <div className={`sefi-grid__container ${theme.currentTheme}`}>
           <span className='item left'>Balance</span>
           <strong className='item right'>{(isNaN(parseFloat(props.data.balance))?"0.0":props.data.balance)} </strong>

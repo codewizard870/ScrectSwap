@@ -144,6 +144,43 @@ export const AdditionalInfo = ({
             {fromToken}
           </strong>
         </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingTop: '0.2rem',
+          }}
+        >
+          <span>
+            Expected Cashback Rewards
+            <Popup
+            className={style.icon_info__popup} 
+            on='click'
+              trigger={
+                <Icon
+                  name="info"
+                  className={style.icon_info}
+                  circular
+                  size="tiny"
+                  style={{
+                    marginLeft: '0.5rem',
+                    verticalAlign: 'middle',
+                  }}
+                />
+              } 
+              position="top center"
+            >
+              <Popup.Content>
+                When users trade, they acquire cashback tokens.<br/> 
+                These cashback tokens can be burned to claim SEFI. <br/>
+                {/* <a href="#">Learn more about cashback tokens</a> */}
+              </Popup.Content>
+            </Popup>
+          </span>
+          <strong>
+            Working on it
+          </strong>
+        </div>
         <PairAnalyticsLink pairAddress={pairAddress} />
       </Container>
     </div>

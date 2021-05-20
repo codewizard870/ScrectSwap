@@ -1,12 +1,11 @@
 import BigNumber from 'bignumber.js';
 import React from 'react';
-import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import { Container } from 'semantic-ui-react';
 import { UserStoreEx } from 'stores/UserStore';
 import { WithdrawLiquidityPanel } from './WithdrawLiqudityPanel';
 import { TabsHeader } from './TabsHeader';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
-import cn from 'classnames';
 import * as styles from './styles.styl';
 import { PairMap } from '../TokenModal/types/SwapPair';
 import Loader from 'react-loader-spinner';
@@ -29,18 +28,18 @@ export class WithdrawTab extends React.Component<
     onCloseTab: CallableFunction;
     theme: Theme;
   },
-  { searchText: string ,isOpen:boolean}
+  { searchText: string; isOpen: boolean }
 > {
   constructor(props) {
     super(props);
   }
 
-  state = { searchText: '',isOpen:false };
-  renderThumbVertical=()=>{
-    return <div className={`${styles.thumb} ${styles[this.props.theme.currentTheme]}`}></div>
-  }
-  setIsOpen(isRowOpen:boolean):void{
-    this.setState({isOpen:isRowOpen})
+  state = { searchText: '', isOpen: false };
+  renderThumbVertical = () => {
+    return <div className={`${styles.thumb} ${styles[this.props.theme.currentTheme]}`}></div>;
+  };
+  setIsOpen(isRowOpen: boolean): void {
+    this.setState({ isOpen: isRowOpen });
   }
   render() {
     const pairs = Array.from(new Set(this.props.pairs.values()));
@@ -69,68 +68,74 @@ export class WithdrawTab extends React.Component<
             />
           </div>
         ) : null}
-        <Scrollbars autoHide renderThumbVertical={this.renderThumbVertical} style={{ width: 472, height: 300 }}  className={styles.withdrawLiquitityContent}>
+        <Scrollbars
+          autoHide
+          renderThumbVertical={this.renderThumbVertical}
+          style={{ width: 472, height: 300 }}
+          className={styles.withdrawLiquitityContent}
+        >
           <div className={styles.lpTokensContainer}>
             {pairs
-          .filter(p => {
-            return (
-              p.contract_addr +
-              p.pair_identifier.split('/').join('') +
-              p.liquidity_token +
-              p.asset_infos[0].symbol +
-              p.asset_infos[1].symbol
-            )
-              .toLowerCase()
-              .includes(this.state.searchText);
-          })
-          .sort((p1, p2) => {
-            let [p1SymbolA, p1SymbolB] = [p1.asset_infos[0].symbol, p1.asset_infos[1].symbol];
-            p1SymbolA = p1SymbolA.replace(/^s/, '');
-            p1SymbolB = p1SymbolB.replace(/^s/, '');
-            let p1Symbol = `${p1SymbolA}-${p1SymbolB}`;
-            if (p1SymbolB === 'SCRT') {
-              p1Symbol = `${p1SymbolB}-${p1SymbolA}`;
-            }
+              .filter(p => {
+                return (
+                  p.contract_addr +
+                  p.pair_identifier.split('/').join('') +
+                  p.liquidity_token +
+                  p.asset_infos[0].symbol +
+                  p.asset_infos[1].symbol
+                )
+                  .toLowerCase()
+                  .includes(this.state.searchText);
+              })
+              .sort((p1, p2) => {
+                let [p1SymbolA, p1SymbolB] = [p1.asset_infos[0].symbol, p1.asset_infos[1].symbol];
+                p1SymbolA = p1SymbolA.replace(/^s/, '');
+                p1SymbolB = p1SymbolB.replace(/^s/, '');
+                let p1Symbol = `${p1SymbolA}-${p1SymbolB}`;
+                if (p1SymbolB === 'SCRT') {
+                  p1Symbol = `${p1SymbolB}-${p1SymbolA}`;
+                }
 
-            let [p2SymbolA, p2SymbolB] = [p2.asset_infos[0].symbol, p2.asset_infos[1].symbol];
-            p2SymbolA = p2SymbolA.replace(/^s/, '');
-            p2SymbolB = p2SymbolB.replace(/^s/, '');
-            let p2Symbol = `${p2SymbolA}-${p2SymbolB}`;
-            if (p2SymbolB === 'SCRT') {
-              p2Symbol = `${p2SymbolB}-${p2SymbolA}`;
-            }
+                let [p2SymbolA, p2SymbolB] = [p2.asset_infos[0].symbol, p2.asset_infos[1].symbol];
+                p2SymbolA = p2SymbolA.replace(/^s/, '');
+                p2SymbolB = p2SymbolB.replace(/^s/, '');
+                let p2Symbol = `${p2SymbolA}-${p2SymbolB}`;
+                if (p2SymbolB === 'SCRT') {
+                  p2Symbol = `${p2SymbolB}-${p2SymbolA}`;
+                }
 
-            if (p1Symbol.startsWith('SCRT-') && !p2Symbol.startsWith('SCRT-')) {
-              return -1;
-            }
-            if (p2Symbol.startsWith('SCRT-') && !p1Symbol.startsWith('SCRT-')) {
-              return 1;
-            }
+                if (p1Symbol.startsWith('SCRT-') && !p2Symbol.startsWith('SCRT-')) {
+                  return -1;
+                }
+                if (p2Symbol.startsWith('SCRT-') && !p1Symbol.startsWith('SCRT-')) {
+                  return 1;
+                }
 
-            return p1Symbol.localeCompare(p2Symbol);
-          })
-          .map(p => {
-            return (
-              <span key={p.lpTokenSymbol()}>
-                <WithdrawLiquidityPanel
-                  lpTokenSymbol={p.lpTokenSymbol()}
-                  tokens={this.props.tokens}
-                  secretjsSender={this.props.secretjsSender}
-                  selectedPair={p}
-                  balances={this.props.balances}
-                  secretjs={this.props.secretjs}
-                  notify={this.props.notify}
-                  getBalance={this.props.updateToken}
-                  onCloseTab={this.props.onCloseTab}
-                  theme={this.props.theme}
-                  isRowOpen={this.state.isOpen}
-                  setIsRowOpen={(isOpen:boolean)=>{this.setIsOpen(isOpen)}}
-                />
-              </span>
-            );
-          })}
+                return p1Symbol.localeCompare(p2Symbol);
+              })
+              .map(p => {
+                return (
+                  <span key={p.lpTokenSymbol()}>
+                    <WithdrawLiquidityPanel
+                      tokens={this.props.tokens}
+                      secretjsSender={this.props.secretjsSender}
+                      selectedPair={p}
+                      balances={this.props.balances}
+                      secretjs={this.props.secretjs}
+                      notify={this.props.notify}
+                      getBalance={this.props.updateToken}
+                      onCloseTab={this.props.onCloseTab}
+                      theme={this.props.theme}
+                      isRowOpen={this.state.isOpen}
+                      setIsRowOpen={(isOpen: boolean) => {
+                        this.setIsOpen(isOpen);
+                      }}
+                    />
+                  </span>
+                );
+              })}
           </div>
-        </Scrollbars >
+        </Scrollbars>
       </Container>
     );
   }

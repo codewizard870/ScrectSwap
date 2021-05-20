@@ -325,10 +325,6 @@ export const Base = observer(() => {
       await update();
 
     } catch (e) {
-      notify(
-        'error',
-        `Error fetching ${token.display_props.symbol} balance, make sure you are on the right network and have it added on your Metamask!`,
-      );
       await update();
     }
   };

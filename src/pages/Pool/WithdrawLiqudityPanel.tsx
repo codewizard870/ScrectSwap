@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import React from 'react';
-import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient } from 'secretjs';
 import { Accordion, Button, Container, Divider, Header, Image } from 'semantic-ui-react';
 import { CSSProperties } from 'styled-components';
 import { displayHumanizedBalance, humanizeBalance } from 'utils';
@@ -18,7 +18,6 @@ import Theme from 'themes';
 
 export class WithdrawLiquidityPanel extends React.Component<
   {
-    lpTokenSymbol: string;
     tokens: SwapTokenMap;
     balances: { [symbol: string]: BigNumber | JSX.Element };
     secretjs: CosmWasmClient;
@@ -46,8 +45,6 @@ export class WithdrawLiquidityPanel extends React.Component<
   };
 
   render() {
-    const pairSymbol = this.props.lpTokenSymbol.replace('LP-', '');
-
     let [symbolA, symbolB] = [
       this.props.selectedPair.asset_infos[0].symbol,
       this.props.selectedPair.asset_infos[1].symbol,
@@ -82,7 +79,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     const decimalsA = this.props.tokens.get(tokenA)?.decimals;
     const decimalsB = this.props.tokens.get(tokenB)?.decimals;
 
-    const lpTokenBalance = this.props.balances[this.props.lpTokenSymbol];
+    const lpTokenBalance = this.props.balances[selectedPair.lpTokenSymbol()]; // LP-secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek/secret15grq8y54tvc24j8hf8chunsdcr84fd3d30fvqv
     const lpTokenTotalSupply = this.props.balances[selectedPair.liquidity_token + '-total-supply'] as BigNumber;
 
     let lpShare = new BigNumber(0);
@@ -90,17 +87,36 @@ export class WithdrawLiquidityPanel extends React.Component<
     let pooledTokenA: string;
     let pooledTokenB: string;
 
+    const pairSymbol = selectedPair.identifier();
+    const pairSymbolInverse = selectedPair
+      .identifier()
+      .split(SwapPair.id_delimiter)
+      .reverse()
+      .join(SwapPair.id_delimiter);
+
     const lpTokenBalanceNum = new BigNumber(lpTokenBalance as BigNumber);
     if (!lpTokenBalanceNum.isNaN()) {
       if (lpTokenTotalSupply?.isGreaterThan(0)) {
         lpShare = lpTokenBalanceNum.dividedBy(lpTokenTotalSupply);
 
         pooledTokenA = displayHumanizedBalance(
-          humanizeBalance(lpShare.multipliedBy(this.props.balances[`${tokenA}-${pairSymbol}`] as BigNumber), decimalsA),
+          humanizeBalance(
+            lpShare.multipliedBy(
+              (this.props.balances[`${tokenA}-${pairSymbol}`] ??
+                this.props.balances[`${tokenA}-${pairSymbolInverse}`]) as BigNumber,
+            ),
+            decimalsA,
+          ),
         );
 
         pooledTokenB = displayHumanizedBalance(
-          humanizeBalance(lpShare.multipliedBy(this.props.balances[`${tokenB}-${pairSymbol}`] as BigNumber), decimalsB),
+          humanizeBalance(
+            lpShare.multipliedBy(
+              (this.props.balances[`${tokenB}-${pairSymbol}`] ??
+                this.props.balances[`${tokenB}-${pairSymbolInverse}`]) as BigNumber,
+            ),
+            decimalsB,
+          ),
         );
 
         lpShareJsxElement = (
@@ -134,7 +150,7 @@ export class WithdrawLiquidityPanel extends React.Component<
     const rowStyle: CSSProperties = {
       display: 'flex',
       padding: '0.5em 0 0 0',
-      color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE"
+      color: this.props.theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
     };
 
     const poolA = new BigNumber(this.props.balances[`${tokenA}-${pairSymbol}`] as any);
@@ -153,27 +169,27 @@ export class WithdrawLiquidityPanel extends React.Component<
       <Container
         style={{
           padding: '.5rem 1rem',
-          margin:'.5rem 0',
-          borderRadius: '16px', 
-          border:(this.props.theme.currentTheme  == 'light')?'1px solid #DEDEDE':'1px solid white', 
-          backgroundColor:(this.props.theme.currentTheme  == 'light')?'white':'', 
+          margin: '.5rem 0',
+          borderRadius: '16px',
+          border: this.props.theme.currentTheme == 'light' ? '1px solid #DEDEDE' : '1px solid white',
+          backgroundColor: this.props.theme.currentTheme == 'light' ? 'white' : '',
         }}
       >
         <Accordion fluid>
           <Accordion.Title
             active={this.state.isActive}
             onClick={async () => {
-              if(this.state.isActive && this.props.isRowOpen){
+              if (this.state.isActive && this.props.isRowOpen) {
                 this.setState({ isActive: false });
                 this.props.setIsRowOpen(false);
-              }else if(!this.props.isRowOpen){
-                this.setState({ isActive:true,isLoadingBalance: true });
+              } else if (!this.props.isRowOpen) {
+                this.setState({ isActive: true, isLoadingBalance: true });
                 // get balances and subscribe for events for this pair
                 await this.props.getBalance(selectedPair);
                 this.setState({ isLoadingBalance: false });
                 this.props.setIsRowOpen(true);
-              }else{
-                this.props.notify('error','You may not be able to open more than one row at the same time.')
+              } else {
+                this.props.notify('error', 'You may not be able to open more than one row at the same time.');
               }
             }}
           >
@@ -187,7 +203,7 @@ export class WithdrawLiquidityPanel extends React.Component<
               <strong
                 style={{
                   margin: 'auto',
-                  color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE"
+                  color: this.props.theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
                 }}
               >
                 {selectedPair.humanizedSymbol()}
@@ -234,7 +250,9 @@ export class WithdrawLiquidityPanel extends React.Component<
               {lpTokenBalanceNum.isNaN() || lpTokenBalanceString === '0' ? null : (
                 <>
                   <Divider horizontal>
-                    <Header as="h4" style={{color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE"}}>Withdraw</Header>
+                    <Header as="h4" style={{ color: this.props.theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE' }}>
+                      Withdraw
+                    </Header>
                   </Divider>
                   <div
                     style={{

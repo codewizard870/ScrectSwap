@@ -659,7 +659,6 @@ export class SwapRouter extends React.Component<
     //   window.location.hash = 'Swap';
     //   return <></>;
     // }
-
     return (
       <BaseContainer>
         <PageContainer>

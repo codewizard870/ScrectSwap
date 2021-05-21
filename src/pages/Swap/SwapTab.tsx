@@ -455,11 +455,23 @@ export class SwapTab extends React.Component<
       return symbol?.substring(1,symbol.length);
     }
   };
+  getExpectedCSHBK():string{
+    const pair = this.props.selectedPair;
+    let expectedCSHBK='0.0'
+    //Either From or To input is sSCRT or SCRT
+    if(pair){
+      if(pair.asset_infos[0].symbol == 'SCRT' || pair.asset_infos[0].symbol == 'sSCRT'){
+        expectedCSHBK = this.state.fromInput
+      }else if (pair.asset_infos[1].symbol == 'SCRT' || pair.asset_infos[1].symbol == 'sSCRT'){
+        expectedCSHBK = this.state.toInput;
+      }
+    }
+    return expectedCSHBK;
+  }
 
   render() {
-    // console.log(this.props.tokens)
     const pair = this.props.selectedPair;
-
+    const expectedCSHBK= this.getExpectedCSHBK();
     const ask_pool = pair
       ? new BigNumber(this.props.balances[`${this.state.toToken}-${pair?.identifier()}`] as BigNumber)
       : new BigNumber(0);
@@ -794,6 +806,7 @@ export class SwapTab extends React.Component<
                 new BigNumber(1).minus(this.state.slippageTolerance),
               )}
               pairAddress={this.props.selectedPair?.contract_addr}
+              expectedCSHBK={expectedCSHBK}
               /*
               maximumSold={
                 this.state.isFromEstimated

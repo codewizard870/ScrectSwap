@@ -67,11 +67,14 @@ export class Cashback extends React.Component<
   }
 
   async calcRatio(user: UserStoreEx, tokens: Tokens, sefi: string, cashback: string): Promise<number> {
+    // console.log(this.props.balances)
     try {
       const masterAddr = 'secret13hqxweum28nj0c53nnvrpd23ygguhteqggf852';
+      const minterAddr = 'secret1lxvgkwnur05cysvfl8gsggkffuelqgp6egm06j';
 
       const secretjs = user.secretjs;
 
+      
       let result = await secretjs.queryContractSmart(cashback, { token_info: {} });
       const cbTotalSuppply = parseInt(result.token_info.total_supply);
 

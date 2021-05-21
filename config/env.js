@@ -71,6 +71,7 @@ function getClientEnvironment(publicUrl) {
         SECRET_WS: process.env.SECRET_WS,
         SSCRT_CONTRACT: process.env.SSCRT_CONTRACT,
         CSHBK_CONTRACT: process.env.CSHBK_CONTRACT,
+        MINTER_CONTRACT: process.env.MINTER_CONTRACT,
         SIENNA_CONTRACT: process.env.SIENNA_CONTRACT,
 
         SIENNA_PROXY_CONTRACT: process.env.SIENNA_PROXY_CONTRACT,

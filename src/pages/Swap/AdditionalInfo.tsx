@@ -9,6 +9,7 @@ export const AdditionalInfo = ({
   maximumSold,
   liquidityProviderFee,
   priceImpact,
+  expectedCSHBK,
   fromToken,
   toToken,
   pairAddress,
@@ -17,6 +18,7 @@ export const AdditionalInfo = ({
   maximumSold?: BigNumber;
   liquidityProviderFee: number;
   priceImpact: number;
+  expectedCSHBK: string;
   fromToken: string;
   toToken: string;
   pairAddress: string;
@@ -24,7 +26,24 @@ export const AdditionalInfo = ({
   const [minReceivedIconBackground, setMinReceivedIconBackground] = useState<string>('whitesmoke');
   const [liqProvFeeIconBackground, setLiqProvFeeIconBackground] = useState<string>('whitesmoke');
   const [priceImpactIconBackground, setPriceImpactIconBackground] = useState<string>('whitesmoke');
-  const {theme} = useStores();
+  //isSupported = is pair of tokens supported to get CASHBACK token 
+  const [isSupported,setIsSupported] = useState<Boolean>(false)
+  const {theme,user} = useStores();
+  
+  async function getIsSupported():Promise<Boolean>{
+    try {
+      if(pairAddress){
+        let {is_supported:result} = await user.secretjs.queryContractSmart(process.env.MINTER_CONTRACT, {is_supported:{pair:pairAddress}});
+        return result?.is_supported;
+      }else{
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
+  getIsSupported().then((r)=>{setIsSupported(r)})
+
   let priceImpactColor = 'green'; // Less than 1% - Awesome
   if (priceImpact > 0.05) {
     priceImpactColor = 'red'; // High
@@ -155,7 +174,7 @@ export const AdditionalInfo = ({
             Expected Cashback Rewards
             <Popup
             className={style.icon_info__popup} 
-            on='click'
+            // on='click'
               trigger={
                 <Icon
                   name="info"
@@ -178,7 +197,11 @@ export const AdditionalInfo = ({
             </Popup>
           </span>
           <strong>
-            Working on it
+            {
+              (!isSupported)
+                ?"0.0"
+                :expectedCSHBK
+            }
           </strong>
         </div>
         <PairAnalyticsLink pairAddress={pairAddress} />

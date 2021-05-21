@@ -3,20 +3,21 @@ import { Popup ,Icon} from 'semantic-ui-react';
 import {SefiData} from '../types/SefiData' 
 import '../styles.scss';
 import { useStores } from 'stores';
+import Wallet, { WalletType } from '../components/WalletContainer';
 const Claim = (props:{
   data:SefiData
+  claimInfo:any
+  onKeplrIcon:Function
   burnCashback:Function
 })=>{
   const {theme} = useStores();
   return(
     <>
-      <div className="sefi-grid__container background_free claim-sefi__item">
-        <div className="item left">secret12xq...ge26mxlsak</div>
-        <div className="item right">
-          <img className="small-icon" src="/static/key.svg" alt="key"/>
-          <img className="small-icon" src="/static/keplr.svg" alt="keplr"/>
-        </div>
-      </div>
+      <Wallet
+        address={props.claimInfo?.scrt?.address}
+        type={WalletType.Keplr} 
+        ConnectWallet={props.onKeplrIcon}
+        />
       <div className="displayed-center">
         <div className="displayed-center__item">
           <img src="/static/scrt.svg" alt="scrt"/>

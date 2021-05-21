@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal } from 'semantic-ui-react'; 
-import { GetSnip20Params, Snip20TokenInfo } from '../../blockchain-bridge';
+import { getFeeForExecute, GetSnip20Params, Snip20TokenInfo } from '../../blockchain-bridge';
 import { CosmWasmClient } from 'secretjs';
 import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import Loader from 'react-loader-spinner'; 
@@ -19,14 +19,15 @@ import { ITokenInfo } from 'stores/interfaces';
 import { Tokens } from 'stores/Tokens';
 import { UserStoreEx } from 'stores/UserStore';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
-import { displayHumanizedBalance, divDecimals, fixUnlockToken, formatWithTwoDecimals, humanizeBalance, sleep, unlockToken } from 'utils';
-import { getNativeBalance, wrongViewingKey } from './utils';
+import { canonicalizeBalance, displayHumanizedBalance, divDecimals, fixUnlockToken, formatWithTwoDecimals, humanizeBalance, sleep, unlockToken } from 'utils';
+import { getNativeBalance, storeTxResultLocally, wrongViewingKey } from './utils';
 import axios from 'axios'
 import { claimErc, claimInfoErc, ClaimInfoResponse, claimInfoScrt, claimScrt } from './utils_claim';
 import numeral from 'numeral'
 import { UserStoreMetamask } from 'stores/UserStoreMetamask';
 import { web3 } from '../../blockchain-bridge/eth';
 import { useStores } from 'stores';
+import cogoToast from 'cogo-toast';
 export const SefiModal = (props: {
   user: UserStoreEx;
   tokens: Tokens;
@@ -39,6 +40,7 @@ export const SefiModal = (props: {
   const [data ,setData] = React.useState<SefiData>({
     balance:'—',
     unclaimed:'—',
+    cashback_balance:'—',
     sefi_price: 0.0,
     sefi_in_circulation : '—',
     total_supply: '1bn'
@@ -47,7 +49,8 @@ export const SefiModal = (props: {
     eth:any;
     scrt:any;
   }>(undefined)
-const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
+  const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
+  const {user,theme} = useStores();
 
   async function getSefiToken(){
     const tokens: ITokenInfo[] = [...(await props.tokens.tokensUsage('SWAP'))];
@@ -223,14 +226,13 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       }
       const price = await getSefiPrice()
       const price_formatted = numeral(price).format('$0.00');
-      
       const sefi_circulation =  await getCirculationSEFI();
-      console.log(`Total SEFI in circulation :${sefi_circulation}`)
       const total_sefi_circulation = numeral(sefi_circulation).format(getFloatFormat(sefi_circulation)).toString().toUpperCase()
       
       setData({
         ...data,
         balance: balance || "—",
+        cashback_balance: user.balanceCSHBK || '0.0',
         sefi_price:price_formatted,
         unclaimed: unclaimed,
         sefi_in_circulation: total_sefi_circulation,
@@ -288,10 +290,58 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
       console.error(error)
     }
   }
-  const burnCashback = ()=>{
-    console.log("Burning cashback")
+  const burnCashback = async()=>{
+    setStatus(SefiModalState.LOADING)
+    setUnclaimedAmout(parseFloat(user.balanceCSHBK))
+    try {
+        await user.ConvertCHSBKToSEFI();
+        notify('success', `Converted ${user.balanceCSHBK} CSHBK to SEFI!`);
+        setStatus(SefiModalState.CONFIRMATION_CASHBACK)
+
+      } catch (error) {
+        console.error('Error', error);
+        const txHash = error?.txHash;
+        setStatus(SefiModalState.GENERAL)
+        setOpen(false);
+        notify(
+          'errorWithHash',
+          `Error Converting ${user.balanceCSHBK} CSHBK to SEFI
+          }: ${error.message} ${txHash ? '\nTx Hash: ' + txHash : ''}`,
+          undefined,
+          txHash,
+        );
+        return;
+      } finally { 
+        console.log("Finally")
+      }
+  } 
+  
+  function notify(type: 'success' | 'error' | 'errorWithHash', msg: string, hideAfterSec: number = 120, txHash?: string) {
+    let cogoType: string = type;
+    if (type === 'error') {
+      msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
+      msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
+    }
+
+    let onClick = () => {
+      hide();
+    };
+    if (type === 'errorWithHash') {
+      cogoType = 'warn';
+      onClick = () => {
+        const url = `https://secretnodes.com/secret/chains/secret-2/transactions/${txHash}`;
+        const win = window.open(url, '_blank');
+        win.focus();
+        hide();
+      };
+    }
+
+    const { hide } = cogoToast[cogoType](msg, {
+      toastContainerID:'notifications_container', 
+      hideAfter: hideAfterSec,
+      onClick,
+    });
   }
-  const {theme} = useStores();
   return(
     <Modal
       onClose={() => { 
@@ -346,7 +396,12 @@ const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
         }
         {
           (status === SefiModalState.CLAIM_CASH_BACK) 
-              && <ClaimCashback data={data} burnCashback={burnCashback}/>
+              && <ClaimCashback 
+                  data={data} 
+                  burnCashback={burnCashback}
+                  onKeplrIcon={loginKeplr}
+                  claimInfo={claimInfo} 
+                />
         }
         {
           (status === SefiModalState.LOADING) 

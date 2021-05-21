@@ -4,10 +4,12 @@ import { statusFetching } from '../constants';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as agent from 'superagent';
 import { IOperation } from './interfaces';
-import { divDecimals, fixUnlockToken, formatWithSixDecimals, sleep, unlockToken } from '../utils';
+import { canonicalizeBalance, divDecimals, fixUnlockToken, formatWithSixDecimals, sleep, unlockToken } from '../utils';
 import { BroadcastMode, CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
-import { getViewingKey, QueryDeposit, QueryRewards, Snip20GetBalance } from '../blockchain-bridge';
+import { getFeeForExecute, getViewingKey, QueryDeposit, QueryRewards, Snip20GetBalance } from '../blockchain-bridge';
 import { AsyncSender } from '../blockchain-bridge/scrt/asyncSender';
+import BigNumber from 'bignumber.js';
+import { storeTxResultLocally } from 'pages/Swap/utils';
 
 export const rewardsDepositKey = key => `${key}RewardsDeposit`;
 
@@ -29,6 +31,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public sessionType: 'mathwallet' | 'ledger' | 'wallet';
   @observable public address: string;
   @observable public balanceSCRT: string;
+  @observable public balanceCSHBK: string;
 
   @observable public balanceToken: { [key: string]: string } = {};
   @observable public balanceTokenMin: { [key: string]: string } = {};
@@ -327,6 +330,7 @@ export class UserStoreEx extends StoreConstructor {
       this.secretjsSend = this.initSecretJS(process.env.SECRET_POST_ADDRESS, true);
       this.secretjs = this.initSecretJS(process.env.SECRET_LCD, false);
       await this.updateScrtBalance();
+      await this.updateCSHBKBalance()
     } catch (error) {
       this.isUnconnected = 'true';
       console.error(error)
@@ -529,6 +533,8 @@ export class UserStoreEx extends StoreConstructor {
       await this.updateScrtBalance();
     } else if (symbol === 'sSCRT') {
       await this.updateSScrtBalance();
+    }else if(symbol === "CSHBK"){
+      await this.updateCSHBKBalance();
     }
 
     //console.log(symbol)
@@ -537,6 +543,58 @@ export class UserStoreEx extends StoreConstructor {
 
     //await this.refreshRewardsBalances(symbol);
   };
+  @action  public updateCSHBKBalance= async() => {
+     try {
+      const balance = await this.getSnip20Balance(process.env.CSHBK_CONTRACT, 6);
+      this.balanceToken['CSHBK'] = balance;
+      this.balanceCSHBK = balance;
+    } catch (err) {
+      this.balanceToken['CSHBK'] = unlockToken;
+      console.log(err)
+      this.balanceCSHBK = unlockToken;
+    }
+    
+    const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'CSHBK');
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      this.balanceTokenMin['CSHBK'] = token.display_props.min_from_scrt;
+    } catch (e) {
+      console.log(`unknown error: ${e}`);
+    }
+    return;
+  }
+  public async ConvertCHSBKToSEFI():Promise<void>{
+    function extractError(result: any) {
+      if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {
+        return 'Swap fell short of expected return (slippage error)';
+      }
+      if (result?.raw_log) {
+        return result.raw_log;
+      }
+      console.error(result);
+      return `Unknown error`;
+    }
+
+    const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK),6)
+    const result = await this.secretjsSend.asyncExecute(
+      process.env.CSHBK_CONTRACT,
+        {
+        burn: {
+            amount: canonicalizeCHSBK,
+          },
+        },'',[],
+      getFeeForExecute(400_000),
+    );
+    if (result?.code) {
+      const error = extractError(result);
+      storeTxResultLocally(result);
+      throw new Error(error);
+    }
+  }
 
   private async refreshTokenBalance(symbol: string) {
     const token = this.stores.tokens.allData.find(t => t.display_props.symbol === symbol);

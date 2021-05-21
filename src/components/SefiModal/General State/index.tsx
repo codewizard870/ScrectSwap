@@ -38,6 +38,7 @@ const GeneralState = (props:{
                   {
                     (props.data.sefi_in_circulation !== '—')&&
                     <button  
+                      disabled={parseFloat(props.data.balance) == 0}
                       onClick={()=>{props.onClaimSefi()}}
                     >
                       Claim 
@@ -64,14 +65,25 @@ const GeneralState = (props:{
                     </Popup>   
                 </td>
                 <td>
-                  <strong>2.00</strong>
+                  <strong>
+                    {
+                      isNaN(parseFloat(props.data.cashback_balance))
+                        ? "0.0"
+                        : props.data.cashback_balance
+                    }
+                  </strong>
                 </td>
                 <td>
-                  <button 
-                    onClick={()=>{props.onClaimCashback()}}
-                  >
-                      Redeem
-                  </button>
+                  {
+                    (props.data.cashback_balance !== '—')&&
+                    <button 
+                      disabled={parseFloat(props.data.cashback_balance) == 0}
+                      onClick={()=>{props.onClaimCashback()}}
+                    >
+                        Redeem
+                    </button>
+
+                  }
                 </td>
               </tr>
             </tbody>

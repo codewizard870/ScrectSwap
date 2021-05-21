@@ -93,7 +93,7 @@ export class Cashback extends React.Component<
 
       return (((cbRewardBalance + cbPendingRewards) * 0.2) / (cbTotalSuppply * 3.8 * 0.003)) * 100;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return undefined;
     }
   }

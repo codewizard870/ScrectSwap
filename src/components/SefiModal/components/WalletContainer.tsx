@@ -1,7 +1,7 @@
 import { CopyWithFeedback } from 'components/Swap/CopyWithFeedback'
 import React from 'react'
 import { useStores } from 'stores'
-enum WalletType {
+export enum WalletType {
   Keplr,Metamask
 }
 const Wallet = ({
@@ -13,13 +13,20 @@ const Wallet = ({
   type:WalletType;
   ConnectWallet:Function;
 })=>{
+  let walletImg,tokenIcon,address_formatted;
   const {theme} = useStores();
-  const address_formatted = address.substring(0,10)+ '...'+address.substring(address?.length - 10,address?.length)
-  let walletImg,tokenIcon;
+  if(address){
+    address_formatted = address.substring(0,10)+ '...'+address.substring(address?.length - 10,address?.length)
+  }else{
+    address_formatted = undefined;
+  }
+
   if(type == WalletType.Keplr){
     tokenIcon = "/static/scrt.svg"
+    walletImg='/static/keplr.svg'
   }else{
-
+    tokenIcon = "/static/address-icon.svg"
+    walletImg='/static/meta-mask.svg'
   }
   return (
     <div className="sefi-grid__container background_free claim-sefi__item address_container">
@@ -42,3 +49,5 @@ const Wallet = ({
       </div>
   )
 }
+
+export default Wallet;

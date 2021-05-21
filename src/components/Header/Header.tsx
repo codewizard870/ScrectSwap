@@ -18,6 +18,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
     const isSeFi = history.location.pathname === '/sefi';
+    const isCashback = history.location.pathname === '/cashback';
     
 
     const handleSignIn = async()=>{
@@ -53,12 +54,14 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
 
                         <ul className='nav_menu__items'>
                             <li className={(isSwap) ? 'active':''}><Link  to={"/swap"}>Swap</Link></li>
-                            <li className='pool_link'><span>|</span></li>
-                            <li  className={(isPool)  ? 'active pool_link':'pool_link'}><Link  to={"/pool"}>Pool</Link></li>
+                            <li className='hide_mobile'><span>|</span></li>
+                            <li  className={(isPool)  ? 'active hide_mobile':'hide_mobile'}><Link  to={"/pool"}>Pool</Link></li>
                             <li><span>|</span></li>
                             <li  className={(isSeFi) ? 'active':''}><Link  to="/sefi">Earn</Link></li>
-                            {/* <li><span>|</span></li> */}
-                            {/* <li><Link  to="/">Governance</Link></li>  */}
+                            <li className='hide_mobile'><span>|</span></li>
+                            <li className={(isCashback)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/cashback">Cashback</Link></li> 
+                            {/* <li><span>|</span></li>
+                            <li><Link  to="/">Governance</Link></li>  */}
                         </ul>
                     </div>
                     

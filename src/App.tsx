@@ -14,7 +14,7 @@ import { EarnRewards } from './pages/Earn';
 import { FAQPage } from './pages/FAQ';
 import { FinancePage } from './pages/Finance';
 import { SeFiPage } from './pages/SeFi';
-
+import { Cashback } from './pages/Cashback'
 // import { InfoPage } from './pages/Info';
 
 export const App: React.FC = () => (
@@ -24,6 +24,7 @@ export const App: React.FC = () => (
         <Route exact path="/swap" component={SwapPageWrapper} />
         <Route exact path="/pool" component={SwapPagePool} />
         <Route exact path="/sefi" component={SeFiPage} />
+        <Route exact path="/cashback" component={Cashback} />
         {/* <Route exact path="/tokens" component={Tokens} /> */}
         {/* <Route exact path="/faq" component={FAQPage} /> */}
         {/* <Route exact path="/finance" component={FinancePage} /> */}

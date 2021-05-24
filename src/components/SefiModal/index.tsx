@@ -41,6 +41,7 @@ export const SefiModal = (props: {
     balance:'—',
     unclaimed:'—',
     cashback_balance:'—',
+    expected_sefi:0.0,
     sefi_price: 0.0,
     sefi_in_circulation : '—',
     total_supply: '1bn'
@@ -233,6 +234,7 @@ export const SefiModal = (props: {
         ...data,
         balance: balance || "—",
         cashback_balance: user.balanceCSHBK || '0.0',
+        expected_sefi: user.expectedSEFIFromCSHBK,
         sefi_price:price_formatted,
         unclaimed: unclaimed,
         sefi_in_circulation: total_sefi_circulation,
@@ -292,7 +294,7 @@ export const SefiModal = (props: {
   }
   const burnCashback = async()=>{
     setStatus(SefiModalState.LOADING)
-    setUnclaimedAmout(parseFloat(user.balanceCSHBK))
+    setUnclaimedAmout(user.expectedSEFIFromCSHBK)
     try {
         await user.ConvertCHSBKToSEFI();
         notify('success', `Converted ${user.balanceCSHBK} CSHBK to SEFI!`);
@@ -380,6 +382,7 @@ export const SefiModal = (props: {
               hasViewingKey={hasViewingKey} 
               onClaimSefi={onClaimSefi} 
               onClaimCashback={onClaimCashback} 
+              claimInfo={claimInfo} 
               data={data}
               />
         }

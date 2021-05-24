@@ -3,14 +3,19 @@ import { Popup ,Icon} from 'semantic-ui-react';
 import {SefiData} from '../types/SefiData' 
 import '../styles.scss';
 import { useStores } from 'stores';
+import { divDecimals } from 'utils';
 const GeneralState = (props:{
   data:SefiData,
   onClaimSefi: CallableFunction,
   onClaimCashback: CallableFunction,
   createViewingKey: any,
+  claimInfo:any,
   hasViewingKey: Boolean
 })=>{
   const {theme} = useStores();
+  const scrtBalance = parseFloat(divDecimals(props.claimInfo?.scrt?.amount?.toString(), 6));
+  const ethBalance = parseFloat(divDecimals(props.claimInfo?.eth?.amount?.toString(), 6));
+
   return(
     <>
       <div className={`table_container ${theme.currentTheme}`}>
@@ -38,7 +43,7 @@ const GeneralState = (props:{
                   {
                     (props.data.sefi_in_circulation !== '—')&&
                     <button  
-                      disabled={parseFloat(props.data.balance) == 0}
+                      disabled={(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)&&(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)}
                       onClick={()=>{props.onClaimSefi()}}
                     >
                       Claim 

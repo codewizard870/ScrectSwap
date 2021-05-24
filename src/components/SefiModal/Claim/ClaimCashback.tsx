@@ -23,7 +23,7 @@ const Claim = (props:{
           <img src="/static/scrt.svg" alt="scrt"/>
         </div>
         <p className="displayed-center__item">You can burn <strong>{props.data.cashback_balance} cashback</strong> tokens to claim</p>
-        <h1 className="displayed-center__item">400 SEFI</h1>
+        <h1 className="displayed-center__item">{props.data.expected_sefi} SEFI</h1>
         <span className="displayed-center__item">The more you trade, the more cashback tokens you get.</span>
         {/* <a className={`displayed-center__item ${theme.currentTheme}`} href="#">Learn more about cashback tokens</a> */}
         <button className="displayed-center__item claim-button" onClick={()=>props.burnCashback()}> Claim</button>

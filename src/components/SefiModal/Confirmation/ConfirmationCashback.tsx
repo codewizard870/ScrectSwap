@@ -12,11 +12,11 @@ const GeneralState = (props:{
             <p className="span-2 congrats_title">Congratulations !</p> 
         </div>
         <div className="m-small">
-          <p className="span-2 congrats_msg">You have claimed <strong>400 SEFI</strong> from your cashback tokens! 
+          <p className="span-2 congrats_msg">You have claimed <strong>{props.data.expected_sefi} SEFI</strong> from your cashback tokens! 
           The more you swap, the more SEFI you can claim.</p>
         </div>
         <div className="m-small">
-          <a className="span-2" href="#">Learn more about cashback token</a>
+          {/* <a className="span-2" href="#">Learn more about cashback token</a>   */}
         </div>
         <button className='earn-sefi__btn m-small'> Earn with SEFI</button>  
         <div className="sefi-grid__container-confirm">

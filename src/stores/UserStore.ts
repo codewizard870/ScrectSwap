@@ -32,6 +32,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public address: string;
   @observable public balanceSCRT: string;
   @observable public balanceCSHBK: string;
+  @observable public expectedSEFIFromCSHBK: number;
 
   @observable public balanceToken: { [key: string]: string } = {};
   @observable public balanceTokenMin: { [key: string]: string } = {};
@@ -543,14 +544,40 @@ export class UserStoreEx extends StoreConstructor {
 
     //await this.refreshRewardsBalances(symbol);
   };
+  @action  public updateExpectedSEFIFromCSHBK = async() => {
+    try {
+      if(parseFloat(this.balanceCSHBK) > 0){
+        //Parsing CSHBK balance
+        const cb_balance = parseFloat(this.balanceCSHBK)
+        //Total supply
+        const {token_info} = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { token_info: {} });
+        const cb_total_supply = parseFloat(token_info?.total_supply)
+        //Current block
+        const block = (await this.secretjs.getBlock()).header.height;
+        //Peding SEFI
+        const {pending} = await this.secretjs.queryContractSmart(process.env.MASTER_CONTRACT, {pending: {spy_addr: process.env.CSHBK_CONTRACT,block,},});
+        const pending_sefi = parseFloat(pending?.amount);
+        //Result
+        this.expectedSEFIFromCSHBK = parseFloat(((cb_balance / cb_total_supply) * pending_sefi).toFixed(2))
+      }else{
+        this.expectedSEFIFromCSHBK=0.0;
+      }
+      
+    } catch (error) {
+      this.expectedSEFIFromCSHBK=0.0;
+      console.error(error)
+    }
+  }
+  
   @action  public updateCSHBKBalance= async() => {
      try {
       const balance = await this.getSnip20Balance(process.env.CSHBK_CONTRACT, 6);
       this.balanceToken['CSHBK'] = balance;
       this.balanceCSHBK = balance;
+      await this.updateExpectedSEFIFromCSHBK()
     } catch (err) {
       this.balanceToken['CSHBK'] = unlockToken;
-      console.log(err)
+      console.error(err)
       this.balanceCSHBK = unlockToken;
     }
     

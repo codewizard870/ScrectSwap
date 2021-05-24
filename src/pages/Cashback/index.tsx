@@ -34,7 +34,7 @@ export const Cashback =observer((props)=>{
                     <p>You have earned</p>
                     <h2>{user.balanceCSHBK} CSHBK </h2>
                     <p>that you can trade for</p>
-                    <h2>5.246 SEFI</h2>
+                    <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
                   </>
                   : <>
                     <h1>Too Bad !</h1>
@@ -45,8 +45,8 @@ export const Cashback =observer((props)=>{
                   </>
                 }
               </div>
-              <div>
-                <img src="/static/robot.svg" alt="Rockstart robot"  />
+              <div className="call-toAction__container">
+                <img src="/static/robot-cashback.png" alt="Rockstart robot"  />
                 <button 
                   disabled={!hasCashback}
                   className="redeem-sefi__button" 

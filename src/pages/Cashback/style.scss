@@ -77,7 +77,6 @@
 
 .redeem-sefi__button {
   width: 100%;
-  padding: 1rem 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -114,4 +113,10 @@
     background: rgba(255, 255, 255, 0.4);
     color: #1b1b1b;
   }
+}
+.call-toAction__container {
+  img {
+    width: 100%;
+  }
+  display: grid;
 }

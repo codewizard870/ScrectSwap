@@ -660,6 +660,7 @@ export class SwapTab extends React.Component<
             onClick={async () => {
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;
+              const cb_optional_msg = (this.props.isSupported)? `And you earned ${expectedCSHBK} CSHBK tokens!` :'Empty msg'
 
               this.setState({ loadingSwap: true });
 
@@ -721,7 +722,7 @@ export class SwapTab extends React.Component<
                     'success',
                     `Swapped ${sent} ${this.props.tokens.get(fromToken)?.symbol} for ${received} ${
                       this.props.tokens.get(toToken).symbol
-                    }`,
+                    } ${cb_optional_msg}`,
                   );
                 } else {
                   let result: ExecuteResult;
@@ -759,7 +760,7 @@ export class SwapTab extends React.Component<
                     'success',
                     `Swapped ${sent} ${this.props.tokens.get(fromToken).symbol} for ${received} ${
                       this.props.tokens.get(toToken).symbol
-                    }`,
+                    } ${cb_optional_msg}`,
                   );
                 }
                 await this.props.updateBalances()
@@ -808,7 +809,7 @@ export class SwapTab extends React.Component<
               )}
               pairAddress={this.props.selectedPair?.contract_addr}
               expectedCSHBK={expectedCSHBK}
-              isSupported={true}
+              isSupported={this.props.isSupported}
               /*
               maximumSold={
                 this.state.isFromEstimated

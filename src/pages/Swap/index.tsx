@@ -551,7 +551,7 @@ export class SwapRouter extends React.Component<
     this.setState({
       selectedPair: selectedPair,
       selectedPairRoutes: routes,
-      isSupported
+      isSupported:isSupported
     });
 
     //this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
@@ -698,7 +698,7 @@ export class SwapRouter extends React.Component<
                   pairs={this.state.pairs}
                   isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
                   updateBalances={this.updateBalances.bind(this)}
-                  isSupported={false}
+                  isSupported={this.state.isSupported}
                 />
               {/* {isProvide && (
                 <ProvideTab

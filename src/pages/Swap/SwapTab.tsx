@@ -170,6 +170,7 @@ export class SwapTab extends React.Component<
     onSetTokens: CallableFunction;
     refreshPools: CallableFunction;
     secretAddress: string;
+    isSupported: boolean;
     pairs: PairMap;
     isLoadingSupportedTokens: boolean;
     updateBalances: Function;
@@ -807,6 +808,7 @@ export class SwapTab extends React.Component<
               )}
               pairAddress={this.props.selectedPair?.contract_addr}
               expectedCSHBK={expectedCSHBK}
+              isSupported={true}
               /*
               maximumSold={
                 this.state.isFromEstimated

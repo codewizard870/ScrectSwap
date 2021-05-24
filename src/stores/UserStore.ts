@@ -623,7 +623,18 @@ export class UserStoreEx extends StoreConstructor {
       throw new Error(error);
     }
   }
-
+  public async getIsSupported(pairAddress :string):Promise<boolean>{
+    try {
+      if(pairAddress){
+        let {is_supported:result} = await this.secretjs.queryContractSmart(process.env.MINTER_CONTRACT, {is_supported:{pair:pairAddress}});
+        return result?.is_supported;
+      }else{
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
   private async refreshTokenBalance(symbol: string) {
     const token = this.stores.tokens.allData.find(t => t.display_props.symbol === symbol);
 

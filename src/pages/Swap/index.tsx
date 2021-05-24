@@ -79,6 +79,7 @@ export class SwapRouter extends React.Component<
     routerOnline: boolean;
     routingGraph: { [token0: string]: { [token1: string]: number } };
     selectedPairRoutes: string[][];
+    isSupported: boolean;
     keplrConnected: boolean;
     cashback: string;
     sefi: string;
@@ -103,6 +104,7 @@ export class SwapRouter extends React.Component<
       routingGraph: {},
       selectedPairRoutes: [],
       keplrConnected: undefined,
+      isSupported:false,
       cashback: 'secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht',
       sefi: 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm',
     };
@@ -519,7 +521,8 @@ export class SwapRouter extends React.Component<
 
   setCurrentPair = async (token0: string, token1: string) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
-
+    const isSupported = await this.props.user.getIsSupported(selectedPair?.contract_addr)
+    
     while (Object.keys(this.state.routingGraph).length === 0) {
       await sleep(100);
     }
@@ -548,6 +551,7 @@ export class SwapRouter extends React.Component<
     this.setState({
       selectedPair: selectedPair,
       selectedPairRoutes: routes,
+      isSupported
     });
 
     //this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
@@ -694,6 +698,7 @@ export class SwapRouter extends React.Component<
                   pairs={this.state.pairs}
                   isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
                   updateBalances={this.updateBalances.bind(this)}
+                  isSupported={false}
                 />
               {/* {isProvide && (
                 <ProvideTab

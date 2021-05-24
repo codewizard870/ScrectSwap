@@ -10,6 +10,7 @@ export const AdditionalInfo = ({
   liquidityProviderFee,
   priceImpact,
   expectedCSHBK,
+  isSupported,
   fromToken,
   toToken,
   pairAddress,
@@ -17,6 +18,7 @@ export const AdditionalInfo = ({
   minimumReceived?: BigNumber;
   maximumSold?: BigNumber;
   liquidityProviderFee: number;
+  isSupported: Boolean;
   priceImpact: number;
   expectedCSHBK: string;
   fromToken: string;
@@ -27,22 +29,7 @@ export const AdditionalInfo = ({
   const [liqProvFeeIconBackground, setLiqProvFeeIconBackground] = useState<string>('whitesmoke');
   const [priceImpactIconBackground, setPriceImpactIconBackground] = useState<string>('whitesmoke');
   //isSupported = is pair of tokens supported to get CASHBACK token 
-  const [isSupported,setIsSupported] = useState<Boolean>(false)
   const {theme,user} = useStores();
-  
-  async function getIsSupported():Promise<Boolean>{
-    try {
-      if(pairAddress){
-        let {is_supported:result} = await user.secretjs.queryContractSmart(process.env.MINTER_CONTRACT, {is_supported:{pair:pairAddress}});
-        return result?.is_supported;
-      }else{
-        return false;
-      }
-    } catch (error) {
-      return false;
-    }
-  }
-  getIsSupported().then((r)=>{setIsSupported(r)})
 
   let priceImpactColor = 'green'; // Less than 1% - Awesome
   if (priceImpact > 0.05) {

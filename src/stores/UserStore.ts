@@ -33,6 +33,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public balanceSCRT: string;
   @observable public balanceCSHBK: string;
   @observable public expectedSEFIFromCSHBK: number;
+  @observable public ratioCSHBK:number;
 
   @observable public balanceToken: { [key: string]: string } = {};
   @observable public balanceTokenMin: { [key: string]: string } = {};
@@ -547,7 +548,8 @@ export class UserStoreEx extends StoreConstructor {
   @action  public updateExpectedSEFIFromCSHBK = async() => {
     try {
       if(parseFloat(this.balanceCSHBK) > 0){
-        //Parsing CSHBK balance
+
+        //Calculating Expected SEFI from CSHBK
         const cb_balance = parseFloat(this.balanceCSHBK)
         //Total supply
         const {token_info} = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { token_info: {} });
@@ -557,10 +559,23 @@ export class UserStoreEx extends StoreConstructor {
         //Peding SEFI
         const {pending} = await this.secretjs.queryContractSmart(process.env.MASTER_CONTRACT, {pending: {spy_addr: process.env.CSHBK_CONTRACT,block,},});
         const pending_sefi = parseFloat(pending?.amount);
-        //Result
+        //Result Expected SEFI
         this.expectedSEFIFromCSHBK = parseFloat(((cb_balance / cb_total_supply) * pending_sefi).toFixed(2))
+            
+
+        //Calculating CSHBK ratio
+        //Reward balance 
+        const result = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { reward_balance: {} });
+        const cb_rewards_balance = parseInt(result.reward_balance.balance);
+        //Prices
+        const sefiUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SEFI')?.price || '0.2');
+        const scrtUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT')?.price || '3.8');
+        //Result Rate CSHBK
+        this.ratioCSHBK = parseFloat(((((cb_rewards_balance + pending_sefi) * sefiUSD) / (cb_total_supply * scrtUSD * 0.003)) * 100).toFixed(2));
+      
       }else{
         this.expectedSEFIFromCSHBK=0.0;
+        this.ratioCSHBK = Infinity;
       }
       
     } catch (error) {

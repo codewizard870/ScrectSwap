@@ -37,21 +37,17 @@ export class Cashback extends React.Component<
       cbRatio: undefined,
     };
 
-    setTimeout(() => {
-      this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr).then(ratio => {
-        console.log('################## ratio');
-        this.setState({
-          cbRatio: ratio,
-        });
-      });
+    setTimeout(async() => {
+       await this.props.user.updateCSHBKBalance();
+       this.setState({
+         cbRatio:this.props.user.ratioCSHBK
+       })
     }, 5000);
-    setInterval(() => {
-      this.calcRatio(this.props.user, this.props.tokens, sefiAddr, cashbackAddr).then(ratio => {
-        console.log('################## ratio');
-        this.setState({
-          cbRatio: ratio,
-        });
-      });
+    setInterval(async() => {
+        await this.props.user.updateCSHBKBalance();
+       this.setState({
+         cbRatio:this.props.user.ratioCSHBK
+       })
     }, 5000);
   }
 
@@ -66,40 +62,40 @@ export class Cashback extends React.Component<
     return `Unknown error`;
   }
 
-  async calcRatio(user: UserStoreEx, tokens: Tokens, sefi: string, cashback: string): Promise<number> {
-    // console.log(this.props.balances)
-    try {
-      const masterAddr = 'secret13hqxweum28nj0c53nnvrpd23ygguhteqggf852';
-      const minterAddr = 'secret1lxvgkwnur05cysvfl8gsggkffuelqgp6egm06j';
+  // async calcRatio(user: UserStoreEx, tokens: Tokens, sefi: string, cashback: string): Promise<number> {
+  //   // console.log(this.props.balances)
+  //   try {
+  //     const masterAddr = 'secret13hqxweum28nj0c53nnvrpd23ygguhteqggf852';
+  //     const minterAddr = 'secret1lxvgkwnur05cysvfl8gsggkffuelqgp6egm06j';
 
-      const secretjs = user.secretjs;
+  //     const secretjs = user.secretjs;
 
       
-      let result = await secretjs.queryContractSmart(cashback, { token_info: {} });
-      const cbTotalSuppply = parseInt(result.token_info.total_supply);
+  //     let result = await secretjs.queryContractSmart(cashback, { token_info: {} });
+  //     const cbTotalSuppply = parseInt(result.token_info.total_supply);
 
-      result = await secretjs.queryContractSmart(cashback, { reward_balance: {} });
-      const cbRewardBalance = parseInt(result.reward_balance.balance);
+  //     result = await secretjs.queryContractSmart(cashback, { reward_balance: {} });
+  //     const cbRewardBalance = parseInt(result.reward_balance.balance);
 
-      const block = (await user.secretjs.getBlock()).header.height;
-      result = await secretjs.queryContractSmart(masterAddr, {
-        pending: {
-          spy_addr: cashback,
-          block,
-        },
-      });
-      const cbPendingRewards = parseInt(result.pending.amount);
+  //     const block = (await user.secretjs.getBlock()).header.height;
+  //     result = await secretjs.queryContractSmart(masterAddr, {
+  //       pending: {
+  //         spy_addr: cashback,
+  //         block,
+  //       },
+  //     });
+  //     const cbPendingRewards = parseInt(result.pending.amount);
 
-      // Not working on testnet
-      // const sefiUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SEFI').price);
-      // const scrtUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SSCRT').price);
+  //     // Not working on testnet
+  //     // const sefiUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SEFI').price);
+  //     // const scrtUSD = parseInt(tokens.allData.find(t => t.display_props.symbol === 'SSCRT').price);
 
-      return (((cbRewardBalance + cbPendingRewards) * 0.2) / (cbTotalSuppply * 3.8 * 0.003)) * 100;
-    } catch (e) {
-      console.error(e);
-      return undefined;
-    }
-  }
+  //     return (((cbRewardBalance + cbPendingRewards) * 0.2) / (cbTotalSuppply * 3.8 * 0.003)) * 100;
+  //   } catch (e) {
+  //     console.error(e);
+  //     return undefined;
+  //   }
+  // }
 
   render() {
     const cashbackAddr = 'secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht';

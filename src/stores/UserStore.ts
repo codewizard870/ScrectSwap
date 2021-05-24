@@ -616,6 +616,7 @@ export class UserStoreEx extends StoreConstructor {
         },'',[],
       getFeeForExecute(400_000),
     );
+    this.updateCSHBKBalance();
     if (result?.code) {
       const error = extractError(result);
       storeTxResultLocally(result);

@@ -2,17 +2,23 @@ import { BaseContainer, PageContainer } from 'components'
 import { Box } from 'grommet'
 import { observer } from 'mobx-react';
 import React from 'react'
+import { Button, Loader } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import "./style.scss";
 
 export const Cashback =observer((props)=>{
     const {theme,user} = useStores();
-    const hasCashback = user.balanceCSHBK != '0';
+    const [loading,setLoading]=React.useState(false);
+    const hasCashback = user?.balanceCSHBK != '0';
 
     const burnSEFI = async () => {
       try {
-        await user.ConvertCHSBKToSEFI(); 
-        console.log("You've claimed CSHBK")
+        if(user?.balanceCSHBK){
+          setLoading(true)
+          await user.ConvertCHSBKToSEFI(); 
+          setLoading(false)
+          console.log("You've claimed CSHBK")
+        }
       } catch (error) {
         console.error(error)
       }
@@ -47,12 +53,13 @@ export const Cashback =observer((props)=>{
               </div>
               <div className="call-toAction__container">
                 <img src="/static/robot-cashback.png" alt="Rockstart robot"  />
-                <button 
+                <Button 
+                  loading={loading}
                   disabled={!hasCashback}
                   className="redeem-sefi__button" 
                   onClick={burnSEFI}>
-                    Redem for SEFI
-                </button>
+                    Redem for SEFI 
+                </Button>
               </div>
             </div>
             <div className={`additional-info__container ${theme.currentTheme}`}>

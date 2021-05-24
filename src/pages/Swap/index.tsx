@@ -81,8 +81,6 @@ export class SwapRouter extends React.Component<
     selectedPairRoutes: string[][];
     isSupported: boolean;
     keplrConnected: boolean;
-    cashback: string;
-    sefi: string;
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
@@ -105,8 +103,6 @@ export class SwapRouter extends React.Component<
       selectedPairRoutes: [],
       keplrConnected: undefined,
       isSupported:false,
-      cashback: 'secret1g022tjrppardjmal2e7jx2jljvgnkzatxfhtht',
-      sefi: 'secret12q2c5s5we5zn9pq43l0rlsygtql6646my0sqfm',
     };
   }
 
@@ -151,8 +147,7 @@ export class SwapRouter extends React.Component<
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
     }
 
-    newBalances[this.state.cashback] = await this.refreshTokenBalance(this.state.cashback);
-    newBalances[this.state.sefi] = await this.refreshTokenBalance(this.state.sefi);
+
 
     if (updateState) {
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
@@ -191,8 +186,6 @@ export class SwapRouter extends React.Component<
     for (let i = 0; i < 10; i++) {
       if (this.props.user.secretjs) {
         sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
-        sScrtBalance[this.state.cashback] = await this.refreshTokenBalance(this.state.cashback);
-        sScrtBalance[this.state.sefi] = await this.refreshTokenBalance(this.state.sefi);
         keplrConnected = true;
         break;
       }
@@ -759,15 +752,6 @@ export class SwapRouter extends React.Component<
             </Box>
             {/* <SwapFooter />
             <BetaWarning secretjs={this.props.user.secretjsSend} /> */}
-            <Cashback
-              user={this.props.user}
-              secretjsSender={this.props.user.secretjsSend}
-              refreshBalances={this.refreshBalances}
-              balances={this.state.balances}
-              allTokens={this.state.allTokens}
-              tokens={this.props.tokens}
-              notify={this.notify}
-            />
           </Box>
         </PageContainer>
       </BaseContainer>

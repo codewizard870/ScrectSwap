@@ -620,7 +620,7 @@ export class UserStoreEx extends StoreConstructor {
       console.error(result);
       return `Unknown error`;
     }
-
+    
     const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK),6)
     const result = await this.secretjsSend.asyncExecute(
       process.env.CSHBK_CONTRACT,

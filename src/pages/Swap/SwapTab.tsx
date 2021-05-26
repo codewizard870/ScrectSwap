@@ -547,6 +547,11 @@ export class SwapTab extends React.Component<
       this.state.buttonMessage === BUTTON_MSG_NO_ROUTE;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
     const btnError = buttonMessage == BUTTON_MSG_NO_ROUTE || buttonMessage == BUTTON_MSG_NOT_ENOUGH_LIQUIDITY
+    let doubleCashback=false;
+    if(!this.props.isSupported && this.state.bestRoute?.length > 2){
+      doubleCashback = this.state.bestRoute?.some((address)=>address===process.env.SSCRT_CONTRACT)
+    }
+    
     return (
       <>
         <Container className={`${styles.swapContainerStyle} ${styles[stores.theme.currentTheme]}`}>
@@ -810,6 +815,7 @@ export class SwapTab extends React.Component<
               pairAddress={this.props.selectedPair?.contract_addr}
               expectedCSHBK={expectedCSHBK}
               isSupported={this.props.isSupported}
+              doubleCashback={doubleCashback}
               /*
               maximumSold={
                 this.state.isFromEstimated

@@ -10,6 +10,7 @@ export const AdditionalInfo = ({
   liquidityProviderFee,
   priceImpact,
   expectedCSHBK,
+  doubleCashback,
   isSupported,
   fromToken,
   toToken,
@@ -18,6 +19,7 @@ export const AdditionalInfo = ({
   minimumReceived?: BigNumber;
   maximumSold?: BigNumber;
   liquidityProviderFee: number;
+  doubleCashback: boolean;
   isSupported: Boolean;
   priceImpact: number;
   expectedCSHBK: string;
@@ -41,7 +43,7 @@ export const AdditionalInfo = ({
   }
 
   return (
-    <div style={{ maxWidth: '400px', minWidth: '400px' }}>
+    <div style={{ maxWidth: '450px', minWidth: '450px' }}>
       <Container
         className={`${style.additionalInfo_container} ${style[theme.currentTheme]}`}
       >
@@ -186,7 +188,7 @@ export const AdditionalInfo = ({
           <strong>
             {
               (!isSupported)
-                ?"0.0"
+                ?(doubleCashback)?'Double Cashback':'0.0'
                 :expectedCSHBK
             }
           </strong>

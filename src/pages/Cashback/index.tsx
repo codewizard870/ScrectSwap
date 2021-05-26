@@ -66,6 +66,8 @@ export const Cashback =observer((props)=>{
         console.error(error)
       }
     }
+    const sefi_earned = localStorage.getItem('total_sefi_earned')
+    const cb_received = localStorage.getItem('total_cb_received')
 
     const rateCSHBK = user?.ratioCSHBK || .6 //Default value .60 meantime it loads 
     const fontColor = theme.currentTheme=='light'?'#5F5F6B':'white'
@@ -163,8 +165,6 @@ export const Cashback =observer((props)=>{
                   <text fill="#79CC81" x={topRightChart - 5 } y='10' textAnchor='middle'>Good</text>
                   <rect x="4" y="21" width="520" height="22" rx="11" fill="url(#paint0_linear)"/>
                   <path d={`M${xPositionChart} 21V43`} stroke={fontColor}/>
-                  {/* <path d="M14 21V43" stroke='red'/>
-                  <path d="M514 21V43" stroke='green'/> */}
                   <path d="M14 53V73" stroke={fontColor}/>
                   <path d="M139 53V63" stroke={fontColor}/>
                   <path d="M264 53V73" stroke={fontColor}/>
@@ -186,11 +186,11 @@ export const Cashback =observer((props)=>{
             <div className={`additional-info__container ${theme.currentTheme}`}>
               <div className='additional-info__row'>
                 <p>Total Cashback Received</p>
-                <strong>0.013055 CSHBK</strong>
+                <strong>{(cb_received)?cb_received:'0.0'} CSHBK</strong>
               </div>
               <div className='additional-info__row'>
                 <p>SEFI Earned from Cashback</p>
-                <strong>0.006018 SEFI</strong>
+                <strong>{(sefi_earned)?sefi_earned:'0.0'} SEFI</strong>
               </div>
             </div>
           </Box>

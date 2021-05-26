@@ -547,36 +547,32 @@ export class UserStoreEx extends StoreConstructor {
   };
   @action  public updateExpectedSEFIFromCSHBK = async() => {
     try {
+      //Calculating Expected SEFI from CSHBK
+      const cb_balance = parseFloat(this.balanceCSHBK)
+      //Total supply
+      const {token_info} = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { token_info: {} });
+      const cb_total_supply = parseFloat(token_info?.total_supply)
+      //Current block
+      const block = (await this.secretjs.getBlock()).header.height;
+      //Peding SEFI
+      const {pending} = await this.secretjs.queryContractSmart(process.env.MASTER_CONTRACT, {pending: {spy_addr: process.env.CSHBK_CONTRACT,block,},});
+      const pending_sefi = parseFloat(pending?.amount);
+      //Calculating CSHBK ratio
+      //Reward balance 
+      const result = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { reward_balance: {} });
+      const cb_rewards_balance = parseInt(result.reward_balance.balance);
+      //Prices
+      const sefiUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SEFI')?.price || '0.2');
+      const scrtUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT')?.price || '3.8');
+
       if(parseFloat(this.balanceCSHBK) > 0){
-
-        //Calculating Expected SEFI from CSHBK
-        const cb_balance = parseFloat(this.balanceCSHBK)
-        //Total supply
-        const {token_info} = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { token_info: {} });
-        const cb_total_supply = parseFloat(token_info?.total_supply)
-        //Current block
-        const block = (await this.secretjs.getBlock()).header.height;
-        //Peding SEFI
-        const {pending} = await this.secretjs.queryContractSmart(process.env.MASTER_CONTRACT, {pending: {spy_addr: process.env.CSHBK_CONTRACT,block,},});
-        const pending_sefi = parseFloat(pending?.amount);
         //Result Expected SEFI
-        this.expectedSEFIFromCSHBK = parseFloat(((cb_balance / cb_total_supply) * pending_sefi).toFixed(2))
-            
-
-        //Calculating CSHBK ratio
-        //Reward balance 
-        const result = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { reward_balance: {} });
-        const cb_rewards_balance = parseInt(result.reward_balance.balance);
-        //Prices
-        const sefiUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SEFI')?.price || '0.2');
-        const scrtUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT')?.price || '3.8');
-        //Result Rate CSHBK
-        this.ratioCSHBK = parseFloat((((cb_rewards_balance + pending_sefi) * sefiUSD) / (cb_total_supply * scrtUSD * 0.003)).toFixed(2));
-      
+        this.expectedSEFIFromCSHBK = parseFloat(((cb_balance / cb_total_supply) * pending_sefi).toFixed(2))        
       }else{
         this.expectedSEFIFromCSHBK=0.0;
-        this.ratioCSHBK = Infinity;
       }
+      //Result Rate CSHBK
+      this.ratioCSHBK = parseFloat((((cb_rewards_balance + pending_sefi) * sefiUSD) / (cb_total_supply * scrtUSD * 0.003)).toFixed(2));
       
     } catch (error) {
       this.expectedSEFIFromCSHBK=0.0;
@@ -631,6 +627,7 @@ export class UserStoreEx extends StoreConstructor {
         },'',[],
       getFeeForExecute(400_000),
     );
+    this.updateLocalCSHBKData(this.expectedSEFIFromCSHBK,this.balanceCSHBK)
     this.updateCSHBKBalance();
     if (result?.code) {
       const error = extractError(result);
@@ -638,6 +635,25 @@ export class UserStoreEx extends StoreConstructor {
       throw new Error(error);
     }
   }
+
+  public updateLocalCSHBKData(sefi:number,cashback:string){
+    const sefi_earned = localStorage.getItem('total_sefi_earned')
+    const cb_received = localStorage.getItem('total_cb_received')
+    
+    if(sefi_earned){
+      const total_sefi_earned = parseFloat(sefi_earned)+sefi;
+      localStorage.setItem('total_sefi_earned',total_sefi_earned.toString())
+    }else{
+      localStorage.setItem('total_sefi_earned',sefi.toString())
+    }
+    if(cb_received){
+      const total_cb_received = parseFloat(cb_received)+parseFloat(cashback);
+      localStorage.setItem('total_cb_received',total_cb_received.toString())
+    }else{
+      localStorage.setItem('total_cb_received',cashback)
+    }
+  }
+
   public async getIsSupported(pairAddress :string):Promise<boolean>{
     try {
       if(pairAddress){

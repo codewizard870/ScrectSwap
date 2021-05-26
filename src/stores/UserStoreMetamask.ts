@@ -46,9 +46,9 @@ export class UserStoreMetamask extends StoreConstructor {
 
     const sessionObj = JSON.parse(session);
 
-    if (sessionObj && sessionObj.ethAddress) {
-      this.signIn();
-    }
+    // if (!sessionObj && !sessionObj.ethAddress) {
+    //   this.signIn();
+    // }
 
     if (sessionObj && sessionObj.erc20Address) {
       this.setToken(sessionObj.erc20Address);

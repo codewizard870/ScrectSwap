@@ -154,7 +154,7 @@ export const SefiModal = (props: {
         return infoErc;
       }else{
         console.log('Meta mask sigin now');
-        props.metaMask.signIn();
+        await props.metaMask.signIn();
         return undefined;
       }
     } catch (error) {

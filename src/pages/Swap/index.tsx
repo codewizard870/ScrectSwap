@@ -4,7 +4,7 @@ import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
-import { fixUnlockToken, sleep, sortedStringify, unlockToken } from 'utils';
+import { fixUnlockToken, sleep, unlockToken } from 'utils';
 import { UserStoreEx } from 'stores/UserStore';
 import { observer } from 'mobx-react';
 import { SwapTab } from './SwapTab';
@@ -78,8 +78,10 @@ export class SwapRouter extends React.Component<
     selectedToken1: string;
     queries: string[];
     routerSupportedTokens: Set<string>;
+    routerOnline: boolean;
     routingGraph: { [token0: string]: { [token1: string]: number } };
     selectedPairRoutes: string[][];
+    keplrConnected: boolean;
   }
 > {
   private symbolUpdateHeightCache: { [symbol: string]: number } = {};
@@ -97,8 +99,10 @@ export class SwapRouter extends React.Component<
       selectedToken1: '',
       queries: [],
       routerSupportedTokens: new Set(),
+      routerOnline: false,
       routingGraph: {},
       selectedPairRoutes: [],
+      keplrConnected: undefined,
     };
   }
 
@@ -125,25 +129,25 @@ export class SwapRouter extends React.Component<
     let updateState = false;
     const { selectedToken0, selectedToken1 } = this.state;
 
-    if (selectedToken0 !== prevState.selectedToken0 && selectedToken0 !== prevState.selectedToken1) {
-      console.log(
-        `new token: ${selectedToken0}: prev state t0: ${prevState.selectedToken0}, prev state t1: ${prevState.selectedToken1}`,
-      );
+    // this happens 3 times since setting state takes time (or maybe because componentDidUpdate gets called 3 times when
+    // keplr connects. Either way this should be fine as it doesn't happen very often
+    if (this.props.user.secretjs && prevState.keplrConnected === false) {
+      newBalances[selectedToken0] = await this.refreshTokenBalance(selectedToken0);
+      newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
+      this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances }, keplrConnected: true }));
+    }
 
+    if (selectedToken0 !== prevState.selectedToken0 && selectedToken0 !== prevState.selectedToken1) {
       updateState = true;
       newBalances[selectedToken0] = await this.refreshTokenBalance(selectedToken0);
     }
 
     if (selectedToken1 !== prevState.selectedToken0 && selectedToken1 !== prevState.selectedToken1) {
-      console.log(
-        `new token: ${selectedToken1}: prev state t0: ${prevState.selectedToken0}, prev state t1: ${prevState.selectedToken1}`,
-      );
       updateState = true;
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
     }
 
     if (updateState) {
-      console.log('updated state');
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
   }
@@ -153,27 +157,28 @@ export class SwapRouter extends React.Component<
     window.addEventListener('storage', this.updateTokens);
     window.addEventListener('updatePairsAndTokens', this.updatePairs);
 
-    if (!this.props.user.secretjs) {
-      await this.updateTokens();
-    }
+    await this.updateTokens();
 
     while (this.props.pairs.isPending || this.props.tokens.isPending) {
       await sleep(100);
     }
 
+    let sScrtBalance: { [symbol: string]: BigNumber | JSX.Element } = {
+      [process.env.SSCRT_CONTRACT]: new BigNumber('0'),
+    };
+    let keplrConnected = false;
+    // wait for 1 second before deciding that Keplr won't connect
+    for (let i = 0; i < 10; i++) {
+      if (this.props.user.secretjs) {
+        sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
+        keplrConnected = true;
+        break;
+      }
+      await sleep(100);
+    }
+
+    this.setState({ balances: { ...this.state.balances, ...sScrtBalance }, keplrConnected });
     await this.updatePairs();
-
-    while (!this.props.user.secretjs) {
-      await sleep(100);
-    }
-
-    const sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
-
-    this.setState({ balances: { ...this.state.balances, ...sScrtBalance } });
-
-    while (!this.props.user.secretjs) {
-      await sleep(100);
-    }
 
     if (process.env.ENV !== 'DEV') {
       while (this.state.pairs.size === 0) {
@@ -190,7 +195,7 @@ export class SwapRouter extends React.Component<
           }),
         );
         routerSupportedTokens.add('uscrt');
-        this.setState({ routerSupportedTokens }, this.updateRoutingGraph);
+        this.setState({ routerSupportedTokens, routerOnline: true }, this.updateRoutingGraph);
         return;
       } catch (error) {
         console.log('Retrying to get supported tokens from router');
@@ -469,6 +474,12 @@ export class SwapRouter extends React.Component<
     }
 
     this.setState({ allTokens: swapTokens });
+    if (!this.state.routerOnline) {
+      this.setState(
+        { routerSupportedTokens: new Set(swapTokens.keys()), routerOnline: false },
+        this.updateRoutingGraph,
+      );
+    }
 
     return swapTokens;
   };
@@ -506,7 +517,7 @@ export class SwapRouter extends React.Component<
       selectedPairRoutes: routes,
     });
 
-    this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
+    //this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
   };
 
   updatePairs = async () => {
@@ -651,7 +662,7 @@ export class SwapRouter extends React.Component<
                   refreshPools={this.refreshBalances}
                   secretAddress={this.props.user.address}
                   pairs={this.state.pairs}
-                  isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
+                  isLoadingSupportedTokens={!this.state.routerOnline}
                 />
               )}
               {isProvide && (

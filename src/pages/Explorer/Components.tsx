@@ -34,11 +34,11 @@ import { messages, messageToString } from '../EthBridge/messages';
 // };
 
 export const Price = observer(
-  (props: { value: number; valueUsd?: number; isEth?: boolean; boxProps?: BoxProps; token?: string }) => {
+  (props: { value: number | string; valueUsd?: number; isEth?: boolean; boxProps?: BoxProps; token?: string }) => {
     const { user, userMetamask } = useStores();
 
     const tokenName = props.token || (props.isEth ? userMetamask.getCurrencySymbol() : 'SCRT');
-    const valueUsd = props.valueUsd ? props.valueUsd : props.value * (props.isEth ? user.ethRate : user.scrtRate);
+    const valueUsd = props.valueUsd ? props.valueUsd : Number(props.value) * (props.isEth ? user.ethRate : user.scrtRate);
     return (
       <Box direction="column" align="end" justify="center" pad={{ right: 'medium' }} {...props.boxProps}>
         <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 3 }}>{`${props.value} ${tokenName}`}</Text>

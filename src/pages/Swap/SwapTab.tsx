@@ -24,6 +24,7 @@ import { UserStoreEx } from '../../stores/UserStore';
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_ROUTE = 'Cannot find a route';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
+const BUTTON_CONNECTING_TO_CHAIN = 'Connect Wallet to Trade';
 const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
 const BUTTON_MSG_SWAP = 'Swap';
 const BUTTON_MSG_FINDING_ROUTE = 'Finding best route';
@@ -465,8 +466,10 @@ export class SwapTab extends React.Component<
     let buttonMessage: string;
     if (this.state.toToken === '' || this.state.fromToken === '') {
       buttonMessage = BUTTON_MSG_SELECT_TOKEN;
-    } else if (this.state.loadingPriceData || this.props.isLoadingSupportedTokens) {
+    } else if (this.state.loadingPriceData) {
       buttonMessage = BUTTON_MSG_LOADING_PRICE;
+    } else if (this.props.isLoadingSupportedTokens) {
+      buttonMessage = BUTTON_CONNECTING_TO_CHAIN;
     } else if (this.state.loadingBestRoute) {
       buttonMessage = BUTTON_MSG_FINDING_ROUTE;
     } else if (this.state.bestRoute) {

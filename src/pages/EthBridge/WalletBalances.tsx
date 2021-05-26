@@ -41,7 +41,7 @@ const WalletTemplate = observer((props: { address: string; symbol: string; amoun
 export const WalletBalances = observer(() => {
   const { user, userMetamask, actionModals } = useStores();
   return (
-    <Box direction="row" pad="none" align="end" style={{ minHeight: 50 }}>
+    <Box className={styles.walletsContainer} >
       <Box margin={{ right: 'small' }}>
         {!user.isAuthorized ? (
           <Button

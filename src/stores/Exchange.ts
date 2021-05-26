@@ -11,6 +11,8 @@ import { NETWORKS } from '../pages/EthBridge';
 import { messages, messageToString } from '../pages/EthBridge/messages';
 import { web3 } from '../blockchain-bridge/eth';
 
+export const LOCAL_STORAGE_OPERATIONS_KEY = 'operationskey';
+
 export enum EXCHANGE_STEPS {
   BASE = 'BASE',
   APPROVE_CONFIRMATION = 'APPROVE_CONFIRMATION',
@@ -21,6 +23,20 @@ export enum EXCHANGE_STEPS {
   CHECK_TRANSACTION = 'CHECK_TRANSACTION',
 }
 
+export interface PROXY_CONTRACT {
+  contract: string;
+  symbol: string;
+}
+
+
+export interface IOperationPanel {
+  id: string;
+  tokenImage: any;
+  amount: number;
+  fromToken: string;
+  toToken: string;
+  mode: string;
+}
 export interface IStepConfig {
   id: EXCHANGE_STEPS;
   buttons: Array<{
@@ -32,7 +48,12 @@ export interface IStepConfig {
   title?: string;
 }
 
+export const proxyContracts: PROXY_CONTRACT[] = [
+  { contract: process.env.WSCRT_PROXY_CONTRACT, symbol: 'SSCRT' },
+  { contract: process.env.SIENNA_PROXY_CONTRACT, symbol: 'SIENNA' },
+]
 export class Exchange extends StoreConstructor {
+  @observable operations: Array<IOperationPanel> = [];
   @observable error = '';
   @observable txHash = '';
   @observable confirmations = 0;
@@ -193,6 +214,31 @@ export class Exchange extends StoreConstructor {
   }
 
   @action.bound
+  removeLocalstorageOperation(id) {
+    let tmpoperations = this.getLocalstorageOperations().filter(o => o.id !== id);
+    this.operations = tmpoperations;
+    localStorage.setItem(LOCAL_STORAGE_OPERATIONS_KEY, JSON.stringify(tmpoperations));
+  }
+
+  @action.bound
+  addLocalstorageOperation(operation) {
+    let tmpoperations = this.getLocalstorageOperations();
+    tmpoperations.push(operation);
+    this.operations = tmpoperations;
+    localStorage.setItem(LOCAL_STORAGE_OPERATIONS_KEY, JSON.stringify(tmpoperations));
+  }
+
+  @action.bound
+  getLocalstorageOperations() {
+    try {
+      const result = JSON.parse(localStorage.getItem(LOCAL_STORAGE_OPERATIONS_KEY)) || [];
+      return result;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  @action.bound
   setMode(mode: EXCHANGE_MODE) {
     this.mode = mode;
     this.setAddressByMode();
@@ -251,6 +297,14 @@ export class Exchange extends StoreConstructor {
             this.operation.image = token.display_props.image;
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+          } else {
+            const proxy = proxyContracts.find(p => p.contract === swap.dst_address)
+            if (proxy) {
+              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === proxy.symbol);
+              this.operation.image = token.display_props.image;
+              this.operation.symbol = formatSymbol(EXCHANGE_MODE.FROM_SCRT, token.display_props.symbol);
+              this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+            }
           }
         } else {
           const token = this.tokens.find(t => t.dst_address === swap.src_coin);
@@ -258,6 +312,14 @@ export class Exchange extends StoreConstructor {
             this.operation.image = token.display_props.image;
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+          } else {
+            const proxy = proxyContracts.find(p => p.contract === swap.src_coin)
+            if (proxy) {
+              const token = this.stores.tokens.allData.find(t => t.display_props.symbol === proxy.symbol);
+              this.operation.image = token.display_props.image;
+              this.operation.symbol = formatSymbol(EXCHANGE_MODE.FROM_SCRT, token.display_props.symbol);
+              this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
+            }
           }
         }
 
@@ -300,6 +362,14 @@ export class Exchange extends StoreConstructor {
     this.confirmations = 0;
     this.txHash = '';
     this.operation.id = params.id;
+    this.addLocalstorageOperation({
+      id: params.id,
+      tokenImage: this.transaction.tokenSelected.image,
+      amount: this.transaction.amount,
+      fromToken: this.transaction.tokenSelected.symbol,
+      toToken: this.transaction.tokenSelected.symbol,
+      mode: this.mode,
+    });
     await operationService.createOperation(this.network, params);
     return this.operation;
   }
@@ -483,11 +553,20 @@ export class Exchange extends StoreConstructor {
         decimals = token.decimals;
         price = token.price;
         this.transaction.snip20Address = token.dst_address;
-
+        // todo: fix this up - proxy token
         if (token.display_props.proxy) {
-          proxyContract = process.env.WSCRT_PROXY_CONTRACT;
-          recipient = process.env.WSCRT_PROXY_CONTRACT;
-          this.transaction.snip20Address = process.env.SSCRT_CONTRACT;
+          if (
+            token.display_props.symbol.toUpperCase() === 'WSCRT' ||
+            token.display_props.symbol.toUpperCase() === 'SSCRT'
+          ) {
+            proxyContract = process.env.WSCRT_PROXY_CONTRACT;
+            recipient = process.env.WSCRT_PROXY_CONTRACT;
+            this.transaction.snip20Address = process.env.SSCRT_CONTRACT;
+          } else if (token.display_props.symbol === 'SIENNA') {
+            proxyContract = process.env.SIENNA_PROXY_CONTRACT;
+            recipient = process.env.SIENNA_PROXY_CONTRACT;
+            this.transaction.snip20Address = process.env.SIENNA_CONTRACT;
+          }
         }
       }
     }

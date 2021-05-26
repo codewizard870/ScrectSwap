@@ -126,12 +126,21 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
     let content = tokenArray
       .filter(t => (process.env.TEST_COINS ? true : !t.display_props?.hidden))
       .map(t => {
-        if (t?.display_props?.proxy) {
-          t.display_props.proxy_address = t.dst_address;
-          t.dst_address = process.env.SSCRT_CONTRACT;
-          t.display_props.proxy_symbol = 'WSCRT';
-
-          //t.display_props.symbol = t.name;
+        if (t.display_props.proxy) {
+          switch (t.display_props.symbol.toLowerCase()) {
+            case 'sscrt':
+              t.display_props.proxy_address = t.dst_address;
+              t.dst_address = process.env.SSCRT_CONTRACT;
+              t.display_props.proxy_symbol = 'WSCRT';
+              break;
+            case 'sienna':
+              t.display_props.proxy_address = t.dst_address;
+              t.dst_address = process.env.SIENNA_CONTRACT;
+              t.display_props.proxy_symbol = 'WSIENNA';
+              break;
+            default:
+              throw new Error('Unsupported proxy token');
+          }
         }
 
         return t;

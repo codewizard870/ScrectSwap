@@ -5,7 +5,7 @@ import { Text, Title, Icon } from 'components/Base';
 import Loader from 'react-loader-spinner';
 import * as styles from './styles.styl';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { unlockToken } from 'utils';
+import { unlockToken, wrongNetwork } from 'utils';
 import { Icon as IconUI } from 'semantic-ui-react';
 import cogoToast from 'cogo-toast';
 import { NETWORKS } from 'pages/EthBridge';
@@ -143,8 +143,8 @@ export const NetworkTemplate = (props: { template: NetworkTemplateInterface; use
             <ViewingKeyIcon user={props.user} />
           </Box>
         ) : (
-          <Text bold color="#30303D" size="medium" style={{ margin: '0 5' }}>
-            {props.template.amount}
+          <Text bold size="medium" style={{ margin: '0 5' }}>
+            <span style={{ color: props.template.amount === wrongNetwork ? "#c5bb2e" : "#30303D" }}>{props.template.amount}</span>
           </Text>
         )}
         <Text bold style={{ margin: '0 5' }} color="#748695" size="medium">

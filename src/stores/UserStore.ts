@@ -571,7 +571,7 @@ export class UserStoreEx extends StoreConstructor {
         const sefiUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SEFI')?.price || '0.2');
         const scrtUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT')?.price || '3.8');
         //Result Rate CSHBK
-        this.ratioCSHBK = parseFloat(((((cb_rewards_balance + pending_sefi) * sefiUSD) / (cb_total_supply * scrtUSD * 0.003)) * 100).toFixed(2));
+        this.ratioCSHBK = parseFloat((((cb_rewards_balance + pending_sefi) * sefiUSD) / (cb_total_supply * scrtUSD * 0.003)).toFixed(2));
       
       }else{
         this.expectedSEFIFromCSHBK=0.0;

@@ -4,18 +4,21 @@ import {SefiData} from '../types/SefiData'
 import '../styles.scss';
 import { useStores } from 'stores';
 import { divDecimals } from 'utils';
+import { unlockJsx } from '../utils';
+import { createViewingKey } from 'pages/Exchange/utils';
 const GeneralState = (props:{
   data:SefiData,
   onClaimSefi: CallableFunction,
   onClaimCashback: CallableFunction,
-  createViewingKey: any,
+  createSefiViewingKey: any,
+  createCSHBKViewingKey: any,
   claimInfo:any,
   hasViewingKey: Boolean
 })=>{
   const {theme} = useStores();
   const scrtBalance = parseFloat(divDecimals(props.claimInfo?.scrt?.amount?.toString(), 6));
   const ethBalance = parseFloat(divDecimals(props.claimInfo?.eth?.amount?.toString(), 6));
-
+  console.log(props.data.balance)
   return(
     <>
       <div className={`table_container ${theme.currentTheme}`}>
@@ -30,26 +33,32 @@ const GeneralState = (props:{
             <tbody>
               <tr> 
                 <td className='bold_titles'>SEFI</td>
-                <td>
-                  <strong>
-                    {
-                      isNaN(parseFloat(props.data.balance))
-                        ? "0.0"
-                        : props.data.balance
-                    }
-                  </strong>
-                </td>
-                <td>
-                  {
-                    (props.data.sefi_in_circulation !== '—')&&
-                    <button  
-                      disabled={(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)&&(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)}
-                      onClick={()=>{props.onClaimSefi()}}
-                    >
-                      Claim 
-                    </button>
-                  }
-                </td>
+                {
+                  (props.data.balance != 'Unlock' && props.data.balance != '—')
+                  ? <>
+                      <td>
+                        <strong>
+                          {
+                            isNaN(parseFloat(props.data.balance))
+                              ? "0.0"
+                              : props.data.balance
+                          }
+                        </strong>
+                      </td>
+                      <td>
+                        {
+                          (props.data.sefi_in_circulation !== '—')&&
+                          <button  
+                            disabled={(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)&&(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)}
+                            onClick={()=>{props.onClaimSefi()}}
+                          >
+                            Claim 
+                          </button>
+                        }
+                      </td>
+                    </>
+                  : <td colSpan={2}>{unlockJsx({onClick:props.createSefiViewingKey})}</td>
+                }
               </tr>
               <tr> 
                 <td className='bold_titles'> 
@@ -69,27 +78,33 @@ const GeneralState = (props:{
                     >
                     </Popup>   
                 </td>
-                <td>
-                  <strong>
-                    {
-                      isNaN(parseFloat(props.data.cashback_balance))
-                        ? "0.0"
-                        : props.data.cashback_balance
-                    }
-                  </strong>
-                </td>
-                <td>
-                  {
-                    (props.data.cashback_balance !== '—')&&
-                    <button 
-                      disabled={parseFloat(props.data.cashback_balance) == 0}
-                      onClick={()=>{props.onClaimCashback()}}
-                    >
-                        Redeem
-                    </button>
+                {
+                  (props.data.cashback_balance != 'Unlock' && props.data.cashback_balance != '—')
+                  ? <>
+                      <td>
+                        <strong>
+                          {
+                            isNaN(parseFloat(props.data.cashback_balance))
+                              ? "0.0"
+                              : props.data.cashback_balance
+                          }
+                        </strong>
+                      </td>
+                      <td>
+                        {
+                          (props.data.cashback_balance !== '—')&&
+                          <button 
+                            disabled={parseFloat(props.data.cashback_balance) == 0}
+                            onClick={()=>{props.onClaimCashback()}}
+                          >
+                              Redeem
+                          </button>
 
-                  }
-                </td>
+                        }
+                      </td>
+                    </>
+                  : <td colSpan={2}>{unlockJsx({onClick:props.createCSHBKViewingKey})}</td>
+                }
               </tr>
             </tbody>
         </table>
@@ -143,12 +158,12 @@ const GeneralState = (props:{
         </div>
         <div className="sefi-grid__container links background_free">
               <strong className='item left'><a className={`view_analytics ${theme.currentTheme}`} href="https://secretanalytics.xyz/secretswap" target='_blank'>View Analytics</a></strong>
-              {
+              {/* {
                 (!props.hasViewingKey) && 
                   <strong onClick={props?.createViewingKey} className='item right primary'>
                     <a>Create viewing keys</a>
                   </strong>
-              }
+              } */}
         </div>
     </>
   )

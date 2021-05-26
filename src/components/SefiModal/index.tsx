@@ -52,7 +52,7 @@ export const SefiModal = (props: {
   }>(undefined)
   const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
   const {user,theme} = useStores();
-
+  // console.log(user.balanceCSHBK)
   async function getSefiToken(){
     const tokens: ITokenInfo[] = [...(await props.tokens.tokensUsage('SWAP'))];
     // convert to token map for swap
@@ -167,11 +167,22 @@ export const SefiModal = (props: {
     const scrtClaimInfo = await loadSRCTClaimInfo();
     return {scrtClaimInfo,ethClaimInfo}
   };
-  async function createViewingKey() {
+  async function createSefiViewingKey() {
     try {
       setOpen(false);
       await props.user.keplrWallet.suggestToken(props.user.chainId, token.address);
       await props.user.updateScrtBalance();
+      setHasViewingKey(true)
+    } catch (e) {
+      console.error("Error at creating new viewing key ",e)
+    }
+    
+  }
+  async function createCSHBKViewingKey() {
+    try {
+      setOpen(false);
+      await props.user.keplrWallet.suggestToken(props.user.chainId, process.env.CSHBK_CONTRACT);
+      await props.user.updateCSHBKBalance();
       setHasViewingKey(true)
     } catch (e) {
       console.error("Error at creating new viewing key ",e)
@@ -378,7 +389,8 @@ export const SefiModal = (props: {
         {
           (status === SefiModalState.GENERAL) 
             && <General 
-              createViewingKey={createViewingKey} 
+              createSefiViewingKey={createSefiViewingKey} 
+              createCSHBKViewingKey={createCSHBKViewingKey} 
               hasViewingKey={hasViewingKey} 
               onClaimSefi={onClaimSefi} 
               onClaimCashback={onClaimCashback} 

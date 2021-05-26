@@ -18,7 +18,7 @@ const GeneralState = (props:{
   const {theme} = useStores();
   const scrtBalance = parseFloat(divDecimals(props.claimInfo?.scrt?.amount?.toString(), 6));
   const ethBalance = parseFloat(divDecimals(props.claimInfo?.eth?.amount?.toString(), 6));
-  console.log(props.data.balance)
+
   return(
     <>
       <div className={`table_container ${theme.currentTheme}`}>

@@ -18,8 +18,7 @@ import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from '../TokenModal/t
 import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import cogoToast from 'cogo-toast';
 import { pairIdFromTokenIds, PairMap, SwapPair } from '../TokenModal/types/SwapPair';
-import { NativeToken, Token,Asset } from '../TokenModal/types/trade';
-import { KeplrButton } from '../../components/Secret/KeplrButton';
+import { NativeToken, Token } from '../TokenModal/types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
@@ -29,7 +28,7 @@ import Theme from 'themes';
 
 export const SwapPagePool = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
-  let { user, tokens, secretSwapPairs, secretSwapPools,theme} = useStores();
+  let { user, tokens, secretSwapPairs, secretSwapPools, theme } = useStores();
 
   useEffect(() => {
     secretSwapPairs.init({
@@ -87,7 +86,13 @@ export class SwapRouter extends React.Component<
   private ws: WebSocket;
   private pairRefreshInterval;
 
-  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools ;theme: Theme }) {
+  constructor(props: {
+    user: UserStoreEx;
+    tokens: Tokens;
+    pairs: SecretSwapPairs;
+    pools: SecretSwapPools;
+    theme: Theme;
+  }) {
     super(props);
     this.state = {
       allTokens: new Map<string, SwapToken>(),
@@ -135,9 +140,9 @@ export class SwapRouter extends React.Component<
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances }, keplrConnected: true }));
     }
-    
+
     if (selectedToken0 !== prevState.selectedToken0 && selectedToken0 !== prevState.selectedToken1) {
-      console.log("hello world")
+      console.log('hello world');
       updateState = true;
       newBalances[selectedToken0] = await this.refreshTokenBalance(selectedToken0);
     }
@@ -151,9 +156,9 @@ export class SwapRouter extends React.Component<
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
   }
-  async updateBalances (){
+  async updateBalances() {
     try {
-      console.log("Updating balances")
+      console.log('Updating balances');
       const newBalances = {};
       const { selectedToken0, selectedToken1 } = this.state;
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
@@ -161,7 +166,7 @@ export class SwapRouter extends React.Component<
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
       await this.props.user.updateScrtBalance();
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
 
@@ -369,12 +374,14 @@ export class SwapRouter extends React.Component<
 
     let userBalance; //balance.includes(unlockToken)
 
-    if ((tokenIdentifier === 'uscrt') && this.state.routerOnline) {
+    if (tokenIdentifier === 'uscrt' && this.state.routerOnline) {
       userBalance = await getNativeBalance(this.props.user.address, this.props.user.secretjsSend);
       //this.props.user.balanceSCRT = userBalance.toString();
       return userBalance;
-    }else if(tokenIdentifier === 'uscrt'){
-      return new Promise((resolve,reject)=>{resolve(new BigNumber(0))});
+    } else if (tokenIdentifier === 'uscrt') {
+      return new Promise((resolve, reject) => {
+        resolve(new BigNumber(0));
+      });
     }
 
     let balance = await this.props.user.getSnip20Balance(tokenIdentifier);
@@ -394,12 +401,12 @@ export class SwapRouter extends React.Component<
             // result in an on-chain transaction
             const a = await this.refreshTokenBalance(tokenIdentifier);
             const b = {
-              [tokenIdentifier]:a
-            }
-            this.setState(currentState => ({ balances: { ...currentState.balances, ...b } })); 
+              [tokenIdentifier]: a,
+            };
+            this.setState(currentState => ({ balances: { ...currentState.balances, ...b } }));
             await this.props.user.updateScrtBalance();
           } catch (error) {
-            console.error("Failed")
+            console.error('Failed');
           }
         },
       });
@@ -416,7 +423,6 @@ export class SwapRouter extends React.Component<
     const pairSymbol = pair.identifier();
     console.log('Refresh LP token for', pairSymbol);
     // update my LP token balance
-    const lpTokenSymbol = `LP-${pairSymbol}`;
     const lpTokenAddress = pair.liquidity_token;
     if (process.env.ENV === 'DEV') {
       let lpTotalSupply = new BigNumber(0);
@@ -455,7 +461,7 @@ export class SwapRouter extends React.Component<
     }
 
     returnBalances.push({
-      [lpTokenSymbol]: lpBalance,
+      [pair.lpTokenSymbol()]: lpBalance,
     });
 
     return returnBalances;
@@ -634,7 +640,7 @@ export class SwapRouter extends React.Component<
     }
 
     const { hide } = cogoToast[cogoType](msg, {
-      toastContainerID:'notifications_container', 
+      toastContainerID: 'notifications_container',
       hideAfter: hideAfterSec,
       onClick,
     });
@@ -648,8 +654,8 @@ export class SwapRouter extends React.Component<
 
     if (!isProvide && !isWithdraw && !isHistory) {
       window.location.hash = 'Provide';
-       return <></>;
-     }
+      return <></>;
+    }
 
     return (
       <BaseContainer>
@@ -666,7 +672,7 @@ export class SwapRouter extends React.Component<
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                borderRadius: '16px'
+                borderRadius: '16px',
               }}
               pad={{ bottom: 'medium' }}
             >

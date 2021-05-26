@@ -15,7 +15,7 @@ import * as agent from 'superagent';
 import { SwapStatus } from '../constants';
 import { NETWORKS } from '../pages/EthBridge';
 
-const availableNetworks = [NETWORKS.ETH, NETWORKS.BSC, NETWORKS.PLSM];
+const availableNetworks = [NETWORKS.ETH, NETWORKS.BSC]; //, NETWORKS.PLSM
 
 const BACKENDS = {
   [NETWORKS.ETH]: process.env.BACKEND_URL,

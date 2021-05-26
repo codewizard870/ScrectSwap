@@ -6,7 +6,7 @@ import { useStores } from 'stores';
 import { Button, Select, Text } from 'components/Base';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
 import { messages, messageToString } from '../EthBridge/messages';
-import { NETWORKS } from '../EthBridge';
+import { networkFromToken, NETWORKS } from '../EthBridge';
 
 const selectTokenText = (mode: string, token: ITokenInfo) => {
   if (token.display_props.symbol === 'SEFI') {
@@ -41,7 +41,7 @@ export const ERC20Select = observer((props: { onSelectToken?: Function; value: s
     if (bridgeTokens.length > 0) {
       setFilteredTokens(
         bridgeTokens.filter(value => {
-          return value.src_network === userMetamask.getNetworkFullName();
+          return networkFromToken(value) === userMetamask.network;
         }),
       );
     }

@@ -72,7 +72,7 @@ function executeRouterSwap(
           denom: 'uscrt',
         },
       ],
-      getFeeForExecute(bestRoute.length * 400_000),
+      getFeeForExecute(bestRoute.length * 500_000),
     );
   } else {
     return secretjsSender.asyncExecute(
@@ -92,7 +92,7 @@ function executeRouterSwap(
       },
       '',
       [],
-      getFeeForExecute(bestRoute.length * 400_000),
+      getFeeForExecute(bestRoute.length * 500_000),
     );
   }
 }

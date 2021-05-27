@@ -616,23 +616,28 @@ export class UserStoreEx extends StoreConstructor {
       console.error(result);
       return `Unknown error`;
     }
-    
-    const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK),6)
-    const result = await this.secretjsSend.asyncExecute(
-      process.env.CSHBK_CONTRACT,
-        {
-        burn: {
-            amount: canonicalizeCHSBK,
-          },
-        },'',[],
-      getFeeForExecute(400_000),
-    );
-    this.updateLocalCSHBKData(this.expectedSEFIFromCSHBK,this.balanceCSHBK)
-    this.updateCSHBKBalance();
-    if (result?.code) {
-      const error = extractError(result);
-      storeTxResultLocally(result);
-      throw new Error(error);
+    try {
+      const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK),6)
+      const result = await this.secretjsSend.asyncExecute(
+        process.env.CSHBK_CONTRACT,
+          {
+          burn: {
+              amount: canonicalizeCHSBK,
+            },
+          },'',[],
+        getFeeForExecute(400_000),
+      );
+      if (result?.code) {
+        const error = extractError(result);
+        storeTxResultLocally(result);
+        throw new Error(error);
+      }
+      
+      this.updateLocalCSHBKData(this.expectedSEFIFromCSHBK,this.balanceCSHBK)
+      this.updateCSHBKBalance();
+      
+    } catch (error) {
+      console.error(error)
     }
   }
 

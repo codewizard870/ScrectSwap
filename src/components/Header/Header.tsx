@@ -17,7 +17,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const { user, tokens,userMetamask,theme } = useStores();
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
-    const isSeFi = history.location.pathname === '/sefi';
+    const isEarn = history.location.pathname === '/earn';
     const isCashback = history.location.pathname === '/cashback';
     
 
@@ -57,7 +57,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                             <li className='hide_mobile'><span>|</span></li>
                             <li  className={(isPool)  ? 'active hide_mobile':'hide_mobile'}><Link  to={"/pool"}>Pool</Link></li>
                             <li><span>|</span></li>
-                            <li  className={(isSeFi) ? 'active':''}><Link  to="/sefi">Earn</Link></li>
+                            <li  className={(isEarn) ? 'active':''}><Link  to="/earn">Earn</Link></li>
                             <li className='hide_mobile'><span>|</span></li>
                             <li className={(isCashback)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/cashback">Cashback</Link></li> 
                             {/* <li><span>|</span></li>

@@ -43,16 +43,10 @@ export const CheckTransaction = observer(() => {
         status = 'Unsigned';
         break;
       case SwapStatus.SWAP_SIGNED:
-        status =
-          exchange.operation.type === EXCHANGE_MODE.TO_SCRT
-            ? 'Being processed on Ethereum'
-            : 'Being processed on Secret Network';
+        status = `Being processed on ${exchange.operation.swap.src_network}`
         break;
       case SwapStatus.SWAP_SUBMITTED:
-        status =
-          exchange.operation.type === EXCHANGE_MODE.TO_SCRT
-            ? `Confirmed on Ethereum and it's being processed on Secret Network`
-            : `Confirmed on Secret Network and it's being processed on Ethereum`;
+        status = `Confirmed on ${exchange.operation.swap.src_network} and it's being processed on ${exchange.operation.swap.dst_network}`
         break;
       case SwapStatus.SWAP_CONFIRMED:
         status = 'Completed!';
@@ -80,7 +74,7 @@ export const CheckTransaction = observer(() => {
 
     if (exchange.operation.status <= 4) progress = (exchange.operation.status / 4) * 100;
     setProgressBar(progress);
-  }, [exchange.operation.status, exchange.operation.type]);
+  }, [exchange.operation.status, exchange.operation.swap]);
 
   const swap = exchange.operation.swap || { dst_address: '', src_tx_hash: '', dst_tx_hash: '', amount: '' };
 

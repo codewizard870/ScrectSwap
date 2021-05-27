@@ -638,6 +638,7 @@ export class UserStoreEx extends StoreConstructor {
       
     } catch (error) {
       console.error(error)
+      throw new Error(error);
     }
   }
 

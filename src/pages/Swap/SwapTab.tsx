@@ -665,7 +665,11 @@ export class SwapTab extends React.Component<
             onClick={async () => {
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;
-              const cb_optional_msg = (this.props.isSupported)? `And you earned ${expectedCSHBK} CSHBK tokens!` :'Empty msg'
+              const cb_optional_msg = (this.props.isSupported)
+                ? `And you earned ${expectedCSHBK} CSHBK tokens!` 
+                :(doubleCashback)
+                  ?'And you earned Double Cashback!'
+                  :''
 
               this.setState({ loadingSwap: true });
 

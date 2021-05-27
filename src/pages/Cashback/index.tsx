@@ -47,23 +47,20 @@ export const Cashback =observer((props)=>{
     }
 
     const burnSEFI = async () => {
-      try {
-        if(user?.balanceCSHBK){
-          try {
-            setLoading(true)
-            const expected_sefi = user.expectedSEFIFromCSHBK;
-            const cashbak = user.balanceCSHBK;
-            await user.ConvertCHSBKToSEFI(); 
-            notify('success',`You have claimed ${cashbak} CSHBK into ${expected_sefi} SEFI tokens!`)
-            setLoading(false)
-            console.log("You've claimed CSHBK")
-          } catch (error) {
-            notify('error',`An error happended when converting CSHBK to SEFI`)
-            setLoading(false)
-          }
+      if(user?.balanceCSHBK){
+        try {
+          setLoading(true)
+          const expected_sefi = user.expectedSEFIFromCSHBK;
+          const cashbak = user.balanceCSHBK;
+          await user.ConvertCHSBKToSEFI(); 
+          notify('success',`You have claimed ${cashbak} CSHBK into ${expected_sefi} SEFI tokens!`)
+          setLoading(false)
+          console.log("You've claimed CSHBK")
+        } catch (error) {
+          notify('error',"Error when burning CSHBK to SEFI")
+          setLoading(false)
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
       }
     }
     const sefi_earned = localStorage.getItem('total_sefi_earned')
@@ -104,6 +101,7 @@ export const Cashback =observer((props)=>{
     }else{
       ratioColor='#FF726E'
     }
+    const balanceCSHBK = parseFloat(user.balanceCSHBK || '0.0').toFixed(2)
     return(
       <BaseContainer>
         <PageContainer>
@@ -126,7 +124,7 @@ export const Cashback =observer((props)=>{
                         <p>For trading on</p>
                         <h3><strong>secret</strong>swap</h3>
                         <p>You have earned</p>
-                        <h2>{user.balanceCSHBK} CSHBK </h2>
+                        <h2>{balanceCSHBK} CSHBK </h2>
                         <p>that you can trade for</p>
                         <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
                       </>
@@ -135,7 +133,7 @@ export const Cashback =observer((props)=>{
                       <p>You haven't traded recently on </p>
                       <h3><strong>secret</strong>swap</h3>
                       <p>You have earned</p>
-                      <h2>{user.balanceCSHBK} CSHBK </h2>
+                      <h2>0.0 CSHBK </h2>
                     </>
                 }
                 

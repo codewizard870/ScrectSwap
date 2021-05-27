@@ -4,11 +4,12 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as contract from '../blockchain-bridge';
 import { getErc20Balance, getEthBalance } from '../blockchain-bridge';
-import { divDecimals, formatWithSixDecimals, sleep, wrongNetwork } from '../utils';
+import { divDecimals, sleep } from '../utils';
 import Web3 from 'web3';
-import { TOKEN } from './interfaces';
-import { NETWORKS } from '../pages/EthBridge';
+import { IOperation, TOKEN } from './interfaces';
+import { networkFromToken, NETWORKS } from '../pages/EthBridge';
 import { messages, messageToString } from '../pages/EthBridge/messages';
+import * as agent from 'superagent';
 
 const defaults = {};
 
@@ -59,6 +60,7 @@ export class UserStoreMetamask extends StoreConstructor {
   @observable public nativeBalanceMin: string = '';
   @observable public balanceToken: { [key: string]: string } = {};
   @observable public balanceTokenMin: { [key: string]: string } = {};
+  @observable public rates: Record<NETWORKS, number>;
 
   @observable erc20Address: string = '';
   @observable erc20TokenDetails: IERC20Token;
@@ -79,9 +81,12 @@ export class UserStoreMetamask extends StoreConstructor {
     if (sessionObj && sessionObj.erc20Address) {
       this.setToken(sessionObj.erc20Address);
     }
-
+    this.getRates();
     this.getBalances();
-    setInterval(() => this.getBalances(), 5000);
+    setInterval(() => {
+      this.getRates();
+      this.getBalances();
+    }, 5000);
   }
 
   @action.bound
@@ -93,6 +98,38 @@ export class UserStoreMetamask extends StoreConstructor {
       this.syncLocalStorage();
     }
     this.getBalances();
+  }
+
+  @action public async getRates() {
+    console.log('got rates');
+    this.rates = Object.assign(
+      {},
+      ...this.stores.tokens.allData
+        .filter(token => token.src_address === 'native')
+        .map(token => {
+          let network = networkFromToken(token);
+          return {
+            [network]: Number(token.price),
+          };
+        }),
+    );
+
+    if (isNaN(this.rates.BSC) || this.rates.BSC === 0) {
+      const bnbUSDT = await agent.get<{ body: IOperation }>(
+        'https://api.binance.com/api/v1/ticker/24hr?symbol=BNBUSDT',
+      );
+      this.rates.BSC = bnbUSDT.body.lastPrice;
+    }
+    if (isNaN(this.rates.ETH) || this.rates.ETH === 0) {
+      const ethusdt = await agent.get<{ body: IOperation }>(
+        'https://api.binance.com/api/v1/ticker/24hr?symbol=ETHUSDT',
+      );
+      this.rates.ETH = ethusdt.body.lastPrice;
+    }
+  }
+
+  getNetworkPrice() {
+    return this.rates[this.network];
   }
 
   getCurrencySymbol() {
@@ -286,7 +323,7 @@ export class UserStoreMetamask extends StoreConstructor {
       await sleep(50);
     }
     // always load native balance, because why not? And this bypasses race conditions with this.stores.tokens
-    this.nativeBalance = await getEthBalance(this.ethAddress)
+    this.nativeBalance = await getEthBalance(this.ethAddress);
     this.nativeBalanceMin = this.balanceTokenMin[this.getNetworkFullName()];
 
     for (const token of this.stores.tokens.allData) {

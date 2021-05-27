@@ -28,7 +28,6 @@ export interface PROXY_CONTRACT {
   symbol: string;
 }
 
-
 export interface IOperationPanel {
   id: string;
   tokenImage: any;
@@ -51,7 +50,7 @@ export interface IStepConfig {
 export const proxyContracts: PROXY_CONTRACT[] = [
   { contract: process.env.WSCRT_PROXY_CONTRACT, symbol: 'SSCRT' },
   { contract: process.env.SIENNA_PROXY_CONTRACT, symbol: 'SIENNA' },
-]
+];
 export class Exchange extends StoreConstructor {
   @observable operations: Array<IOperationPanel> = [];
   @observable error = '';
@@ -159,7 +158,7 @@ export class Exchange extends StoreConstructor {
             } else {
               token = this.tokens.find(t => t.dst_address === this.transaction.snip20Address);
             }
-            this.swapFeeUsd = this.ethSwapFee * this.stores.user.ethRate;
+            this.swapFeeUsd = this.ethSwapFee * this.stores.userMetamask.getNetworkPrice();
             this.swapFeeToken = this.swapFeeUsd / Number(token.price);
             this.isFeeLoading = false;
             break;
@@ -298,7 +297,7 @@ export class Exchange extends StoreConstructor {
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           } else {
-            const proxy = proxyContracts.find(p => p.contract === swap.dst_address)
+            const proxy = proxyContracts.find(p => p.contract === swap.dst_address);
             if (proxy) {
               const token = this.stores.tokens.allData.find(t => t.display_props.symbol === proxy.symbol);
               this.operation.image = token.display_props.image;
@@ -313,7 +312,7 @@ export class Exchange extends StoreConstructor {
             this.operation.symbol = formatSymbol(EXCHANGE_MODE.TO_SCRT, token.display_props.symbol);
             this.operation.swap.amount = Number(divDecimals(swap.amount, token.decimals));
           } else {
-            const proxy = proxyContracts.find(p => p.contract === swap.src_coin)
+            const proxy = proxyContracts.find(p => p.contract === swap.src_coin);
             if (proxy) {
               const token = this.stores.tokens.allData.find(t => t.display_props.symbol === proxy.symbol);
               this.operation.image = token.display_props.image;
@@ -329,7 +328,7 @@ export class Exchange extends StoreConstructor {
           const tx = await web3.eth.getTransaction(etherHash);
           if (tx.blockNumber) this.confirmations = blockNumber - tx.blockNumber;
           if (this.confirmations < 0) this.confirmations = 0;
-        } catch (error) { }
+        } catch (error) {}
       }
     };
 

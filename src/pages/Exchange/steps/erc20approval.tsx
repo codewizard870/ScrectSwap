@@ -12,7 +12,7 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { Price } from '../../Explorer/Components';
 import HeadShake from 'react-reveal/HeadShake';
 import { useStores } from '../../../stores';
-import { messages, messageToString } from "../../EthBridge/messages";
+import { messages, messageToString } from '../../EthBridge/messages';
 
 export const ERC20ApprovalModal = observer(() => {
   const { exchange } = useStores();

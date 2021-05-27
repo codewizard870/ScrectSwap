@@ -99,17 +99,19 @@ const getBalance = async (
   const scrt = { minAmount: '0', maxAmount: '0' };
 
   const ethSwapFee = await getNetworkFee(Number(process.env.SWAP_FEE));
-  const swapFeeUsd = ethSwapFee * user.ethRate;
+  const swapFeeUsd = ethSwapFee * userMetamask.getNetworkPrice();
   const swapFeeToken = ((swapFeeUsd / Number(token.price)) * 0.9).toFixed(`${toInteger(token.price)}`.length);
 
   const src_coin = exchange.transaction.tokenSelected.src_coin;
   const src_address = exchange.transaction.tokenSelected.src_address;
-  eth.maxAmount = userMetamask.balanceToken[src_coin] ? divDecimals(userMetamask.balanceToken[src_coin], token.decimals) : wrongNetwork;
+  eth.maxAmount = userMetamask.balanceToken[src_coin]
+    ? divDecimals(userMetamask.balanceToken[src_coin], token.decimals)
+    : wrongNetwork;
   eth.minAmount = userMetamask.balanceTokenMin[src_coin] || '0';
   scrt.maxAmount = user.balanceToken[src_coin] || '0';
   scrt.minAmount = `${Math.max(Number(swapFeeToken), Number(token.display_props.min_from_scrt))}` || '0';
   if (src_address === 'native') {
-    eth.maxAmount = userMetamask.isCorrectNetworkSelected() ? (userMetamask.nativeBalance || '0') : wrongNetwork;
+    eth.maxAmount = userMetamask.isCorrectNetworkSelected() ? userMetamask.nativeBalance || '0' : wrongNetwork;
     eth.minAmount = userMetamask.nativeBalanceMin || '0';
   }
 
@@ -196,7 +198,6 @@ export const Base = observer(() => {
 
   useEffect(() => {
     const selectNetwork = async () => {
-
       await onSelectNetwork(userMetamask.network);
     };
     selectNetwork();
@@ -308,7 +309,6 @@ export const Base = observer(() => {
 
       const balance = await getBalance(exchange, userMetamask, user, isLocked, token);
 
-
       setBalance(balance);
       setTokenLocked(amount === unlockToken);
       setErrors(newerrors);
@@ -323,7 +323,6 @@ export const Base = observer(() => {
       }
       await user.updateBalanceForSymbol(token.display_props.symbol);
       await update();
-
     } catch (e) {
       await update();
     }
@@ -422,7 +421,7 @@ export const Base = observer(() => {
       </Box>
       <Box fill direction="column" className={styles.exchangeContainer}>
         <Form data={exchange.transaction} {...({} as any)}>
-          <Box className={styles.baseContainer} >
+          <Box className={styles.baseContainer}>
             <Box className={styles.baseRightSide} gap="2px">
               <Box width="100%" margin={{ right: 'medium' }} direction="column">
                 <ERC20Select value={selectedToken.value} onSelectToken={value => onSelectedToken(value)} />
@@ -542,28 +541,28 @@ export const Base = observer(() => {
             <Box className={styles.addressInput}>
               {((exchange.mode === EXCHANGE_MODE.FROM_SCRT && userMetamask.isAuthorized) ||
                 (exchange.mode === EXCHANGE_MODE.TO_SCRT && user.isAuthorized)) && (
-                  <Box
-                    style={{
-                      fontWeight: 'bold',
-                      right: 0,
-                      top: 0,
-                      position: 'absolute',
-                      color: 'rgb(0, 173, 232)',
-                      textAlign: 'right',
-                    }}
-                    onClick={() => {
-                      if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
-                        exchange.transaction.ethAddress = userMetamask.ethAddress;
-                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
-                      } else {
-                        exchange.transaction.scrtAddress = user.address;
-                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
-                      }
-                    }}
-                  >
-                    Use my address
-                  </Box>
-                )}
+                <Box
+                  style={{
+                    fontWeight: 'bold',
+                    right: 0,
+                    top: 0,
+                    position: 'absolute',
+                    color: 'rgb(0, 173, 232)',
+                    textAlign: 'right',
+                  }}
+                  onClick={() => {
+                    if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
+                      exchange.transaction.ethAddress = userMetamask.ethAddress;
+                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
+                    } else {
+                      exchange.transaction.scrtAddress = user.address;
+                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
+                    }
+                  }}
+                >
+                  Use my address
+                </Box>
+              )}
 
               <Input
                 label={

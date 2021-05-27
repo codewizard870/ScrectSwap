@@ -38,7 +38,9 @@ export const Price = observer(
     const { user, userMetamask } = useStores();
 
     const tokenName = props.token || (props.isEth ? userMetamask.getCurrencySymbol() : 'SCRT');
-    const valueUsd = props.valueUsd ? props.valueUsd : Number(props.value) * (props.isEth ? user.ethRate : user.scrtRate);
+    const valueUsd = props.valueUsd
+      ? props.valueUsd
+      : Number(props.value) * (props.isEth ? userMetamask.getNetworkPrice() : user.scrtRate);
     return (
       <Box direction="column" align="end" justify="center" pad={{ right: 'medium' }} {...props.boxProps}>
         <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 3 }}>{`${props.value} ${tokenName}`}</Text>
@@ -121,10 +123,10 @@ export const SecretToken = observer((props: ISecretTokenProps) => {
   if (value === TOKEN.ERC20 || value === TOKEN.S20) {
     const token = tokens.allData.find(
       t =>
-        t.dst_address.toLowerCase() === secretAddress.toLowerCase() ||
+        t.dst_address?.toLowerCase() === secretAddress.toLowerCase() ||
         t.dst_coin?.toLowerCase() === secretAddress.toLowerCase() ||
         t.name?.toLowerCase() === secretAddress.toLowerCase() ||
-        t.display_props.proxy_address === secretAddress.toLowerCase(),
+        t.display_props?.proxy_address === secretAddress.toLowerCase(),
     );
 
     if (token && token.display_props) {

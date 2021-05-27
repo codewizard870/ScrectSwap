@@ -129,6 +129,8 @@ export const Explorer = observer((props: any) => {
   const [columns, setColumns] = useState(getColumns());
   const [search, setSearch] = useState('');
 
+  const currentPrice = userMetamask.rates[userMetamask.network];
+
   useEffect(() => {
     tokens.init();
     // tokens.filters = {
@@ -138,7 +140,7 @@ export const Explorer = observer((props: any) => {
     operations.init({
       isLocal: true,
       sorter: 'created_on, desc',
-      paginationData: {pageSize: 10},
+      paginationData: { pageSize: 10 },
       pollingInterval: 20000,
       // filters: {
       //   src_network: userMetamask.getNetworkFullName(),
@@ -149,18 +151,16 @@ export const Explorer = observer((props: any) => {
 
   useEffect(() => {
     setColumns(getColumns());
-  }, [user.scrtRate, user.ethRate, tokens.data, tokens.fetchStatus]);
+  }, [user.scrtRate, currentPrice, tokens.data, tokens.fetchStatus]);
 
   const onChangeDataFlow = (props: any) => {
     operations.onChangeDataFlow(props);
   };
 
-  const filteredData = operations.allData.sort(
-    (opA, opB) => opA.created_on > opB.created_on ? -1 : 1
-  );
+  const filteredData = operations.allData.sort((opA, opB) => (opA.created_on > opB.created_on ? -1 : 1));
 
   // search filter by network (if we want to make this work)
-    // .filter(value => {
+  // .filter(value => {
   //     return !(
   //       value.dst_network !== userMetamask.getNetworkFullName() && value.src_network !== userMetamask.getNetworkFullName()
   //     );

@@ -461,9 +461,9 @@ export class SwapTab extends React.Component<
     let expectedCSHBK='0.0'
     //Either From or To input is sSCRT or SCRT
     if(pair){
-      if(pair.asset_infos[0].symbol == 'SCRT' || pair.asset_infos[0].symbol == 'sSCRT'){
+      if(this.state.fromToken == 'uscrt' || this.state.fromToken == process.env.SSCRT_CONTRACT){
         expectedCSHBK = this.state.fromInput
-      }else if (pair.asset_infos[1].symbol == 'SCRT' || pair.asset_infos[1].symbol == 'sSCRT'){
+      }else if (this.state.toToken == 'uscrt' || this.state.toToken == process.env.SSCRT_CONTRACT){
         expectedCSHBK = this.state.toInput;
       }
     }

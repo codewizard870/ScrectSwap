@@ -178,7 +178,7 @@ export const SwapConfirmation = observer(() => {
                 </Box>
               </Box>
               <Box direction="row" margin={{ top: 'small' }} justify="between">
-                <Text>Ethereum Address:</Text>
+                <Text>{userMetamask.getNetworkFullName()} Address:</Text>
                 <Box direction="row">
                   <Text size="small" style={{ fontFamily: 'monospace' }}>
                     {truncateAddressString(exchange.transaction.ethAddress)}
@@ -234,7 +234,7 @@ export const SwapConfirmation = observer(() => {
                 <Box className={styles.warningSign} direction="row" align="center">
                   <img style={{ marginRight: 6, width: 15, height: 15 }} src={userMetamask.getNetworkImage()} />
                   <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>
-                    Ethereum Fee
+                    {userMetamask.getNetworkFullName()} Fee
                   </Text>
                 </Box>
                 {exchange.isFeeLoading ? (
@@ -340,7 +340,7 @@ export const SwapConfirmation = observer(() => {
                   <b>
                     {formatWithSixDecimals(Number(exchange.swapFeeToken))} {symbol}
                   </b>{' '}
-                  will be used to pay for Ethereum gas fees
+                  will be used to pay for {userMetamask.getNetworkFullName()} gas fees
                 </Text>
               </Box>
             )}

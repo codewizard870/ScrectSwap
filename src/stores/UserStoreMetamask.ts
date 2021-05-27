@@ -101,7 +101,6 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   @action public async getRates() {
-    console.log('got rates');
     this.rates = Object.assign(
       {},
       ...this.stores.tokens.allData

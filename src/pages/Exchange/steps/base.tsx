@@ -163,7 +163,10 @@ export const Base = observer(() => {
         // note: We don't currently support multiple leader accounts for different networks
         // if we want to make the leader address change on a different network we need to add
         // it here
-        if (signer.signer === process.env.LEADER_ACCOUNT && signers.length >= Number(process.env.SIG_THRESHOLD)) {
+        const updatedonTimestamp = new Date(signer.updated_on).getTime()
+        if (signer.signer === process.env.LEADER_ACCOUNT &&
+          signers.length >= Number(process.env.SIG_THRESHOLD) &&
+          new Date().getTime() - updatedonTimestamp < 1000 * 60 * 5) {
           return true;
         }
       }
@@ -172,7 +175,7 @@ export const Base = observer(() => {
 
     setFromSecretHealth(parseHealth(signers.filter(s => s.from_scrt)));
     setToSecretHealth(parseHealth(signers.filter(s => s.to_scrt)));
-  }, [signerHealth.allData]);
+  }, [signerHealth.allData, userMetamask.network]);
 
   useEffect(() => {
     setSelectedToken(exchange.transaction.tokenSelected);
@@ -541,28 +544,28 @@ export const Base = observer(() => {
             <Box className={styles.addressInput}>
               {((exchange.mode === EXCHANGE_MODE.FROM_SCRT && userMetamask.isAuthorized) ||
                 (exchange.mode === EXCHANGE_MODE.TO_SCRT && user.isAuthorized)) && (
-                <Box
-                  style={{
-                    fontWeight: 'bold',
-                    right: 0,
-                    top: 0,
-                    position: 'absolute',
-                    color: 'rgb(0, 173, 232)',
-                    textAlign: 'right',
-                  }}
-                  onClick={() => {
-                    if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
-                      exchange.transaction.ethAddress = userMetamask.ethAddress;
-                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
-                    } else {
-                      exchange.transaction.scrtAddress = user.address;
-                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
-                    }
-                  }}
-                >
-                  Use my address
-                </Box>
-              )}
+                  <Box
+                    style={{
+                      fontWeight: 'bold',
+                      right: 0,
+                      top: 0,
+                      position: 'absolute',
+                      color: 'rgb(0, 173, 232)',
+                      textAlign: 'right',
+                    }}
+                    onClick={() => {
+                      if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
+                        exchange.transaction.ethAddress = userMetamask.ethAddress;
+                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
+                      } else {
+                        exchange.transaction.scrtAddress = user.address;
+                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
+                      }
+                    }}
+                  >
+                    Use my address
+                  </Box>
+                )}
 
               <Input
                 label={

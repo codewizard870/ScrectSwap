@@ -12,12 +12,7 @@ export const Cashback =observer((props)=>{
     const {theme,user} = useStores();
     const [loading,setLoading]=React.useState(false);
     const hasCashback = user?.balanceCSHBK != '0';
-    const topRightChart = 514;
-    const topLeftChart = 14;
-    const topLeftLabel = 50.5;
-    const topRightLabel = 575.5;
-    const maxLimit= Math.round(user?.ratioCSHBK+1) || 1
-    const minLimit= 0.4
+
     function notify(type: 'success' | 'error' | 'errorWithHash', msg: string, hideAfterSec: number = 120, txHash?: string) {
       let cogoType: string = type;
       if (type === 'error') {
@@ -63,11 +58,20 @@ export const Cashback =observer((props)=>{
         }
       }
     }
+
+    const topRightChart = 514;
+    const topLeftChart = 14;
+    const topLeftLabel = 50.5;
+    const topRightLabel = 575.5;
+    const maxLimit= Math.round(user?.ratioCSHBK+1) || 1
+
     const sefi_earned = localStorage.getItem('total_sefi_earned')
     const cb_received = localStorage.getItem('total_cb_received')
-
+    
     const rateCSHBK = user?.ratioCSHBK || .6 //Default value .60 meantime it loads 
     const fontColor = theme.currentTheme=='light'?'#5F5F6B':'white'
+
+    let minLimit=(rateCSHBK <=  0.5)?0: 0.5
     let ratioColor,xPositionChart,xPositionLabel,xPositionArrow;
     // Calculating X positions base on Rate CSHBK
     if(rateCSHBK >= maxLimit){

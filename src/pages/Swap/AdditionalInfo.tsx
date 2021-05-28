@@ -10,8 +10,6 @@ export const AdditionalInfo = ({
   liquidityProviderFee,
   priceImpact,
   expectedCSHBK,
-  doubleCashback,
-  isSupported,
   fromToken,
   toToken,
   pairAddress,
@@ -19,10 +17,9 @@ export const AdditionalInfo = ({
   minimumReceived?: BigNumber;
   maximumSold?: BigNumber;
   liquidityProviderFee: number;
-  doubleCashback: boolean;
   isSupported: Boolean;
   priceImpact: number;
-  expectedCSHBK: string;
+  expectedCSHBK: number;
   fromToken: string;
   toToken: string;
   pairAddress: string;
@@ -186,11 +183,7 @@ export const AdditionalInfo = ({
             </Popup>
           </span>
           <strong>
-            {
-              (!isSupported)
-                ?(doubleCashback)?'Double Cashback':'0.0'
-                :expectedCSHBK
-            }
+            {expectedCSHBK}
           </strong>
         </div>
         <PairAnalyticsLink pairAddress={pairAddress} />

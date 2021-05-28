@@ -189,6 +189,7 @@ export class SwapTab extends React.Component<
     buttonMessage: string;
     loadingSwap: boolean;
     loadingBestRoute: boolean;
+    expectedCSHBK: number;
     loadingBestRouteCount: number;
     bestRoute: string[];
     loadingPriceData: boolean;
@@ -211,6 +212,7 @@ export class SwapTab extends React.Component<
       isFromEstimated: false,
       isToEstimated: false,
       spread: 0,
+      expectedCSHBK: 0.0,
       commission: 0,
       priceImpact: 0,
       slippageTolerance: new BigNumber(DEFAULT_SLIPPAGE),
@@ -245,6 +247,7 @@ export class SwapTab extends React.Component<
     // we normalize offer_pool & ask_pool
     // we could also canonicalize offer_amount & ask_amount
     // but this way is less code because we get the results normalized
+
     let offer_pool = humanizeBalance(
       new BigNumber(this.props.balances[`${fromToken}-${pair.identifier()}`] as any),
       fromDecimals,
@@ -445,7 +448,8 @@ export class SwapTab extends React.Component<
       return;
     }
 
-    this.updateInputsFromBestRoute();
+    await this.updateInputsFromBestRoute();
+    await this.updateExpectedCSHBK();
   }
   symbolFromAddress = (identifier: string) => {
     const uniqueSymbols = ['SCRT','SEFI','CSHBK','sSCRT']
@@ -456,23 +460,56 @@ export class SwapTab extends React.Component<
       return symbol?.substring(1,symbol.length);
     }
   };
-  getExpectedCSHBK():string{
+  async updateExpectedCSHBK():Promise<void>{
     const pair = this.props.selectedPair;
     let expectedCSHBK='0.0'
+    console.log(this.state.bestRoute)
+    let doubleCashback=false;
+    if(!this.props.isSupported && this.state.bestRoute?.length > 2){
+      doubleCashback = this.state.bestRoute?.some((address)=>address===process.env.SSCRT_CONTRACT)
+    }
+
     //Either From or To input is sSCRT or SCRT
-    if(pair){
+    if(pair && this.props.isSupported){
       if(this.state.fromToken == 'uscrt' || this.state.fromToken == process.env.SSCRT_CONTRACT){
         expectedCSHBK = this.state.fromInput
       }else if (this.state.toToken == 'uscrt' || this.state.toToken == process.env.SSCRT_CONTRACT){
         expectedCSHBK = this.state.toInput;
       }
+    }else if(!this.props.isSupported && doubleCashback){
+      expectedCSHBK = await this.queryExpectedDoubleCashBack();
+    }else{
+      expectedCSHBK='0.0'
     }
-    return expectedCSHBK;
+    const cb_reward = parseFloat(parseFloat(expectedCSHBK).toFixed(8))
+    this.setState({expectedCSHBK:cb_reward})
   }
+  async queryExpectedDoubleCashBack():Promise<any>{
+    try {
+      let {  toToken,toInput ,fromInput,fromToken} = this.state;
+      let token =this.props.tokens.get(toToken) ;
+      const pair: SwapPair = this.props.pairs.get(`${process.env.SSCRT_CONTRACT}${SwapPair.id_delimiter}${toToken}`);
+
+      if(pair){
+          const { offer_pool, ask_pool } = await this.getOfferAndAskPools(toToken,process.env.SSCRT_CONTRACT, pair);
+          let offer_amount = new BigNumber(toInput);
+          const { return_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
+          const amount = return_amount.toFixed(token.decimals, BigNumber.ROUND_DOWN)
+          return parseFloat(amount)*2;
+      }else{
+        console.error(`SCRT -> ${token.identifier} is not registered, estimated Cashback cannot be calculated`)
+        return 0.0
+      }
+
+    } catch (error) {
+      console.error(error)
+      return 0.0
+    }
+  }
+
 
   render() {
     const pair = this.props.selectedPair;
-    const expectedCSHBK= this.getExpectedCSHBK();
     const ask_pool = pair
       ? new BigNumber(this.props.balances[`${this.state.toToken}-${pair?.identifier()}`] as BigNumber)
       : new BigNumber(0);
@@ -547,10 +584,7 @@ export class SwapTab extends React.Component<
       this.state.buttonMessage === BUTTON_MSG_NO_ROUTE;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
     const btnError = buttonMessage == BUTTON_MSG_NO_ROUTE || buttonMessage == BUTTON_MSG_NOT_ENOUGH_LIQUIDITY
-    let doubleCashback=false;
-    if(!this.props.isSupported && this.state.bestRoute?.length > 2){
-      doubleCashback = this.state.bestRoute?.some((address)=>address===process.env.SSCRT_CONTRACT)
-    }
+    
     
     return (
       <>
@@ -665,11 +699,9 @@ export class SwapTab extends React.Component<
             onClick={async () => {
               const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
               const pair = this.props.selectedPair;
-              const cb_optional_msg = (this.props.isSupported)
-                ? `And you earned ${expectedCSHBK} CSHBK tokens!` 
-                :(doubleCashback)
-                  ?'And you earned Double Cashback!'
-                  :''
+              const cb_optional_msg = (this.state.expectedCSHBK != 0)
+                ? `And you earned ${this.state.expectedCSHBK} CSHBK tokens!` 
+                :''
 
               this.setState({ loadingSwap: true });
 
@@ -817,9 +849,8 @@ export class SwapTab extends React.Component<
                 new BigNumber(1).minus(this.state.slippageTolerance),
               )}
               pairAddress={this.props.selectedPair?.contract_addr}
-              expectedCSHBK={expectedCSHBK}
+              expectedCSHBK={this.state.expectedCSHBK}
               isSupported={this.props.isSupported}
-              doubleCashback={doubleCashback}
               /*
               maximumSold={
                 this.state.isFromEstimated

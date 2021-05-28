@@ -463,7 +463,6 @@ export class SwapTab extends React.Component<
   async updateExpectedCSHBK():Promise<void>{
     const pair = this.props.selectedPair;
     let expectedCSHBK='0.0'
-    console.log(this.state.bestRoute)
     let doubleCashback=false;
     if(!this.props.isSupported && this.state.bestRoute?.length > 2){
       doubleCashback = this.state.bestRoute?.some((address)=>address===process.env.SSCRT_CONTRACT)

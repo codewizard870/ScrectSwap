@@ -55,7 +55,7 @@ export const apyString = (token: RewardsToken) => {
   }
   return `${apyStr}%`;
 };
-interface RewardsToken {
+export interface RewardsToken {
   name: string;
   decimals: string;
   display_props: {

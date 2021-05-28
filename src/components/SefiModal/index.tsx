@@ -17,7 +17,7 @@ import  './styles.scss';
 import { BigNumber } from 'bignumber.js';
 import { ITokenInfo } from 'stores/interfaces';
 import { Tokens } from 'stores/Tokens';
-import { UserStoreEx } from 'stores/UserStore';
+import { rewardsDepositKey, rewardsKey, UserStoreEx } from 'stores/UserStore';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { canonicalizeBalance, displayHumanizedBalance, divDecimals, fixUnlockToken, formatWithTwoDecimals, humanizeBalance, sleep, unlockToken } from 'utils';
 import { getNativeBalance, storeTxResultLocally, wrongViewingKey } from './utils';
@@ -28,6 +28,9 @@ import { UserStoreMetamask } from 'stores/UserStoreMetamask';
 import { web3 } from '../../blockchain-bridge/eth';
 import { useStores } from 'stores';
 import cogoToast from 'cogo-toast';
+import { RewardsToken } from 'components/Earn/EarnRow';
+
+
 export const SefiModal = (props: {
   user: UserStoreEx;
   tokens: Tokens;
@@ -41,6 +44,7 @@ export const SefiModal = (props: {
     balance:'—',
     unclaimed:'—',
     cashback_balance:'—',
+    apys:[],
     expected_sefi:0.0,
     sefi_price: 0.0,
     sefi_in_circulation : '—',
@@ -51,8 +55,9 @@ export const SefiModal = (props: {
     scrt:any;
   }>(undefined)
   const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
-  const {user,theme} = useStores();
-  // console.log(user.balanceCSHBK)
+  const {user,rewards,theme} = useStores();
+
+
   async function getSefiToken(){
     const tokens: ITokenInfo[] = [...(await props.tokens.tokensUsage('SWAP'))];
     // convert to token map for swap
@@ -215,7 +220,8 @@ export const SefiModal = (props: {
   function getData():any {
     getSefiToken().then(async(token : SwapToken)=>{
       setToken(token)
-      let balance,unclaimed = undefined;
+      let balance,unclaimed= undefined;
+      let apys:RewardsToken[];
       //Get sefi balance here
       try {
         balance = await getSefiBalance(token);
@@ -241,6 +247,14 @@ export const SefiModal = (props: {
       const sefi_circulation =  await getCirculationSEFI();
       const total_sefi_circulation = numeral(sefi_circulation).format(getFloatFormat(sefi_circulation)).toString().toUpperCase()
       
+      //Load APY's info
+      try {
+          apys =  await getAPYsInfo();
+        
+      } catch (error) {
+        console.error("Error at fetch unclaimed SEFI",error)
+        
+      }
       setData({
         ...data,
         balance: balance || "—",
@@ -248,13 +262,14 @@ export const SefiModal = (props: {
         expected_sefi: user.expectedSEFIFromCSHBK,
         sefi_price:price_formatted,
         unclaimed: unclaimed,
+        apys: apys,
         sefi_in_circulation: total_sefi_circulation,
       })
     });
   }
   const onClaimSefi = ()=>{
     console.log("Moving to Claim");
-    setStatus(SefiModalState.CLAIM);
+    setStatus(SefiModalState.CONFIRMATION);
   };
   const onClaimCashback = ()=>{
     console.log("Moving to Claim Cashback");
@@ -303,7 +318,8 @@ export const SefiModal = (props: {
       console.error(error)
     }
   }
-  const burnCashback = async()=>{
+  
+  async function burnCashback(): Promise<any>{
     setStatus(SefiModalState.LOADING)
     setUnclaimedAmout(user.expectedSEFIFromCSHBK)
     try {
@@ -355,6 +371,53 @@ export const SefiModal = (props: {
       onClick,
     });
   }
+
+  async function getAPYsInfo():Promise<RewardsToken[]>{
+    while (rewards.isPending) {
+      await sleep(100);
+    }
+    const lp_tokens = props.tokens.tokensUsageSync('LPSTAKING')
+    const mappedRewards :RewardsToken[] = rewards.allData
+      .filter(rewards => lp_tokens.find(element => (element.dst_address === rewards.inc_token.address) && 
+                                                   ((rewards.inc_token.symbol === 'SEFI') || (rewards.inc_token.symbol === 'LP-sSCRT-SEFI'))))
+      .map(reward => {
+        const token = lp_tokens.find(element => element.dst_address === reward.inc_token.address)
+        const rewardsToken = {
+          rewardsContract: reward.pool_address,
+          lockedAsset: reward.inc_token.symbol,
+          lockedAssetAddress: token.dst_address,
+          totalLockedRewards: divDecimals(
+            Number(reward.total_locked) * Number(reward.inc_token.price),
+            reward.inc_token.decimals,
+          ),
+          rewardsDecimals: String(reward.rewards_token.decimals),
+          rewards: user.balanceRewards[rewardsKey(reward.inc_token.symbol)],
+          deposit: user.balanceRewards[rewardsDepositKey(reward.inc_token.symbol)],
+          balance: user.balanceToken[token.src_coin],
+          decimals: token.decimals,
+          name: token.name,
+          price: String(reward.inc_token.price),
+          rewardsPrice: String(reward.rewards_token.price),
+          display_props: token.display_props,
+          remainingLockedRewards: reward.pending_rewards,
+          deadline: Number(reward.deadline),
+          rewardsSymbol: 'SEFI',
+        };
+        return rewardsToken;
+      });
+    return mappedRewards;
+  };
+
+  useEffect(() => {
+    rewards.init({
+      isLocal: true,
+      sorter: 'none',
+      pollingInterval: 20000,
+    });
+    rewards.fetch();
+  }, []);
+
+
   return(
     <Modal
       onClose={() => { 

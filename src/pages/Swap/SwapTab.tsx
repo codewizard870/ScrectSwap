@@ -6,7 +6,7 @@ import { AdditionalInfo } from './AdditionalInfo';
 import { PriceRow } from '../../components/Swap/PriceRow';
 import { compute_offer_amount, compute_swap } from '../../blockchain-bridge/scrt/swap';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
-import { CosmWasmClient, ExecuteResult,SigningCosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
 import { BigNumber } from 'bignumber.js';
 import { extractValueFromLogs, getFeeForExecute, Snip20Send } from '../../blockchain-bridge';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
@@ -17,10 +17,23 @@ import * as styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
 import { RouteRow } from 'components/Swap/RouteRow';
 import { Token } from '../TokenModal/types/trade';
-const baseButtonStyle = { margin: '1em 0 0 0', borderRadius: '4px', padding: '11px 42px', fontSize: '16px', fontWeight: '600', height: '46px', } 
-const disableButtonStyle = { ...baseButtonStyle, color: '#5F5F6B', background: '#DEDEDE', }; 
-const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#ff726e', };
-const errorButtonStyle = { ...baseButtonStyle, color: '#ff726e', background: 'transparent',opacity:'1',cursor:'default'};
+const baseButtonStyle = {
+  margin: '1em 0 0 0',
+  borderRadius: '4px',
+  padding: '11px 42px',
+  fontSize: '16px',
+  fontWeight: '600',
+  height: '46px',
+};
+const disableButtonStyle = { ...baseButtonStyle, color: '#5F5F6B', background: '#DEDEDE' };
+const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#ff726e' };
+const errorButtonStyle = {
+  ...baseButtonStyle,
+  color: '#ff726e',
+  background: 'transparent',
+  opacity: '1',
+  cursor: 'default',
+};
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 import stores from '../../stores';
@@ -122,7 +135,7 @@ function executeSwapUscrt(secretjsSender: AsyncSender, pair: SwapPair, fromAmoun
         denom: 'uscrt',
       },
     ],
-    getFeeForExecute(500_000),
+    getFeeForExecute(550_000),
   );
 }
 
@@ -230,10 +243,9 @@ export class SwapTab extends React.Component<
     if (
       sortedStringify({ ...previousProps.balances, ...previousProps.selectedPairRoutes }) !==
       sortedStringify({ ...this.props.balances, ...this.props.selectedPairRoutes })
-      ) {
-        this.updateInputs();
-      }
-
+    ) {
+      this.updateInputs();
+    }
   }
 
   async getOfferAndAskPools(
@@ -256,7 +268,7 @@ export class SwapTab extends React.Component<
       new BigNumber(this.props.balances[`${toToken}-${pair.identifier()}`] as any),
       toDecimals,
     );
-    
+
     if (offer_pool.isNaN() || ask_pool.isNaN()) {
       const balances = await this.props.refreshPools({ pair });
       offer_pool = humanizeBalance(new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any), fromDecimals);
@@ -452,12 +464,12 @@ export class SwapTab extends React.Component<
     await this.updateExpectedCSHBK();
   }
   symbolFromAddress = (identifier: string) => {
-    const uniqueSymbols = ['SCRT','SEFI','CSHBK','sSCRT']
-    const symbol = this.props.tokens.get(identifier)?.symbol
-    if(uniqueSymbols.includes(symbol)){
-      return symbol
-    }else{
-      return symbol?.substring(1,symbol.length);
+    const uniqueSymbols = ['SCRT', 'SEFI', 'CSHBK', 'sSCRT'];
+    const symbol = this.props.tokens.get(identifier)?.symbol;
+    if (uniqueSymbols.includes(symbol)) {
+      return symbol;
+    } else {
+      return symbol?.substring(1, symbol.length);
     }
   };
   async updateExpectedCSHBK():Promise<void>{
@@ -582,9 +594,7 @@ export class SwapTab extends React.Component<
       this.state.buttonMessage === BUTTON_MSG_NOT_ENOUGH_LIQUIDITY ||
       this.state.buttonMessage === BUTTON_MSG_NO_ROUTE;
     const price = Number(this.state.fromInput) / Number(this.state.toInput);
-    const btnError = buttonMessage == BUTTON_MSG_NO_ROUTE || buttonMessage == BUTTON_MSG_NOT_ENOUGH_LIQUIDITY
-    
-    
+    const btnError = buttonMessage == BUTTON_MSG_NO_ROUTE || buttonMessage == BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
     return (
       <>
         <Container className={`${styles.swapContainerStyle} ${styles[stores.theme.currentTheme]}`}>
@@ -615,39 +625,39 @@ export class SwapTab extends React.Component<
             }}
           >
             <FlexRowSpace />
-            {
-              (this.state.loadingSwap)?
-                <span>
-                  <img className={cn(styles.spin)} width="28" height="23" src="/static/logoIcon.svg" alt="Secret Swap" />
-                </span>:
-                <span
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    // switch
-                    this.setState(
-                      {
-                        toToken: this.state.fromToken,
-                        toInput: this.state.isFromEstimated ? '' : this.state.fromInput,
-                        isToEstimated: this.state.isFromEstimated,
+            {this.state.loadingSwap ? (
+              <span>
+                <img className={cn(styles.spin)} width="28" height="23" src="/static/logoIcon.svg" alt="Secret Swap" />
+              </span>
+            ) : (
+              <span
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  // switch
+                  this.setState(
+                    {
+                      toToken: this.state.fromToken,
+                      toInput: this.state.isFromEstimated ? '' : this.state.fromInput,
+                      isToEstimated: this.state.isFromEstimated,
 
-                        fromToken: this.state.toToken,
-                        fromInput: this.state.isToEstimated ? '' : this.state.toInput,
-                        isFromEstimated: this.state.isToEstimated,
-                      },
-                      async () => {
-                        this.setState({ bestRoute: null, allRoutesOutputs: [] });
+                      fromToken: this.state.toToken,
+                      fromInput: this.state.isToEstimated ? '' : this.state.toInput,
+                      isFromEstimated: this.state.isToEstimated,
+                    },
+                    async () => {
+                      this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
-                        await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
+                      await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
-                        this.updateInputs();
-                      },
-                    );
-                  }}
-                >
-                  <img src='/static/exchange-arrows.svg' alt='exchange arrows'/>
-                </span>
-            }
-            
+                      this.updateInputs();
+                    },
+                  );
+                }}
+              >
+                <img src="/static/exchange-arrows.svg" alt="exchange arrows" />
+              </span>
+            )}
+
             <FlexRowSpace />
           </div>
           <SwapAssetRow
@@ -684,161 +694,155 @@ export class SwapTab extends React.Component<
               allRoutesOutputs={this.state.allRoutesOutputs}
             />
           )}
-        {(btnError)?
-          <Button fluid style={errorButtonStyle}>
-            {buttonMessage}
-          </Button>
-          :
-          <Button
-            className={`${styles.swap_button} ${styles[stores.theme.currentTheme]}`}
-            disabled={buttonMessage !== BUTTON_MSG_SWAP || this.state.loadingSwap}
-            // loading={this.state.loadingSwap}
-            primary={buttonMessage === BUTTON_MSG_SWAP}
-            fluid
-            onClick={async () => {
-              const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
-              const pair = this.props.selectedPair;
-              const cb_optional_msg = (this.state.expectedCSHBK != 0)
-                ? `And you earned ${this.state.expectedCSHBK} CSHBK tokens!` 
-                :''
+          {btnError ? (
+            <Button fluid style={errorButtonStyle}>
+              {buttonMessage}
+            </Button>
+          ) : (
+            <Button
+              className={`${styles.swap_button} ${styles[stores.theme.currentTheme]}`}
+              disabled={buttonMessage !== BUTTON_MSG_SWAP || this.state.loadingSwap}
+              // loading={this.state.loadingSwap}
+              primary={buttonMessage === BUTTON_MSG_SWAP}
+              fluid
+              onClick={async () => {
+                const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
+                const pair = this.props.selectedPair;
 
-              this.setState({ loadingSwap: true });
+                this.setState({ loadingSwap: true });
 
-              if (priceImpact >= 0.15) {
-                const confirmString = 'confirm';
-                const confirm = prompt(
-                  `Price impact for this swap is very high. Please type the word "${confirmString}" to continue.`,
-                );
-                if (confirm !== confirmString) {
-                  return;
+                if (priceImpact >= 0.15) {
+                  const confirmString = 'confirm';
+                  const confirm = prompt(
+                    `Price impact for this swap is very high. Please type the word "${confirmString}" to continue.`,
+                  );
+                  if (confirm !== confirmString) {
+                    return;
+                  }
                 }
-              }
 
-              try {
-                const { decimals } = this.props.tokens.get(fromToken);
-                const fromAmount = canonicalizeBalance(new BigNumber(fromInput), decimals).toFixed(
-                  0,
-                  BigNumber.ROUND_DOWN,
-                  /*
+                try {
+                  const { decimals } = this.props.tokens.get(fromToken);
+                  const fromAmount = canonicalizeBalance(new BigNumber(fromInput), decimals).toFixed(
+                    0,
+                    BigNumber.ROUND_DOWN,
+                    /*
                   should be 0 fraction digits because of canonicalizeBalance,
                   but to be sure we're rounding down to prevent over-spending
                   */
-                );
+                  );
 
-                // offer_amount: exactly how much we're sending
-                // ask_amount: roughly how much we're getting
-                // expected_return: at least ask_amount minus some slippage
+                  // offer_amount: exactly how much we're sending
+                  // ask_amount: roughly how much we're getting
+                  // expected_return: at least ask_amount minus some slippage
 
-                //const ask_amount = canonToInput;
-                let expected_return = canonToInput
-                  .multipliedBy(new BigNumber(1).minus(slippageTolerance))
-                  .toFormat(0, { groupSeparator: '' });
-                if (Number(expected_return) < 1) {
-                  // make sure even low value trade won't lose funds
-                  expected_return = '1';
-                }
-
-                if (fromToken === 'uscrt') {
-                  let result: ExecuteResult;
-                  if (bestRoute && bestRoute.length > 2) {
-                    const hops = await this.getHops(bestRoute);
-
-                    result = await executeRouterSwap(
-                      this.props.secretjsSender,
-                      this.props.secretAddress,
-                      fromToken,
-                      fromAmount,
-                      hops,
-                      expected_return,
-                      bestRoute,
-                    );
-                  } else {
-                    result = await executeSwapUscrt(this.props.secretjsSender, pair, fromAmount, expected_return);
+                  //const ask_amount = canonToInput;
+                  let expected_return = canonToInput
+                    .multipliedBy(new BigNumber(1).minus(slippageTolerance))
+                    .toFormat(0, { groupSeparator: '' });
+                  if (Number(expected_return) < 1) {
+                    // make sure even low value trade won't lose funds
+                    expected_return = '1';
                   }
 
-                  const { sent, received } = storeResult(result, fromAmount, fromDecimals, bestRoute, toDecimals);
+                  if (fromToken === 'uscrt') {
+                    let result: ExecuteResult;
+                    if (bestRoute && bestRoute.length > 2) {
+                      const hops = await this.getHops(bestRoute);
 
-                  this.props.notify(
-                    'success',
-                    `Swapped ${sent} ${this.props.tokens.get(fromToken)?.symbol} for ${received} ${
-                      this.props.tokens.get(toToken).symbol
-                    } ${cb_optional_msg}`,
-                  );
-                } else {
-                  let result: ExecuteResult;
-                  if (bestRoute && bestRoute.length > 2) {
-                    const hops = await this.getHops(bestRoute);
-                    result = await executeRouterSwap(
-                      this.props.secretjsSender,
-                      this.props.secretAddress,
-                      fromToken,
-                      fromAmount,
-                      hops,
-                      expected_return,
-                      bestRoute,
+                      result = await executeRouterSwap(
+                        this.props.secretjsSender,
+                        this.props.secretAddress,
+                        fromToken,
+                        fromAmount,
+                        hops,
+                        expected_return,
+                        bestRoute,
+                      );
+                    } else {
+                      result = await executeSwapUscrt(this.props.secretjsSender, pair, fromAmount, expected_return);
+                    }
+
+                    const { sent, received } = storeResult(result, fromAmount, fromDecimals, bestRoute, toDecimals);
+
+                    this.props.notify(
+                      'success',
+                      `Swapped ${sent} ${this.props.tokens.get(fromToken)?.symbol} for ${received} ${
+                        this.props.tokens.get(toToken).symbol
+                      }`,
                     );
                   } else {
-                    result = await Snip20Send({
-                      secretjs: this.props.secretjsSender,
-                      address: fromToken,
-                      amount: fromAmount,
-                      msg: btoa(
-                        JSON.stringify({
-                          swap: {
-                            expected_return,
-                          },
-                        }),
-                      ),
-                      recipient: pair.contract_addr,
-                      fee: getFeeForExecute(500_000),
-                    });
+                    let result: ExecuteResult;
+                    if (bestRoute && bestRoute.length > 2) {
+                      const hops = await this.getHops(bestRoute);
+                      result = await executeRouterSwap(
+                        this.props.secretjsSender,
+                        this.props.secretAddress,
+                        fromToken,
+                        fromAmount,
+                        hops,
+                        expected_return,
+                        bestRoute,
+                      );
+                    } else {
+                      result = await Snip20Send({
+                        secretjs: this.props.secretjsSender,
+                        address: fromToken,
+                        amount: fromAmount,
+                        msg: btoa(
+                          JSON.stringify({
+                            swap: {
+                              expected_return,
+                            },
+                          }),
+                        ),
+                        recipient: pair.contract_addr,
+                        fee: getFeeForExecute(550_000),
+                      });
+                    }
+
+                    const { sent, received } = storeResult(result, fromAmount, fromDecimals, bestRoute, toDecimals);
+
+                    this.props.notify(
+                      'success',
+                      `Swapped ${sent} ${this.props.tokens.get(fromToken).symbol} for ${received} ${
+                        this.props.tokens.get(toToken).symbol
+                      }`,
+                    );
                   }
-
-                  const { sent, received } = storeResult(result, fromAmount, fromDecimals, bestRoute, toDecimals);
-
+                  await this.props.updateBalances();
+                } catch (error) {
+                  console.error('Swap error', error);
+                  const txHash = error?.txHash;
                   this.props.notify(
-                    'success',
-                    `Swapped ${sent} ${this.props.tokens.get(fromToken).symbol} for ${received} ${
+                    'errorWithHash',
+                    `Error swapping ${fromInput} ${this.props.tokens.get(fromToken).symbol} for ${
                       this.props.tokens.get(toToken).symbol
-                    } ${cb_optional_msg}`,
+                    }: ${error.message} ${txHash ? '\nTx Hash: ' + txHash : ''}`,
+                    undefined,
+                    txHash,
                   );
+                  return;
+                } finally {
+                  this.setState({
+                    loadingSwap: false,
+                  });
                 }
-                await this.props.updateBalances()
-
-              } catch (error) {
-                console.error('Swap error', error);
-                const txHash = error?.txHash;
-                this.props.notify(
-                  'errorWithHash',
-                  `Error swapping ${fromInput} ${this.props.tokens.get(fromToken).symbol} for ${
-                    this.props.tokens.get(toToken).symbol
-                  }: ${error.message} ${txHash ? '\nTx Hash: ' + txHash : ''}`,
-                  undefined,
-                  txHash,
-                );
-                return;
-              } finally {
+                await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
                 this.setState({
-                  loadingSwap: false,
+                  toInput: '',
+                  fromInput: '',
+                  isFromEstimated: false,
+                  isToEstimated: false,
                 });
-              }
-              await this.props.onSetTokens(this.props.selectedToken0, this.props.selectedToken1, true);
-              this.setState({
-                toInput: '',
-                fromInput: '',
-                isFromEstimated: false,
-                isToEstimated: false,
-              });
-              await this.props.user.updateCSHBKBalance();
-            }}
-          >
-            {buttonMessage}
-          </Button>
-        
-        }
+              }}
+            >
+              {buttonMessage}
+            </Button>
+          )}
         </Container>
         {!hidePriceRow && (
-          <div style = {(this.state.loadingSwap)? {opacity:'0.4'}:{}}> 
+          <div style={this.state.loadingSwap ? { opacity: '0.4' } : {}}>
             <AdditionalInfo
               fromToken={this.props.tokens.get(this.state.fromToken).symbol}
               toToken={this.props.tokens.get(this.state.toToken).symbol}

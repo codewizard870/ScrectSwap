@@ -58,12 +58,13 @@ export const Cashback =observer((props)=>{
         }
       }
     }
+    saveMaxValue(Math.round(user?.ratioCSHBK+1))
 
     const topRightChart = 514;
     const topLeftChart = 14;
     const topLeftLabel = 50.5;
     const topRightLabel = 575.5;
-    const maxLimit= Math.round(user?.ratioCSHBK+1) || 1
+    const maxLimit= getMaxValue();
 
     const sefi_earned = localStorage.getItem('total_sefi_earned')
     const cb_received = parseFloat(localStorage.getItem('total_cb_received') || '0.0') + parseFloat(user?.balanceCSHBK)
@@ -202,3 +203,22 @@ export const Cashback =observer((props)=>{
     )
   }
 )
+
+const MAX_VALUE_KEY = 'maxValue'
+function saveMaxValue(maxValue:number){
+  const localValue = localStorage.getItem(MAX_VALUE_KEY)
+  const localMaxValue = parseFloat(localValue)
+
+  if(!localValue || (maxValue > localMaxValue)){
+    localStorage.setItem(MAX_VALUE_KEY,maxValue.toString())
+  }
+}
+
+function getMaxValue():number{
+  const localValue = localStorage.getItem(MAX_VALUE_KEY)
+  if(localValue){
+    return parseFloat(localValue)
+  }else{
+    return 1;
+  }
+}

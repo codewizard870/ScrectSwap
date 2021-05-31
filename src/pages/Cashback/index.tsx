@@ -58,6 +58,7 @@ export const Cashback =observer((props)=>{
         }
       }
     }
+    debugger
     saveMaxValue(Math.round(user?.ratioCSHBK+1))
 
     const topRightChart = 514;
@@ -208,9 +209,15 @@ const MAX_VALUE_KEY = 'maxValue'
 function saveMaxValue(maxValue:number){
   const localValue = localStorage.getItem(MAX_VALUE_KEY)
   const localMaxValue = parseFloat(localValue)
-
+  console.log('Local Value',localValue)
+  console.log('Max Value',maxValue)
+  
   if(!localValue || (maxValue > localMaxValue)){
-    localStorage.setItem(MAX_VALUE_KEY,maxValue.toString())
+    if(!isNaN(maxValue)){
+      localStorage.setItem(MAX_VALUE_KEY,maxValue.toString())
+    }else{
+      localStorage.setItem(MAX_VALUE_KEY,'1')
+    }
   }
 }
 

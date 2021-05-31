@@ -209,8 +209,6 @@ const MAX_VALUE_KEY = 'maxValue'
 function saveMaxValue(maxValue:number){
   const localValue = localStorage.getItem(MAX_VALUE_KEY)
   const localMaxValue = parseFloat(localValue)
-  console.log('Local Value',localValue)
-  console.log('Max Value',maxValue)
   
   if(!localValue || (maxValue > localMaxValue)){
     if(!isNaN(maxValue)){

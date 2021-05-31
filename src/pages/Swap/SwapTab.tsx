@@ -708,7 +708,7 @@ export class SwapTab extends React.Component<
               onClick={async () => {
                 const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
                 const pair = this.props.selectedPair;
-
+                const optMessage = (this.state.expectedCSHBK)?`And you earned ${this.state.expectedCSHBK} cashback`:''
                 this.setState({ loadingSwap: true });
 
                 if (priceImpact >= 0.15) {
@@ -769,7 +769,7 @@ export class SwapTab extends React.Component<
                       'success',
                       `Swapped ${sent} ${this.props.tokens.get(fromToken)?.symbol} for ${received} ${
                         this.props.tokens.get(toToken).symbol
-                      }`,
+                      } ${optMessage}`,
                     );
                   } else {
                     let result: ExecuteResult;
@@ -807,10 +807,11 @@ export class SwapTab extends React.Component<
                       'success',
                       `Swapped ${sent} ${this.props.tokens.get(fromToken).symbol} for ${received} ${
                         this.props.tokens.get(toToken).symbol
-                      }`,
+                      } ${optMessage}`,
                     );
                   }
                   await this.props.updateBalances();
+                  await this.props.user.updateCSHBKBalance();
                 } catch (error) {
                   console.error('Swap error', error);
                   const txHash = error?.txHash;

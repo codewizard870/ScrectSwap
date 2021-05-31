@@ -66,7 +66,7 @@ export const Cashback =observer((props)=>{
     const maxLimit= Math.round(user?.ratioCSHBK+1) || 1
 
     const sefi_earned = localStorage.getItem('total_sefi_earned')
-    const cb_received = localStorage.getItem('total_cb_received')
+    const cb_received = parseFloat(localStorage.getItem('total_cb_received') || '0.0') + parseFloat(user?.balanceCSHBK)
     
     const rateCSHBK = user?.ratioCSHBK || .6 //Default value .60 meantime it loads 
     const fontColor = theme.currentTheme=='light'?'#5F5F6B':'white'

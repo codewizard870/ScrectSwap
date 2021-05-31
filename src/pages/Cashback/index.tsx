@@ -215,7 +215,7 @@ function saveMaxValue(maxValue:number){
   if(!localValue || (maxValue > localMaxValue)){
     if(!isNaN(maxValue)){
       localStorage.setItem(MAX_VALUE_KEY,maxValue.toString())
-    }else{
+    }else if(isNaN(localMaxValue)){
       localStorage.setItem(MAX_VALUE_KEY,'1')
     }
   }

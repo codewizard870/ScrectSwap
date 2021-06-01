@@ -171,7 +171,7 @@ export const Cashback =observer((props)=>{
                         <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
                       </>
                     : <>
-                      <h1>Too Bad !</h1> 
+                      <h1>Keep Trading!</h1> 
                       <p>You haven't traded recently on </p>
                       <h3><strong>secret</strong>swap</h3>
                       <p>You currently have</p>

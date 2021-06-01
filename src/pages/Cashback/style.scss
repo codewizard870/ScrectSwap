@@ -24,12 +24,12 @@
 
 .cashback-container__card {
   z-index: 2;
-  width: 631px;
-  height: 290px;
+  width: 742px;
+  height: 300px;
   padding: 20px;
   border-radius: 16px 16px 0 0;
   display: grid;
-  grid-template-columns: repeat(2, calc(50% - 5px));
+  grid-template-columns: calc(45% - 5px) calc(55% - 5px);
   column-gap: 10px;
   &.dark {
     background: #0e0e10;
@@ -38,7 +38,6 @@
   &.light {
     background: #ffffff;
     color: #1b1b1b;
-    box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
   }
 }
 
@@ -79,7 +78,7 @@
 
 .redeem-sefi__button {
   width: 100%;
-  height: 4rem !important;
+  height: 46px !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -90,7 +89,6 @@
   font-weight: 600;
   font-size: 16px !important;
   cursor: pointer;
-  margin-bottom: 20px !important;
   &:disabled {
     background: #d6d6d6 !important;
   }
@@ -104,7 +102,7 @@
   padding: calc(16px + 2rem) 2rem 1rem 2rem;
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 448px;
   .additional-info__row {
     display: flex;
     justify-content: space-between;
@@ -121,9 +119,10 @@
 .call-toAction__container {
   img {
     width: 100%;
-    margin-top: 10px;
   }
   display: grid;
+  grid-template-rows: calc(80% - 14px) calc(20% - 14px);
+  row-gap: 25px;
 }
 
 .connect_wallet {
@@ -131,7 +130,7 @@
   color: #ff726e;
 }
 .rate-bar__container {
-  width: 631px;
+  width: 742px;
   border-radius: 0 0 16px 16px;
   padding: 20px;
   z-index: 2;
@@ -172,4 +171,15 @@
   width: 70px;
   flex-direction: column;
   align-items: center;
+}
+
+.box-shadow {
+  &.light {
+    box-shadow: 4px 10px 32px rgba(140, 140, 140, 0.25);
+  }
+  &.dark {
+    box-shadow: 4px 10px 32px rgba(70, 70, 70, 0.25);
+  }
+  z-index: 3;
+  border-radius: 16px;
 }

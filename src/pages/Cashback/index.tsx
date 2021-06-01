@@ -142,7 +142,7 @@ export const Cashback =observer((props)=>{
       <BaseContainer>
         <PageContainer>
           <Box className="cashback-container">
-            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade more. Earn More</h1>
+            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade more. Earn More.</h1>
             <div className={`cashback-container__card ${theme.currentTheme}`}>
               <div className="congratulations-container">
                 {
@@ -189,7 +189,7 @@ export const Cashback =observer((props)=>{
                     } alt="Cashback logo"  />
                 <Button 
                   loading={loading}
-                  disabled={!hasCashback}
+                  disabled={!hasCashback || user?.balanceCSHBK == 'Unlock'}
                   className="redeem-sefi__button" 
                   onClick={burnSEFI}>
                     Redeem for SEFI 

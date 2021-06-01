@@ -118,8 +118,12 @@ export const Cashback =observer((props)=>{
 
     }else{
       //Calculations
-      xPositionChart = parseFloat((312.4 * rateCSHBK - 125).toFixed(2))+topLeftChart;
-      xPositionLabel = parseFloat((328.125 * rateCSHBK - 131.25).toFixed(2))+topLeftLabel;
+      const b=125
+      const a= b/minLimit
+      const bLabel=131.25
+      const aLabel=bLabel/minLimit
+      xPositionChart = parseFloat((a * rateCSHBK - b).toFixed(2))+topLeftChart;
+      xPositionLabel = parseFloat((aLabel * rateCSHBK - bLabel).toFixed(2))+topLeftLabel;
       xPositionArrow = xPositionLabel-5;
     }
 
@@ -177,7 +181,12 @@ export const Cashback =observer((props)=>{
                 
               </div>
               <div className="call-toAction__container">
-                <img style={{opacity:(isNaN(balanceCSHBK) || balanceCSHBK == 0)?'.3':'1'}} src="/static/cashback_logo.png" alt="Cashback logo"  />
+                <img  src=
+                    {
+                      (isNaN(balanceCSHBK) || balanceCSHBK == 0)
+                        ?"/static/cashback_logo_gray.png"
+                        :"/static/cashback_logo.png"
+                    } alt="Cashback logo"  />
                 <Button 
                   loading={loading}
                   disabled={!hasCashback}

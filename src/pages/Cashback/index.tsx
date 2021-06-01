@@ -132,13 +132,13 @@ export const Cashback =observer((props)=>{
       ratioColor='#FF726E'
     }
 
-    const balanceCSHBK = parseFloat(user.balanceCSHBK || '0.0').toFixed(2)
+    const balanceCSHBK = parseFloat(parseFloat(user.balanceCSHBK || '0.0').toFixed(2))
     
     return(
       <BaseContainer>
         <PageContainer>
           <Box className="cashback-container">
-            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade more, claim more.</h1>
+            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade more, earn more.</h1>
             <div className={`cashback-container__card ${theme.currentTheme}`}>
               <div className="congratulations-container">
                 {
@@ -177,13 +177,13 @@ export const Cashback =observer((props)=>{
                 
               </div>
               <div className="call-toAction__container">
-                <img src="/static/cashback_logo.png" alt="Cashback logo"  />
+                <img style={{opacity:(isNaN(balanceCSHBK) || balanceCSHBK == 0)?'.3':'1'}} src="/static/cashback_logo.png" alt="Cashback logo"  />
                 <Button 
                   loading={loading}
                   disabled={!hasCashback}
                   className="redeem-sefi__button" 
                   onClick={burnSEFI}>
-                    Redem for SEFI 
+                    Redeem for SEFI 
                 </Button>
               </div>
             </div>

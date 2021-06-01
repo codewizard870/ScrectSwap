@@ -79,7 +79,7 @@
 
 .redeem-sefi__button {
   width: 100%;
-  height: 3rem !important;
+  height: 4rem !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -88,8 +88,9 @@
   background: #79cc81 !important;
   border-radius: 4px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 16px !important;
   cursor: pointer;
+  margin-bottom: 20px !important;
   &:disabled {
     background: #d6d6d6 !important;
   }
@@ -120,9 +121,9 @@
 .call-toAction__container {
   img {
     width: 100%;
+    margin-top: 10px;
   }
   display: grid;
-  grid-template-rows: 85% 15%;
 }
 
 .connect_wallet {

@@ -605,18 +605,7 @@ export class UserStoreEx extends StoreConstructor {
     }
     return;
   }
-  public async ConvertCHSBKToSEFI():Promise<void>{
-    function extractError(result: any) {
-      if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {
-        return 'Swap fell short of expected return (slippage error)';
-      }
-      if (result?.raw_log) {
-        return result.raw_log;
-      }
-      console.error(result);
-      return `Unknown error`;
-    }
-    try {
+  public async ConvertCHSBKToSEFI():Promise<any>{
       const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK),6)
       const result = await this.secretjsSend.asyncExecute(
         process.env.CSHBK_CONTRACT,
@@ -625,21 +614,14 @@ export class UserStoreEx extends StoreConstructor {
               amount: canonicalizeCHSBK,
             },
           },'',[],
-        getFeeForExecute(400_000),
+        getFeeForExecute(450_000),
       );
-      if (result?.code) {
-        const error = extractError(result);
-        storeTxResultLocally(result);
-        throw new Error(error);
-      }
+      
       
       this.updateLocalCSHBKData(this.expectedSEFIFromCSHBK,this.balanceCSHBK)
-      this.updateCSHBKBalance();
-      
-    } catch (error) {
-      console.error(error)
-      throw new Error(error);
-    }
+      await this.updateCSHBKBalance();
+      return result;
+
   }
 
   public updateLocalCSHBKData(sefi:number,cashback:string){

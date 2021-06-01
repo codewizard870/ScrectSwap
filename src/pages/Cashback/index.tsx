@@ -3,6 +3,8 @@ import { BaseContainer, PageContainer } from 'components'
 import { ArrowDown } from 'components/Base/components/Icons/tsx_svg_icons';
 import { Box } from 'grommet'
 import { observer } from 'mobx-react';
+import { unlockJsx } from 'pages/Pool/utils';
+import { storeTxResultLocally } from 'pages/Swap/utils';
 import React from 'react'
 import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores';
@@ -40,25 +42,49 @@ export const Cashback =observer((props)=>{
       });
       // NotificationManager[type](undefined, msg, closesAfterMs);
     }
-
+    function extractError(result: any) {
+      if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {
+        return 'Swap fell short of expected return (slippage error)';
+      }
+      if (result?.raw_log) {
+        return result.raw_log;
+      }
+      console.error(result);
+      return `Unknown error`;
+    }
+    async function createCSHBKViewingKey() {
+      try {
+        await user.keplrWallet.suggestToken(user.chainId, process.env.CSHBK_CONTRACT);
+        await user.updateCSHBKBalance();
+      } catch (e) {
+        console.error("Error at creating new viewing key ",e)
+      }
+      
+    }
     const burnSEFI = async () => {
       if(user?.balanceCSHBK){
         try {
           setLoading(true)
           const expected_sefi = user.expectedSEFIFromCSHBK;
           const cashbak = user.balanceCSHBK;
-          await user.ConvertCHSBKToSEFI(); 
+          const result = await user.ConvertCHSBKToSEFI(); 
+
+          if (result?.code) {
+            const error = extractError(result);
+            storeTxResultLocally(result);
+            throw new Error(error);
+          }
           notify('success',`You have claimed ${cashbak} CSHBK into ${expected_sefi} SEFI tokens!`)
           setLoading(false)
           console.log("You've claimed CSHBK")
         } catch (error) {
-          notify('error',"Error when burning CSHBK to SEFI")
+          notify('error',`Error redeeming : ${error.message}`)
           setLoading(false)
           console.error(error)
         }
       }
     }
-    debugger
+
     saveMaxValue(Math.round(user?.ratioCSHBK+1))
 
     const topRightChart = 514;
@@ -109,6 +135,7 @@ export const Cashback =observer((props)=>{
     }
 
     const balanceCSHBK = parseFloat(user.balanceCSHBK || '0.0').toFixed(2)
+    console.log(user.balanceCSHBK)
     return(
       <BaseContainer>
         <PageContainer>
@@ -131,7 +158,13 @@ export const Cashback =observer((props)=>{
                         <p>For trading on</p>
                         <h3><strong>secret</strong>swap</h3>
                         <p>You have earned</p>
-                        <h2>{balanceCSHBK} CSHBK </h2>
+                        <h2>
+                            {(user?.balanceCSHBK == 'Unlock')
+                              ?<p><strong>{unlockJsx({onClick:createCSHBKViewingKey})}</strong></p>
+                              :balanceCSHBK
+                            } 
+                          CSHBK 
+                        </h2>
                         <p>that you can trade for</p>
                         <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
                       </>

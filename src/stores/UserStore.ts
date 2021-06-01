@@ -564,16 +564,18 @@ export class UserStoreEx extends StoreConstructor {
       //Prices
       const sefiUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SEFI')?.price || '0.2');
       const scrtUSD = parseFloat(this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT')?.price || '3.8');
+      const accumulated_sefi = cb_rewards_balance + pending_sefi;
 
+      //Result Rate CSHBK
+      // console.log(`(${accumulated_sefi} / ${cb_total_supply}) * ( ${sefiUSD} / ( ${scrtUSD} * 0.003 ))`)      
+      this.ratioCSHBK =  parseFloat(((accumulated_sefi / cb_total_supply) * (sefiUSD / (scrtUSD * 0.003))).toFixed(2))
       if(parseFloat(this.balanceCSHBK) > 0){
         //Result Expected SEFI
-        this.expectedSEFIFromCSHBK = parseFloat(((cb_balance / cb_total_supply) * pending_sefi).toFixed(2))        
+        this.expectedSEFIFromCSHBK = parseFloat(((cb_balance * scrtUSD * 0.003 * this.ratioCSHBK) / sefiUSD).toFixed(2))    
+        // console.log(`cashback -> (46.1 * ${scrtUSD} * 0.003 * ${this.ratioCSHBK} ) / ${sefiUSD}`)    
       }else{
         this.expectedSEFIFromCSHBK=0.0;
       }
-      //Result Rate CSHBK
-      this.ratioCSHBK = parseFloat((((cb_rewards_balance + pending_sefi) * sefiUSD) / (cb_total_supply * scrtUSD * 0.003)).toFixed(2));
-      
     } catch (error) {
       this.expectedSEFIFromCSHBK=0.0;
       console.error(error)

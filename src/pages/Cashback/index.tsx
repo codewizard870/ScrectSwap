@@ -74,7 +74,7 @@ export const Cashback =observer((props)=>{
             storeTxResultLocally(result);
             throw new Error(error);
           }
-          notify('success',`You have claimed ${cashbak} CSHBK into ${expected_sefi} SEFI tokens!`)
+          notify('success',`You have burned ${cashbak} CSHBK and got ${expected_sefi} SEFI tokens!`)
           setLoading(false)
           console.log("You've claimed CSHBK")
         } catch (error) {
@@ -96,32 +96,30 @@ export const Cashback =observer((props)=>{
     const sefi_earned = localStorage.getItem('total_sefi_earned')
     const cb_received = parseFloat(localStorage.getItem('total_cb_received') || '0.0') + parseFloat(user?.balanceCSHBK)
     
-    const rateCSHBK = user?.ratioCSHBK || .6 //Default value .60 meantime it loads 
+    const rateCSHBK = user?.ratioCSHBK || 0.8 //Default value .60 meantime it loads 
     const fontColor = theme.currentTheme=='light'?'#5F5F6B':'white'
 
-    let minLimit=(rateCSHBK <=  0.5)?0: 0.5
+    let minLimit = parseFloat((maxLimit / 5).toFixed(2));
+    const midValue =( minLimit * 3).toFixed(2);
     let ratioColor,xPositionChart,xPositionLabel,xPositionArrow;
     // Calculating X positions base on Rate CSHBK
     if(rateCSHBK >= maxLimit){
       //Equal or HIGHER than minimun limit
       xPositionChart= topRightChart
-      xPositionLabel= topRightLabel
+      xPositionLabel= topRightLabel+5
       xPositionArrow=topRightLabel;
 
     }else if(rateCSHBK <= minLimit){
       //Equal or LOWER than minimun limit
       xPositionChart =topLeftChart
       xPositionLabel =topLeftLabel
-      xPositionArrow=topLeftLabel;
+      xPositionArrow=topLeftLabel-5;
+      minLimit=0;
 
     }else{
       //Calculations
-      const lengthBar = maxLimit - minLimit;
-      const relative_porcentage = ((rateCSHBK * 100)/lengthBar);
-      const pixels_one_percentage_chart = (topRightChart-topLeftChart)/100;
-      const pixels_one_percentage_label = (topRightLabel-topLeftLabel)/100;
-      xPositionChart = ((relative_porcentage * pixels_one_percentage_chart)+topLeftChart).toFixed(2);
-      xPositionLabel = ((relative_porcentage * pixels_one_percentage_label)+topLeftLabel).toFixed(2);
+      xPositionChart = parseFloat((312.4 * rateCSHBK - 125).toFixed(2))+topLeftChart;
+      xPositionLabel = parseFloat((328.125 * rateCSHBK - 131.25).toFixed(2))+topLeftLabel;
       xPositionArrow = xPositionLabel-5;
     }
 
@@ -135,7 +133,7 @@ export const Cashback =observer((props)=>{
     }
 
     const balanceCSHBK = parseFloat(user.balanceCSHBK || '0.0').toFixed(2)
-    console.log(user.balanceCSHBK)
+    
     return(
       <BaseContainer>
         <PageContainer>
@@ -161,9 +159,9 @@ export const Cashback =observer((props)=>{
                         <h2>
                             {(user?.balanceCSHBK == 'Unlock')
                               ?<p><strong>{unlockJsx({onClick:createCSHBKViewingKey})}</strong></p>
-                              :balanceCSHBK
+                              :balanceCSHBK 
                             } 
-                          CSHBK 
+                           CSHBK 
                         </h2>
                         <p>that you can trade for</p>
                         <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
@@ -172,7 +170,7 @@ export const Cashback =observer((props)=>{
                       <h1>Too Bad !</h1> 
                       <p>You haven't traded recently on </p>
                       <h3><strong>secret</strong>swap</h3>
-                      <p>You have earned</p>
+                      <p>You currently have</p>
                       <h2>0.0 CSHBK </h2>
                     </>
                 }
@@ -210,7 +208,7 @@ export const Cashback =observer((props)=>{
                   <path d="M514 53V73" stroke={fontColor}/>
                   <text fill={fontColor} x={topLeftChart} y='90' textAnchor='middle'>{minLimit}</text>
                   <text fill={fontColor} x={topRightChart } y='90' textAnchor='middle'>{maxLimit}</text>
-                  <text fill={fontColor} x={(topRightChart-topLeftChart)/2 + topLeftChart} y='90' textAnchor='middle'>{maxLimit/2}</text>
+                  <text fill={fontColor} x={(topRightChart-topLeftChart)/2 + topLeftChart} y='90' textAnchor='middle'>{midValue}</text>
                   <defs>
                   <linearGradient id="paint0_linear" x1="14" y1="31.9999" x2="514" y2="32.0001" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#FF726E"/>

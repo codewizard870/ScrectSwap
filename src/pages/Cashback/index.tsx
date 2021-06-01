@@ -138,7 +138,7 @@ export const Cashback =observer((props)=>{
       <BaseContainer>
         <PageContainer>
           <Box className="cashback-container">
-            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade more, earn more.</h1>
+            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade more, claim more.</h1>
             <div className={`cashback-container__card ${theme.currentTheme}`}>
               <div className="congratulations-container">
                 {
@@ -147,8 +147,8 @@ export const Cashback =observer((props)=>{
                       <h1 className='connect_wallet'>PLEASE CONNECT YOUR WALLET</h1>
                       <p>You haven't traded recently on </p>
                       <h3><strong>secret</strong>swap</h3>
-                      <p>You have earned</p>
-                      <h2>0.0 CSHBK </h2>
+                      <p>You currently have</p>
+                      <h2>0 CSHBK </h2>
                     </> 
                   : (hasCashback)
                     ? <>
@@ -158,10 +158,10 @@ export const Cashback =observer((props)=>{
                         <p>You have earned</p>
                         <h2>
                             {(user?.balanceCSHBK == 'Unlock')
-                              ?<p><strong>{unlockJsx({onClick:createCSHBKViewingKey})}</strong></p>
+                              ?<p><strong >{unlockJsx({onClick:createCSHBKViewingKey})}</strong></p>
                               :balanceCSHBK 
                             } 
-                           CSHBK 
+                          	&nbsp;CSHBK 
                         </h2>
                         <p>that you can trade for</p>
                         <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
@@ -171,13 +171,13 @@ export const Cashback =observer((props)=>{
                       <p>You haven't traded recently on </p>
                       <h3><strong>secret</strong>swap</h3>
                       <p>You currently have</p>
-                      <h2>0.0 CSHBK </h2>
+                      <h2>0 CSHBK </h2>
                     </>
                 }
                 
               </div>
               <div className="call-toAction__container">
-                <img src="/static/robot-cashback.png" alt="Rockstart robot"  />
+                <img src="/static/cashback_logo.png" alt="Cashback logo"  />
                 <Button 
                   loading={loading}
                   disabled={!hasCashback}

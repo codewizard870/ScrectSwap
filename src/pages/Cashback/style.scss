@@ -3,6 +3,7 @@
   font-weight: 600;
   font-size: 28px;
   margin-bottom: 2rem;
+  letter-spacing: 0.05em;
   &.dark {
     color: #cccccc;
   }
@@ -25,7 +26,7 @@
 .cashback-container__card {
   z-index: 2;
   width: 742px;
-  height: 300px;
+  height: 310px;
   padding: 20px;
   border-radius: 16px 16px 0 0;
   display: grid;
@@ -52,7 +53,6 @@
   }
   p {
     font-size: 17px;
-    font-weight: 100;
     text-align: center;
   }
   h1 {
@@ -89,6 +89,7 @@
   font-weight: 600;
   font-size: 16px !important;
   cursor: pointer;
+  margin-top: 28px !important;
   &:disabled {
     background: #d6d6d6 !important;
   }
@@ -120,9 +121,9 @@
   img {
     width: 100%;
   }
-  display: grid;
-  grid-template-rows: calc(80% - 14px) calc(20% - 14px);
-  row-gap: 25px;
+  // display: grid;
+  // grid-template-rows: calc(80% - 14px) calc(20% - 14px);
+  // row-gap: 28px;
 }
 
 .connect_wallet {
@@ -182,4 +183,23 @@
   }
   z-index: 3;
   border-radius: 16px;
+}
+.view-token-button {
+  cursor: pointer;
+  border-radius: 30px;
+  padding: 0 0.6em 0 0.3em;
+}
+
+.view-token-button:hover {
+  background: rgba(255, 114, 110, 0.1);
+}
+.chart-value {
+  font-family: 'Poppins', Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+.current-rate {
+  font-size: 14px;
+  font-family: 'Poppins', Arial, Helvetica, sans-serif;
+  fill: #0e0e10;
 }

@@ -333,6 +333,7 @@ export class UserStoreEx extends StoreConstructor {
       this.secretjs = this.initSecretJS(process.env.SECRET_LCD, false);
       await this.updateScrtBalance();
       await this.updateCSHBKBalance()
+      this.isUnconnected = '';
     } catch (error) {
       this.isUnconnected = 'true';
       console.error(error)

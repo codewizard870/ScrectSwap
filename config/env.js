@@ -72,8 +72,10 @@ function getClientEnvironment(publicUrl) {
         SSCRT_CONTRACT: process.env.SSCRT_CONTRACT,
         SIENNA_CONTRACT: process.env.SIENNA_CONTRACT,
 
-        SIENNA_PROXY_CONTRACT: process.env.SIENNA_PROXY_CONTRACT,
-        WSCRT_PROXY_CONTRACT: process.env.WSCRT_PROXY_CONTRACT,
+        SIENNA_PROXY_CONTRACT_ETH: process.env.SIENNA_PROXY_CONTRACT_ETH,
+        WSCRT_PROXY_CONTRACT_ETH: process.env.WSCRT_PROXY_CONTRACT_ETH,
+        SIENNA_PROXY_CONTRACT_BSC: process.env.SIENNA_PROXY_CONTRACT_BSC,
+        WSCRT_PROXY_CONTRACT_BSC: process.env.WSCRT_PROXY_CONTRACT_BSC,
 
         AMM_FACTORY_CONTRACT: process.env.AMM_FACTORY_CONTRACT,
         AMM_ROUTER_CONTRACT: process.env.AMM_ROUTER_CONTRACT,
@@ -116,7 +118,8 @@ function getClientEnvironment(publicUrl) {
 
         TEST_COINS: !!process.env.TEST_COINS,
         SIG_THRESHOLD: process.env.SIG_THRESHOLD,
-        LEADER_ACCOUNT: process.env.LEADER_ACCOUNT,
+        LEADER_ACCOUNT_ETH: process.env.LEADER_ACCOUNT_ETH,
+        LEADER_ACCOUNT_BSC: process.env.LEADER_ACCOUNT_BSC,
       },
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

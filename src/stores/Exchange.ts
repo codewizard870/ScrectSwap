@@ -47,9 +47,62 @@ export interface IStepConfig {
   title?: string;
 }
 
+export const ProxyTokens = {
+  'WSCRT': {
+    [NETWORKS.ETH]: {
+      proxy: process.env.WSCRT_PROXY_CONTRACT_ETH,
+      token: process.env.SSCRT_CONTRACT,
+      proxySymbol: 'WSCRT'
+    },
+    [NETWORKS.BSC]: {
+      proxy: process.env.WSCRT_PROXY_CONTRACT_BSC,
+      token: process.env.SSCRT_CONTRACT,
+      proxySymbol: 'WSCRT'
+    },
+    [NETWORKS.PLSM]: {
+      proxy: undefined,
+      token: undefined
+    }
+  },
+  'SSCRT': {
+    [NETWORKS.ETH]: {
+      proxy: process.env.WSCRT_PROXY_CONTRACT_ETH,
+      token: process.env.SSCRT_CONTRACT,
+      proxySymbol: 'WSCRT'
+    },
+    [NETWORKS.BSC]: {
+      proxy: process.env.WSCRT_PROXY_CONTRACT_BSC,
+      token: process.env.SSCRT_CONTRACT,
+      proxySymbol: 'WSCRT'
+    },
+    [NETWORKS.PLSM]: {
+      proxy: undefined,
+      token: undefined
+    }
+  },
+  'SIENNA': {
+    [NETWORKS.ETH]: {
+      proxy: process.env.SIENNA_PROXY_CONTRACT_ETH,
+      token: process.env.SIENNA_CONTRACT,
+      proxySymbol: 'WSIENNA'
+    },
+    [NETWORKS.BSC]: {
+      proxy: process.env.SIENNA_PROXY_CONTRACT_BSC,
+      token: process.env.SIENNA_CONTRACT,
+      proxySymbol: 'WSIENNA'
+    },
+    [NETWORKS.PLSM]: {
+      proxy: undefined,
+      token: undefined
+    }
+  }
+}
+
 export const proxyContracts: PROXY_CONTRACT[] = [
-  { contract: process.env.WSCRT_PROXY_CONTRACT, symbol: 'SSCRT' },
-  { contract: process.env.SIENNA_PROXY_CONTRACT, symbol: 'SIENNA' },
+  { contract: process.env.WSCRT_PROXY_CONTRACT_ETH, symbol: 'SSCRT' },
+  { contract: process.env.WSCRT_PROXY_CONTRACT_BSC, symbol: 'SSCRT' },
+  { contract: process.env.SIENNA_PROXY_CONTRACT_ETH, symbol: 'SIENNA' },
+  { contract: process.env.SIENNA_PROXY_CONTRACT_BSC, symbol: 'SIENNA' },
 ];
 export class Exchange extends StoreConstructor {
   @observable operations: Array<IOperationPanel> = [];
@@ -554,18 +607,23 @@ export class Exchange extends StoreConstructor {
         this.transaction.snip20Address = token.dst_address;
         // todo: fix this up - proxy token
         if (token.display_props.proxy) {
-          if (
-            token.display_props.symbol.toUpperCase() === 'WSCRT' ||
-            token.display_props.symbol.toUpperCase() === 'SSCRT'
-          ) {
-            proxyContract = process.env.WSCRT_PROXY_CONTRACT;
-            recipient = process.env.WSCRT_PROXY_CONTRACT;
-            this.transaction.snip20Address = process.env.SSCRT_CONTRACT;
-          } else if (token.display_props.symbol === 'SIENNA') {
-            proxyContract = process.env.SIENNA_PROXY_CONTRACT;
-            recipient = process.env.SIENNA_PROXY_CONTRACT;
-            this.transaction.snip20Address = process.env.SIENNA_CONTRACT;
-          }
+
+          proxyContract = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.proxy
+          recipient = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.proxy
+          this.transaction.snip20Address = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.token
+
+          // if (
+          //   token.display_props.symbol.toUpperCase() === 'WSCRT' ||
+          //   token.display_props.symbol.toUpperCase() === 'SSCRT'
+          // ) {
+          //   proxyContract = process.env.WSCRT_PROXY_CONTRACT;
+          //   recipient = process.env.WSCRT_PROXY_CONTRACT;
+          //   this.transaction.snip20Address = process.env.SSCRT_CONTRACT;
+          // } else if (token.display_props.symbol === 'SIENNA') {
+          //   proxyContract = process.env.SIENNA_PROXY_CONTRACT;
+          //   recipient = process.env.SIENNA_PROXY_CONTRACT;
+          //   this.transaction.snip20Address = process.env.SIENNA_CONTRACT;
+          // }
         }
       }
     }

@@ -158,13 +158,13 @@ export const Base = observer(() => {
       return;
     }
 
-    const parseHealth = (signers: ISignerHealth[]): boolean => {
+    const parseHealth = (leaderAccount: string, signers: ISignerHealth[]): boolean => {
       for (const signer of signers) {
         // note: We don't currently support multiple leader accounts for different networks
         // if we want to make the leader address change on a different network we need to add
         // it here
         const updatedonTimestamp = new Date(signer.updated_on).getTime()
-        if (signer.signer === process.env.LEADER_ACCOUNT &&
+        if (signer.signer.toLowerCase() === leaderAccount.toLowerCase() &&
           signers.length >= Number(process.env.SIG_THRESHOLD) &&
           new Date().getTime() - updatedonTimestamp < 1000 * 60 * 5) {
           return true;
@@ -173,8 +173,8 @@ export const Base = observer(() => {
       return false;
     };
 
-    setFromSecretHealth(parseHealth(signers.filter(s => s.from_scrt)));
-    setToSecretHealth(parseHealth(signers.filter(s => s.to_scrt)));
+    setFromSecretHealth(parseHealth(userMetamask.getLeaderAddress(), signers.filter(s => s.from_scrt)));
+    setToSecretHealth(parseHealth(userMetamask.getLeaderAddress(), signers.filter(s => s.to_scrt)));
   }, [signerHealth.allData, userMetamask.network]);
 
   useEffect(() => {

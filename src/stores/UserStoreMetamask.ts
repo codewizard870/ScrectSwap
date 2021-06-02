@@ -33,6 +33,12 @@ const chainIdMap: Record<string, NetworkProps> = {
   '0x50': { mainnet: false, network: NETWORKS.PLSM },
 };
 
+const leaderMap: Record<NETWORKS, string> = {
+  [NETWORKS.ETH]: "",
+  [NETWORKS.PLSM]: "",
+  [NETWORKS.BSC]: ""
+}
+
 export interface IERC20Token {
   name: string;
   symbol: string;
@@ -87,6 +93,10 @@ export class UserStoreMetamask extends StoreConstructor {
       this.getRates();
       this.getBalances();
     }, 5000);
+  }
+
+  getLeaderAddress() {
+    return leaderMap[this.network]
   }
 
   @action.bound

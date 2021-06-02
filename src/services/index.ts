@@ -13,7 +13,8 @@ import {
 } from '../stores/interfaces';
 import * as agent from 'superagent';
 import { SwapStatus } from '../constants';
-import { NETWORKS } from '../pages/EthBridge';
+import { networkFromToken, NETWORKS } from '../pages/EthBridge';
+import { ProxyTokens } from '../stores/Exchange';
 
 const availableNetworks = [NETWORKS.ETH, NETWORKS.BSC]; //, NETWORKS.PLSM
 
@@ -127,20 +128,27 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
       .filter(t => (process.env.TEST_COINS ? true : !t.display_props?.hidden))
       .map(t => {
         if (t.display_props.proxy) {
-          switch (t.display_props.symbol.toLowerCase()) {
-            case 'sscrt':
-              t.display_props.proxy_address = t.dst_address;
-              t.dst_address = process.env.SSCRT_CONTRACT;
-              t.display_props.proxy_symbol = 'WSCRT';
-              break;
-            case 'sienna':
-              t.display_props.proxy_address = t.dst_address;
-              t.dst_address = process.env.SIENNA_CONTRACT;
-              t.display_props.proxy_symbol = 'WSIENNA';
-              break;
-            default:
-              throw new Error('Unsupported proxy token');
-          }
+          t.display_props.proxy_address = t.dst_address;
+          console.log(t.display_props.symbol.toUpperCase())
+          console.log(networkFromToken(t))
+          const proxyToken = ProxyTokens[t.display_props.symbol.toUpperCase()][networkFromToken(t)];
+          console.log(`${JSON.stringify(proxyToken)}`);
+          t.dst_address = proxyToken.token
+          t.display_props.proxy_symbol = proxyToken.proxySymbol;
+          // switch (t.display_props.symbol.toUpperCase()) {
+          //   case 'SSCRT':
+          //     t.display_props.proxy_address = t.dst_address;
+          //     t.dst_address = process.env.SSCRT_CONTRACT;
+          //     t.display_props.proxy_symbol = 'WSCRT';
+          //     break;
+          //   case 'sienna':
+          //
+          //     t.dst_address = process.env.SIENNA_CONTRACT;
+          //     t.display_props.proxy_symbol = 'WSIENNA';
+          //     break;
+          //   default:
+          //     throw new Error('Unsupported proxy token');
+          // }
         }
 
         return t;

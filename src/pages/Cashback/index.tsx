@@ -156,7 +156,7 @@ export const Cashback =observer((props)=>{
                       </> 
                     : (user?.balanceCSHBK == 'Unlock')
                       ? <>
-                          <p>Welcome newcomer to</p>
+                          <p>Welcome to</p>
                           <h2>CASHBACK</h2>
                           <p>To get started</p>
                           <p>Click below to create a</p>

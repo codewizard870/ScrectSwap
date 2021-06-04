@@ -132,6 +132,7 @@
 }
 .rate-bar__container {
   width: 742px;
+  height: 250px;
   border-radius: 0 0 16px 16px;
   padding: 20px;
   z-index: 2;
@@ -201,7 +202,6 @@
 .current-rate {
   font-size: 14px;
   font-family: 'Poppins', Arial, Helvetica, sans-serif;
-  fill: #0e0e10;
 }
 .calculation-callToAction {
   color: #ff726e;

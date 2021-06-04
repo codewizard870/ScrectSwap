@@ -15,6 +15,7 @@
     $background-modal: white;
     .header {
       color: $font-color-primary;
+      background: $background-modal;
       padding: 42px 42px 0 42px;
       border-radius: 10px !important;
       strong {
@@ -34,8 +35,60 @@
         span {
           color: $font-color-secondary;
         }
+        h1 {
+          color: $font-color-primary;
+        }
+      }
+      background: $background-modal;
+    }
+    background: $background-modal;
+    .actions {
+      background: $background-modal;
+      border-radius: 10px !important;
+      .ok-button {
+        background: $font-color-highlighted;
+        color: $font-color-button;
+        width: 200px;
+        height: 46px;
       }
     }
+  }
+  &.modal-dark {
+    $font-color-primary: white;
+    $font-color-secondary: #bebebe;
+    $font-color-highlighted: #ff726e;
+    $font-color-button: white;
+    $background-button-calltoAction: #ff726e;
+    $background-modal: #0e0e10;
+    .header {
+      color: $font-color-primary;
+      background: $background-modal;
+      padding: 42px 42px 0 42px;
+      border-radius: 10px !important;
+      strong {
+        color: $font-color-highlighted;
+        font-weight: 600;
+      }
+      span {
+        color: $font-color-secondary;
+      }
+    }
+    .content {
+      .sefi-formula__title {
+        color: $font-color-secondary;
+      }
+      .sefi-formula__content {
+        p,
+        span {
+          color: $font-color-secondary;
+        }
+        h1 {
+          color: $font-color-primary;
+        }
+      }
+      background: $background-modal;
+    }
+    background: $background-modal;
     .actions {
       background: $background-modal;
       border-radius: 10px !important;

@@ -1,0 +1,117 @@
+.modal {
+  .header,
+  .actions {
+    border: none !important;
+  }
+  border-radius: 10px !important;
+  min-width: 700px !important;
+  max-width: fit-content !important;
+  &.modal-light {
+    $font-color-primary: #0e0e10;
+    $font-color-secondary: #5f5f6b;
+    $font-color-highlighted: #ff726e;
+    $font-color-button: white;
+    $background-button-calltoAction: #ff726e;
+    $background-modal: white;
+    .header {
+      color: $font-color-primary;
+      padding: 42px 42px 0 42px;
+      border-radius: 10px !important;
+      strong {
+        color: $font-color-highlighted;
+        font-weight: 600;
+      }
+      span {
+        color: $font-color-secondary;
+      }
+    }
+    .content {
+      .sefi-formula__title {
+        color: $font-color-secondary;
+      }
+      .sefi-formula__content {
+        p,
+        span {
+          color: $font-color-secondary;
+        }
+      }
+    }
+    .actions {
+      background: $background-modal;
+      border-radius: 10px !important;
+      .ok-button {
+        background: $font-color-highlighted;
+        color: $font-color-button;
+        width: 200px;
+        height: 46px;
+      }
+    }
+  }
+}
+
+.icon-info__popup {
+  min-width: auto !important;
+  max-width: 350px !important;
+}
+.icon_info {
+  margin-left: 5px !important;
+  font-size: 7px !important;
+  font-weight: normal !important;
+}
+
+.formula-fees__container {
+  width: fit-content;
+  display: grid;
+  grid-template-columns: repeat(9, auto);
+  align-items: center;
+  column-gap: 8px;
+  * {
+    margin: 0;
+    width: fit-content;
+  }
+}
+
+.fee {
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  padding: 42px !important;
+}
+.actions {
+  padding: 0 42px 42px 0 !important;
+}
+h2 {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  font-family: 'Poppins', Arial, Helvetica, sans-serif !important;
+}
+.sefi-formula__content {
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  column-gap: 53px;
+  div {
+    display: grid;
+    align-items: flex-end;
+    justify-content: center;
+    p,
+    h1,
+    span {
+      font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    }
+    span,
+    h1 {
+      font-size: 36px;
+    }
+    p {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+    }
+    * {
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+}

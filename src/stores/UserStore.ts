@@ -573,7 +573,8 @@ export class UserStoreEx extends StoreConstructor {
       if(parseFloat(this.balanceCSHBK) > 0){
         //Result Expected SEFI
         this.expectedSEFIFromCSHBK = parseFloat(((cb_balance * scrtUSD * 0.003 * this.ratioCSHBK) / sefiUSD).toFixed(2))    
-        // console.log(`cashback -> (46.1 * ${scrtUSD} * 0.003 * ${this.ratioCSHBK} ) / ${sefiUSD}`)    
+        // console.log(`cashback -> (${cb_balance} * ${scrtUSD} * 0.003 * ${this.ratioCSHBK} ) / ${sefiUSD}`)    
+        // console.log(`cashback 2 -> ((${cb_balance} * ${scrtUSD} * 0.003 ) / ${sefiUSD}) * ${this.ratioCSHBK} `)    
       }else{
         this.expectedSEFIFromCSHBK=0.0;
       }

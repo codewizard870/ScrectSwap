@@ -1,6 +1,7 @@
 import cogoToast from 'cogo-toast';
 import { BaseContainer, PageContainer } from 'components'
 import { ArrowDown } from 'components/Base/components/Icons/tsx_svg_icons';
+import { RedeemtionFormulaModal } from 'components/RedeemInfoModal';
 import { Box } from 'grommet'
 import { observer } from 'mobx-react';
 import { unlockJsx } from 'pages/Pool/utils';
@@ -141,7 +142,7 @@ export const Cashback =observer((props)=>{
       <BaseContainer>
         <PageContainer>
           <Box className="cashback-container">
-            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade more. Earn More.</h1>
+            <h1 className={`trade-more__title ${theme.currentTheme}`}>Trade SCRT, get CSHBK, earn SEFI.</h1>
             <div className={`box-shadow ${theme.currentTheme}`}>
               <div className={`cashback-container__card ${theme.currentTheme}`}>
                 <div className="congratulations-container">
@@ -149,8 +150,8 @@ export const Cashback =observer((props)=>{
                     (user.isUnconnected == 'true')
                     ? <>
                         <h1 className='connect_wallet'>PLEASE CONNECT YOUR WALLET</h1>
-                        <p>You haven't traded recently on </p>
-                        <SecretSwapLogo fill={(theme.currentTheme == 'light')?'#1b1b1b':'#ffffff'}/> 
+                        {/* <p>You haven't traded recently on </p> */}
+                        {/* <SecretSwapLogo fill={(theme.currentTheme == 'light')?'#1b1b1b':'#ffffff'}/>  */}
                         <p>You currently have</p>
                         <h2>0 CSHBK </h2>
                       </> 
@@ -168,18 +169,19 @@ export const Cashback =observer((props)=>{
                         </>
                       : (hasCashback)
                         ? <>
-                            <h1>Congratulations</h1>
+                            {/* <h1>Congratulations</h1>
                             <p>For trading on</p>
-                            <SecretSwapLogo fill={(theme.currentTheme == 'light')?'#1b1b1b':'#ffffff'}/> 
-                            <p>You have earned</p>
+                            <SecretSwapLogo fill={(theme.currentTheme == 'light')?'#1b1b1b':'#ffffff'}/>  */}
+                            <p>You currently earned</p>
                             <h2> {balanceCSHBK} CSHBK </h2>
                             <p>that you can trade for</p>
                             <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
+                            <RedeemtionFormulaModal trigger={<a className='calculation-callToAction' href="#">How do we get to this number?</a>}/>
                           </>
                         : <>
                           <h1>Keep Trading!</h1> 
-                          <p>You haven't traded recently on </p>
-                          <SecretSwapLogo fill={(theme.currentTheme == 'light')?'#1b1b1b':'#ffffff'}/> 
+                          {/* <p>You haven't traded recently on </p>
+                          <SecretSwapLogo fill={(theme.currentTheme == 'light')?'#1b1b1b':'#ffffff'}/>  */}
                           <p>You currently have</p>
                           <h2>0 CSHBK </h2>
                         </>

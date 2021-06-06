@@ -34,10 +34,10 @@ const chainIdMap: Record<string, NetworkProps> = {
 };
 
 const leaderMap: Record<NETWORKS, string> = {
-  [NETWORKS.ETH]: "",
-  [NETWORKS.PLSM]: "",
-  [NETWORKS.BSC]: ""
-}
+  [NETWORKS.ETH]: process.env.LEADER_ACCOUNT_ETH,
+  [NETWORKS.PLSM]: '',
+  [NETWORKS.BSC]: process.env.LEADER_ACCOUNT_BSC,
+};
 
 export interface IERC20Token {
   name: string;
@@ -96,7 +96,7 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   getLeaderAddress() {
-    return leaderMap[this.network]
+    return leaderMap[this.network];
   }
 
   @action.bound

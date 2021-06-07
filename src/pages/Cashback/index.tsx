@@ -151,7 +151,7 @@ export const Cashback =observer((props)=>{
 
     const balanceCSHBK = numeral(user?.balanceCSHBK).format('0.00');
     const expectedSEFI = numeral(user?.expectedSEFIFromCSHBK).format('0.00');
-    console.log(expectedSEFI)
+
     
     return(
       <BaseContainer>
@@ -244,10 +244,10 @@ export const Cashback =observer((props)=>{
                     <text fill={fontColor} x={topRightChart } y='90' textAnchor='middle'>{maxLimit}</text>
                     <text fill={fontColor} x={(topRightChart-topLeftChart)/2 + topLeftChart} y='90' textAnchor='middle'>1.00</text>
                     <defs>
-                    <linearGradient id="paint0_linear" x1="0" y1="10.9999" x2="624" y2="11.0001" gradientUnits="userSpaceOnUse">
+                    <linearGradient id="paint0_linear" x1="0" y1="10.9999" x2="614" y2="11.0001" gradientUnits="userSpaceOnUse">
                     <stop stopColor="#FF726E"/>
-                    <stop offset="0.507078" stopColor="#F8EC99"/>
-                    <stop offset="1" stopColor="#79CC81"/>
+                    <stop offset="0.252143" stopColor="#F8EC99"/>
+                    <stop offset="0.573412" stopColor="#79CC81"/>
                     </linearGradient>
                     </defs>
 

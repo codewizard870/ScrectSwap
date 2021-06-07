@@ -1,4 +1,5 @@
 import cogoToast from 'cogo-toast';
+import numeral from 'numeral'
 import { BaseContainer, PageContainer } from 'components'
 import { ArrowDown } from 'components/Base/components/Icons/tsx_svg_icons';
 import { RedeemtionFormulaModal } from 'components/RedeemInfoModal';
@@ -147,8 +148,10 @@ export const Cashback =observer((props)=>{
     }else{
       ratioColor='#FF726E'
     }
-    console.log(xPositionInfoIcon)
-    const balanceCSHBK = parseFloat(parseFloat(user.balanceCSHBK || '0.0').toFixed(2))
+
+    const balanceCSHBK = numeral(user?.balanceCSHBK).format('0.00');
+    const expectedSEFI = numeral(user?.expectedSEFIFromCSHBK).format('0.00');
+    console.log(expectedSEFI)
     
     return(
       <BaseContainer>
@@ -187,7 +190,7 @@ export const Cashback =observer((props)=>{
                             <p>You currently earned</p>
                             <h2> {balanceCSHBK} CSHBK </h2>
                             <p>that you can trade for</p>
-                            <h2>{user.expectedSEFIFromCSHBK} SEFI</h2>
+                            <h2>{expectedSEFI} SEFI</h2>
                             <RedeemtionFormulaModal trigger={<a className='calculation-callToAction' href="#">How do we get to this number?</a>}/>
                           </>
                         : <>

@@ -38,11 +38,11 @@ export const RedeemtionFormulaModal=(
           <span>=</span> 
           <h2>{balanceCashback}</h2>
           <span>x</span> 
-          <h2 className='fee'>0.003 <InfoIcon content='Gas fee'/></h2> 
+          <h2 className='fee'>0.003 <InfoIcon content='Liquidity Provider Fee'/></h2> 
           <span>=</span> 
           <h2>{scrtFee} SCRT</h2>
           <span>=</span>
-          <TradingFeePopup tradingFee={tradingSefiFee} content={<h2 style={{cursor:'pointer'}}>{`${tradingSefiFeeFormatted}~`}</h2>}/>
+          <h2>{tradingSefiFeeFormatted} SEFI</h2>
         </div>
       </Modal.Header>
       <Modal.Content>
@@ -50,7 +50,7 @@ export const RedeemtionFormulaModal=(
             <div className='sefi-formula__content'>
               <div>
                 <p>Fee paid in SEFI</p>
-                <TradingFeePopup tradingFee={tradingSefiFee} content={<h1 style={{cursor:'pointer'}}>{`${tradingSefiFeeFormatted}~`}</h1>}/>
+                <h1>{tradingSefiFeeFormatted}</h1>
               </div>
               <div>
                 <span>X</span>

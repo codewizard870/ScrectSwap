@@ -76,6 +76,10 @@ const GeneralState = (props:{
                         />
                       }
                     >
+                      <p>
+                        When users trade, they acquire cashback tokens. These cashback tokens can be burned to claim SEFI. 
+                      </p> 
+                      {/* <a href="#">Learn more about cashback tokens</a> */}
                     </Popup>   
                 </td>
                 {

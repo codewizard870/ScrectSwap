@@ -18,7 +18,8 @@ export const RedeemtionFormulaModal=(
   const sefiUSD = parseFloat(user.stores.tokens.allData.find(t => t.display_props.symbol === 'SEFI')?.price || '0.2');
   const scrtUSD = parseFloat(user.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT')?.price || '3.8');
   const scrtFee = parseFloat((parseFloat(balanceCashback)*0.003).toFixed(3))
-  const tradingSefiFee = parseFloat((scrtFee*scrtUSD / sefiUSD).toFixed(3))
+  const tradingSefiFee = (scrtFee*scrtUSD / sefiUSD)
+  const tradingSefiFeeFormatted = parseFloat((scrtFee*scrtUSD / sefiUSD).toFixed(3))
   const expectedSefi= (ratioCSHBK * tradingSefiFee).toFixed(2)
 
 
@@ -41,7 +42,7 @@ export const RedeemtionFormulaModal=(
           <span>=</span> 
           <h2>{scrtFee} SCRT</h2>
           <span>=</span>
-          <h2>{tradingSefiFee} SEFI</h2>
+          <TradingFeePopup tradingFee={tradingSefiFee} tradingFeeFormatted={`${tradingSefiFeeFormatted} SEFI`}/>
         </div>
       </Modal.Header>
       <Modal.Content>
@@ -49,7 +50,7 @@ export const RedeemtionFormulaModal=(
             <div className='sefi-formula__content'>
               <div>
                 <p>Fee paid in SEFI</p>
-                <h1>{tradingSefiFee}</h1>
+                <TradingFeePopup tradingFee={tradingSefiFee} tradingFeeFormatted={`${tradingSefiFeeFormatted}`}/>
               </div>
               <div>
                 <span>X</span>
@@ -89,4 +90,17 @@ const InfoIcon =(props:{content:string})=>(
     >
       {props.content}
     </Popup>
+)
+const TradingFeePopup =(props:{tradingFee:number,tradingFeeFormatted:string})=>(
+  <Popup 
+    className="icon-info__popup" 
+    position='top center'
+    trigger={
+      <h1>
+        {props.tradingFeeFormatted}
+      </h1>
+    }
+    >
+    {props.tradingFee}
+  </Popup>
 )

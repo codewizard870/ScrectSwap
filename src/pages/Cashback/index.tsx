@@ -101,7 +101,7 @@ export const Cashback =observer((props)=>{
     const fontColor = theme.currentTheme=='light'?'#5F5F6B':'white'
 
     let minLimit = 0;
-    let ratioColor,xPositionChart,xPositionLabel,xPositionArrow;
+    let ratioColor,xPositionChart,xPositionLabel,xPositionArrow,xPositionInfoIcon;
     // Calculating X positions base on Rate CSHBK
     if(rateCSHBK >= maxLimit){
       //Equal or HIGHER than minimun limit
@@ -137,7 +137,8 @@ export const Cashback =observer((props)=>{
         xPositionArrow = xPositionLabel-2.5;
       }
     }
-
+    xPositionInfoIcon = parseFloat(xPositionLabel) + ((rateCSHBK.toString().length) * 5)
+    
     //Calculating color of rate value
     if(rateCSHBK > minLimit && rateCSHBK < maxLimit){
       ratioColor='#c7b517'
@@ -146,7 +147,7 @@ export const Cashback =observer((props)=>{
     }else{
       ratioColor='#FF726E'
     }
-
+    console.log(xPositionInfoIcon)
     const balanceCSHBK = parseFloat(parseFloat(user.balanceCSHBK || '0.0').toFixed(2))
     
     return(
@@ -220,7 +221,7 @@ export const Cashback =observer((props)=>{
                     <svg width="742" height="94" viewBox="0 0 742 94" fill="none" xmlns="http://www.w3.org/2000/svg">
                         {/* <text className='current-rate' x={xPositionLabel} textAnchor='middle' y='15%' fill={fontColor}>Current</text> */}
                         <text className='current-rate' x={xPositionLabel} textAnchor='middle' y='35%' fill={fontColor} >Score </text>
-                        <InfoIcon x={parseFloat(xPositionLabel) + 25} y='22%' content='Multiple of fees you get back.' />
+                        <InfoIcon x={xPositionInfoIcon} y='50%' content='Multiple of fees you get back.' />
                         <text className='chart-value' x={xPositionLabel} textAnchor='middle' y='65%' fill={ratioColor}>{rateCSHBK}</text>
                         <Arrow x={xPositionArrow} y='80' stroke={fontColor} width='10px'/>
                     </svg>

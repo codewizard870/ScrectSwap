@@ -1,4 +1,9 @@
 import React, { useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Link,
+  useLocation
+} from "react-router-dom";
 import { Box } from 'grommet';
 import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
@@ -31,7 +36,13 @@ export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, tokens, secretSwapPairs, secretSwapPools } = useStores();
 
+  function useQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
+  let query = useQuery();
+
   useEffect(() => {
+    
     secretSwapPairs.init({
       isLocal: true,
       sorter: 'none',
@@ -57,7 +68,7 @@ export const SwapPageWrapper = observer(() => {
     secretSwapPools = null;
   }
 
-  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} />;
+  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} query={query}/>;
 });
 
 export class SwapRouter extends React.Component<
@@ -66,6 +77,7 @@ export class SwapRouter extends React.Component<
     tokens: Tokens;
     pairs: SecretSwapPairs;
     pools: SecretSwapPools;
+    query: URLSearchParams;
   },
   {
     allTokens: SwapTokenMap;
@@ -87,15 +99,17 @@ export class SwapRouter extends React.Component<
   private ws: WebSocket;
   private pairRefreshInterval;
 
-  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools }) {
+  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools ;query:URLSearchParams}) {
     super(props);
     this.state = {
       allTokens: new Map<string, SwapToken>(),
       balances: {},
       pairs: new Map<string, SwapPair>(),
       selectedPair: undefined,
-      selectedToken0: process.env.SSCRT_CONTRACT,
-      selectedToken1: '',
+      //Getting parameters as default 
+      //in ComponentDidMount we check if they exist or not
+      selectedToken0: this.props.query.get('inputCurrency') || process.env.SSCRT_CONTRACT,
+      selectedToken1: this.props.query.get('outputCurrency') || '',
       queries: [],
       routerSupportedTokens: new Set(),
       routerOnline: false,
@@ -105,7 +119,14 @@ export class SwapRouter extends React.Component<
       isSupported:false,
     };
   }
-
+  existToken(address :string):boolean{
+    const token = Array.from(this.props.tokens.allData).find((token)=>token.dst_address == address)
+    if(token || address == 'uscrt' || address == process.env.SSCRT_CONTRACT){
+      return true;
+    }else{
+      return false
+    } 
+  }
   onHashChange = () => {
     this.forceUpdate();
   };
@@ -178,20 +199,44 @@ export class SwapRouter extends React.Component<
       await sleep(100);
     }
 
-    let sScrtBalance: { [symbol: string]: BigNumber | JSX.Element } = {
-      [process.env.SSCRT_CONTRACT]: new BigNumber('0'),
+    let balanceToken0: { [symbol: string]: BigNumber | JSX.Element } = {
+      [this.state.selectedToken0]: new BigNumber('0'),
     };
+    let balanceToken1: { [symbol: string]: BigNumber | JSX.Element } = {
+      [this.state.selectedToken1]: new BigNumber('0'),
+    };
+
+    let selectedToken0,selectedToken1;
+    const existsToken0 = this.existToken(this.state.selectedToken0);
+    const existsToken1 = this.existToken(this.state.selectedToken1);
+
     let keplrConnected = false;
     // wait for 1 second before deciding that Keplr won't connect
     for (let i = 0; i < 10; i++) {
       if (this.props.user.secretjs) {
-        sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
+        //Checked if the input and output params exist
+        //if not selectedToken0 equal SCRT
+        //selectedToken1 is empty
+        if(existsToken0){
+          balanceToken0  = { [this.state.selectedToken0]: await this.refreshTokenBalance(this.state.selectedToken0) };
+          selectedToken0 = this.state.selectedToken0
+        }else{
+          selectedToken0=process.env.SSCRT_CONTRACT
+        }
+
+        if(existsToken1){
+          balanceToken1 = { [this.state.selectedToken1]: await this.refreshTokenBalance(this.state.selectedToken1) };
+          selectedToken1 = this.state.selectedToken1
+        }else{
+          selectedToken1 =''
+        }
+
         keplrConnected = true;
         break;
       }
       await sleep(100);
     }
-    this.setState({ balances: { ...this.state.balances, ...sScrtBalance }, keplrConnected });
+    this.setState({ balances: { ...this.state.balances, ...balanceToken0 ,...balanceToken1}, keplrConnected,selectedToken1,selectedToken0});
     await this.updatePairs();
 
     if (process.env.ENV !== 'DEV') {
@@ -200,7 +245,6 @@ export class SwapRouter extends React.Component<
       }
       this.pairRefreshInterval = setInterval(this.reloadPairData(), 1000);
     }
-
     while (true) {
       try {
         const routerSupportedTokens: Set<string> = new Set(
@@ -210,6 +254,11 @@ export class SwapRouter extends React.Component<
         );
         routerSupportedTokens.add('uscrt');
         this.setState({ routerSupportedTokens, routerOnline: true }, this.updateRoutingGraph);
+        //Updating pair when page has parameters
+        //This setCurrenPair updates pair's route
+        if(existsToken0 && existsToken1){
+          await this.setCurrentPair(this.state.selectedToken0,this.state.selectedToken1)
+        }
         return;
       } catch (error) {
         console.log('Retrying to get supported tokens from router');
@@ -540,7 +589,6 @@ export class SwapRouter extends React.Component<
       console.error('Error computing selectedPairRoutes:', e.message);
     }
     // }
-
     this.setState({
       selectedPair: selectedPair,
       selectedPairRoutes: routes,

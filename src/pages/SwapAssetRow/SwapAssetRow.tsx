@@ -94,10 +94,11 @@ export const SwapAssetRow = ({
               }
 
               if (tokens.size > 0) {
-                return displayHumanizedBalance(
-                  humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token).decimals),
+                const hum = displayHumanizedBalance(
+                  humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token)?.decimals),
                   BigNumber.ROUND_DOWN,
                 );
+                return (isNaN(parseFloat(hum)))?0:hum
               }
               return undefined;
             })()}

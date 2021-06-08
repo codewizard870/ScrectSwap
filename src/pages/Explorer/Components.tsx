@@ -7,8 +7,8 @@ import { EXCHANGE_MODE, TOKEN } from 'stores/interfaces';
 import { observer } from 'mobx-react';
 import { useStores } from '../../stores';
 import { divDecimals, formatWithSixDecimals } from '../../utils';
-import { networkFromToken, NETWORKS } from '../EthBridge';
-import { messages, messageToString } from '../EthBridge/messages';
+import { chainProps, chainPropToString } from '../../blockchain-bridge/eth/chainProps';
+import { networkFromToken, NETWORKS } from '../../blockchain-bridge';
 
 // export const OperationType = (props: { type: EXCHANGE_MODE }) => {
 //   return (
@@ -103,12 +103,12 @@ export const ERC20Token = observer((props: IERC20TokenProps) => {
         : (tokenName = token.display_props.symbol);
     }
   } else if (value === TOKEN.NATIVE) {
-    tokenName = messageToString(messages.currency_symbol, props.network);
+    tokenName = chainPropToString(chainProps.currency_symbol, props.network);
   }
 
   return (
     <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
-      <img className={styles.imgToken} src={messageToString(messages.image_logo, props.network)} />
+      <img className={styles.imgToken} src={chainPropToString(chainProps.image_logo, props.network)} />
       {tokenName}
     </Box>
   );

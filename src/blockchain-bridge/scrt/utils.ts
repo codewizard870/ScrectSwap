@@ -2,7 +2,7 @@ import { decode } from 'bech32';
 import { ExecuteResult } from 'secretjs';
 import { StdFee } from 'secretjs/types/types';
 import { EXCHANGE_MODE, TOKEN } from '../../stores/interfaces';
-import { NETWORKS } from '../../pages/EthBridge';
+import { NETWORKS } from '../eth/networks';
 
 const HRP = 'secret';
 

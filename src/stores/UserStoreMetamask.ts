@@ -3,12 +3,11 @@ import { statusFetching } from '../constants';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as contract from '../blockchain-bridge';
-import { getErc20Balance, getEthBalance } from '../blockchain-bridge';
+import { getErc20Balance, getEthBalance, networkFromToken, NETWORKS } from '../blockchain-bridge';
 import { divDecimals, sleep } from '../utils';
 import Web3 from 'web3';
 import { IOperation, TOKEN } from './interfaces';
-import { networkFromToken, NETWORKS } from '../pages/EthBridge';
-import { messages, messageToString } from '../pages/EthBridge/messages';
+import { chainProps, chainPropToString } from '../blockchain-bridge/eth/chainProps';
 import * as agent from 'superagent';
 
 const defaults = {};
@@ -142,19 +141,19 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   getCurrencySymbol() {
-    return messageToString(messages.currency_symbol, this.network || NETWORKS.ETH);
+    return chainPropToString(chainProps.currency_symbol, this.network || NETWORKS.ETH);
   }
 
   getNetworkFullName() {
-    return messageToString(messages.full_name, this.network || NETWORKS.ETH);
+    return chainPropToString(chainProps.full_name, this.network || NETWORKS.ETH);
   }
 
   getNetworkImage() {
-    return messageToString(messages.image_logo, this.network || NETWORKS.ETH);
+    return chainPropToString(chainProps.image_logo, this.network || NETWORKS.ETH);
   }
 
   getNativeDecimals() {
-    return messageToString(messages.decimals, this.network || NETWORKS.ETH);
+    return chainPropToString(chainProps.decimals, this.network || NETWORKS.ETH);
   }
 
   getNetworkName(id: string) {

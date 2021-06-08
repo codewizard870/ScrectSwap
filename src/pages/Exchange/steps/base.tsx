@@ -28,8 +28,8 @@ import { toInteger } from 'lodash';
 import cogoToast from 'cogo-toast';
 import { UserStoreEx } from '../../../stores/UserStore';
 import { UserStoreMetamask } from '../../../stores/UserStoreMetamask';
-import { NETWORKS } from '../../EthBridge';
-import { messages, messageToString } from '../../EthBridge/messages';
+import { chainProps, chainPropToString } from '../../../blockchain-bridge/eth/chainProps';
+import { NETWORKS } from '../../../blockchain-bridge';
 
 interface Errors {
   amount: string;
@@ -163,18 +163,30 @@ export const Base = observer(() => {
         // note: We don't currently support multiple leader accounts for different networks
         // if we want to make the leader address change on a different network we need to add
         // it here
-        const updatedonTimestamp = new Date(signer.updated_on).getTime()
-        if (signer.signer.toLowerCase() === leaderAccount.toLowerCase() &&
+        const updatedonTimestamp = new Date(signer.updated_on).getTime();
+        if (
+          signer.signer.toLowerCase() === leaderAccount.toLowerCase() &&
           signers.length >= Number(process.env.SIG_THRESHOLD) &&
-          new Date().getTime() - updatedonTimestamp < 1000 * 60 * 5) {
+          new Date().getTime() - updatedonTimestamp < 1000 * 60 * 5
+        ) {
           return true;
         }
       }
       return false;
     };
 
-    setFromSecretHealth(parseHealth(userMetamask.getLeaderAddress(), signers.filter(s => s.from_scrt)));
-    setToSecretHealth(parseHealth(userMetamask.getLeaderAddress(), signers.filter(s => s.to_scrt)));
+    setFromSecretHealth(
+      parseHealth(
+        userMetamask.getLeaderAddress(),
+        signers.filter(s => s.from_scrt),
+      ),
+    );
+    setToSecretHealth(
+      parseHealth(
+        userMetamask.getLeaderAddress(),
+        signers.filter(s => s.to_scrt),
+      ),
+    );
   }, [signerHealth.allData, userMetamask.network]);
 
   useEffect(() => {
@@ -214,8 +226,8 @@ export const Base = observer(() => {
       exchange.transaction.amount >= maxAmount
     ) {
       setWarningAmount(
-        `Remember to leave some ${messageToString(
-          messages.currency_symbol,
+        `Remember to leave some ${chainPropToString(
+          chainProps.currency_symbol,
           userMetamask.network || NETWORKS.ETH,
         )} behind to pay for network fees`,
       );
@@ -544,28 +556,28 @@ export const Base = observer(() => {
             <Box className={styles.addressInput}>
               {((exchange.mode === EXCHANGE_MODE.FROM_SCRT && userMetamask.isAuthorized) ||
                 (exchange.mode === EXCHANGE_MODE.TO_SCRT && user.isAuthorized)) && (
-                  <Box
-                    style={{
-                      fontWeight: 'bold',
-                      right: 0,
-                      top: 0,
-                      position: 'absolute',
-                      color: 'rgb(0, 173, 232)',
-                      textAlign: 'right',
-                    }}
-                    onClick={() => {
-                      if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
-                        exchange.transaction.ethAddress = userMetamask.ethAddress;
-                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
-                      } else {
-                        exchange.transaction.scrtAddress = user.address;
-                        setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
-                      }
-                    }}
-                  >
-                    Use my address
-                  </Box>
-                )}
+                <Box
+                  style={{
+                    fontWeight: 'bold',
+                    right: 0,
+                    top: 0,
+                    position: 'absolute',
+                    color: 'rgb(0, 173, 232)',
+                    textAlign: 'right',
+                  }}
+                  onClick={() => {
+                    if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
+                      exchange.transaction.ethAddress = userMetamask.ethAddress;
+                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, userMetamask.ethAddress) });
+                    } else {
+                      exchange.transaction.scrtAddress = user.address;
+                      setErrors({ ...errors, address: validateAddressInput(exchange.mode, user.address) });
+                    }
+                  }}
+                >
+                  Use my address
+                </Box>
+              )}
 
               <Input
                 label={

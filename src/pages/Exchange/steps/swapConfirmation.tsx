@@ -16,7 +16,7 @@ import { useStores } from '../../../stores';
 import { createNotification, TokenLocked } from '../utils';
 import HeadShake from 'react-reveal/HeadShake';
 import Jump from 'react-reveal/Jump';
-import { messages, messageToString } from "../../EthBridge/messages";
+import { chainProps, chainPropToString } from '../../../blockchain-bridge/eth/chainProps';
 
 type NetworkTemplateInterface = {
   image: string;
@@ -87,12 +87,12 @@ export const SwapConfirmation = observer(() => {
         const balance = user.balanceToken[exchange.transaction.tokenSelected.src_coin];
         setTokenLocked(balance === unlockToken);
       });
-    } catch (e) { }
+    } catch (e) {}
   }, []);
 
   useEffect(() => {
     if (exchange.mode === EXCHANGE_MODE.TO_SCRT) {
-      setHash(`${messageToString(messages.explorerUrl, exchange.network)}/tx/${exchange.txHash}`);
+      setHash(`${chainPropToString(chainProps.explorerUrl, exchange.network)}/tx/${exchange.txHash}`);
     }
 
     if (exchange.mode === EXCHANGE_MODE.FROM_SCRT) {
@@ -246,7 +246,6 @@ export const SwapConfirmation = observer(() => {
                     token={formatSymbol(EXCHANGE_MODE.TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                     boxProps={{ pad: {} }}
                   />
-
                 )}
               </Box>
             )}
@@ -254,7 +253,10 @@ export const SwapConfirmation = observer(() => {
             {exchange.mode === EXCHANGE_MODE.FROM_SCRT && (
               <Box style={{ height: 40 }} direction="row" align="start" margin={{ top: 'xsmall' }} justify="between">
                 <Box direction="row" align="center">
-                  <img src={exchange.transaction.tokenSelected.image} style={{ marginRight: 6, width: 15, height: 15 }} />
+                  <img
+                    src={exchange.transaction.tokenSelected.image}
+                    style={{ marginRight: 6, width: 15, height: 15 }}
+                  />
 
                   <Text bold size="small" color="#00ADE8" margin={{ right: 'xxsmall' }}>
                     You will recieve
@@ -264,7 +266,8 @@ export const SwapConfirmation = observer(() => {
                   <Loader type="ThreeDots" color="#00BFFF" height="1em" width="5em" />
                 ) : (
                   <Text bold size="small" color={calculated === 0 ? '#f37373' : '#212D5E'}>
-                    {formatWithSixDecimals(calculated)} {formatSymbol(EXCHANGE_MODE.TO_SCRT, exchange.transaction.tokenSelected.symbol)}
+                    {formatWithSixDecimals(calculated)}{' '}
+                    {formatSymbol(EXCHANGE_MODE.TO_SCRT, exchange.transaction.tokenSelected.symbol)}
                   </Text>
                 )}
               </Box>
@@ -282,15 +285,16 @@ export const SwapConfirmation = observer(() => {
               </HeadShake>
             )}
 
-            {exchange.mode === EXCHANGE_MODE.FROM_SCRT && !userMetamask.isCorrectNetworkSelected() && <HeadShake bottom>
-              <Box margin={{ top: 'xsmall' }}>
-                <Text color={"#a1991d"}>
-                  Transaction fee is being calculated for the wrong network! Please change it accordingly on your metamask.
+            {exchange.mode === EXCHANGE_MODE.FROM_SCRT && !userMetamask.isCorrectNetworkSelected() && (
+              <HeadShake bottom>
+                <Box margin={{ top: 'xsmall' }}>
+                  <Text color={'#a1991d'}>
+                    Transaction fee is being calculated for the wrong network! Please change it accordingly on your
+                    metamask.
                   </Text>
-              </Box>
-
-            </HeadShake>}
-
+                </Box>
+              </HeadShake>
+            )}
 
             <Box fill direction="row" align="center" style={{ width: '100%' }} margin={{ top: 'large' }}>
               {!exchange.transaction.confirmed ? (

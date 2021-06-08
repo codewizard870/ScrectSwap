@@ -11,22 +11,21 @@ import * as styles from './styles.styl';
 import cn from 'classnames';
 import { ERC20Token, FormatWithDecimals, SecretToken } from './Components';
 import { SwapStatus } from '../../constants';
-import { getScrtAddress } from '../../blockchain-bridge';
+import { getScrtAddress, networkFromToken, NETWORKS } from '../../blockchain-bridge';
 import { SearchInput } from '../../components/Search';
-import { messages, messageToString } from '../EthBridge/messages';
-import { networkFromToken, NETWORKS } from '../EthBridge';
+import { chainProps, chainPropToString } from '../../blockchain-bridge/eth/chainProps';
 
 const ethAddress = (value, network?: NETWORKS) => (
   <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
     <img
       className={styles.imgToken}
       style={{ height: 20 }}
-      src={messageToString(messages.image_logo, network)}
+      src={chainPropToString(chainProps.image_logo, network)}
       alt={'token logo'}
     />
     <a
       className={styles.addressLink}
-      href={`${messageToString(messages.explorerUrl, network)}/address/${value}`}
+      href={`${chainPropToString(chainProps.explorerUrl, network)}/address/${value}`}
       target="_blank"
       rel="noreferrer"
     >

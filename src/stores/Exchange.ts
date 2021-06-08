@@ -4,12 +4,11 @@ import { statusFetching, SwapStatus } from '../constants';
 import { ACTION_TYPE, EXCHANGE_MODE, IOperation, ITokenInfo, TOKEN } from './interfaces';
 import * as operationService from 'services';
 import * as contract from '../blockchain-bridge';
-import { Snip20SendToBridge, Snip20SwapHash, swapContractAddress } from '../blockchain-bridge';
-import { balanceNumberFormat, divDecimals, formatSymbol, mulDecimals, sleep, uuid } from '../utils';
+import { NETWORKS, Snip20SendToBridge, Snip20SwapHash, swapContractAddress } from '../blockchain-bridge';
+import { balanceNumberFormat, divDecimals, formatSymbol, mulDecimals, uuid } from '../utils';
 import { getNetworkFee } from '../blockchain-bridge/eth/helpers';
-import { NETWORKS } from '../pages/EthBridge';
-import { messages, messageToString } from '../pages/EthBridge/messages';
-import { web3 } from '../blockchain-bridge/eth';
+import { web3 } from '../blockchain-bridge';
+import { proxyContracts, ProxyTokens } from '../blockchain-bridge/eth/proxyTokens';
 
 export const LOCAL_STORAGE_OPERATIONS_KEY = 'operationskey';
 
@@ -21,11 +20,6 @@ export enum EXCHANGE_STEPS {
   SENDING = 'SENDING',
   RESULT = 'RESULT',
   CHECK_TRANSACTION = 'CHECK_TRANSACTION',
-}
-
-export interface PROXY_CONTRACT {
-  contract: string;
-  symbol: string;
 }
 
 export interface IOperationPanel {
@@ -47,63 +41,6 @@ export interface IStepConfig {
   title?: string;
 }
 
-export const ProxyTokens = {
-  'WSCRT': {
-    [NETWORKS.ETH]: {
-      proxy: process.env.WSCRT_PROXY_CONTRACT_ETH,
-      token: process.env.SSCRT_CONTRACT,
-      proxySymbol: 'WSCRT'
-    },
-    [NETWORKS.BSC]: {
-      proxy: process.env.WSCRT_PROXY_CONTRACT_BSC,
-      token: process.env.SSCRT_CONTRACT,
-      proxySymbol: 'WSCRT'
-    },
-    [NETWORKS.PLSM]: {
-      proxy: undefined,
-      token: undefined
-    }
-  },
-  'SSCRT': {
-    [NETWORKS.ETH]: {
-      proxy: process.env.WSCRT_PROXY_CONTRACT_ETH,
-      token: process.env.SSCRT_CONTRACT,
-      proxySymbol: 'WSCRT'
-    },
-    [NETWORKS.BSC]: {
-      proxy: process.env.WSCRT_PROXY_CONTRACT_BSC,
-      token: process.env.SSCRT_CONTRACT,
-      proxySymbol: 'WSCRT'
-    },
-    [NETWORKS.PLSM]: {
-      proxy: undefined,
-      token: undefined
-    }
-  },
-  'SIENNA': {
-    [NETWORKS.ETH]: {
-      proxy: process.env.SIENNA_PROXY_CONTRACT_ETH,
-      token: process.env.SIENNA_CONTRACT,
-      proxySymbol: 'WSIENNA'
-    },
-    [NETWORKS.BSC]: {
-      proxy: process.env.SIENNA_PROXY_CONTRACT_BSC,
-      token: process.env.SIENNA_CONTRACT,
-      proxySymbol: 'WSIENNA'
-    },
-    [NETWORKS.PLSM]: {
-      proxy: undefined,
-      token: undefined
-    }
-  }
-}
-
-export const proxyContracts: PROXY_CONTRACT[] = [
-  { contract: process.env.WSCRT_PROXY_CONTRACT_ETH, symbol: 'SSCRT' },
-  { contract: process.env.WSCRT_PROXY_CONTRACT_BSC, symbol: 'SSCRT' },
-  { contract: process.env.SIENNA_PROXY_CONTRACT_ETH, symbol: 'SIENNA' },
-  { contract: process.env.SIENNA_PROXY_CONTRACT_BSC, symbol: 'SIENNA' },
-];
 export class Exchange extends StoreConstructor {
   @observable operations: Array<IOperationPanel> = [];
   @observable error = '';
@@ -607,10 +544,9 @@ export class Exchange extends StoreConstructor {
         this.transaction.snip20Address = token.dst_address;
         // todo: fix this up - proxy token
         if (token.display_props.proxy) {
-
-          proxyContract = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.proxy
-          recipient = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.proxy
-          this.transaction.snip20Address = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.token
+          proxyContract = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.proxy;
+          recipient = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.proxy;
+          this.transaction.snip20Address = ProxyTokens[token.display_props.symbol.toUpperCase()][this.network]?.token;
 
           // if (
           //   token.display_props.symbol.toUpperCase() === 'WSCRT' ||

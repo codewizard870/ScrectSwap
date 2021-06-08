@@ -16,7 +16,7 @@ import { SwapStatus } from '../../../constants';
 import { CopyRow } from '../utils';
 import { EXCHANGE_MODE } from 'stores/interfaces';
 import HeadShake from 'react-reveal/HeadShake';
-import { messages, messageToString } from "../../EthBridge/messages";
+import { chainProps, chainPropToString } from '../../../blockchain-bridge/eth/chainProps';
 
 export const CheckTransaction = observer(() => {
   const { exchange } = useStores();
@@ -26,7 +26,7 @@ export const CheckTransaction = observer(() => {
   const [progressBar, setProgressBar] = useState<number>(0);
 
   useEffect(() => {
-    if (!exchange.operation) return
+    if (!exchange.operation) return;
     if (exchange.operation.type === EXCHANGE_MODE.FROM_SCRT) {
       setConfirmationsMessage(
         'You will have your Ethereum Tokens in your Metamask wallet within 6 network confirmations',
@@ -43,10 +43,10 @@ export const CheckTransaction = observer(() => {
         status = 'Unsigned';
         break;
       case SwapStatus.SWAP_SIGNED:
-        status = `Being processed on ${exchange.operation.swap.src_network}`
+        status = `Being processed on ${exchange.operation.swap.src_network}`;
         break;
       case SwapStatus.SWAP_SUBMITTED:
-        status = `Confirmed on ${exchange.operation.swap.src_network} and it's being processed on ${exchange.operation.swap.dst_network}`
+        status = `Confirmed on ${exchange.operation.swap.src_network} and it's being processed on ${exchange.operation.swap.dst_network}`;
         break;
       case SwapStatus.SWAP_CONFIRMED:
         status = 'Completed!';
@@ -152,7 +152,9 @@ export const CheckTransaction = observer(() => {
                   <Text size="small" bold>
                     {' '}
                     <a
-                      href={`${messageToString(messages.explorerUrl, exchange.network)}/tx/${exchange.operation.transactionHash}`}
+                      href={`${chainPropToString(chainProps.explorerUrl, exchange.network)}/tx/${
+                        exchange.operation.transactionHash
+                      }`}
                       style={{ textDecoration: 'none', color: '#00BFFF' }}
                       target="_blank"
                       rel="noreferrer"

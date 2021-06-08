@@ -6,9 +6,15 @@ import * as agent from 'superagent';
 import { IOperation } from './interfaces';
 import { divDecimals, fixUnlockToken, formatWithSixDecimals, sleep, unlockToken } from '../utils';
 import { BroadcastMode, CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
-import { getViewingKey, QueryDeposit, QueryRewards, Snip20GetBalance } from '../blockchain-bridge';
+import {
+  getViewingKey,
+  networkFromToken,
+  NETWORKS,
+  QueryDeposit,
+  QueryRewards,
+  Snip20GetBalance,
+} from '../blockchain-bridge';
 import { AsyncSender } from '../blockchain-bridge/scrt/asyncSender';
-import { networkFromToken, NETWORKS } from '../pages/EthBridge';
 
 export const rewardsDepositKey = key => `${key}RewardsDeposit`;
 

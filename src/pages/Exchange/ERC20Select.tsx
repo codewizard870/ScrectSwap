@@ -3,15 +3,14 @@ import { useEffect, useState } from 'react';
 import { Box } from 'grommet';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
-import { Button, Select, Text } from 'components/Base';
+import { Select, Text } from 'components/Base';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
-import { messages, messageToString } from '../EthBridge/messages';
-import { networkFromToken, NETWORKS } from '../EthBridge';
+import { networkFromToken } from '../../blockchain-bridge';
 
 // todo: fix this up - proxy token
 const selectTokenText = (mode: string, token: ITokenInfo) => {
   if (token.display_props.symbol === 'SEFI') {
-    return `Secret Finance Token (SeFi)`;
+    return `SEFI (Secret Finance Token)`;
   }
   if (mode === EXCHANGE_MODE.FROM_SCRT && !token.display_props.proxy) {
     return `secret${token.display_props.symbol}`;
@@ -38,7 +37,7 @@ export const ERC20Select = observer((props: { onSelectToken?: Function; value: s
 
   // useEffect(() => {}, [token]);
 
-  const bridgeTokens = tokens.tokensUsageSync('BRIDGE');
+  //const bridgeTokens = tokens.tokensUsageSync('BRIDGE');
 
   useEffect(() => {
     const bridgeTokens = tokens.tokensUsageSync('BRIDGE');

@@ -6,13 +6,13 @@ import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
 import { Button, Text } from 'components/Base';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
-import { messages, messageToString } from '../EthBridge/messages';
-import { NETWORKS } from '../EthBridge';
+import { chainProps, chainPropToString } from '../../blockchain-bridge/eth/chainProps';
 import { NetworkTemplateInterface, NetworkTemplate } from './utils';
 import { formatSymbol } from '../../utils';
 import { BalanceInterface } from './steps/base';
 import Select, { components } from 'react-select';
 import * as styles from './styles.styl';
+import { NETWORKS } from '../../blockchain-bridge';
 
 export const NetworkSelect = observer(
   (props: {
@@ -38,13 +38,13 @@ export const NetworkSelect = observer(
         networks.push({
           value: id,
           id,
-          name: messageToString(messages.full_name, id),
+          name: chainPropToString(chainProps.full_name, id),
           wallet: 'Metamask',
           symbol: formatSymbol(EXCHANGE_MODE.TO_SCRT, exchange.transaction.tokenSelected.symbol),
           amount: balance.eth.maxAmount,
           image: exchange.transaction.tokenSelected.image,
-          health: fromSecretHealth,
-          networkImage: messageToString(messages.image_logo, id),
+          health: toSecretHealth,
+          networkImage: chainPropToString(chainProps.image_logo, id),
         });
       });
 
@@ -64,7 +64,7 @@ export const NetworkSelect = observer(
       symbol: formatSymbol(EXCHANGE_MODE.FROM_SCRT, exchange.transaction.tokenSelected.symbol),
       amount: balance.scrt.maxAmount,
       image: exchange.transaction.tokenSelected.image,
-      health: toSecretHealth,
+      health: fromSecretHealth,
       networkImage: '/static/scrt.svg',
     };
 

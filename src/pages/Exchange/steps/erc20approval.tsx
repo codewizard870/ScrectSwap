@@ -12,7 +12,7 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { Price } from '../../Explorer/Components';
 import HeadShake from 'react-reveal/HeadShake';
 import { useStores } from '../../../stores';
-import { messages, messageToString } from '../../EthBridge/messages';
+import { chainProps, chainPropToString } from '../../../blockchain-bridge/eth/chainProps';
 
 export const ERC20ApprovalModal = observer(() => {
   const { exchange } = useStores();
@@ -69,7 +69,7 @@ export const ERC20ApprovalModal = observer(() => {
                   <Text>
                     View in{' '}
                     <a
-                      href={`${messageToString(messages.explorerUrl, exchange.network)}/tx/${exchange.txHash}`}
+                      href={`${chainPropToString(chainProps.explorerUrl, exchange.network)}/tx/${exchange.txHash}`}
                       style={{ textDecoration: 'none' }}
                       target="_blank"
                       rel="noreferrer"

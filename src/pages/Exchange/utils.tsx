@@ -8,7 +8,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { unlockToken, wrongNetwork } from 'utils';
 import { Icon as IconUI } from 'semantic-ui-react';
 import cogoToast from 'cogo-toast';
-import { NETWORKS } from 'pages/EthBridge';
+import { NETWORKS } from '../../blockchain-bridge';
 
 export const createNotification = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
@@ -80,13 +80,20 @@ export const WrongNetwork = (props: { networkSelected: NETWORKS }) => {
           Wrong Network
         </Text>
         <Text margin={{ top: 'xxsmall', bottom: 'xxsmall' }}>
-          It seems your Metamask Wallet is connected to the wrong network! {props.networkSelected === NETWORKS.BSC && <span>If you are trying to use Binance Smart Chain please make sure you have it added on your wallet as explained
-          <a
-              style={{ textDecoration: 'none', color: '#00BFFF', marginLeft: 5 }}
-              href="https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain" target="_blank">
-              here
-            </a>
-          </span>}
+          It seems your Metamask Wallet is connected to the wrong network!{' '}
+          {props.networkSelected === NETWORKS.BSC && (
+            <span>
+              If you are trying to use Binance Smart Chain please make sure you have it added on your wallet as
+              explained
+              <a
+                style={{ textDecoration: 'none', color: '#00BFFF', marginLeft: 5 }}
+                href="https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain"
+                target="_blank"
+              >
+                here
+              </a>
+            </span>
+          )}
         </Text>
       </Box>
     </HeadShake>
@@ -94,7 +101,7 @@ export const WrongNetwork = (props: { networkSelected: NETWORKS }) => {
 };
 
 export type NetworkTemplateInterface = {
-  id?: NETWORKS,
+  id?: NETWORKS;
   name: string;
   wallet: string;
   image: string;
@@ -144,7 +151,9 @@ export const NetworkTemplate = (props: { template: NetworkTemplateInterface; use
           </Box>
         ) : (
           <Text bold size="medium" style={{ margin: '0 5' }}>
-            <span style={{ color: props.template.amount === wrongNetwork ? "#c5bb2e" : "#30303D" }}>{props.template.amount}</span>
+            <span style={{ color: props.template.amount === wrongNetwork ? '#c5bb2e' : '#30303D' }}>
+              {props.template.amount}
+            </span>
           </Text>
         )}
         <Text bold style={{ margin: '0 5' }} color="#748695" size="medium">

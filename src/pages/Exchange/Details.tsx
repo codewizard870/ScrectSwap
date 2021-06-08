@@ -1,16 +1,16 @@
-import * as React from "react";
-import { useState } from "react";
-import { Box } from "grommet";
-import { observer } from "mobx-react-lite";
-import { Icon, Text } from "components/Base";
-import { useStores } from "stores";
-import { formatWithSixDecimals, truncateAddressString } from "utils";
-import { EXCHANGE_MODE, TOKEN } from "../../stores/interfaces";
-import { Price } from "../Explorer/Components";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import Loader from "react-loader-spinner";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import { messages, messageToString } from "../EthBridge/messages";
+import * as React from 'react';
+import { useState } from 'react';
+import { Box } from 'grommet';
+import { observer } from 'mobx-react-lite';
+import { Icon, Text } from 'components/Base';
+import { useStores } from 'stores';
+import { formatWithSixDecimals, truncateAddressString } from 'utils';
+import { EXCHANGE_MODE, TOKEN } from '../../stores/interfaces';
+import { Price } from '../Explorer/Components';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import Loader from 'react-loader-spinner';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import { chainProps, chainPropToString } from '../../blockchain-bridge/eth/chainProps';
 
 const AssetRow = observer(
   (props: { label?: string; link?: string; address?: boolean; value?: string; children?: any; after?: any }) => {
@@ -65,7 +65,7 @@ export const Details = observer<{ showTotal?: boolean; children?: any }>(({ show
   return (
     <Box direction="column">
       <AssetRow
-        label={`${messageToString(messages.currency_symbol, userMetamask.network)} Address`}
+        label={`${chainPropToString(chainProps.currency_symbol, userMetamask.network)} Address`}
         value={exchange.transaction.ethAddress}
         address={true}
       />
@@ -73,7 +73,7 @@ export const Details = observer<{ showTotal?: boolean; children?: any }>(({ show
       <AssetRow
         label={`${String(
           exchange.token === TOKEN.NATIVE
-            ? messageToString(messages.currency_symbol, userMetamask.network)
+            ? chainPropToString(chainProps.currency_symbol, userMetamask.network)
             : userMetamask.erc20TokenDetails.symbol,
         ).toUpperCase()} amount`}
         value={formatWithSixDecimals(exchange.transaction.amount)}
@@ -177,7 +177,7 @@ export const Details = observer<{ showTotal?: boolean; children?: any }>(({ show
       {exchange.txHash ? (
         <Box direction="column" margin={{ top: 'large' }}>
           <a
-            href={`${messageToString(messages.explorerUrl, exchange.network)}/tx/${exchange.txHash}`}
+            href={`${chainPropToString(chainProps.explorerUrl, exchange.network)}/tx/${exchange.txHash}`}
             style={{ textDecoration: 'none' }}
             target="_blank"
             rel="noreferrer"

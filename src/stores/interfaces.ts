@@ -1,6 +1,6 @@
 import { NativeToken, Token } from 'pages/Swap/types/trade';
 import { SwapStatus } from '../constants';
-import { NETWORKS } from '../pages/EthBridge';
+import { NETWORKS } from '../blockchain-bridge';
 
 export enum EXCHANGE_MODE {
   TO_SCRT = 'eth_to_scrt',

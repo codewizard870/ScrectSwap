@@ -10,10 +10,9 @@ import { formatWithTwoDecimals, truncateAddressString } from 'utils';
 import * as styles from './styles.styl';
 import { Text } from 'components/Base';
 import { SearchInput } from 'components/Search';
-import { getScrtAddress } from '../../blockchain-bridge';
+import { getScrtAddress, networkFromToken, NETWORKS } from '../../blockchain-bridge';
 import { isMobile } from 'react-device-detect';
-import { messages, messageToString } from '../EthBridge/messages';
-import { NETWORKS, networkFromToken } from '../EthBridge';
+import { chainProps, chainPropToString } from '../../blockchain-bridge/eth/chainProps';
 
 const nativeWithLogo = (network?: NETWORKS) => {
   return (
@@ -21,7 +20,7 @@ const nativeWithLogo = (network?: NETWORKS) => {
       <img
         className={styles.imgToken}
         style={{ height: 20 }}
-        src={messageToString(messages.image_logo, network || NETWORKS.ETH)}
+        src={chainPropToString(chainProps.image_logo, network || NETWORKS.ETH)}
         alt={'scrt'}
       />
       native
@@ -34,12 +33,12 @@ const ethAddress = (value, num = 10, network?: NETWORKS) => (
     <img
       className={styles.imgToken}
       style={{ height: 20 }}
-      src={messageToString(messages.image_logo, network || NETWORKS.ETH)}
+      src={chainPropToString(chainProps.image_logo, network || NETWORKS.ETH)}
       alt={'scrt'}
     />
     <a
       className={styles.addressLink}
-      href={`${messageToString(messages.explorerUrl, network)}/token/${value}`}
+      href={`${chainPropToString(chainProps.explorerUrl, network)}/token/${value}`}
       target="_blank"
       rel={'noreferrer'}
     >

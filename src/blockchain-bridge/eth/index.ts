@@ -1,8 +1,8 @@
 import { EthMethods } from './EthMethods';
 import { EthMethodsERC20 } from './EthMethodsERC20';
-import { NETWORKS } from '../../pages/EthBridge';
 import { TOKEN } from '../../stores/interfaces';
 import { EthMethodsSefi } from './EthMethodsSefi';
+import { NETWORKS } from './networks';
 
 const Web3 = require('web3');
 

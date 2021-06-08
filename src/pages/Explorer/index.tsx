@@ -139,8 +139,9 @@ export const Explorer = observer((props: any) => {
     operations.init({
       isLocal: true,
       sorter: 'created_on, desc',
-      paginationData: { pageSize: 10 },
+      //paginationData: { pageSize: 10 },
       pollingInterval: 20000,
+      //sorters: {}
       // filters: {
       //   src_network: userMetamask.getNetworkFullName(),
       // },
@@ -156,7 +157,7 @@ export const Explorer = observer((props: any) => {
     operations.onChangeDataFlow(props);
   };
 
-  const filteredData = operations.allData.sort((opA, opB) => (opA.created_on > opB.created_on ? -1 : 1));
+  const filteredData = operations.allData.slice().sort((opA, opB) => (opA.created_on > opB.created_on ? -1 : 1));
 
   // search filter by network (if we want to make this work)
   // .filter(value => {
@@ -171,18 +172,21 @@ export const Explorer = observer((props: any) => {
       if (search) {
         return (
           Object.values(value).some(
-            value =>
-              value &&
+            value => {
+              console.log(value.toString());
+              return (value &&
               value
                 .toString()
                 .toLowerCase()
-                .includes(search.toLowerCase()),
-          ) || getScrtAddress(value.dst_address).toLowerCase() === search.toLowerCase()
-        );
+                .includes(search.toLowerCase())
+            ) || getScrtAddress(value.dst_address).toLowerCase() === search.toLowerCase()
       }
-
+        ));
+      }
+// || value.src_coin.toLowerCase().includes(search.toLowerCase()
       return true;
     })
+    .slice()
     .sort((op1, op2) => (op1.created_on > op2.created_on ? -1 : 1));
 
   return (
@@ -200,7 +204,7 @@ export const Explorer = observer((props: any) => {
           </Box>
 
           <Table
-            data={search ? filteredDataSearch : filteredData}
+            data={search ? filteredDataSearch : operations.data}
             columns={columns}
             isPending={operations.isPending}
             dataLayerConfig={operations.dataFlow}

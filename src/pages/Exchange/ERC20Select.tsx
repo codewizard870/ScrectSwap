@@ -62,6 +62,7 @@ export const ERC20Select = observer((props: { onSelectToken?: Function; value: s
       <Box style={{ marginTop: 8 }}>
         <Select
           options={filteredTokens
+            .slice()
             .sort((a, b) =>
               /* SCRT first */
               a.display_props.symbol.toLowerCase().includes('scrt') ? -1 : 1,

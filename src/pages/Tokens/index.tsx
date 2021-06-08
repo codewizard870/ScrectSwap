@@ -208,6 +208,7 @@ export const Tokens = observer((props: any) => {
       (token as any).key = token.symbol; // make react not sad
       return token;
     })
+    .slice()
     .sort((t1, t2) => (Number(t1.totalLockedUSD) > Number(t2.totalLockedUSD) ? -1 : 1))
     .map(token => {
       try {

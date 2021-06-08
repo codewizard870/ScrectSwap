@@ -564,7 +564,9 @@ export class SwapRouter extends React.Component<
   setCurrentPair = async (token0: string, token1: string) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
     const isSupported = await this.props.user.getIsSupported(selectedPair?.contract_addr)
-    
+    ///test --
+    window.history.replaceState({},"",`swap?inputCurrency=${token0}&outputCurrency=${token1}`)
+    //
     while (Object.keys(this.state.routingGraph).length === 0) {
       await sleep(100);
     }

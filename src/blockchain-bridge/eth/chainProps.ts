@@ -46,8 +46,8 @@ const message_map: Record<chainProps, Record<NETWORKS, string>> = {
     [NETWORKS.PLSM]: 'secretPLM',
   },
   [chainProps.image_logo]: {
-    [NETWORKS.ETH]: '/static/eth.svg',
-    [NETWORKS.BSC]: '/static/binance-logo.png',
+    [NETWORKS.ETH]: '/static/networks/eth.svg',
+    [NETWORKS.BSC]: '/static/networks/binance-smart-chain.svg',
     [NETWORKS.PLSM]: '/static/plsm.png',
   },
   [chainProps.full_name]: {

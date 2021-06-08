@@ -65,7 +65,7 @@ export const NetworkSelect = observer(
       amount: balance.scrt.maxAmount,
       image: exchange.transaction.tokenSelected.image,
       health: fromSecretHealth,
-      networkImage: '/static/scrt.svg',
+      networkImage: '/static/networks/secret-scrt-logo-dark.svg',
     };
 
     if (secret)

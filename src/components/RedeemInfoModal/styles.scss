@@ -3,10 +3,10 @@
   .actions {
     border: none !important;
   }
-  border-radius: 10px !important;
-  min-width: 700px !important;
-  max-width: fit-content !important;
   &.modal-light {
+    border-radius: 10px !important;
+    min-width: 700px !important;
+    max-width: fit-content !important;
     $font-color-primary: #0e0e10;
     $font-color-secondary: #5f5f6b;
     $font-color-highlighted: #ff726e;
@@ -54,6 +54,9 @@
     }
   }
   &.modal-dark {
+    border-radius: 10px !important;
+    min-width: 700px !important;
+    max-width: fit-content !important;
     $font-color-primary: white;
     $font-color-secondary: #bebebe;
     $font-color-highlighted: #ff726e;

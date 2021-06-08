@@ -282,6 +282,7 @@ export class UserStoreMetamask extends StoreConstructor {
       provider.on('chainChanged', chainId => {
         this.chainName = this.getNetworkName(chainId);
         this.setNetworkFromChainId(chainId);
+        this.getBalances();
       });
 
       if (!provider) {
@@ -388,6 +389,7 @@ export class UserStoreMetamask extends StoreConstructor {
     }
     // always load native balance, because why not? And this bypasses race conditions with this.stores.tokens
     this.nativeBalance = await getEthBalance(this.ethAddress);
+
     this.nativeBalanceMin = this.balanceTokenMin[this.getNetworkFullName()];
 
     for (const token of this.stores.tokens.allData) {

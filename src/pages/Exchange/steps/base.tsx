@@ -346,6 +346,7 @@ export const Base = observer(() => {
   };
 
   const onSelectNetwork = async (network: NETWORKS) => {
+    console.log(`switching to ${network}`)
     userMetamask.setNetwork(network);
     setMetamaskNetwork(network);
     exchange.clear();

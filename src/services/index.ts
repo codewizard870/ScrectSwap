@@ -92,7 +92,8 @@ export const getOperations = async (params: any): Promise<{ content: ISwap[] }> 
   ]);
 
   //const res = await agent.get<{ body: ISwap[] }>(url, params);
-  const swapArray: ISwap[] = res.flatMap(t => t.body.swaps);
+  const swapArray: ISwap[] = res.flatMap(t => t.body.swaps)
+    .sort((a, b) => {return (a.created_on > b.created_on ? -1 : 1);});
   // const content = res.body.swaps;
 
   return { content: swapArray };

@@ -10,7 +10,7 @@ import { networkFromToken } from '../../blockchain-bridge';
 // todo: fix this up - proxy token
 const selectTokenText = (mode: string, token: ITokenInfo) => {
   if (token.display_props.symbol === 'SEFI') {
-    return `SEFI (Secret Finance Token)`;
+    return `SEFI`;
   }
   if (mode === EXCHANGE_MODE.FROM_SCRT && !token.display_props.proxy) {
     return `secret${token.display_props.symbol}`;

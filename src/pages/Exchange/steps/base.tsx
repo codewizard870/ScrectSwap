@@ -135,7 +135,7 @@ export const Base = observer(() => {
   const [maxAmount, setMaxAmount] = useState<string>('');
   const [warningAmount, setWarningAmount] = useState<string>('');
   const [progress, setProgress] = useState<number>(0);
-  const [metamaskNetwork, setMetamaskNetork] = useState<NETWORKS>(NETWORKS.ETH);
+  const [metamaskNetwork, setMetamaskNetwork] = useState<NETWORKS>(NETWORKS.ETH);
 
   const defaultBalance: BalanceInterface = {
     eth: { minAmount: '', maxAmount: '' },
@@ -213,7 +213,9 @@ export const Base = observer(() => {
 
   useEffect(() => {
     const selectNetwork = async () => {
-      await onSelectNetwork(userMetamask.network);
+      if (userMetamask.network) {
+        await onSelectNetwork(userMetamask.network);
+      }
     };
     selectNetwork();
   }, [userMetamask.network, userMetamask.chainId, userMetamask.ethAddress]);
@@ -345,7 +347,7 @@ export const Base = observer(() => {
 
   const onSelectNetwork = async (network: NETWORKS) => {
     userMetamask.setNetwork(network);
-    setMetamaskNetork(network);
+    setMetamaskNetwork(network);
     exchange.clear();
     setErrors({ token: '', address: '', amount: '' });
     setProgress(0);

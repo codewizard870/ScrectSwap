@@ -17,6 +17,7 @@ import { CopyRow } from '../utils';
 import { EXCHANGE_MODE } from 'stores/interfaces';
 import HeadShake from 'react-reveal/HeadShake';
 import { chainProps, chainPropToString } from '../../../blockchain-bridge/eth/chainProps';
+import { networkToDisplay } from '../../../blockchain-bridge/utils';
 
 export const CheckTransaction = observer(() => {
   const { exchange } = useStores();
@@ -43,10 +44,12 @@ export const CheckTransaction = observer(() => {
         status = 'Unsigned';
         break;
       case SwapStatus.SWAP_SIGNED:
-        status = `Being processed on ${exchange.operation.swap.src_network}`;
+        status = `Being processed on ${networkToDisplay(exchange.operation.swap.src_network)}`;
         break;
       case SwapStatus.SWAP_SUBMITTED:
-        status = `Confirmed on ${exchange.operation.swap.src_network} and it's being processed on ${exchange.operation.swap.dst_network}`;
+        status = `Confirmed on ${networkToDisplay(
+          exchange.operation.swap.src_network,
+        )} and it's being processed on ${networkToDisplay(exchange.operation.swap.dst_network)}`;
         break;
       case SwapStatus.SWAP_CONFIRMED:
         status = 'Completed!';

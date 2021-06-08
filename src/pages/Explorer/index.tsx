@@ -173,13 +173,12 @@ export const Explorer = observer((props: any) => {
         return (
           Object.values(value).some(
             value => {
-              console.log(value.toString());
               return (value &&
               value
                 .toString()
                 .toLowerCase()
                 .includes(search.toLowerCase())
-            ) || getScrtAddress(value.dst_address).toLowerCase() === search.toLowerCase()
+            )
       }
         ));
       }

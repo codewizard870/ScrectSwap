@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { useLocation } from 'react-router';
 
 import { Button, Icon, Text } from 'components/Base';
 import * as styles from '../styles.styl';
@@ -19,7 +18,15 @@ import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import HeadShake from 'react-reveal/HeadShake';
 import ProgressBar from '@ramonak/react-progress-bar';
-import { TokenLocked, ViewingKeyIcon, WrongNetwork } from '../utils';
+import {
+  HealthStatus,
+  HealthStatusDetailed,
+  Signer,
+  signerAddresses,
+  TokenLocked,
+  ViewingKeyIcon,
+  WrongNetwork,
+} from '../utils';
 import { formatSymbol, wrongNetwork } from '../../../utils';
 import { ISignerHealth } from '../../../stores/interfaces';
 import { useStores } from '../../../stores';
@@ -145,8 +152,8 @@ export const Base = observer(() => {
   const [onSwap, setSwap] = useState<boolean>(false);
   const [toApprove, setToApprove] = useState<boolean>(false);
   const [readyToSend, setReadyToSend] = useState<boolean>(false);
-  const [toSecretHealth, setToSecretHealth] = useState<boolean>(true);
-  const [fromSecretHealth, setFromSecretHealth] = useState<boolean>(true);
+  const [toSecretHealth, setToSecretHealth] = useState<HealthStatusDetailed>(undefined);
+  const [fromSecretHealth, setFromSecretHealth] = useState<HealthStatusDetailed>(undefined);
 
   const { signerHealth } = useStores();
 
@@ -158,35 +165,55 @@ export const Base = observer(() => {
       return;
     }
 
-    const parseHealth = (leaderAccount: string, signers: ISignerHealth[]): boolean => {
+    const parseHealth = (signers: ISignerHealth[], direction: EXCHANGE_MODE): Record<Signer, HealthStatus> => {
+      let healthStatus = {
+        [Signer.staked]: undefined,
+        [Signer.citadel]: undefined,
+        [Signer.bharvest]: undefined,
+        [Signer.enigma]: undefined,
+        [Signer.figment]: undefined,
+      };
+
       for (const signer of signers) {
         // note: We don't currently support multiple leader accounts for different networks
         // if we want to make the leader address change on a different network we need to add
         // it here
         const updatedonTimestamp = new Date(signer.updated_on).getTime();
-        if (
-          signer.signer.toLowerCase() === leaderAccount.toLowerCase() &&
-          signers.length >= Number(process.env.SIG_THRESHOLD) &&
-          new Date().getTime() - updatedonTimestamp < 1000 * 60 * 5
-        ) {
-          return true;
+        healthStatus[signerAddresses[metamaskNetwork][signer.signer.toLowerCase()]] = {
+          time: updatedonTimestamp,
+          status: (new Date().getTime() - updatedonTimestamp < 1000 * 60 * 5)
+                  && (direction === EXCHANGE_MODE.FROM_SCRT ? signer.from_scrt : signer.to_scrt)
         }
       }
-      return false;
+
+      return healthStatus;
     };
 
     setFromSecretHealth(
       parseHealth(
-        userMetamask.getLeaderAddress(),
-        signers.filter(s => s.from_scrt),
+        signers,
+        EXCHANGE_MODE.FROM_SCRT
       ),
     );
+
     setToSecretHealth(
       parseHealth(
-        userMetamask.getLeaderAddress(),
-        signers.filter(s => s.to_scrt),
+        signers,
+        EXCHANGE_MODE.TO_SCRT
       ),
     );
+    // setFromSecretHealth(
+    //   parseHealth(
+    //     userMetamask.getLeaderAddress(),
+    //     signers.filter(s => s.from_scrt),
+    //   ),
+    // );
+    // setToSecretHealth(
+    //   parseHealth(
+    //     userMetamask.getLeaderAddress(),
+    //     signers.filter(s => s.to_scrt),
+    //   ),
+    // );
   }, [signerHealth.allData, userMetamask.network]);
 
   useEffect(() => {
@@ -346,7 +373,6 @@ export const Base = observer(() => {
   };
 
   const onSelectNetwork = async (network: NETWORKS) => {
-    console.log(`switching to ${network}`)
     userMetamask.setNetwork(network);
     setMetamaskNetwork(network);
     exchange.clear();

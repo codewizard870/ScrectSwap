@@ -9,6 +9,8 @@ import { unlockToken, wrongNetwork } from 'utils';
 import { Icon as IconUI } from 'semantic-ui-react';
 import cogoToast from 'cogo-toast';
 import { NETWORKS } from '../../blockchain-bridge';
+import PopupExample from './HealthPopup';
+import HealthPopup from './HealthPopup';
 
 export const createNotification = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
   if (type === 'error') {
@@ -100,6 +102,74 @@ export const WrongNetwork = (props: { networkSelected: NETWORKS }) => {
   );
 };
 
+
+export enum Signer {
+  figment,
+  bharvest,
+  citadel,
+  enigma,
+  staked
+}
+
+export const signerToString = (signer: Signer): string => {
+    switch (signer) {
+      case Signer.bharvest:
+        return "B-Harvest"
+      case Signer.citadel:
+        return "Citadel.One"
+      case Signer.enigma:
+        return "Enigma";
+      case Signer.figment:
+        return "Figment";
+      case Signer.staked:
+        return "Staked.us"
+    }
+}
+
+export const signerAddresses = {
+  [NETWORKS.ETH]: {
+    "0xd76c427fc6e48fc94d1c62e0a23c4bf07a22a3fb": Signer.bharvest,
+    "0xcc3040b283ff0df84073a5a446d88d10ea329460": Signer.citadel,
+    "0x9d06d59677b412c48f5f8546b45b9ea694a99698": Signer.enigma,
+    "0x42194527ddccaee189313d77458ae491fa41256a": Signer.staked,
+    "0x189fbd54bd7194cd4e49cbc067e92cfd6dc8281d": Signer.figment,
+  },
+  [NETWORKS.BSC]: {
+    "0xd76c427fc6e48fc94d1c62e0a23c4bf07a22a3fb": Signer.bharvest,
+    "0xcc3040b283ff0df84073a5a446d88d10ea329460": Signer.citadel,
+    "0x08e54c84d61e9db2ed7ea53e2216276d75b5b426": Signer.enigma,
+    "0x42194527ddccaee189313d77458ae491fa41256a": Signer.staked,
+    "0x189fbd54bd7194cd4e49cbc067e92cfd6dc8281d": Signer.figment,
+  }
+}
+
+export type HealthStatus = {
+  time: Date,
+  status: boolean
+}
+
+export type HealthStatusDetailed = Record<Signer, HealthStatus>;
+export const SignerTypes = [Signer.figment, Signer.enigma, Signer.citadel, Signer.bharvest, Signer.staked];
+
+export function healthFromStatus (health: HealthStatusDetailed): boolean {
+
+  if (!health) {
+    return false;
+  }
+
+  let online = 0;
+  let leaderOnline = false;
+  for (const k of SignerTypes) {
+    if (health[k]?.status) {
+      online += 1;
+      if (k === Signer.enigma) {
+        leaderOnline = true;
+      }
+    }
+  }
+  return online >= Number(process.env.SIG_THRESHOLD) && leaderOnline
+}
+
 export type NetworkTemplateInterface = {
   id?: NETWORKS;
   name: string;
@@ -107,16 +177,19 @@ export type NetworkTemplateInterface = {
   image: string;
   symbol: string;
   amount: string;
-  health: boolean;
+  health: HealthStatusDetailed;
   networkImage: string;
 };
 
-export const NetworkTemplate = (props: { template: NetworkTemplateInterface; user: any }) => (
+export const NetworkTemplate = (props: { template: NetworkTemplateInterface; user: any }) => {
+
+  let overAllHealth = healthFromStatus(props.template.health);
+
+  return (
   <Box direction="column">
     <Box direction="row" align={'start'} margin={{ top: 'xxsmall' }}>
       <Box direction="column" style={{ marginRight: 7, minWidth: 40 }} align="center">
         <img style={{ marginBottom: 5 }} height="37" src={props.template.networkImage} alt="network image" />
-        <IconUI style={{ margin: 0 }} className={'circle'} color={props.template.health ? 'green' : 'red'} />
       </Box>
 
       <Box direction="column">
@@ -126,12 +199,21 @@ export const NetworkTemplate = (props: { template: NetworkTemplateInterface; use
         <Text size="medium" bold color={'#748695'}>
           {props.template.wallet}
         </Text>
-        <Text size="xsmall" color={'#748695'}>
-          {props.template.health ? 'Live' : 'Down'}
-        </Text>
+
       </Box>
     </Box>
-
+    <HealthPopup health={props.template.health}>
+      <Box direction="row"  align={'start'} margin={{ top: 'xxsmall' }}>
+        <Box direction="column" style={{ marginRight: 7, minWidth: 40 }} align="center">
+          <IconUI style={{ margin: 0 }} className={'circle'} color={overAllHealth ? 'green' : 'red'} />
+        </Box>
+        <Box direction="column">
+        <Text size="xsmall" color={'#748695'}>
+          {overAllHealth ? 'Live' : 'Down'}
+        </Text>
+        </Box>
+      </Box>
+    </HealthPopup>
     {props.template.symbol && (
       <Box
         pad="xsmall"
@@ -163,6 +245,8 @@ export const NetworkTemplate = (props: { template: NetworkTemplateInterface; use
     )}
   </Box>
 );
+}
+
 
 export const CopyRow = (props: { label: string; value: string; rawValue: string }) => (
   <HeadShake bottom>

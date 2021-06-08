@@ -7,7 +7,7 @@ import { useStores } from 'stores';
 import { Button, Text } from 'components/Base';
 import { EXCHANGE_MODE, ITokenInfo } from 'stores/interfaces';
 import { chainProps, chainPropToString } from '../../blockchain-bridge/eth/chainProps';
-import { NetworkTemplateInterface, NetworkTemplate } from './utils';
+import { NetworkTemplateInterface, NetworkTemplate, HealthStatusDetailed } from './utils';
 import { formatSymbol } from '../../utils';
 import { BalanceInterface } from './steps/base';
 import Select, { components } from 'react-select';
@@ -20,8 +20,8 @@ export const NetworkSelect = observer(
     value: NETWORKS;
     onChange: Function;
     balance: BalanceInterface;
-    toSecretHealth: boolean;
-    fromSecretHealth: boolean;
+    toSecretHealth: HealthStatusDetailed;
+    fromSecretHealth: HealthStatusDetailed;
   }) => {
     const { user, userMetamask, exchange } = useStores();
     const { secret, onChange, balance, toSecretHealth, fromSecretHealth, value } = props;

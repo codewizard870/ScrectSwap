@@ -44,12 +44,12 @@ export const CheckTransaction = observer(() => {
         status = 'Unsigned';
         break;
       case SwapStatus.SWAP_SIGNED:
-        status = `Being processed on ${networkToDisplay(exchange.operation.swap.src_network)}`;
+        status = `Being processed on ${networkToDisplay(exchange.operation.swap?.src_network)}`;
         break;
       case SwapStatus.SWAP_SUBMITTED:
         status = `Confirmed on ${networkToDisplay(
-          exchange.operation.swap.src_network,
-        )} and it's being processed on ${networkToDisplay(exchange.operation.swap.dst_network)}`;
+          exchange.operation.swap?.src_network,
+        )} and it's being processed on ${networkToDisplay(exchange.operation.swap?.dst_network)}`;
         break;
       case SwapStatus.SWAP_CONFIRMED:
         status = 'Completed!';

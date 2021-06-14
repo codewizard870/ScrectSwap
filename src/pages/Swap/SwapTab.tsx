@@ -446,6 +446,7 @@ export class SwapTab extends React.Component<
   }
 
   async updateInputs() {
+    
     this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
     const routes = this.props.selectedPairRoutes;
@@ -566,7 +567,7 @@ export class SwapTab extends React.Component<
       } else {
         buttonMessage = BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
       }
-    } else if (!pair) {
+    } else if (!pair || this.props.selectedPairRoutes?.length == 0) {
       buttonMessage = BUTTON_MSG_NO_ROUTE;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {
       buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
@@ -947,6 +948,7 @@ export class SwapTab extends React.Component<
   }
 
   private setFromAmount = (value: string) => {
+    
     if (value === '' || Number(value) === 0) {
       this.setState({
         fromInput: value,

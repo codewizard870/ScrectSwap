@@ -1,21 +1,20 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { Box } from 'grommet';
 import { BaseContainer, PageContainer } from 'components';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
 import * as styles from './styles.styl';
 import { Exchange } from '../Exchange';
-import { TOKEN } from 'stores/interfaces';
 import { Title } from 'components/Base';
 import { WalletBalances } from './WalletBalances';
-import { useEffect } from 'react';
 import { EXCHANGE_STEPS } from 'stores/Exchange';
-import { BridgeHealth } from '../../components/Secret/BridgeHealthIndicator';
 import { Message } from 'semantic-ui-react';
-import { ClaimTokenErc, ClaimTokenScrt } from '../../components/Earn/ClaimToken';
 
 export const EthBridge = observer((props: any) => {
   const { exchange, rewards, signerHealth, tokens } = useStores();
+  //userMetamask
+  //const [network, setNetwork] = useState<NETWORKS>(NETWORKS.ETH);
 
   useEffect(() => {
     rewards.init({
@@ -29,6 +28,13 @@ export const EthBridge = observer((props: any) => {
 
     signerHealth.init({});
     signerHealth.fetch();
+
+    // if (props.match.params.token) {
+    //   if ([TOKEN.NATIVE, TOKEN.ERC20].includes(props.match.params.token)) {
+    //     exchange.setToken(props.match.params.token);
+    //   }
+    // }
+
     if (props.match.params.operationId) {
       exchange.setOperationId(props.match.params.operationId);
     }
@@ -38,6 +44,14 @@ export const EthBridge = observer((props: any) => {
     if (exchange.step === EXCHANGE_STEPS.CHECK_TRANSACTION && exchange.operation)
       exchange.fetchStatus(exchange.operation.id);
   }, [exchange.step]);
+
+  // useEffect(() => {
+  //   if (userMetamask.network) {
+  //     exchange.setNetwork(userMetamask.network);
+  //     exchange.setMainnet(userMetamask.mainnet);
+  //     setNetwork(userMetamask.network);
+  //   }
+  // }, [userMetamask.network, userMetamask.mainnet, exchange]);
 
   return (
     <BaseContainer>

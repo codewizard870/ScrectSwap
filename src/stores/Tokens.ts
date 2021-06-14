@@ -20,6 +20,11 @@ export class Tokens extends ListStoreConstructor<ITokenInfo> {
       },
     });
   }
+
+  getTokenBySymbol(symbol: string): ITokenInfo {
+    return this.allData.find(token => token.display_props.symbol.toLowerCase() === symbol.toLowerCase());
+  }
+
   //
   @computed get totalLockedUSD() {
     return this.allData.reduce((acc, v) => acc + Number(v.totalLockedUSD), 0);

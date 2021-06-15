@@ -16,6 +16,77 @@ import { SwapStatus } from '../constants';
 import { ProxyTokens } from '../blockchain-bridge/eth/proxyTokens';
 import { networkFromToken, NETWORKS } from '../blockchain-bridge';
 
+//
+// Map for override images for each token
+//
+const tokenImages = {
+  //'SSCRT': '/static/token-images/sscrt.svg',
+  //'SEFI': '/static/token-images/sefi.svg',
+  //'SIENNA': '/static/token-images/sienna.svg',
+  //'BAC': '/static/token-images/bac_ethereum.svg',
+  //'RENBTC': '/static/token-images/renbtc_ethereum.svg',
+  //'DPI': '/static/token-images/dpi_ethereum.svg',
+  //'UNILP-WSCRT-ETH': '/static/token-images/unilp_ethereum.svg',
+  //'RUNE': '/static/token-images/rune_ethereum.svg',
+  //'MANA': '/static/token-images/mana_ethereum.svg',
+  //'YFL': '/static/token-images/yfl_ethereum.svg',
+  //'BNB(BSC)': '/static/token-images/bnb_binance.svg',
+  'ETH': '/static/token-images/eth_ethereum.svg',
+  'USDT': '/static/token-images/usdt_ethereum.svg',
+  'DAI': '/static/token-images/dai_ethereum.svg',
+  'COMP': '/static/token-images/comp_ethereum.svg',
+  'UNI': '/static/token-images/uni_ethereum.svg',
+  'YFI': '/static/token-images/yfi_ethereum.svg',
+  'TUSD': '/static/token-images/tusd_ethereum.svg',
+  'OCEAN': '/static/token-images/ocean_ethereum.svg',
+  'LINK': '/static/token-images/link_ethereum.svg',
+  'MKR': '/static/token-images/mkr_ethereum.svg',
+  'SNX': '/static/token-images/snx_ethereum.svg',
+  'BAND': '/static/token-images/band_ethereum.svg',
+  'KNC': '/static/token-images/knc_ethereum.svg',
+  'AAVE': '/static/token-images/aave_ethereum.svg',
+  'WBTC': '/static/token-images/wbtc_ethereum.svg',
+  'REN': '/static/token-images/ren_ethereum.svg',
+  'SUSHI': '/static/token-images/sushi_ethereum.svg',
+  'RSR': '/static/token-images/rsr_ethereum.svg',
+  'USDC': '/static/token-images/usdc_ethereum.svg',
+  'TORN': '/static/token-images/torn_ethereum.svg',
+  'BAT': '/static/token-images/bat_ethereum.svg',
+  'ZRX': '/static/token-images/zrx_ethereum.svg',
+  'ENJ': '/static/token-images/enj_ethereum.svg',
+  'ALPHA': '/static/token-images/alpha_ethereum.svg',
+  'BUSD(BSC)': '/static/token-images/busd_binance.svg',
+  'ETH(BSC)': '/static/token-images/eth_binance.svg',
+  'XRP(BSC)': '/static/token-images/xrp_binance.svg',
+  'USDT(BSC)': '/static/token-images/usdt_binance.svg',
+  'ADA(BSC)': '/static/token-images/ada_binance.svg',
+  'DOGE(BSC)': '/static/token-images/doge_binance.svg',
+  'DOT(BSC)': '/static/token-images/dot_binance.svg',
+  'USDC(BSC)': '/static/token-images/usdc_binance.svg',
+  'BCH(BSC)': '/static/token-images/bch_binance.svg',
+  'LTC(BSC)': '/static/token-images/ltc_binance.svg',
+  'LINK(BSC)': '/static/token-images/link_binance.svg',
+  'TRX(BSC)': '/static/token-images/trx_binance.svg',
+  'CAKE': '/static/token-images/cake_binance.svg',
+  'BAKE': '/static/token-images/bake_binance.svg',
+  'XVS': '/static/token-images/xvs_binance.svg',
+  'LINA': '/static/token-images/lina_binance.svg',
+  'FINE': '/static/token-images/fine_binance.svg',
+  'BUNNY': '/static/token-images/bunny_binance.svg'
+}
+
+//
+// Custom token labels
+//
+const tokenLabels = {
+  'BAKE': 'BAKE(BSC)',
+  'BUNNY': 'BUNNY(BSC)',
+  'CAKE': 'CAKE(BSC)',
+  'FINE': 'FINE(BSC)',
+  'LINA': 'LINA(BSC)',
+  'XVS': 'XVS(BSC)'
+}
+
 const availableNetworks = [NETWORKS.ETH, NETWORKS.BSC]; //, NETWORKS.PLSM
 
 const BACKENDS = {
@@ -134,6 +205,16 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
           const proxyToken = ProxyTokens[t.display_props.symbol.toUpperCase()][networkFromToken(t)];
           t.dst_address = proxyToken.token;
           t.display_props.proxy_symbol = proxyToken.proxySymbol;
+        }
+
+        // Overide the image for each token
+        if (tokenImages[t.display_props.symbol]) {
+          t.display_props.image = tokenImages[t.display_props.symbol]
+        }
+
+        // Overide the lable for each token
+        if (tokenLabels[t.display_props.symbol]) {
+          t.display_props.symbol = tokenLabels[t.display_props.symbol]
         }
 
         return t;

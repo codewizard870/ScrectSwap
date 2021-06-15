@@ -99,6 +99,7 @@ export const TokenSelector = (props: {
               <Scrollbars autoHide renderThumbVertical={renderThumbVertical} className={styles.listTokens__subcontainer}>
                 {
                   filteredTokens
+                    .slice()
                     .sort((a, b) => {
                       /* sSCRT first */
                       if (a.symbol === 'sSCRT') {

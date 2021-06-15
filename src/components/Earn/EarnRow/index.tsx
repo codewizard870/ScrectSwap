@@ -16,7 +16,6 @@ import ScrtTokenBalance from '../ScrtTokenBalance';
 import { useStores } from 'stores';
 import Theme from 'themes';
 
-
 export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))
   // deadline - current time, 6 seconds per block
@@ -299,7 +298,8 @@ class EarnRow extends Component<
                 if (value) {
                   this.props.notify(
                     'success',
-                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${this.props.token.display_props.symbol
+                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
+                      this.props.token.display_props.symbol
                     }`,
                   );
                 } else {
@@ -326,7 +326,8 @@ class EarnRow extends Component<
                 if (value) {
                   this.props.notify(
                     'success',
-                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${this.props.token.display_props.symbol
+                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
+                      this.props.token.display_props.symbol
                     } rewards`,
                   );
                 } else {

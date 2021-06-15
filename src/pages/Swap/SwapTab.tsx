@@ -40,7 +40,7 @@ import stores from '../../stores';
 import { observer } from 'mobx-react';
 import { Symbols } from 'recharts';
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
-const BUTTON_MSG_NO_ROUTE = 'Cannot find a route';
+const BUTTON_MSG_NO_ROUTE = 'No route available';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
 const BUTTON_CONNECTING_TO_CHAIN = 'Connect Wallet to Trade';
 const BUTTON_MSG_NOT_ENOUGH_LIQUIDITY = 'Insufficient liquidity for this trade';
@@ -446,6 +446,7 @@ export class SwapTab extends React.Component<
   }
 
   async updateInputs() {
+    
     this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
     const routes = this.props.selectedPairRoutes;
@@ -566,7 +567,7 @@ export class SwapTab extends React.Component<
       } else {
         buttonMessage = BUTTON_MSG_NOT_ENOUGH_LIQUIDITY;
       }
-    } else if (!pair) {
+    } else if (!pair || this.props.selectedPairRoutes?.length == 0) {
       buttonMessage = BUTTON_MSG_NO_ROUTE;
     } else if (this.state.fromInput === '' && this.state.toInput === '') {
       buttonMessage = BUTTON_MSG_ENTER_AMOUNT;
@@ -947,6 +948,7 @@ export class SwapTab extends React.Component<
   }
 
   private setFromAmount = (value: string) => {
+    
     if (value === '' || Number(value) === 0) {
       this.setState({
         fromInput: value,

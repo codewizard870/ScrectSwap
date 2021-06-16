@@ -629,6 +629,9 @@ export class UserStoreEx extends StoreConstructor {
         getFeeForExecute(450_000),
       );
       
+      if(result?.code){
+        return result
+      }
       
       this.updateLocalCSHBKData(this.expectedSEFIFromCSHBK,this.balanceCSHBK)
       await this.updateCSHBKBalance();

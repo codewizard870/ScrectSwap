@@ -411,7 +411,7 @@ export class WithdrawLiquidityPanel extends React.Component<
                             },
                             '',
                             [],
-                            getFeeForExecute(500_000),
+                            getFeeForExecute(550_000),
                           );
                           storeTxResultLocally(result);
                           this.props.notify(

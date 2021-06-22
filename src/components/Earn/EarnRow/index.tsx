@@ -33,6 +33,61 @@ export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying
 
   return apy;
 };
+const tokenImages = {
+  'SSCRT': '/static/token-images/sscrt.svg',
+  'SEFI': '/static/token-images/sefi.svg',
+  'SIENNA': '/static/token-images/sienna.svg',
+  'BAC': '/static/token-images/bac_ethereum.svg',
+  'RENBTC': '/static/token-images/renbtc_ethereum.svg',
+  'DPI': '/static/token-images/dpi_ethereum.svg',
+  'UNILP-WSCRT-ETH': '/static/token-images/unilp_ethereum.svg',
+  'RUNE': '/static/token-images/rune_ethereum.svg',
+  'MANA': '/static/token-images/mana_ethereum.svg',
+  'YFL': '/static/token-images/yfl_ethereum.svg',
+  'BNB(BSC)': '/static/token-images/bnb_binance.svg',
+  'ETH': '/static/token-images/eth_ethereum.svg',
+  'USDT': '/static/token-images/usdt_ethereum.svg',
+  'DAI': '/static/token-images/dai_ethereum.svg',
+  'COMP': '/static/token-images/comp_ethereum.svg',
+  'UNI': '/static/token-images/uni_ethereum.svg',
+  'YFI': '/static/token-images/yfi_ethereum.svg',
+  'TUSD': '/static/token-images/tusd_ethereum.svg',
+  'OCEAN': '/static/token-images/ocean_ethereum.svg',
+  'LINK': '/static/token-images/link_ethereum.svg',
+  'MKR': '/static/token-images/mkr_ethereum.svg',
+  'SNX': '/static/token-images/snx_ethereum.svg',
+  'BAND': '/static/token-images/band_ethereum.svg',
+  'KNC': '/static/token-images/knc_ethereum.svg',
+  'AAVE': '/static/token-images/aave_ethereum.svg',
+  'WBTC': '/static/token-images/wbtc_ethereum.svg',
+  'REN': '/static/token-images/ren_ethereum.svg',
+  'SUSHI': '/static/token-images/sushi_ethereum.svg',
+  'RSR': '/static/token-images/rsr_ethereum.svg',
+  'USDC': '/static/token-images/usdc_ethereum.svg',
+  'TORN': '/static/token-images/torn_ethereum.svg',
+  'BAT': '/static/token-images/bat_ethereum.svg',
+  'ZRX': '/static/token-images/zrx_ethereum.svg',
+  'ENJ': '/static/token-images/enj_ethereum.svg',
+  'ALPHA': '/static/token-images/alpha_ethereum.svg',
+  'BUSD(BSC)': '/static/token-images/busd_binance.svg',
+  'ETH(BSC)': '/static/token-images/eth_binance.svg',
+  'XRP(BSC)': '/static/token-images/xrp_binance.svg',
+  'USDT(BSC)': '/static/token-images/usdt_binance.svg',
+  'ADA(BSC)': '/static/token-images/ada_binance.svg',
+  'DOGE(BSC)': '/static/token-images/doge_binance.svg',
+  'DOT(BSC)': '/static/token-images/dot_binance.svg',
+  'USDC(BSC)': '/static/token-images/usdc_binance.svg',
+  'BCH(BSC)': '/static/token-images/bch_binance.svg',
+  'LTC(BSC)': '/static/token-images/ltc_binance.svg',
+  'LINK(BSC)': '/static/token-images/link_binance.svg',
+  'TRX(BSC)': '/static/token-images/trx_binance.svg',
+  'CAKE': '/static/token-images/cake_binance.svg',
+  'BAKE': '/static/token-images/bake_binance.svg',
+  'XVS': '/static/token-images/xvs_binance.svg',
+  'LINA': '/static/token-images/lina_binance.svg',
+  'FINE': '/static/token-images/fine_binance.svg',
+  'BUNNY': '/static/token-images/bunny_binance.svg'
+}
 
 export const apyString = (token: RewardsToken) => {
   const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
@@ -137,76 +192,41 @@ class EarnRow extends Component<
     if(typeof s !== 'string') return '';
     return s.charAt(0).toLowerCase()+s.slice(1)
   }
+  getBaseTokenName = (tokenName:string):string=>{
+    if(!tokenName)
+      return '';
+    
+    tokenName = tokenName.toUpperCase();
+    
+    if(tokenName == 'SSCRT' || tokenName == 'SEFI' ||tokenName == 'SCRT'){
+      return tokenName;
+    }else{
+      if(tokenName.charAt(0) == 'S'){
+        return tokenName.slice(1)
+      }else{
+        return tokenName;
+      }
+    }
+  }
   render() {
     // const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     const style =`${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     //this.props.userStore.keplrWallet.suggestToken(this.props.userStore.chainId, );
     const { activeIndex } = this.state;
-    const images = [
-      {
-        symbol:'sscrt',
-        src:'/static/tokens/sscrt.svg'
-      },
-      {
-        symbol:'scrt',
-        src:'/static/tokens/srct.svg'
-      },
-      {
-        symbol:'sefi',
-        src:'/static/tokens/sefi.png'
-      },
-      {
-        symbol:'seth',
-        src:'/static/tokens/seth.png'
-      },
-      {
-        symbol:'slink',
-        src:'/static/tokens/slink.png'
-      },
-      {
-        symbol:'susdt',
-        src:'/static/tokens/susdt.png'
-      },
-      {
-        symbol:'srune',
-        src:'/static/tokens/srune.png'
-      },
-      {
-        symbol:'srsr',
-        src:'/static/tokens/srsr.png'
-      },
-      {
-        symbol:'swbtc',
-        src:'/static/tokens/swbtc.png'
-      },
-      {
-        symbol:'smana',
-        src:'/static/tokens/smana.png'
-      },
-      {
-        symbol:'sdai',
-        src:'/static/tokens/sdai.png'
-      },
-      {
-        symbol:'syfi',
-        src:'/static/tokens/syfi.png'
-      },
-      {
-        symbol:'socean',
-        src:'/static/tokens/socean.png'
-      },
-      {
-        symbol:'suni',
-        src:'/static/tokens/suni.png'
-      },
-      {
-        symbol:'ssienna',
-        src:'/static/sienna-token.svg'
-      },
-    ]
-    const _symbols = this.props.token.lockedAsset?.split('-');
-    const image_primaryToken = images.filter((img)=>img.symbol === _symbols[1]?.toLowerCase());
-    const image_secondaryToken = images.filter((img)=>img.symbol === _symbols[2]?.toLowerCase());
+
+    const _symbols = this.props.token.lockedAsset?.toUpperCase().split('-');
+    let image_primaryToken,image_secondaryToken;
+    let tokenName1 = this.getBaseTokenName(_symbols[1])
+    let tokenName2 = this.getBaseTokenName(_symbols[2])
+
+    // Overide the image for each token
+    if (tokenImages[tokenName1]) {
+      image_primaryToken = tokenImages[tokenName1]
+    }
+    if (tokenImages[tokenName2]) {
+      image_secondaryToken = tokenImages[tokenName2]
+    }
+    
     let tokenName;
     if(_symbols[1] == 'SEFI'){
       tokenName = _symbols[1]+' - '+this.unCapitalize(_symbols[2]);
@@ -233,8 +253,8 @@ class EarnRow extends Component<
             :
             (
               <div className={cn(styles.assetIcon)}>
-              <Image src={image_primaryToken[0]?.src} rounded size="mini" />
-              <Image src={image_secondaryToken[0]?.src} rounded size="mini" />
+              <Image src={image_primaryToken} rounded size="mini" />
+              <Image src={image_secondaryToken} rounded size="mini" />
               </div>
             )
           }

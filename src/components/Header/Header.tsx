@@ -19,6 +19,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const isPool = history.location.pathname === '/pool';
     const isEarn = history.location.pathname === '/earn';
     const isCashback = history.location.pathname === '/cashback';
+    const isGovernance = history.location.pathname === '/governance' || history.location.pathname == '/proposal';
     
 
     const handleSignIn = async()=>{
@@ -60,8 +61,8 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                             <li  className={(isEarn) ? 'active':''}><Link  to="/earn">Earn</Link></li>
                             <li className='hide_mobile'><span>|</span></li>
                             <li className={(isCashback)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/cashback">Cashback</Link></li> 
-                            {/* <li><span>|</span></li>
-                            <li><Link  to="/">Governance</Link></li>  */}
+                            <li><span>|</span></li>
+                            <li className={(isGovernance)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/governance">Governance</Link></li> 
                         </ul>
                     </div>
                     

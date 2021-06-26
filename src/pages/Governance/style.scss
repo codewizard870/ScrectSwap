@@ -1,0 +1,116 @@
+.light{
+    $background-button:black;
+    $color-button:white;
+    $color-pink:#FF726E;
+    $color-pink-transparent:#FFE1E0;
+    $color-gray: #5F5F6B;
+    .g-button{
+        background: $background-button;
+        color: $color-button; 
+        &--outline{
+            background: transparent;
+            border: $background-button 1px solid;
+            color: $background-button;
+        }
+    }
+    .border{
+        border: 1px solid $background-button;
+    }
+    .hero-governance{
+        h1{
+            color: $color-pink;
+        }
+        span,p{
+            color: $color-gray;
+            &.pink{   
+                color: $color-pink;
+            }
+        }
+    }
+    .content-governance{
+        &__title{
+            color: $color-gray;
+        }
+    }
+    .filters{
+        .active{
+            background: $color-pink-transparent;
+            color: $color-pink;
+            &:hover{
+                background: $color-pink-transparent;
+                color: $color-pink;
+            }
+        }
+    }
+}
+
+
+.column{
+    display: grid;
+    grid-auto-flow: column;
+}
+.governance{
+    max-width: 1162px;
+    min-width: 1162px;
+}
+.hero-governance{
+    display: grid;
+    width: 100%;
+    grid-template-columns:75% 25%;
+    padding: 32px 0;
+    .buttons{
+        row-gap: 10px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content:flex-end;
+        align-items: flex-end;
+    }
+    h1{
+        font-weight: 600;
+        size: 36px;
+    }
+    span,p{
+        font-weight: 600;
+        font-size: 16px;
+        
+    }
+}
+.content-governance{
+    width: 100%;
+    &__title{
+        h3{
+            font-size: 28px;   
+            margin: 0;         
+        }
+        width: 100%;
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+    .filters{
+        justify-content: flex-end;
+        display: grid;
+        grid-auto-flow: column;
+    }
+}
+.row{ 
+    display: grid;
+    grid-auto-flow: row;
+}
+.g-button{
+    margin: 10px 0;
+    &--outline{
+        width: fit-content;
+    }
+}
+.list-proposal{
+    padding: 33px 0;
+}
+
+//force semantic-ui-react to use this font family
+h1,h2,h3,h4,h5,h6{
+    font-family: 'poppins',Arial, Helvetica, sans-serif;
+}
+*{
+    font-family: 'poppins',Arial, Helvetica, sans-serif;
+}

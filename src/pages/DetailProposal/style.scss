@@ -1,0 +1,69 @@
+.proposal-detail{
+    &.light{
+        box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+        $font-gray:#5F5F6B;
+        $card-background:white;
+        background: $card-background;
+        .vote-row{
+            p{
+                color: $font-gray;
+            }
+        }
+        .proposal-content{
+            .title,.description{
+                span{
+                    color: $font-gray;
+                }
+            }
+        }
+    }
+}
+
+.proposal-detail{
+    margin-top: 20px;
+    padding: 26px;
+    border-radius: 16px;
+    .vote-row{
+        display: grid;
+        grid-auto-flow: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 0;
+        p,h3{
+            margin: 0;
+            font-weight: normal;
+        }
+        p{
+            font-weight: 600;
+        }
+    }
+    .proposal-id{
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: auto auto;
+        column-gap: 10px;
+        justify-content: start;
+        align-items: center;
+    }
+    .proposal-content{
+        .title{
+            display: grid;
+            grid-auto-flow: row;
+            row-gap: 8px;
+            padding-top: 8px;
+            h1{
+                margin: 0;
+            }
+        }
+        .description{
+            padding-top: 26px;
+            font-size: 16px;
+            display: grid;
+            grid-auto-flow: row;
+            row-gap: 8px;
+        }
+    }
+    .button-vote{
+        max-width: 122px;
+    }
+}

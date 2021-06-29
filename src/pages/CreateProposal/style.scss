@@ -1,0 +1,58 @@
+.create-proposal{
+    &.light{
+        .card-proposal{
+            $font-gray:#5F5F6B;
+            $border-color: #D6D6D6;
+            background: white;
+            box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+            label,select,input{
+                color: $font-gray;
+            }
+            select,input,textarea{
+                border: 1px solid $border-color;
+            }
+        }
+    }
+}
+.card-proposal{
+    padding: 26px;
+    border-radius: 16px;
+    display: grid;
+    row-gap: 26px;
+    .form-title{
+        display: grid;
+        grid-template: auto auto / auto auto;
+        gap: 4px 26px;
+    }
+    .form-description{
+        display: grid;
+        grid-auto-flow: row;
+        row-gap: 4px;
+    }
+    label,select,input{
+        font-size: 16px;
+    }
+    select,input,textarea{
+        padding:5px 5px;
+        border-radius: 4px;
+        background: transparent;
+    }
+}
+.title-section{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-auto-flow: column;
+    align-items: center;
+    padding: 34px 0;
+    h1{
+        margin: 0;
+    }
+    &__buttons{
+        display: grid;
+        grid-template-columns: auto auto;
+        column-gap: 16px;
+        grid-auto-flow: column;
+        justify-content: flex-end;
+        align-items: center;
+    }
+}

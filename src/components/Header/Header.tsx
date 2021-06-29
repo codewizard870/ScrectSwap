@@ -14,12 +14,13 @@ import { notify } from 'pages/Earn';
 // Import Icons
 const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const history = useHistory(); 
+    const governancePaths = ['/governance','/proposal']
     const { user, tokens,userMetamask,theme } = useStores();
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
     const isEarn = history.location.pathname === '/earn';
     const isCashback = history.location.pathname === '/cashback';
-    const isGovernance = history.location.pathname === '/governance' || history.location.pathname == '/proposal';
+    const isGovernance = governancePaths.includes(history.location.pathname);
     
 
     const handleSignIn = async()=>{

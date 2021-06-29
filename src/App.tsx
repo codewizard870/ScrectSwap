@@ -15,7 +15,9 @@ import { FAQPage } from './pages/FAQ';
 import { FinancePage } from './pages/Finance';
 import { SeFiPage } from './pages/SeFi';
 import { Cashback } from './pages/Cashback'
-import { GovernancePageWrapper } from 'pages/Governance';
+import { Governance } from 'pages/Governance';
+import CreateProposal from 'pages/CreateProposal';
+import { DetailProposal } from 'pages/DetailProposal';
 // import { InfoPage } from './pages/Info';
 
 export const App: React.FC = () => (
@@ -26,7 +28,9 @@ export const App: React.FC = () => (
         <Route exact path="/pool" component={SwapPagePool} />
         <Route exact path="/earn" component={SeFiPage} />
         <Route exact path="/cashback" component={Cashback} />
-        <Route exact path="/governance" component={GovernancePageWrapper} />
+        <Route exact path="/governance" component={Governance} />
+        <Route exact path="/proposal" component={CreateProposal} />
+        <Route exact path="/proposal/:id" component={DetailProposal} />
         {/* <Route exact path="/faq" component={FAQPage} /> */}
         {/* <Route exact path="/finance" component={FinancePage} /> */}
         {/* <Route exact path="/info" component={InfoPage} /> */}

@@ -1,0 +1,44 @@
+.vote-modal{
+    &.light{
+        $font-gray:#5F5F6B;
+        .content{
+            span{
+                color: $font-gray;
+            }
+            .vote-yes{
+                color: #3EA248;
+                background: #E9F7EA;
+                border: 1px solid #3EA248;
+            }
+            .vote-no{
+                color: #D94C48;
+                background: #FAE6E6;
+                border: 1px solid #D94C48;
+            }
+        }
+    }
+}
+
+.vote-modal{
+    border-radius: 16px !important;
+    .content{
+        border-radius: 16px !important;
+        div{
+            display: grid;
+            grid-auto-flow: column;
+        }
+        .center{
+            justify-content: center;
+        }
+        .space-between{
+            justify-content: space-between;
+        }
+        strong{
+            font-weight: 600;
+        }
+        .title{
+            padding: 2px 0 42px 0;
+        }
+    }
+}
+

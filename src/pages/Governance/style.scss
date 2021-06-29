@@ -81,7 +81,9 @@
     &__title{
         h3{
             font-size: 28px;   
-            margin: 0;         
+            margin: 0;
+            letter-spacing: 0.01em;
+            font-weight: 600;         
         }
         width: 100%;
         display: grid;
@@ -105,6 +107,9 @@
 }
 .list-proposal{
     padding: 33px 0;
+    display: grid;
+    grid-auto-flow: row;
+    row-gap: 26px;
 }
 
 //force semantic-ui-react to use this font family

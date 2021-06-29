@@ -53,18 +53,36 @@ export class Governance extends React.Component<
         count:'string',
         filters:['All','Active',"Passed","Failed"],
         selectedFilter:0,
-        proposals:[{
+        proposals:[
+          {
             index:1,
             title:'Awareness Committee Funding',
-            endTime:new Date(),
-            status:'active',
-        }]
+            endTime:this.randomDate(new Date(2012, 0, 1), new Date()),
+            status:'failed',
+          },
+          {
+              index:2,
+              title:'Awareness Committee Funding',
+              endTime:this.randomDate(new Date(2012, 0, 1), new Date()),
+              status:'active',
+          },
+          {
+            index:3,
+            title:'Awareness Committee Funding',
+            endTime:this.randomDate(new Date(2012, 0, 1), new Date()),
+            status:'passed',
+          },
+        ]
     };
   }  
   setFilter(i:number):void{
     this.setState({
         selectedFilter:i
     })
+  }
+  //Temp function
+  randomDate(start, end) {
+    return new Date(start. getTime() + Math. random() * (end. getTime() - start. getTime()));
   }
   render() {
 

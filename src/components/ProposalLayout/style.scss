@@ -1,0 +1,21 @@
+.proposal-layout{
+    &.dark{
+        color: white;
+    }
+    &.light{
+        color: #0E0E10;
+    }
+    .go-back{
+        display: grid;
+        grid-auto-flow: column;
+        width: 100%;
+        justify-content: start;
+        align-items: center;
+        column-gap: 10px;
+        text-decoration: none;
+        color: inherit;
+        h3{
+            margin: 0;
+        }
+    }
+}

@@ -101,7 +101,9 @@ export const Governance = observer(() => {
                   </div>
               </div>
               <div className='buttons'>
-                      <Button className='g-button'>Participate in Governance</Button>
+                      <Button className='g-button'>
+                          <Link to='/sefistaking'>Participate in Governance</Link>
+                        </Button>
                       <Button className='g-button--outline'>
                         <Link to='/proposal'>Create proposal</Link>
                       </Button>

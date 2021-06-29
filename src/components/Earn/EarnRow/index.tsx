@@ -139,6 +139,7 @@ class EarnRow extends Component<
     notify: Function;
     callToAction: string;
     theme: Theme;
+    isSefiStaking?: boolean;
   },
   {
     activeIndex: Number;
@@ -160,6 +161,14 @@ class EarnRow extends Component<
       symbol:'',
     },
   };
+  componentDidMount(){
+    //auto open for SEFI STAKING page
+    if(this.props.isSefiStaking){
+      setTimeout(() => {
+        this.handleClick('',{index:0})
+      }, 100);
+    }
+  }
 
   handleChangeDeposit = event => {
     this.setState({ depositValue: event.target.value });

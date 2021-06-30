@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import { Box } from 'grommet';
 import * as styles from '../FAQ/faq-styles.styl';
@@ -17,9 +17,9 @@ import { ProposalRow } from 'components/ProposalRow';
 
 export const Governance = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
-  let { user, theme } = useStores();
+  let { user, theme,tokens } = useStores();
   let query = new URLSearchParams(useLocation().search);
-
+  const [rewardToken,setRewardToken] = React.useState(undefined);
   const [state, setState]= React.useState({ 
     count:'string',
     filters:['All','Active',"Passed","Failed"],
@@ -74,6 +74,13 @@ export const Governance = observer(() => {
   function randomDate(start, end) {
     return new Date(start. getTime() + Math. random() * (end. getTime() - start. getTime()));
   }
+  useEffect(()=>{
+    (async () => {
+        const SEFI_REWARD_TOKEN = await user.getRewardToken('SEFI')
+        setRewardToken(SEFI_REWARD_TOKEN)
+    })();
+    
+  },[tokens.allData])
  
 
   return (

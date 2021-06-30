@@ -79,7 +79,7 @@ function SefiBalance(props: { address: string; sefiBalance: string | JSX.Element
   );
 }
 
-interface RewardData {
+export interface RewardData {
   reward: IRewardPool;
   token: ITokenInfo;
 }
@@ -108,30 +108,6 @@ export const SeFiStakingPage = observer(() => {
     }
   }
 
-  async function addSefiToWatchlist() {
-    try {
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await web3.currentProvider.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20', // Initially only supports ERC20, but eventually more!
-          options: {
-            address: process.env.ETH_GOV_TOKEN_ADDRESS, // The address that the token is at.
-            symbol: 'SEFI', // A ticker symbol or shorthand, up to 5 chars.
-            decimals: 6, // The number of decimals in the token
-            image: 'https://pbs.twimg.com/profile_images/1361712479546474498/1a3370iV_400x400.jpg', // A string url of the token logo
-          },
-        },
-      });
-
-      if (wasAdded) {
-        notify('success', 'SeFi in on your watchlist on Metamask');
-      }
-    } catch (error) {
-      notify('error', `Failed to add SeFi to the watchlist on Metamask: ${error}`);
-      console.log(`Failed to add SeFi to the watchlist on Metamask: ${error}`);
-    }
-  }
 
 
   const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);

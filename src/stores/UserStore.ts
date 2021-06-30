@@ -1,5 +1,5 @@
 import { action, observable } from 'mobx';
-import { IStores } from 'stores';
+import stores, { IStores } from 'stores';
 import { statusFetching } from '../constants';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as agent from 'superagent';
@@ -18,6 +18,8 @@ import {
 import { AsyncSender } from '../blockchain-bridge/scrt/asyncSender';
 import BigNumber from 'bignumber.js';
 import { storeTxResultLocally } from 'pages/Swap/utils';
+import { RewardData } from 'pages/SefiStaking';
+import { RewardsToken } from 'components/Earn/EarnRow';
 
 export const rewardsDepositKey = key => `${key}RewardsDeposit`;
 
@@ -830,4 +832,86 @@ export class UserStoreEx extends StoreConstructor {
   //
   // this.ethRate = ethusdt.body.lastPrice;
   //}
+  @action public async getRewardToken(tokenSymbol:string):Promise<RewardsToken> {
+    try {
+      stores.rewards.init({
+        isLocal: true,
+        sorter: 'none',
+        pollingInterval: 20000,
+      });
+      stores.rewards.fetch();
+      stores.tokens.init();
+      const getFilteredTokens = async () => {
+        if (stores.tokens.allData.length > 0) {
+          await sleep(500);
+          return(stores.tokens.tokensUsageSync('LPSTAKING'));
+        }else{
+          return undefined
+        }
+      };
+
+      while (stores.rewards.isPending) {
+        await sleep(100);
+      }
+      const filteredTokens = await getFilteredTokens();
+      const mappedRewards = stores.rewards.allData
+        .filter(rewards => filteredTokens?.find(element => element.dst_address === rewards.inc_token.address))
+        .map(reward => {
+          return { reward, token: filteredTokens?.find(element => element.dst_address === reward.inc_token.address) };
+        });
+        while (!stores.user.secretjs || stores.tokens.isPending) {
+          await sleep(100);
+        }
+        await stores.user.updateBalanceForSymbol(tokenSymbol);  
+        const reward_tokens = mappedRewards
+        .slice()
+        .sort((a, b) => {
+          /* SEFI first */
+          if (a.reward.inc_token.symbol === tokenSymbol) {
+            return -1;
+          }
+
+          return 0;
+        })
+        ?.filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+        //@ts-ignore
+        .map(rewardToken => {
+          if (Number(rewardToken.reward.deadline) < 2_000_000) {
+            return null;
+          }
+          
+          const rewardsToken :RewardsToken = {
+            rewardsContract: rewardToken.reward.pool_address,
+            lockedAsset: rewardToken.reward.inc_token.symbol,
+            lockedAssetAddress: rewardToken.token.dst_address,
+            totalLockedRewards: divDecimals(
+              Number(rewardToken.reward.total_locked) * Number(rewardToken.reward.inc_token.price),
+              rewardToken.reward.inc_token.decimals,
+            ),
+            rewardsDecimals: String(rewardToken.reward.rewards_token.decimals),
+            rewards: stores.user.balanceRewards[rewardsKey(rewardToken.reward.inc_token.symbol)],
+            deposit: stores.user.balanceRewards[rewardsDepositKey(rewardToken.reward.inc_token.symbol)],
+            balance: stores.user.balanceToken[rewardToken.token.src_coin],
+            decimals: rewardToken.token.decimals,
+            name: rewardToken.token.name,
+            price: String(rewardToken.reward.inc_token.price),
+            rewardsPrice: String(rewardToken.reward.rewards_token.price),
+            display_props: rewardToken.token.display_props,
+            remainingLockedRewards: rewardToken.reward.pending_rewards,
+            deadline: Number(rewardToken.reward.deadline),
+            rewardsSymbol: 'SEFI',
+          };
+
+          if(rewardsToken.lockedAsset === tokenSymbol){
+              return rewardsToken;
+          }
+        });
+        return reward_tokens[0];
+    } catch (error) {
+      console.error(error)
+      return undefined;
+    }
+      
+      
+  }
 }

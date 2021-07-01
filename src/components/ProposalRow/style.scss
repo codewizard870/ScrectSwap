@@ -53,11 +53,11 @@
     $background-success:#E9F7EA;
     $background-active:#E5F3FB;
     $background-failed:#FAE6E6;
-    $shadow-card:4px 4px 32px rgba(77, 74, 74, 0.25);
+    // $shadow-card:4px 2px 32px rgba(77, 74, 74, 0.25);
     
     &.proposal-row{
         background: $background-card;
-        box-shadow: $shadow-card;
+        // box-shadow: $shadow-card;
         p{
             color: $color-secondary;
             &.title{

@@ -640,7 +640,35 @@ export class UserStoreEx extends StoreConstructor {
       return result;
 
   }
+  public async createProposal(title:string,description:string,):Promise<any>{
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
 
+    if(viewingKey){
+      const result = await this.secretjsSend.asyncExecute(process.env.FACTORY_CONTRACT,
+        {
+          "new_poll": { 
+            "poll_metadata": { 
+              "title": title, 
+              "description": description, 
+              "author": this.address 
+            }, 
+            "poll_choices": ["Yes", "No"], 
+            "pool_viewing_key": viewingKey 
+          }
+        },
+        '',
+        [],
+        getFeeForExecute(450_000),)
+  
+        return result;
+    }else{
+      throw new Error('Not viewing key registered')
+    }
+  }
   public updateLocalCSHBKData(sefi:number,cashback:string){
     const sefi_earned = localStorage.getItem('total_sefi_earned')
     const cb_received = localStorage.getItem('total_cb_received')

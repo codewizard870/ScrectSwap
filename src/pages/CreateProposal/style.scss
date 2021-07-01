@@ -3,12 +3,30 @@
         .card-proposal{
             $font-gray:#5F5F6B;
             $border-color: #D6D6D6;
-            background: white;
+            $background: white;
+            background: $background;
             box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
             label,select,input{
                 color: $font-gray;
             }
             select,input,textarea{
+                border: 1px solid $border-color;
+            }
+        }
+    }
+    &.dark{
+        .card-proposal{
+            $font-gray:white;
+            $border-color: #D6D6D6;
+            $background: #0E0E10;
+            background: $background;
+            // box-shadow: 4px 4px 32px rgb(32, 32, 32);
+            label,select,input{
+                color: $font-gray;
+            }
+            option,select,input,textarea{
+                background: $background;
+                color: $font-gray;
                 border: 1px solid $border-color;
             }
         }

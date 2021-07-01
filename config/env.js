@@ -75,6 +75,7 @@ function getClientEnvironment(publicUrl) {
         MASTER_CONTRACT: process.env.MASTER_CONTRACT,
         SIENNA_CONTRACT: process.env.SIENNA_CONTRACT,
         SEFI_STAKING_CONTRACT: process.env.SEFI_STAKING_CONTRACT,
+        FACTORY_CONTRACT: process.env.FACTORY_CONTRACT,
 
         SIENNA_PROXY_CONTRACT_ETH: process.env.SIENNA_PROXY_CONTRACT_ETH,
         WSCRT_PROXY_CONTRACT_ETH: process.env.WSCRT_PROXY_CONTRACT_ETH,

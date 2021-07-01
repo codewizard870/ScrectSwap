@@ -1,4 +1,5 @@
 import { decode } from 'bech32';
+import cogoToast from 'cogo-toast';
 import { ExecuteResult } from 'secretjs';
 import { StdFee } from 'secretjs/types/types';
 import { EXCHANGE_MODE, TOKEN } from '../../stores/interfaces';
@@ -60,4 +61,44 @@ export const secretTokenName = (mode: EXCHANGE_MODE, token: TOKEN, label: string
   } else {
     return (mode === EXCHANGE_MODE.FROM_SCRT && token === TOKEN.ERC20 ? 'secret' : '') + label;
   }
+};
+
+
+export function notify(type: 'success' | 'error' | 'errorWithHash', msg: string, hideAfterSec: number = 120, txHash?: string,useContainer?:boolean) {
+  let cogoType: string = type;
+  if (type === 'error') {
+    msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
+    msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
+  }
+
+  let onClick = () => {
+    hide();
+  };
+  if (type === 'errorWithHash') {
+    cogoType = 'warn';
+    onClick = () => {
+      const url = `https://secretnodes.com/secret/chains/secret-2/transactions/${txHash}`;
+      const win = window.open(url, '_blank');
+      win.focus();
+      hide();
+    };
+  }
+
+  const { hide } = cogoToast[cogoType](msg, {
+    toastContainerID:useContainer ? 'notifications_container' : '', 
+    hideAfter: hideAfterSec,
+    onClick,
+  });
+  // NotificationManager[type](undefined, msg, closesAfterMs);
+}
+
+export const extractError = (result: any) => {
+  if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {
+    return 'Swap fell short of expected return (slippage error)';
+  }
+  if (result?.raw_log) {
+    return result.raw_log;
+  }
+  console.error(result);
+  return `Unknown error`;
 };

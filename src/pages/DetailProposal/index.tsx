@@ -31,7 +31,7 @@ export const DetailProposal = observer((props)=>{
                         <Button className='button-vote g-button'>Vote</Button>
                     </VoteModal>
                 </div>
-                <div className={`proposal-status status-${proposal.status}`}>
+                <div className={`proposal-status small status-${proposal.status}`}>
                     {proposal.status_message}
                 </div>
                 <div className='proposal-content'>

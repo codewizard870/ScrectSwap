@@ -17,6 +17,24 @@
             }
         }
     }
+    &.dark{
+        // box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+        $font-gray:#ccc;
+        $card-background:#0e0e10;
+        background: $card-background;
+        .vote-row{
+            p{
+                color: $font-gray;
+            }
+        }
+        .proposal-content{
+            .title,.description{
+                span{
+                    color: $font-gray;
+                }
+            }
+        }
+    }
 }
 
 .proposal-detail{
@@ -35,6 +53,13 @@
         }
         p{
             font-weight: 600;
+        }
+    }
+    .proposal-status {
+        &.small {
+            font-size: 16px;
+            padding: 4;
+            max-width: 161px;
         }
     }
     .proposal-id{

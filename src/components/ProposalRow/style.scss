@@ -41,7 +41,49 @@
         }
     }
 }
-
+.dark {
+    //Colors
+    $color-primary : white;
+    $color-secondary : #b8b8b8;
+    $color-success:#3EA248;
+    $color-active:#42A8E1;
+    $color-failed:#D94C48;
+    //Backgrounds
+    $background-card:#0e0e10;
+    $background-success:#E9F7EA;
+    $background-active:#E5F3FB;
+    $background-failed:#FAE6E6;
+    $shadow-card:4px 4px 32px rgba(77, 74, 74, 0.25);
+    
+    &.proposal-row{
+        background: $background-card;
+        box-shadow: $shadow-card;
+        p{
+            color: $color-secondary;
+            &.title{
+                color: $color-primary;
+            }
+        }
+        span{
+            color: $color-secondary;
+        }
+    }
+    .status{
+        &-passed{
+            background: $background-success;
+            color: $color-success;
+        }
+        &-active{
+            background: $background-active;
+            color: $color-active;
+            
+        }
+        &-failed{
+            background: $background-failed;
+            color: $color-failed;
+        }
+    }
+}
 .proposal-row{
     border-radius: 16px;
     cursor: pointer;

@@ -19,10 +19,12 @@ const ProposalLayout = (props:{
                 style={{ alignItems: 'center' }}
             >  
                 <div style={{width:props.width || '100%'}}>
-                    <Link className='go-back' to='/governance' >  
-                        <img src="/static/arrow-left.svg" alt="go-back" />
-                        <h3>Proposal</h3>
-                    </Link>
+                    <div className='go-back'>
+                        <Link className='go-back' to='/governance' >  
+                            <img src="/static/arrow-left.svg" alt="go-back" />
+                            <h3>Proposal</h3>
+                        </Link>
+                    </div>
                 <div className='proposal-layout-content'> 
                         {props.children}
                 </div>

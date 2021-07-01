@@ -1,25 +1,27 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import { Box } from 'grommet';
-import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
-import { UserStoreEx } from 'stores/UserStore';
 import { observer } from 'mobx-react';
-import  Theme  from '../../themes';
-import { SecretSwapPairs } from 'stores/SecretSwapPairs';
-import { SecretSwapPools } from 'stores/SecretSwapPools';
-import './style.scss';
 import { Button } from 'semantic-ui-react';
 import { ProposalRow } from 'components/ProposalRow';
+import numeral from 'numeral';
+import './style.scss';
+import { apyString, RewardsToken } from 'components/Earn/EarnRow';
+import { unlockJsx } from 'pages/Swap/utils';
+import { unlockToken } from 'utils';
+import { rewardsDepositKey } from 'stores/UserStore';
 
 
 export const Governance = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, theme,tokens } = useStores();
   let query = new URLSearchParams(useLocation().search);
-  const [rewardToken,setRewardToken] = React.useState(undefined);
+  const [rewardToken,setRewardToken] = React.useState<RewardsToken>(undefined);
+  const [totalLocked,setTotalLocked] = React.useState(0.0);
+  const [votingPower,setVotingPower] = React.useState(undefined);
   const [state, setState]= React.useState({ 
     count:'string',
     filters:['All','Active',"Passed","Failed"],
@@ -70,18 +72,49 @@ export const Governance = observer(() => {
         selectedFilter:i
     })
   }
+  
   //Temp function
   function randomDate(start, end) {
     return new Date(start. getTime() + Math. random() * (end. getTime() - start. getTime()));
   }
+  async function createSefiViewingKey() {
+    try {
+      await user.keplrWallet.suggestToken(user.chainId, rewardToken.rewardsContract);
+      await user.updateScrtBalance();
+      await user.updateBalanceForSymbol('SEFI');
+    } catch (e) {
+      console.error("Error at creating new viewing key ",e)
+    }
+    
+  }
+
+  //fetch total locked and Staking APY
   useEffect(()=>{
     (async () => {
-        const SEFI_REWARD_TOKEN = await user.getRewardToken('SEFI')
-        setRewardToken(SEFI_REWARD_TOKEN)
+        const sefi_reward_token = await user.getRewardToken('SEFI')
+        const {total_locked} = await user?.secretjs?.queryContractSmart(process.env.SEFI_STAKING_CONTRACT,{"total_locked":{}})
+        const totalLocked = total_locked?.amount;
+
+        setRewardToken(sefi_reward_token)
+        setTotalLocked(totalLocked)
+        
     })();
     
   },[tokens.allData])
- 
+
+  //update voting power
+  useEffect(()=>{
+    (async (a) => {
+      if(a){
+          await user.updateBalanceForSymbol(a.display_props.symbol);
+          await user.refreshRewardsBalances(a.display_props.symbol);
+          setVotingPower(user.balanceRewards[rewardsDepositKey(a.display_props.symbol)]);
+        }
+        
+    })(rewardToken);
+    
+  },[rewardToken])
+
 
   return (
     <BaseContainer>
@@ -95,25 +128,36 @@ export const Governance = observer(() => {
           <div className='hero-governance'>
               <div className='column'>
                   <div>
-                      <h1>12.8%</h1>
+                      {(rewardToken)?<h1>{apyString(rewardToken)}</h1>:<></>}
                       <p>Staking APY</p>
                   </div>
                   <div>
-                      <h1>5,200 <span className='pink'>SEFI</span> <span>(7%)</span></h1>
+                      {
+                        (votingPower)
+                         && (votingPower?.includes(unlockToken) || !votingPower)
+                              ? unlockJsx({onClick:createSefiViewingKey})
+                              : <h1>{numeral(votingPower).format('0,0.00')} 
+                                  <span className='pink'>SEFI</span> 
+                                  <span>({numeral((votingPower*100)/totalLocked).format('0.00000%')})</span>
+                                </h1>
+                      }
+                      
                       <p>My Voting Power</p>
                   </div>
                   <div>
-                      <h1>74,285.71 <span className='pink'>SEFI</span></h1>
+                      <h1>{numeral(totalLocked).format('0,0.00')} <span className='pink'>SEFI</span></h1>
                       <p>Total Voting Power</p>
                   </div>
               </div>
               <div className='buttons'>
-                      <Button className='g-button'>
-                          <Link to='/sefistaking'>Participate in Governance</Link>
-                        </Button>
+                <div className='buttons-container'>
+                      <Button disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'>
+                        <Link to='/sefistaking'>Participate in Governance</Link>
+                      </Button>
                       <Button className='g-button--outline'>
                         <Link to='/proposal'>Create proposal</Link>
                       </Button>
+                </div>
               </div>
           </div>
           <div className='content-governance'>

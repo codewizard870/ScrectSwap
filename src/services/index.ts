@@ -199,12 +199,16 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
     let content = tokenArray
       .filter(t => (process.env.TEST_COINS ? true : !t.display_props?.hidden))
       .map(t => {
-        if (t.display_props.proxy) {
-          t.display_props.proxy_address = t.dst_address;
-
-          const proxyToken = ProxyTokens[t.display_props.symbol.toUpperCase()][networkFromToken(t)];
-          t.dst_address = proxyToken.token;
-          t.display_props.proxy_symbol = proxyToken.proxySymbol;
+        if (t.display_props.proxy ) {
+          try {
+            t.display_props.proxy_address = t.dst_address;
+            const proxyToken = ProxyTokens[t.display_props.symbol.toUpperCase()][networkFromToken(t)];
+            t.dst_address = proxyToken.token;
+            t.display_props.proxy_symbol = proxyToken.proxySymbol;
+            
+          } catch (error) {
+            console.log('Failed to parse proxy '+t.display_props.symbol.toUpperCase())  
+          }
         }
 
         // Overide the image for each token

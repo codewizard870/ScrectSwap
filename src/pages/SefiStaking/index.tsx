@@ -201,7 +201,7 @@ export const SeFiStakingPage = observer(() => {
               })
               .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
               //@ts-ignore
-              .map(rewardToken => {
+              .map((rewardToken,i) => {
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;
                 }
@@ -232,7 +232,7 @@ export const SeFiStakingPage = observer(() => {
                     return (
                       <EarnRow
                         notify={notify}
-                        key={rewardToken.reward.inc_token.symbol}
+                        key={`${rewardToken.reward.inc_token.symbol}-${i}`}
                         userStore={user}
                         token={rewardsToken}
                         callToAction="Sefi Earnings"

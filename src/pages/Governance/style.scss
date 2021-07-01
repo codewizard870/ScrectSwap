@@ -43,7 +43,51 @@
         }
     }
 }
-
+.dark{
+    $background-button:white;
+    $color-button:black;
+    $color-pink:#FF726E;
+    $color-pink-transparent:#FFE1E0;
+    $color-gray: #fff;
+    .g-button{
+        background: $background-button;
+        color: $color-button; 
+        &--outline{
+            background: transparent;
+            border: $background-button 1px solid;
+            color: $background-button;
+        }
+    }
+    .border{
+        border: 1px solid $background-button;
+    }
+    .hero-governance{
+        h1{
+            color: $color-pink;
+        }
+        span,p{
+            color: $color-gray;
+            &.pink{   
+                color: $color-pink;
+            }
+        }
+    }
+    .content-governance{
+        &__title{
+            color: $color-gray;
+        }
+    }
+    .filters{
+        .active{
+            background: $color-pink-transparent;
+            color: $color-pink;
+            &:hover{
+                background: $color-pink-transparent;
+                color: $color-pink;
+            }
+        }
+    }
+}
 
 .column{
     display: grid;
@@ -59,12 +103,18 @@
     grid-template-columns:75% 25%;
     padding: 32px 0;
     .buttons{
-        row-gap: 10px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content:flex-end;
-        align-items: flex-end;
+        display: grid;
+        justify-content: flex-end;
+        grid-template: auto auto / auto;
+        &-container{
+            row-gap: 10px;
+            display: flex;
+            flex-direction: row;
+            max-width: 250px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            grid-template: auto auto / auto;
+        }
     }
     h1{
         font-weight: 600;

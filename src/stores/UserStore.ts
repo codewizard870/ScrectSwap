@@ -510,9 +510,9 @@ export class UserStoreEx extends StoreConstructor {
   @action public updateSScrtBalance = async () => {
     try {
       const balance = await this.getSnip20Balance(process.env.SSCRT_CONTRACT, 6);
-      this.balanceToken['sSCRT'] = balance;
+      this.balanceToken[process.env.SSCRT_CONTRACT] = balance;
     } catch (err) {
-      this.balanceToken['sSCRT'] = unlockToken;
+      this.balanceToken[process.env.SSCRT_CONTRACT] = unlockToken;
     }
 
     const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT');
@@ -522,7 +522,7 @@ export class UserStoreEx extends StoreConstructor {
     }
 
     try {
-      this.balanceTokenMin['sSCRT'] = token.display_props.min_from_scrt;
+      this.balanceTokenMin[process.env.SSCRT_CONTRACT] = token.display_props.min_from_scrt;
     } catch (e) {
       console.log(`unknown error: ${e}`);
     }
@@ -597,11 +597,11 @@ export class UserStoreEx extends StoreConstructor {
   @action  public updateCSHBKBalance= async() => {
      try {
       const balance = await this.getSnip20Balance(process.env.CSHBK_CONTRACT, 6);
-      this.balanceToken['CSHBK'] = balance;
+      this.balanceToken[process.env.CSHBK_CONTRACT] = balance;
       this.balanceCSHBK = balance;
       await this.updateExpectedSEFIFromCSHBK()
     } catch (err) {
-      this.balanceToken['CSHBK'] = unlockToken;
+      this.balanceToken[process.env.CSHBK_CONTRACT] = unlockToken;
       console.error(err)
       this.balanceCSHBK = unlockToken;
     }
@@ -613,7 +613,7 @@ export class UserStoreEx extends StoreConstructor {
     }
 
     try {
-      this.balanceTokenMin['CSHBK'] = token.display_props.min_from_scrt;
+      this.balanceTokenMin[process.env.CSHBK_CONTRACT] = token.display_props.min_from_scrt;
     } catch (e) {
       console.log(`unknown error: ${e}`);
     }
@@ -702,28 +702,57 @@ export class UserStoreEx extends StoreConstructor {
   private async refreshTokenBalance(symbol: string) {
     const token = this.stores.tokens.allData.find(t => t.display_props.symbol === symbol);
 
+    // console.log(token)
     if (!token) {
       return;
     }
 
     try {
       const balance = await this.getSnip20Balance(token.dst_address, token.decimals);
-      this.balanceToken[token.src_coin] = balance;
+      this.balanceToken[token.dst_address] = balance;
     } catch (err) {
-      this.balanceToken[token.src_coin] = unlockToken;
+      this.balanceToken[token.dst_address] = unlockToken;
     }
 
     try {
-      this.balanceTokenMin[token.src_coin] = token.display_props.min_from_scrt;
+      this.balanceTokenMin[token.dst_address] = token.display_props.min_from_scrt;
+    } catch (e) {
+      console.log(`unknown error: ${e}`);
+    }
+  }
+  async refreshTokenBalanceByAddress(address: string) {
+    const token = this.stores.tokens.allData.find(t => t.dst_address === address);
+
+    // console.log(token)
+    if (!token) {
+      return;
+    }
+
+    try {
+      const balance = await this.getSnip20Balance(token.dst_address, token.decimals);
+      this.balanceToken[token.dst_address] = balance;
+    } catch (err) {
+      this.balanceToken[token.dst_address] = unlockToken;
+    }
+
+    try {
+      this.balanceTokenMin[token.dst_address] = token.display_props.min_from_scrt;
     } catch (e) {
       console.log(`unknown error: ${e}`);
     }
   }
 
-  async refreshRewardsBalances(symbol: string) {
-    let rewardsToken = this.stores.rewards.allData.find(t => {
-      return t.inc_token.symbol.toLowerCase() === symbol.toLowerCase();
-    });
+  async refreshRewardsBalances(symbol: string,address?:string) {
+    let rewardsToken;
+    if(address){
+      rewardsToken = this.stores.rewards.allData.find(t => {
+        return t.pool_address === address;
+      });
+    }else{
+      rewardsToken = this.stores.rewards.allData.find(t => {
+        return t.inc_token.symbol.toLowerCase() === symbol.toLowerCase();
+      });
+    }
     if (!rewardsToken) {
       // old style rewards token (earn page)
       rewardsToken = this.stores.rewards.allData.find(t => {
@@ -740,31 +769,31 @@ export class UserStoreEx extends StoreConstructor {
       const balance = await this.getBridgeRewardsBalance(rewardsToken.pool_address, false);
 
       if (balance.includes(unlockToken)) {
-        this.balanceRewards[rewardsKey(rewardsToken.inc_token.symbol)] = balance;
+        this.balanceRewards[rewardsKey(rewardsToken.pool_address)] = balance;
       } else {
         // rewards are in the rewards_token decimals
-        this.balanceRewards[rewardsKey(rewardsToken.inc_token.symbol)] = divDecimals(
+        this.balanceRewards[rewardsKey(rewardsToken.pool_address)] = divDecimals(
           balance,
           rewardsToken.rewards_token.decimals,
         ); //divDecimals(balance, token.inc_token.decimals);
       }
     } catch (err) {
-      this.balanceRewards[rewardsKey(rewardsToken.inc_token.symbol)] = unlockToken;
+      this.balanceRewards[rewardsKey(rewardsToken.pool_address)] = unlockToken;
     }
 
     try {
       const balance = await this.getBridgeDepositBalance(rewardsToken.pool_address);
 
       if (balance.includes(unlockToken)) {
-        this.balanceRewards[rewardsDepositKey(rewardsToken.inc_token.symbol)] = balance;
+        this.balanceRewards[rewardsDepositKey(rewardsToken.pool_address)] = balance;
       } else {
-        this.balanceRewards[rewardsDepositKey(rewardsToken.inc_token.symbol)] = divDecimals(
+        this.balanceRewards[rewardsDepositKey(rewardsToken.pool_address)] = divDecimals(
           balance,
           rewardsToken.inc_token.decimals,
         );
       }
     } catch (err) {
-      this.balanceRewards[rewardsDepositKey(rewardsToken.inc_token.symbol)] = unlockToken;
+      this.balanceRewards[rewardsDepositKey(rewardsToken.pool_address)] = unlockToken;
     }
 
     try {
@@ -774,16 +803,17 @@ export class UserStoreEx extends StoreConstructor {
       );
 
       if (balance.includes(unlockToken)) {
-        this.balanceRewards[rewardsToken.rewards_token.symbol] = balance;
+        this.balanceRewards[rewardsToken.rewards_token.address] = balance;
       } else {
-        this.balanceRewards[rewardsToken.rewards_token.symbol] = divDecimals(
+        this.balanceRewards[rewardsToken.rewards_token.address] = divDecimals(
           balance,
           rewardsToken.rewards_token.decimals,
         );
       }
     } catch (err) {
-      this.balanceRewards[rewardsToken.rewards_token.symbol] = unlockToken;
+      this.balanceRewards[rewardsToken.rewards_token.address] = unlockToken;
     }
+    console.log(this.balanceRewards)
   }
 
   @action public signOut() {
@@ -917,9 +947,9 @@ export class UserStoreEx extends StoreConstructor {
               rewardToken.reward.inc_token.decimals,
             ),
             rewardsDecimals: String(rewardToken.reward.rewards_token.decimals),
-            rewards: stores.user.balanceRewards[rewardsKey(rewardToken.reward.inc_token.symbol)],
-            deposit: stores.user.balanceRewards[rewardsDepositKey(rewardToken.reward.inc_token.symbol)],
-            balance: stores.user.balanceToken[rewardToken.token.src_coin],
+            rewards: stores.user.balanceRewards[rewardsKey(rewardToken.token.dst_address)],
+            deposit: stores.user.balanceRewards[rewardsDepositKey(rewardToken.token.dst_address)],
+            balance: stores.user.balanceToken[rewardToken.token.dst_address],
             decimals: rewardToken.token.decimals,
             name: rewardToken.token.name,
             price: String(rewardToken.reward.inc_token.price),

@@ -132,8 +132,10 @@
   align-items: center;
 }
 
-.content {
-  padding: 42px !important;
+.modal{
+  .content {
+    padding: 42px !important;
+  }
 }
 .actions {
   padding: 0 42px 42px 0 !important;

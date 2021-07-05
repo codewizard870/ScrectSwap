@@ -106,9 +106,9 @@ export const Governance = observer(() => {
   useEffect(()=>{
     (async (a) => {
       if(a){
-          await user.updateBalanceForSymbol(a.display_props.symbol);
-          await user.refreshRewardsBalances(a.display_props.symbol);
-          setVotingPower(user.balanceRewards[rewardsDepositKey(a.display_props.symbol)]);
+          await user.refreshTokenBalanceByAddress(a.lockedAssetAddress);
+          await user.refreshRewardsBalances('',a.rewardsContract);
+          setVotingPower(user.balanceRewards[rewardsDepositKey(a.rewardsContract)]);
         }
         
     })(rewardToken);

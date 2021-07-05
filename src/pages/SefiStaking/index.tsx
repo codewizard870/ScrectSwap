@@ -215,9 +215,9 @@ export const SeFiStakingPage = observer(() => {
                     rewardToken.reward.inc_token.decimals,
                   ),
                   rewardsDecimals: String(rewardToken.reward.rewards_token.decimals),
-                  rewards: user.balanceRewards[rewardsKey(rewardToken.reward.inc_token.symbol)],
-                  deposit: user.balanceRewards[rewardsDepositKey(rewardToken.reward.inc_token.symbol)],
-                  balance: user.balanceToken[rewardToken.token.src_coin],
+                  rewards: user.balanceRewards[rewardsKey(rewardToken.reward.pool_address)],
+                  deposit: user.balanceRewards[rewardsDepositKey(rewardToken.reward.pool_address)],
+                  balance: user.balanceToken[rewardToken.token.dst_address],
                   decimals: rewardToken.token.decimals,
                   name: rewardToken.token.name,
                   price: String(rewardToken.reward.inc_token.price),
@@ -228,7 +228,7 @@ export const SeFiStakingPage = observer(() => {
                   rewardsSymbol: 'SEFI',
                 };
 
-                if(rewardsToken.lockedAsset === 'SEFI'){
+                if(rewardToken.reward.pool_address === process.env.SEFI_STAKING_CONTRACT){
                     return (
                       <EarnRow
                         notify={notify}

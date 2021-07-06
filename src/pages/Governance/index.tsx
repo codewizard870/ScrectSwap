@@ -13,6 +13,7 @@ import { calculateAPY, RewardsToken } from 'components/Earn/EarnRow';
 import { unlockJsx } from 'pages/Swap/utils';
 import { unlockToken, zeroDecimalsFormatter } from 'utils';
 import { rewardsDepositKey } from 'stores/UserStore';
+import axios from "axios";
 
 
 export const Governance = observer(() => {
@@ -106,7 +107,40 @@ export const Governance = observer(() => {
     ]
   });
 
-  console.log(state.selectedFilter);
+  const [myProposals, setProposals] = useState([])
+
+  const [proposal, setProposal] = useState({});
+
+  // console.log(state.selectedFilter);
+
+  const URL = process.env.BACKEND_URL
+
+  const getProposals = async () => {
+
+    try {
+      const response = await axios.get(`${URL}/secret_votes`);
+      const data = response.data.result;
+      // console.log(data);
+      const result = data.map(proposal => {
+        return {
+          id: proposal._id,
+          address: proposal.address,
+          title: proposal.title,
+          description: proposal.description,
+          author_address: proposal.author_addr,
+          author_alias: proposal.author_alias,
+          end_date: proposal.end_timestamp
+        }
+      });
+      setProposals(result);
+      // console.log('Result:', result);
+    } catch (error) {
+      console.log('Error Message:', error);
+    }
+  }
+
+  // console.log(getProposals());
+  // console.log(myProposals);
 
   function setFilter(i: number): void {
     setState({
@@ -166,10 +200,17 @@ export const Governance = observer(() => {
     }
 
   }
-
   // console.log('Voting Power:', votingPower);
   // console.log('Total Voting Power: ', totalLocked);
   // console.log('Reward Token:', rewardToken);
+
+  useEffect(() => {
+    (async () => {
+      await getProposals();
+    })();
+  }, [])
+
+  console.log(myProposals);
 
   //fetch total locked and Staking APY
   useEffect(() => {

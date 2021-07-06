@@ -15,7 +15,8 @@ const CreateProposal = observer((props) => {
     const [formData, updateFormData] = React.useState({
         title: '',
         description: '',
-        type: '1'
+        type: '1',
+        author_alias: '',
     });
 
     function handleChange(e) {
@@ -27,12 +28,12 @@ const CreateProposal = observer((props) => {
         });
     };
 
-    console.log(formData);
+    // console.log(formData);
 
     async function createProposal(event) {
         event.preventDefault();
         try {
-            const result = await user.createProposal(formData.title, formData.description);
+            const result = await user.createProposal(formData.title, formData.description, formData.author_alias);
             if (result?.code) {
                 const message = extractError(result)
                 notify('error', message, 10, result.txhash, true)
@@ -57,16 +58,21 @@ const CreateProposal = observer((props) => {
                     </div>
                 </div>
                 <div className='card-proposal'>
+                    <label htmlFor="title">Title</label>
                     <div className='form-title'>
+                        <input onChange={handleChange} id='title' name='title' type="text" />
+                    </div>
+
+                    <div className="form-proposal">
                         <label htmlFor="type">Proposal Type</label>
-                        <label htmlFor="title">Title</label>
+                        <label htmlFor="author_alias">Proposer Name: </label>
                         <select onChange={handleChange} name="type" id="proposal">
                             <option value="1">SEFI Rewards pool</option>
                             <option value="2">SEFI Community Spending</option>
                             <option value="3">SecretSwap Parameter Change</option>
                             <option value="4">Other</option>
                         </select>
-                        <input onChange={handleChange} id='title' name='title' type="text" />
+                        <input onChange={handleChange} id='author_alias' name='author_alias' type="text" />
                     </div>
                     <div className='form-description'>
                         <label htmlFor="description">Description</label>

@@ -665,7 +665,7 @@ export class UserStoreEx extends StoreConstructor {
       throw new Error('Not viewing key registered')
     }
   }
-  public async createProposal(title: string, description: string,): Promise<any> {
+  public async createProposal(title: string, description: string, author_alias: string): Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
@@ -679,7 +679,8 @@ export class UserStoreEx extends StoreConstructor {
             "poll_metadata": {
               "title": title,
               "description": description,
-              "author": this.address
+              "author": this.address,
+              "author_alias": author_alias
             },
             "poll_choices": ["Yes", "No"],
             "pool_viewing_key": viewingKey

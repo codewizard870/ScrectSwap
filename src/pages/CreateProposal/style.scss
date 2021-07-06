@@ -11,6 +11,7 @@
             }
             select,input,textarea{
                 border: 1px solid $border-color;
+                color: $font-gray;
             }
         }
     }
@@ -38,6 +39,11 @@
     display: grid;
     row-gap: 26px;
     .form-title{
+        display: grid;
+        grid-auto-flow: row;
+        row-gap: 4px;
+    }
+    .form-proposal{
         display: grid;
         grid-template: auto auto / auto auto;
         gap: 4px 26px;

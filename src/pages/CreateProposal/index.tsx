@@ -1,6 +1,6 @@
 import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
 import { useHistory } from "react-router-dom";
-import ProposalLayout from 'components/ProposalLayout'; 
+import ProposalLayout from 'components/ProposalLayout';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -9,34 +9,35 @@ import { useStores } from 'stores';
 import './style.scss';
 import { sleep } from 'utils';
 
-const CreateProposal = observer((props)=>{
-    const {theme,user} = useStores();
+const CreateProposal = observer((props) => {
+    const { theme, user } = useStores();
     const history = useHistory();
     const [formData, updateFormData] = React.useState({
-        title:'',
-        description:'',
-        type:''
-
+        title: '',
+        description: '',
+        type: '1'
     });
 
-    function handleChange(e){
+    function handleChange(e) {
         updateFormData({
-          ...formData,
-      
-          // Trimming any whitespace
-          [e.target.name]: e.target.value.trim()
-        });
-      };
+            ...formData,
 
-    async function createProposal(event){
-        event.preventDefault();        
+            // Trimming any whitespace
+            [e.target.name]: e.target.value.trim()
+        });
+    };
+
+    console.log(formData);
+
+    async function createProposal(event) {
+        event.preventDefault();
         try {
-            const result = await user.createProposal(formData.title,formData.description);
-            if(result?.code){
+            const result = await user.createProposal(formData.title, formData.description);
+            if (result?.code) {
                 const message = extractError(result)
-                notify('error',message,10,result.txhash,true)
-            }else{
-                notify('success','Proposal created successfully',10,'',true)
+                notify('error', message, 10, result.txhash, true)
+            } else {
+                notify('success', 'Proposal created successfully', 10, '', true)
                 await sleep(3000)
                 history.push('/governance')
             }
@@ -59,7 +60,7 @@ const CreateProposal = observer((props)=>{
                     <div className='form-title'>
                         <label htmlFor="type">Proposal Type</label>
                         <label htmlFor="title">Title</label>
-                        <select onChange={handleChange} name="proposal-type" id="proposal-type">
+                        <select onChange={handleChange} name="type" id="proposal">
                             <option value="1">SEFI Rewards pool</option>
                             <option value="2">SEFI Community Spending</option>
                             <option value="3">SecretSwap Parameter Change</option>
@@ -69,20 +70,20 @@ const CreateProposal = observer((props)=>{
                     </div>
                     <div className='form-description'>
                         <label htmlFor="description">Description</label>
-                        <textarea 
+                        <textarea
                             // maxLength={250}
                             onChange={handleChange}
-                            name="description" 
-                            id="description" 
-                            cols={60} 
-                            rows={20}/>
+                            name="description"
+                            id="description"
+                            cols={60}
+                            rows={20} />
                     </div>
                 </div>
-                   
-                </form> 
-            
+
+            </form>
+
         </ProposalLayout>
     )
 })
 
-export default  CreateProposal;
+export default CreateProposal;

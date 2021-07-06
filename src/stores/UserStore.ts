@@ -43,7 +43,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public balanceSCRT: string;
   @observable public balanceCSHBK: string;
   @observable public expectedSEFIFromCSHBK: number;
-  @observable public ratioCSHBK:number;
+  @observable public ratioCSHBK: number;
 
   @observable public balanceToken: { [key: string]: string } = {};
   @observable public balanceTokenMin: { [key: string]: string } = {};
@@ -67,8 +67,8 @@ export class UserStoreEx extends StoreConstructor {
   constructor(stores) {
     super(stores);
     window.addEventListener("keplr_keystorechange", () => {
-        console.log("Key store in Keplr is changed. Reloading page")
-        window.location.reload();
+      console.log("Key store in Keplr is changed. Reloading page")
+      window.location.reload();
     })
     // setInterval(() => this.getBalances(), 15000);
 
@@ -94,9 +94,9 @@ export class UserStoreEx extends StoreConstructor {
           // Keplr is present, stop checking
           clearInterval(keplrCheckInterval)
           accept();
-        }else{
+        } else {
           console.log("Keplr is not installed")
-          this.isUnconnected= 'UNINSTALLED';
+          this.isUnconnected = 'UNINSTALLED';
         }
       }, 1000);
     });
@@ -117,9 +117,9 @@ export class UserStoreEx extends StoreConstructor {
 
         //this.websocketInit();
       });
-    }else{
+    } else {
       console.log("Couln't find a session")
-      this.isUnconnected= 'true';
+      this.isUnconnected = 'true';
     }
   }
 
@@ -273,17 +273,17 @@ export class UserStoreEx extends StoreConstructor {
 
   @action public async signIn(wait?: boolean) {
     try {
-      
+
       this.error = '';
-  
+
       console.log('Waiting for Keplr...');
       while (wait && !this.keplrWallet) {
         await sleep(100);
       }
       console.log('Found Keplr', process.env.CHAIN_ID);
-  
+
       this.chainId = process.env.CHAIN_ID;
-  
+
       // Setup Secret Testnet (not needed on mainnet)
       if (process.env.ENV !== 'MAINNET') {
         await this.keplrWallet.experimentalSuggestChain({
@@ -332,7 +332,7 @@ export class UserStoreEx extends StoreConstructor {
       }
       // Ask the user for permission
       await this.keplrWallet.enable(this.chainId);
-      
+
       // @ts-ignore
       this.keplrOfflineSigner = window.getOfflineSigner(this.chainId);
       const accounts = await this.keplrOfflineSigner.getAccounts();
@@ -354,27 +354,27 @@ export class UserStoreEx extends StoreConstructor {
     try {
       const client = isSigner
         ? new AsyncSender(
-            address,
-            this.address,
-            this.keplrOfflineSigner,
-            // @ts-ignore
-            window.getEnigmaUtils(this.chainId),
-            {
-              init: {
-                amount: [{ amount: '300000', denom: 'uscrt' }],
-                gas: '300000',
-              },
-              exec: {
-                amount: [{ amount: '500000', denom: 'uscrt' }],
-                gas: '500000',
-              },
+          address,
+          this.address,
+          this.keplrOfflineSigner,
+          // @ts-ignore
+          window.getEnigmaUtils(this.chainId),
+          {
+            init: {
+              amount: [{ amount: '300000', denom: 'uscrt' }],
+              gas: '300000',
             },
-            BroadcastMode.Async,
-          )
+            exec: {
+              amount: [{ amount: '500000', denom: 'uscrt' }],
+              gas: '500000',
+            },
+          },
+          BroadcastMode.Async,
+        )
         : new CosmWasmClient(
-            address,
-            // @ts-ignore
-          );
+          address,
+          // @ts-ignore
+        );
       this.syncLocalStorage();
       this.getBalances();
       return client;
@@ -546,7 +546,7 @@ export class UserStoreEx extends StoreConstructor {
       await this.updateScrtBalance();
     } else if (symbol === 'sSCRT') {
       await this.updateSScrtBalance();
-    }else if(symbol === "CSHBK"){
+    } else if (symbol === "CSHBK") {
       await this.updateCSHBKBalance();
     }
 
@@ -556,17 +556,17 @@ export class UserStoreEx extends StoreConstructor {
 
     //await this.refreshRewardsBalances(symbol);
   };
-  @action  public updateExpectedSEFIFromCSHBK = async() => {
+  @action public updateExpectedSEFIFromCSHBK = async () => {
     try {
       //Calculating Expected SEFI from CSHBK
       const cb_balance = parseFloat(this.balanceCSHBK)
       //Total supply
-      const {token_info} = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { token_info: {} });
+      const { token_info } = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { token_info: {} });
       const cb_total_supply = parseFloat(token_info?.total_supply)
       //Current block
       const block = (await this.secretjs.getBlock()).header.height;
       //Peding SEFI
-      const {pending} = await this.secretjs.queryContractSmart(process.env.MASTER_CONTRACT, {pending: {spy_addr: process.env.CSHBK_CONTRACT,block,},});
+      const { pending } = await this.secretjs.queryContractSmart(process.env.MASTER_CONTRACT, { pending: { spy_addr: process.env.CSHBK_CONTRACT, block, }, });
       const pending_sefi = parseFloat(pending?.amount);
       //Calculating CSHBK ratio
       //Reward balance 
@@ -579,23 +579,23 @@ export class UserStoreEx extends StoreConstructor {
 
       //Result Rate CSHBK
       // console.log(`(${accumulated_sefi} / ${cb_total_supply}) * ( ${sefiUSD} / ( ${scrtUSD} * 0.003 ))`)      
-      this.ratioCSHBK =  parseFloat(((accumulated_sefi / cb_total_supply) * (sefiUSD / (scrtUSD * 0.003))).toFixed(2))
-      if(parseFloat(this.balanceCSHBK) > 0){
+      this.ratioCSHBK = parseFloat(((accumulated_sefi / cb_total_supply) * (sefiUSD / (scrtUSD * 0.003))).toFixed(2))
+      if (parseFloat(this.balanceCSHBK) > 0) {
         //Result Expected SEFI
-        this.expectedSEFIFromCSHBK = parseFloat(((cb_balance * scrtUSD * 0.003 * this.ratioCSHBK) / sefiUSD).toFixed(2))    
+        this.expectedSEFIFromCSHBK = parseFloat(((cb_balance * scrtUSD * 0.003 * this.ratioCSHBK) / sefiUSD).toFixed(2))
         // console.log(`cashback -> (${cb_balance} * ${scrtUSD} * 0.003 * ${this.ratioCSHBK} ) / ${sefiUSD}`)    
         // console.log(`cashback 2 -> ((${cb_balance} * ${scrtUSD} * 0.003 ) / ${sefiUSD}) * ${this.ratioCSHBK} `)    
-      }else{
-        this.expectedSEFIFromCSHBK=0.0;
+      } else {
+        this.expectedSEFIFromCSHBK = 0.0;
       }
     } catch (error) {
-      this.expectedSEFIFromCSHBK=0.0;
+      this.expectedSEFIFromCSHBK = 0.0;
       console.error(error)
     }
   }
-  
-  @action  public updateCSHBKBalance= async() => {
-     try {
+
+  @action public updateCSHBKBalance = async () => {
+    try {
       const balance = await this.getSnip20Balance(process.env.CSHBK_CONTRACT, 6);
       this.balanceToken[process.env.CSHBK_CONTRACT] = balance;
       this.balanceCSHBK = balance;
@@ -605,7 +605,7 @@ export class UserStoreEx extends StoreConstructor {
       console.error(err)
       this.balanceCSHBK = unlockToken;
     }
-    
+
     const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'CSHBK');
 
     if (!token) {
@@ -619,80 +619,108 @@ export class UserStoreEx extends StoreConstructor {
     }
     return;
   }
-  public async ConvertCHSBKToSEFI():Promise<any>{
-      const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK),6)
-      const result = await this.secretjsSend.asyncExecute(
-        process.env.CSHBK_CONTRACT,
-          {
-          burn: {
-              amount: canonicalizeCHSBK,
-            },
-          },'',[],
-        getFeeForExecute(450_000),
-      );
-      
-      if(result?.code){
-        return result
-      }
-      
-      this.updateLocalCSHBKData(this.expectedSEFIFromCSHBK,this.balanceCSHBK)
-      await this.updateCSHBKBalance();
-      return result;
+  public async ConvertCHSBKToSEFI(): Promise<any> {
+    const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK), 6)
+    const result = await this.secretjsSend.asyncExecute(
+      process.env.CSHBK_CONTRACT,
+      {
+        burn: {
+          amount: canonicalizeCHSBK,
+        },
+      }, '', [],
+      getFeeForExecute(450_000),
+    );
+
+    if (result?.code) {
+      return result
+    }
+
+    this.updateLocalCSHBKData(this.expectedSEFIFromCSHBK, this.balanceCSHBK)
+    await this.updateCSHBKBalance();
+    return result;
 
   }
-  public async createProposal(title:string,description:string,):Promise<any>{
+  public async createVote(choice: string, contractAddress: string,): Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
       address: process.env.SEFI_STAKING_CONTRACT,
     });
 
-    if(viewingKey){
-      const result = await this.secretjsSend.asyncExecute(process.env.FACTORY_CONTRACT,
+    if (viewingKey) {
+      const result = await this.secretjsSend.asyncExecute(contractAddress,
         {
-          "new_poll": { 
-            "poll_metadata": { 
-              "title": title, 
-              "description": description, 
-              "author": this.address 
-            }, 
-            "poll_choices": ["Yes", "No"], 
-            "pool_viewing_key": viewingKey 
+          "vote":
+          {
+            "choice": choice,
+            "staking_pool_viewing_key": viewingKey
           }
         },
         '',
         [],
-        getFeeForExecute(450_000),)
-  
-        return result;
-    }else{
+        getFeeForExecute(450_000))
+
+      return result;
+    } else {
       throw new Error('Not viewing key registered')
     }
   }
-  public updateLocalCSHBKData(sefi:number,cashback:string){
-    const sefi_earned = localStorage.getItem('total_sefi_earned')
-    const cb_received = localStorage.getItem('total_cb_received')
-    
-    if(sefi_earned){
-      const total_sefi_earned = parseFloat(sefi_earned)+sefi;
-      localStorage.setItem('total_sefi_earned',total_sefi_earned.toString())
-    }else{
-      localStorage.setItem('total_sefi_earned',sefi.toString())
-    }
-    if(cb_received){
-      const total_cb_received = parseFloat(cb_received)+parseFloat(cashback);
-      localStorage.setItem('total_cb_received',total_cb_received.toString())
-    }else{
-      localStorage.setItem('total_cb_received',cashback)
+  public async createProposal(title: string, description: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjsSend.asyncExecute(process.env.FACTORY_CONTRACT,
+        {
+          "new_poll": {
+            "poll_metadata": {
+              "title": title,
+              "description": description,
+              "author": this.address
+            },
+            "poll_choices": ["Yes", "No"],
+            "pool_viewing_key": viewingKey
+          }
+        },
+        '',
+        [],
+        getFeeForExecute(450_000))
+
+      return result;
+    } else {
+      throw new Error('Not viewing key registered')
     }
   }
 
-  public async getIsSupported(pairAddress :string):Promise<boolean>{
+
+
+  public updateLocalCSHBKData(sefi: number, cashback: string) {
+    const sefi_earned = localStorage.getItem('total_sefi_earned')
+    const cb_received = localStorage.getItem('total_cb_received')
+
+    if (sefi_earned) {
+      const total_sefi_earned = parseFloat(sefi_earned) + sefi;
+      localStorage.setItem('total_sefi_earned', total_sefi_earned.toString())
+    } else {
+      localStorage.setItem('total_sefi_earned', sefi.toString())
+    }
+    if (cb_received) {
+      const total_cb_received = parseFloat(cb_received) + parseFloat(cashback);
+      localStorage.setItem('total_cb_received', total_cb_received.toString())
+    } else {
+      localStorage.setItem('total_cb_received', cashback)
+    }
+  }
+
+  public async getIsSupported(pairAddress: string): Promise<boolean> {
     try {
-      if(pairAddress){
-        let {is_supported:result} = await this.secretjs.queryContractSmart(process.env.MINTER_CONTRACT, {is_supported:{pair:pairAddress}});
+      if (pairAddress) {
+        let { is_supported: result } = await this.secretjs.queryContractSmart(process.env.MINTER_CONTRACT, { is_supported: { pair: pairAddress } });
         return result?.is_supported;
-      }else{
+      } else {
         return false;
       }
     } catch (error) {
@@ -742,13 +770,13 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
-  async refreshRewardsBalances(symbol: string,address?:string) {
+  async refreshRewardsBalances(symbol: string, address?: string) {
     let rewardsToken;
-    if(address){
+    if (address) {
       rewardsToken = this.stores.rewards.allData.find(t => {
         return t.pool_address === address;
       });
-    }else{
+    } else {
       rewardsToken = this.stores.rewards.allData.find(t => {
         return t.inc_token.symbol.toLowerCase() === symbol.toLowerCase();
       });
@@ -890,7 +918,7 @@ export class UserStoreEx extends StoreConstructor {
   //
   // this.ethRate = ethusdt.body.lastPrice;
   //}
-  @action public async getRewardToken(tokenSymbol:string):Promise<RewardsToken> {
+  @action public async getRewardToken(tokenSymbol: string): Promise<RewardsToken> {
     try {
       stores.rewards.init({
         isLocal: true,
@@ -902,8 +930,8 @@ export class UserStoreEx extends StoreConstructor {
       const getFilteredTokens = async () => {
         if (stores.tokens.allData.length > 0) {
           await sleep(500);
-          return(stores.tokens.tokensUsageSync('LPSTAKING'));
-        }else{
+          return (stores.tokens.tokensUsageSync('LPSTAKING'));
+        } else {
           return undefined
         }
       };
@@ -917,11 +945,11 @@ export class UserStoreEx extends StoreConstructor {
         .map(reward => {
           return { reward, token: filteredTokens?.find(element => element.dst_address === reward.inc_token.address) };
         });
-        while (!stores.user.secretjs || stores.tokens.isPending) {
-          await sleep(100);
-        }
-        await stores.user.updateBalanceForSymbol(tokenSymbol);  
-        const reward_tokens = mappedRewards
+      while (!stores.user.secretjs || stores.tokens.isPending) {
+        await sleep(100);
+      }
+      await stores.user.updateBalanceForSymbol(tokenSymbol);
+      const reward_tokens = mappedRewards
         .slice()
         .sort((a, b) => {
           /* SEFI first */
@@ -937,8 +965,8 @@ export class UserStoreEx extends StoreConstructor {
           if (Number(rewardToken.reward.deadline) < 2_000_000) {
             return null;
           }
-          
-          const rewardsToken :RewardsToken = {
+
+          const rewardsToken: RewardsToken = {
             rewardsContract: rewardToken.reward.pool_address,
             lockedAsset: rewardToken.reward.inc_token.symbol,
             lockedAssetAddress: rewardToken.token.dst_address,
@@ -960,16 +988,16 @@ export class UserStoreEx extends StoreConstructor {
             rewardsSymbol: 'SEFI',
           };
 
-          if(rewardsToken.lockedAsset === tokenSymbol){
-              return rewardsToken;
+          if (rewardsToken.lockedAsset === tokenSymbol) {
+            return rewardsToken;
           }
         });
-        return reward_tokens[0];
+      return reward_tokens[0];
     } catch (error) {
       console.error(error)
       return undefined;
     }
-      
-      
+
+
   }
 }

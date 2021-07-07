@@ -4,18 +4,17 @@ import { Button } from 'semantic-ui-react';
 import Theme from "themes";
 import './style.scss';
 
-export const ProposalRow = (props:{
-    theme:Theme,
-    index:number,
-    title:string,
-    endTime:Date,
-    status:string,
-
-})=>{
+export const ProposalRow = (props: {
+    theme: Theme,
+    index: number,
+    title: string,
+    endTime: Date,
+    status?: string,
+}) => {
     console.log()
     return (
         <div className={`proposal-row ${props.theme.currentTheme}`}>
-            <p>{props.index}</p>
+            <p>{props.index + 1}</p>
             <p className='title'>{props.title}</p>
             <div>
                 <p>{moment(props.endTime).format('ddd D MMM, h:mm a')}</p>

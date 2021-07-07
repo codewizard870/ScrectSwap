@@ -20,6 +20,8 @@ import BigNumber from 'bignumber.js';
 import { storeTxResultLocally } from 'pages/Swap/utils';
 import { RewardData } from 'pages/SefiStaking';
 import { RewardsToken } from 'components/Earn/EarnRow';
+import axios from "axios";
+
 
 export const rewardsDepositKey = key => `${key}RewardsDeposit`;
 
@@ -49,6 +51,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public balanceTokenMin: { [key: string]: string } = {};
 
   @observable public balanceRewards: { [key: string]: string } = {};
+  @observable public proposals: Array<{ id: string, address: string, title: string, description: string, author_address: string, author_alias: string, end_date: number }>;
 
   @observable public scrtRate = 0;
   // @observable public ethRate = 0;
@@ -342,7 +345,8 @@ export class UserStoreEx extends StoreConstructor {
       this.secretjsSend = this.initSecretJS(process.env.SECRET_POST_ADDRESS, true);
       this.secretjs = this.initSecretJS(process.env.SECRET_LCD, false);
       await this.updateScrtBalance();
-      await this.updateCSHBKBalance()
+      await this.updateCSHBKBalance();
+      await this.getProposals();
       this.isUnconnected = '';
     } catch (error) {
       this.isUnconnected = 'true';
@@ -693,6 +697,29 @@ export class UserStoreEx extends StoreConstructor {
       return result;
     } else {
       throw new Error('Not viewing key registered')
+    }
+  }
+
+  @action public getProposals = async () => {
+    try {
+      const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
+      const data = response.data.result;
+      // console.log(data);
+      const result = data.map(proposal => {
+        return {
+          id: proposal._id,
+          address: proposal.address,
+          title: proposal.title,
+          description: proposal.description,
+          author_address: proposal.author_addr,
+          author_alias: proposal.author_alias,
+          end_date: proposal.end_timestamp
+        }
+      });
+      this.proposals = result;
+      // console.log('Result:', result);
+    } catch (error) {
+      console.log('Error Message:', error);
     }
   }
 

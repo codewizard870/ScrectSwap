@@ -113,12 +113,9 @@ export const Governance = observer(() => {
 
   // console.log(state.selectedFilter);
 
-  const URL = process.env.BACKEND_URL
-
   const getProposals = async () => {
-
     try {
-      const response = await axios.get(`${URL}/secret_votes`);
+      const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
       const data = response.data.result;
       // console.log(data);
       const result = data.map(proposal => {
@@ -153,6 +150,11 @@ export const Governance = observer(() => {
     return proposals.map((proporsal) => {
       return proporsal.title
     });
+  }
+
+  const selectProposal = (id: string) => {
+    const proposal = myProposals.filter(ele => ele.id === id);
+    setProposal(proposal);
   }
 
   // console.log(getAllProporsals());
@@ -268,7 +270,6 @@ export const Governance = observer(() => {
                       <span>({numeral((votingPower * 100) / totalLocked).format('0.0%')})</span>
                     </h1>
                 }
-
                 <p>My Voting Power</p>
               </div>
               <div>
@@ -312,8 +313,17 @@ export const Governance = observer(() => {
             </div>
             <div className='list-proposal'>
               {
-                state?.proposals.map(p => {
-                  return <ProposalRow key={p.index} theme={theme} index={p.index} title={p.title} endTime={p.endTime} status={p.status}></ProposalRow>
+                myProposals.map((p, index) => {
+                  return (
+                    <ProposalRow
+                      key={p.id}
+                      theme={theme}
+                      index={index}
+                      title={p.title}
+                      endTime={p.end_date}
+                      status={'active'}
+                    />
+                  )
                 })
               }
             </div>

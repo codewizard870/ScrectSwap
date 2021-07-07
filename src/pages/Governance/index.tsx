@@ -212,7 +212,7 @@ export const Governance = observer(() => {
     })();
   }, [])
 
-  console.log(myProposals);
+  // console.log(myProposals);
 
   //fetch total locked and Staking APY
   useEffect(() => {
@@ -322,6 +322,7 @@ export const Governance = observer(() => {
                       title={p.title}
                       endTime={p.end_date}
                       status={'active'}
+                      id={p.id}
                     />
                   )
                 })

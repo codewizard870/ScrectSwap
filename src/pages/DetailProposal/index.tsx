@@ -2,6 +2,7 @@ import ProposalLayout from 'components/ProposalLayout'
 import VoteModal from 'components/VoteModal'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
+import { useParams } from 'react-router'
 import { Button } from 'semantic-ui-react'
 import { useStores } from 'stores'
 import './style.scss';
@@ -10,6 +11,9 @@ export const DetailProposal = observer((props) => {
 
     const { theme, user } = useStores();
     // console.log('Proposals:', user.proposals);
+
+    const { id }: any = useParams();
+    // console.log(useParams());
 
     const [currentProposal, setCurrentProposal] = React.useState({
         id: '',
@@ -41,42 +45,50 @@ export const DetailProposal = observer((props) => {
     })
 
     useEffect(() => {
-        getProposal('60e5d55cabf2383e205a2ef1');
+        getProposal(id);
+        // getProposal('60e5d55cabf2383e205a2ef1');
     }, [user.proposals]);
 
     return (
         <ProposalLayout>
-            <div className={`proposal-detail ${theme.currentTheme}`}>
-                <div className='vote-row'>
-                    <div className='proposal-id'>
-                        <p>#{currentProposal.id}</p>
-                        {/* <h3>{proposal.type}</h3> */}
-                    </div>
-                    <VoteModal id={currentProposal.id} title={currentProposal.title}>
-                        <Button className='button-vote g-button'>Vote</Button>
-                    </VoteModal>
+            {!currentProposal
+                ?
+                <div>
+                    <h1>Loading Page</h1>
                 </div>
-                {/* <div className={`proposal-status small status-${proposal.status}`}>
+                :
+                <div className={`proposal-detail ${theme.currentTheme}`}>
+                    <div className='vote-row'>
+                        <div className='proposal-id'>
+                            <p>#{currentProposal.id}</p>
+                            {/* <h3>{proposal.type}</h3> */}
+                        </div>
+                        <VoteModal id={currentProposal.id} title={currentProposal.title}>
+                            <Button className='button-vote g-button'>Vote</Button>
+                        </VoteModal>
+                    </div>
+                    {/* <div className={`proposal-status small status-${proposal.status}`}>
                     {proposal.status_message}
                 </div> */}
-                <div className={`proposal-status small status-active`}>
-                    {'Active'}
+                    <div className={`proposal-status small status-active`}>
+                        {'Active'}
+                    </div>
+                    <div className='proposal-content'>
+                        <div className="propsal-address">
+                            <h5>Porposal Address: </h5>
+                            <p>{currentProposal.author_address}</p>
+                        </div>
+                        <div className='title'>
+                            <h3>{currentProposal.title}</h3>
+                            <span>Porposed by: {currentProposal.author_alias}</span>
+                        </div>
+                        <div className='description'>
+                            <h5>Description</h5>
+                            <p>{currentProposal.description}</p>
+                        </div>
+                    </div>
                 </div>
-                <div className='proposal-content'>
-                    <div className="propsal-address">
-                        <h5>Porposal Address: </h5>
-                        <p>{currentProposal.author_address}</p>
-                    </div>
-                    <div className='title'>
-                        <h3>{currentProposal.title}</h3>
-                        <span>Porposed by: {currentProposal.author_alias}</span>
-                    </div>
-                    <div className='description'>
-                        <h5>Description</h5>
-                        <p>{currentProposal.description}</p>
-                    </div>
-                </div>
-            </div>
+            }
         </ProposalLayout>
     )
 })

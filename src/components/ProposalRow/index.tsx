@@ -1,5 +1,7 @@
 import moment from 'moment';
+import { DetailProposal } from 'pages/DetailProposal';
 import React from 'react';
+import { Route, Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import Theme from "themes";
 import './style.scss';
@@ -10,19 +12,21 @@ export const ProposalRow = (props: {
     title: string,
     endTime: Date,
     status?: string,
+    id: string,
 }) => {
-    console.log()
     return (
-        <div className={`proposal-row ${props.theme.currentTheme}`}>
-            <p>{props.index + 1}</p>
-            <p className='title'>{props.title}</p>
-            <div>
-                <p>{moment(props.endTime).format('ddd D MMM, h:mm a')}</p>
-                <span>Voting End Time</span>
+        <Link to={`/proposal/${props.id}`} style={{ textDecoration: 'none' }}>
+            <div className={`proposal-row ${props.theme.currentTheme}`}>
+                <p>{props.index + 1}</p>
+                <p className='title'>{props.title}</p>
+                <div>
+                    <p>{moment(props.endTime).format('ddd D MMM, h:mm a')}</p>
+                    <span>Voting End Time</span>
+                </div>
+                <div className={`proposal-status status-${props.status}`}>
+                    {props.status}
+                </div>
             </div>
-            <div className={`proposal-status status-${props.status}`}>
-                {props.status}
-            </div>
-        </div>
+        </Link>
     )
 }

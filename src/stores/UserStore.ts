@@ -869,7 +869,7 @@ export class UserStoreEx extends StoreConstructor {
     } catch (err) {
       this.balanceRewards[rewardsToken.rewards_token.address] = unlockToken;
     }
-    console.log(this.balanceRewards)
+    // console.log(this.balanceRewards)
   }
 
   @action public signOut() {

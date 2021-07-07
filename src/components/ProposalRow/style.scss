@@ -86,7 +86,8 @@
 }
 .proposal-row{
     border-radius: 16px;
-    cursor: pointer;
+    text-decoration: none;
+    // cursor: pointer;
     display: grid;
     align-items: center;
     justify-content: space-around;

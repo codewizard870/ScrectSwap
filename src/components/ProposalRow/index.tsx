@@ -12,19 +12,24 @@ export const ProposalRow = (props: {
     title: string,
     endTime: Date,
     status?: string,
-    id: number,
+    id: string,
 }) => {
+
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     return (
         <Link to={`/proposal/${props.id}`} style={{ textDecoration: 'none' }}>
             <div className={`proposal-row ${props.theme.currentTheme}`}>
-                <p>{props.index}</p>
+                <p>{props.index + 1}</p>
                 <p className='title'>{props.title}</p>
                 <div>
                     <p>{moment(props.endTime).format('ddd D MMM, h:mm a')}</p>
                     <span>Voting End Time</span>
                 </div>
                 <div className={`proposal-status status-${props.status}`}>
-                    {props.status}
+                    {capitalizeFirstLetter(props.status)}
                 </div>
             </div>
         </Link>

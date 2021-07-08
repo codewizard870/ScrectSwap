@@ -18,7 +18,7 @@ import axios from "axios";
 
 export const Governance = observer(() => {
 
-  const proposals = [
+  const proposalsTest = [
     {
       index: 1,
       title: 'Awareness Committee Funding',
@@ -63,55 +63,22 @@ export const Governance = observer(() => {
   const [rewardToken, setRewardToken] = React.useState<RewardsToken>(undefined);
   const [totalLocked, setTotalLocked] = React.useState(0.0);
   const [votingPower, setVotingPower] = React.useState(undefined);
-  const [state, setState] = React.useState({
-    count: 'string',
-    filters: ['all', 'active', "passed", "failed"],
-    selectedFilter: 'all',
-    proposals: [
-      {
-        index: 1,
-        title: 'Awareness Committee Funding',
-        endTime: randomDate(new Date(2012, 0, 1), new Date()),
-        status: 'failed',
-      },
-      {
-        index: 2,
-        title: 'Awareness Committee Funding',
-        endTime: randomDate(new Date(2012, 0, 1), new Date()),
-        status: 'active',
-      },
-      {
-        index: 3,
-        title: 'Awareness Committee Funding',
-        endTime: randomDate(new Date(2012, 0, 1), new Date()),
-        status: 'passed',
-      },
-      {
-        index: 4,
-        title: 'Awareness Committee Funding',
-        endTime: randomDate(new Date(2012, 0, 1), new Date()),
-        status: 'failed',
-      },
-      {
-        index: 5,
-        title: 'Awareness Committee Funding',
-        endTime: randomDate(new Date(2012, 0, 1), new Date()),
-        status: 'active',
-      },
-      {
-        index: 6,
-        title: 'Awareness Committee Funding',
-        endTime: randomDate(new Date(2012, 0, 1), new Date()),
-        status: 'passed',
-      },
-    ]
-  });
 
-  const [myProposals, setProposals] = useState([])
+  const filters = ['all', 'active', "passed", "failed"];
+
+  const [proposals, setProposals] = useState([]);
+
+
+  // console.log(filters);
+  // console.log(proposals);
 
   const [filtered, setFiltered] = useState([]);
 
+  // Get the actual filter on click button
+  const [selectedFilter, setSelectedFilter] = useState('all');
+
   // console.log(state.selectedFilter);
+  // console.log(selectedFilter);
 
   const getProposals = async () => {
     try {
@@ -127,7 +94,10 @@ export const Governance = observer(() => {
           description: proposal.description,
           author_address: proposal.author_addr,
           author_alias: proposal.author_alias,
-          end_date: proposal.end_timestamp
+          end_date: proposal.end_timestamp,
+          ended: proposal.ended,
+          valid: proposal.valid,
+          status: proposal.status.toLowerCase(),
         }
       });
       setProposals(result);
@@ -140,20 +110,13 @@ export const Governance = observer(() => {
   // console.log(getProposals());
   // console.log(myProposals);
 
-  function setFilter(i: string): void {
-    setState({
-      ...state,
-      selectedFilter: i
-    })
-  }
-
-
+  function setFilter(filter: string): void { setSelectedFilter(filter) }
 
   const getProporsalsByStatus = (status: string) => {
-    const filter = proposals.filter((proposal => proposal.status.includes(status)));
+    const filter = proposalsTest.filter((proposal => proposal.status.includes(status)));
 
-    const allProposals = proposals;
-    if (state.selectedFilter === 'all') {
+    const allProposals = proposalsTest;
+    if (selectedFilter === 'all') {
       setFiltered(allProposals);
     } else {
       setFiltered(filter);
@@ -161,7 +124,7 @@ export const Governance = observer(() => {
 
   }
 
-  console.log(filtered);
+  // console.log(filtered);
   // console.log(getProporsalsByStatus('passed'));
   // console.log('Filtrado:', filtered);
 
@@ -210,6 +173,16 @@ export const Governance = observer(() => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  const formatNumber = (num) => {
+    if (num > 999 && num < 1000000) {
+      return `${(num / 1000).toFixed(1)} ${'K'}`; // convert to K for number from > 1000 < 1 million
+    } else if (num > 1000000) {
+      return `${(num / 1000000).toFixed(1)} ${'M'}`; // convert to M for number from > 1 million
+    } else if (num < 900) {
+      return num; // if value < 1000, nothing to do
+    }
+  }
+
   useEffect(() => {
     (async () => {
       await getProposals();
@@ -217,8 +190,8 @@ export const Governance = observer(() => {
   }, [])
 
   useEffect(() => {
-    getProporsalsByStatus(state.selectedFilter);
-  }, [state.selectedFilter])
+    getProporsalsByStatus(selectedFilter);
+  }, [selectedFilter])
 
   // console.log(myProposals);
 
@@ -231,8 +204,6 @@ export const Governance = observer(() => {
 
       setRewardToken(sefi_reward_token)
       setTotalLocked(totalLocked)
-
-      // console.log('API:', process.env.SEFI_STAKING_CONTRACT);
 
     })();
 
@@ -272,15 +243,15 @@ export const Governance = observer(() => {
                   (votingPower)
                     && (votingPower?.includes(unlockToken) || !votingPower)
                     ? unlockJsx({ onClick: createSefiViewingKey })
-                    : <h1>{numeral(votingPower).format('0,0.00')}
-                      <span className='pink'>SEFI</span>
-                      <span>({numeral((votingPower * 100) / totalLocked).format('0.0%')})</span>
+                    : <h1>{numeral(formatNumber(votingPower)).format('0,0.00')}
+                      <span className='pink'>SEFI </span>
+                      <span>({numeral((votingPower * 100) / totalLocked).format('0.00%')})</span>
                     </h1>
                 }
                 <p>My Voting Power</p>
               </div>
               <div>
-                <h1>{numeral(totalLocked).format('0,0.00')} <span className='pink'>SEFI</span></h1>
+                <h1>{numeral(formatNumber(totalLocked)).format('0,0.00')} <span className='pink'>SEFI</span></h1>
                 <p>Total Voting Power</p>
               </div>
             </div>
@@ -300,13 +271,13 @@ export const Governance = observer(() => {
               <h3> Proposal</h3>
               <div className='filters'>
                 {
-                  state?.filters.map((filter, i) => {
+                  filters.map((filter, i) => {
                     return (
                       <Button
                         key={`${i}${filter}`}
                         onClick={() => { setFilter(filter) }}
                         className={
-                          (filter === state?.selectedFilter)
+                          (filter === selectedFilter)
                             ? 'active filter-button'
                             : 'filter-button'
                         }
@@ -329,9 +300,8 @@ export const Governance = observer(() => {
                       index={index}
                       title={p.title}
                       endTime={p.end_date}
-                      // status={'active'}
                       status={p.status}
-                      id={p.index}
+                      id={p.id}
                     />
                   )
                 })
@@ -344,33 +314,3 @@ export const Governance = observer(() => {
     </BaseContainer>
   );
 });
-
-// export class Governance extends React.Component<
-//   {
-//     user: UserStoreEx;
-//     query: URLSearchParams;
-//     theme: Theme;
-//   },
-//   {
-//     count: string;
-//     filters: Array<any>;
-//     selectedFilter: number;
-//     proposals: Array<{
-//         index:number,
-//         title:string,
-//         endTime:Date,
-//         status:string,
-//     }>;
-//   }
-// > {
-
-//   constructor(props: { user: UserStoreEx; theme:Theme ;query:URLSearchParams}) {
-//     super(props);
-//     this.state = ;
-//   }  
-
-//   render() {
-
-
-//   }
-// }

@@ -124,7 +124,11 @@ export const Governance = observer(() => {
   }
 
   const countStatus = (status: string) => {
-    return proposals.filter(e => e.status === status.trim()).length;
+    if (status == 'all') {
+      return proposals.length;
+    } else {
+      return proposals.filter(e => e.status === status.trim()).length;
+    }
   }
 
 
@@ -160,13 +164,12 @@ export const Governance = observer(() => {
 
   async function createSefiViewingKey() {
     try {
-      await user.keplrWallet.suggestToken(user.chainId, rewardToken.rewardsContract);
+      await user.keplrWallet.suggestToken(user.chainId, rewardToken.lockedAssetAddress);
       await user.updateScrtBalance();
       await user.updateBalanceForSymbol('SEFI');
     } catch (e) {
       console.error("Error at creating new viewing key ", e)
     }
-
   }
   // console.log('Voting Power:', votingPower);
   // console.log('Total Voting Power: ', totalLocked);

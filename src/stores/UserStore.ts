@@ -643,7 +643,7 @@ export class UserStoreEx extends StoreConstructor {
           amount: canonicalizeCHSBK,
         },
       }, '', [],
-      getFeeForExecute(450_000),
+      getFeeForExecute(200_000),
     );
 
     if (result?.code) {
@@ -655,7 +655,7 @@ export class UserStoreEx extends StoreConstructor {
     return result;
 
   }
-  public async createVote(choice: string, contractAddress: string,): Promise<any> {
+  public async createVote(choice: number, contractAddress: string,): Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
@@ -673,7 +673,7 @@ export class UserStoreEx extends StoreConstructor {
         },
         '',
         [],
-        getFeeForExecute(450_000))
+        getFeeForExecute(550_000))
 
       return result;
     } else {

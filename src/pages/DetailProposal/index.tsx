@@ -66,8 +66,10 @@ export const DetailProposal = observer((props) => {
                             <p>#{currentProposal.id}</p>
                             {/* <h3>{proposal.type}</h3> */}
                         </div>
-                        <VoteModal id={currentProposal.id} title={currentProposal.title}>
-                            <Button className='button-vote g-button'>Vote</Button>
+                        <VoteModal id={currentProposal.id} title={currentProposal.title} address={currentProposal.address}>
+                            <Button
+                                className='button-vote g-button'>Vote</Button>
+
                         </VoteModal>
                     </div>
                     <div className={`proposal-status small status-${currentProposal.status}`}>

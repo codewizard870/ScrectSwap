@@ -1,17 +1,36 @@
+import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
 import React, { ReactChild } from 'react'
 import { Button, Modal } from 'semantic-ui-react'
 import { useStores } from 'stores'
 import { ExitIcon } from 'ui/Icons/ExitIcon'
+import { useHistory } from "react-router-dom";
 import './style.scss';
 
-const VoteModal = (props:{
-    id:string,
-    title:string,
-    children:ReactChild
-    
-})=>{
-    const {theme} = useStores();
+const VoteModal = (props: {
+    id: string,
+    title: string,
+    children: ReactChild,
+    address: string
+}) => {
+    const { theme, user } = useStores();
     const [open, setOpen] = React.useState(false);
+
+    const vote = async (choice: number) => {
+        try {
+            const result = await user.createVote(choice, props.address);
+            console.log(result);
+            setOpen(false);
+            if (result?.code) {
+                const message = extractError(result)
+                notify('error', message, 10, result.txhash, true);
+            } else {
+                notify('success', 'Vote Registered', 10, '', true)
+            }
+        } catch (error) {
+            console.log('Error:', error);
+        }
+    }
+
 
     return (
         <Modal
@@ -35,8 +54,8 @@ const VoteModal = (props:{
                     <h1>{props.title}</h1>
                 </div>
                 <div className='center '>
-                    <Button onClick={() => setOpen(false)} className='vote-no'>No</Button>
-                    <Button onClick={() => setOpen(false)} className='vote-yes'>Yes</Button>
+                    <Button onClick={() => vote(0)} className='vote-no'>No</Button>
+                    <Button onClick={() => vote(1)} className='vote-yes'>Yes</Button>
                 </div>
             </Modal.Content>
         </Modal>

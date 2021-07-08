@@ -51,7 +51,18 @@ export class UserStoreEx extends StoreConstructor {
   @observable public balanceTokenMin: { [key: string]: string } = {};
 
   @observable public balanceRewards: { [key: string]: string } = {};
-  @observable public proposals: Array<{ id: string, address: string, title: string, description: string, author_address: string, author_alias: string, end_date: number }>;
+  @observable public proposals: Array<{
+    id: string,
+    address: string,
+    title: string,
+    description: string,
+    author_address: string,
+    author_alias: string,
+    end_date: number,
+    ended: boolean,
+    valid: boolean,
+    status: string,
+  }>;
 
   @observable public scrtRate = 0;
   // @observable public ethRate = 0;
@@ -669,6 +680,7 @@ export class UserStoreEx extends StoreConstructor {
       throw new Error('Not viewing key registered')
     }
   }
+
   public async createProposal(title: string, description: string, author_alias: string): Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
@@ -713,7 +725,10 @@ export class UserStoreEx extends StoreConstructor {
           description: proposal.description,
           author_address: proposal.author_addr,
           author_alias: proposal.author_alias,
-          end_date: proposal.end_timestamp
+          end_date: proposal.end_timestamp,
+          ended: proposal.ended,
+          valid: proposal.valid,
+          status: proposal.status.toLowerCase(),
         }
       });
       this.proposals = result;

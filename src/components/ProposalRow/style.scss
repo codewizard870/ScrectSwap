@@ -30,10 +30,11 @@
             background: $background-success;
             color: $color-success;
         }
-        &-active{
-            background: $background-active;
-            color: $color-active;
-            
+        &-in{
+            &.progress{
+                background: $background-active;
+                color: $color-active;
+            }
         }
         &-failed{
             background: $background-failed;
@@ -95,7 +96,7 @@
     padding: 26px;
     width: 100%;
     column-gap: 52px;
-    grid-template-columns: 5% calc(50% - 52px) calc(25% - 52px) calc(20% - 52px);
+    grid-template-columns: 5% calc(40% - 52px) calc(35% - 52px) calc(20% - 52px);
     p{
         font-weight: 600;
         font-size: 22px;

@@ -29,7 +29,7 @@ export const Governance = observer(() => {
       index: 2,
       title: 'Awareness Committee Funding',
       endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'active',
+      status: 'in progress',
     },
     {
       index: 3,
@@ -47,7 +47,7 @@ export const Governance = observer(() => {
       index: 5,
       title: 'Awareness Committee Funding',
       endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'active',
+      status: 'in progress',
     },
     {
       index: 6,
@@ -64,10 +64,9 @@ export const Governance = observer(() => {
   const [totalLocked, setTotalLocked] = React.useState(0.0);
   const [votingPower, setVotingPower] = React.useState(undefined);
 
-  const filters = ['all', 'active', "passed", "failed"];
+  const filters = ['all', 'in progress', "passed", "failed"];
 
   const [proposals, setProposals] = useState([]);
-
 
   // console.log(filters);
   // console.log(proposals);
@@ -76,8 +75,8 @@ export const Governance = observer(() => {
 
   // Get the actual filter on click button
   const [selectedFilter, setSelectedFilter] = useState('all');
+  // console.log(filtered);
 
-  // console.log(state.selectedFilter);
   // console.log(selectedFilter);
 
   const getProposals = async () => {
@@ -108,25 +107,27 @@ export const Governance = observer(() => {
   }
 
   // console.log(getProposals());
-  // console.log(myProposals);
 
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
   const getProporsalsByStatus = (status: string) => {
-    const filter = proposalsTest.filter((proposal => proposal.status.includes(status)));
+    const filter = proposals.filter((proposal => proposal.status.includes(status)));
 
-    const allProposals = proposalsTest;
     if (selectedFilter === 'all') {
-      setFiltered(allProposals);
+      setFiltered(proposals);
     } else {
       setFiltered(filter);
     }
 
   }
 
+  const countStatus = (status: string) => {
+    return proposals.filter(e => e.status === status.trim()).length;
+  }
+
+
   // console.log(filtered);
   // console.log(getProporsalsByStatus('passed'));
-  // console.log('Filtrado:', filtered);
 
   const apyString = (token: RewardsToken) => {
     const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
@@ -169,7 +170,7 @@ export const Governance = observer(() => {
   // console.log('Total Voting Power: ', totalLocked);
   // console.log('Reward Token:', rewardToken);
 
-  function capitalizeFirstLetter(string) {
+  const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
@@ -268,7 +269,7 @@ export const Governance = observer(() => {
           </div>
           <div className='content-governance'>
             <div className='column content-governance__title'>
-              <h3> Proposal</h3>
+              <h3>{capitalizeFirstLetter(selectedFilter)} Proposals</h3>
               <div className='filters'>
                 {
                   filters.map((filter, i) => {
@@ -282,8 +283,8 @@ export const Governance = observer(() => {
                             : 'filter-button'
                         }
                       >
-                        {/* {console.log(filter)} */}
                         {capitalizeFirstLetter(filter)}
+                        {` (${countStatus(filter)})`}
                       </Button>
                     )
                   })
@@ -295,9 +296,9 @@ export const Governance = observer(() => {
                 filtered.map((p, index) => {
                   return (
                     <ProposalRow
-                      key={p.index}
-                      theme={theme}
+                      key={p.id}
                       index={index}
+                      theme={theme}
                       title={p.title}
                       endTime={p.end_date}
                       status={p.status}

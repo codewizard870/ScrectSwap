@@ -22,7 +22,10 @@ export const DetailProposal = observer((props) => {
         description: '',
         author_address: '',
         author_alias: '',
-        end_date: 0
+        end_date: 0,
+        ended: false,
+        valid: false,
+        status: ''
     });
 
     const getProposal = (id: string) => {
@@ -67,12 +70,12 @@ export const DetailProposal = observer((props) => {
                             <Button className='button-vote g-button'>Vote</Button>
                         </VoteModal>
                     </div>
-                    {/* <div className={`proposal-status small status-${proposal.status}`}>
-                    {proposal.status_message}
-                </div> */}
-                    <div className={`proposal-status small status-active`}>
-                        {'Active'}
+                    <div className={`proposal-status small status-${currentProposal.status}`}>
+                        {currentProposal.status}
                     </div>
+                    {/* <div className={`proposal-status small status-active`}>
+                        {'Active'}
+                    </div> */}
                     <div className='proposal-content'>
                         <div className="propsal-address">
                             <h5>Porposal Address: </h5>

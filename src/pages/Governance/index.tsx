@@ -71,7 +71,7 @@ export const Governance = observer(() => {
   // console.log(filters);
   // console.log(proposals);
 
-  const [filtered, setFiltered] = useState([]);
+  const [filtered, setFiltered] = useState(proposals);
 
   // Get the actual filter on click button
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -99,7 +99,8 @@ export const Governance = observer(() => {
           status: proposal.status.toLowerCase(),
         }
       });
-      setProposals(result);
+      // console.log(result);
+      return result;
       // console.log('Result:', result);
     } catch (error) {
       console.log('Error Message:', error);
@@ -110,13 +111,14 @@ export const Governance = observer(() => {
 
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
-  const getProporsalsByStatus = (status: string) => {
-    const filter = proposals.filter((proposal => proposal.status.includes(status)));
-
+  const getProporsalsByStatus = (proposals: Array<any>, status: string) => {
     if (selectedFilter === 'all') {
       setFiltered(proposals);
+      // console.log('all');
     } else {
+      const filter = proposals.filter((proposal => proposal.status.includes(status)));
       setFiltered(filter);
+      // console.log('filtered');
     }
 
   }
@@ -186,12 +188,15 @@ export const Governance = observer(() => {
 
   useEffect(() => {
     (async () => {
-      await getProposals();
+      const result = await getProposals();
+      // console.log(result);
+      setProposals(result);
+      getProporsalsByStatus(result, selectedFilter);
     })();
   }, [])
 
   useEffect(() => {
-    getProporsalsByStatus(selectedFilter);
+    getProporsalsByStatus(proposals, selectedFilter);
   }, [selectedFilter])
 
   // console.log(myProposals);

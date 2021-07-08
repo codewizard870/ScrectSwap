@@ -12,12 +12,12 @@ export const ProposalRow = (props: {
     title: string,
     endTime: Date,
     status?: string,
-    id: string,
+    id: number,
 }) => {
     return (
         <Link to={`/proposal/${props.id}`} style={{ textDecoration: 'none' }}>
             <div className={`proposal-row ${props.theme.currentTheme}`}>
-                <p>{props.index + 1}</p>
+                <p>{props.index}</p>
                 <p className='title'>{props.title}</p>
                 <div>
                     <p>{moment(props.endTime).format('ddd D MMM, h:mm a')}</p>

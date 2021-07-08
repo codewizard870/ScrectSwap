@@ -66,7 +66,7 @@ export const Governance = observer(() => {
   const [state, setState] = React.useState({
     count: 'string',
     filters: ['all', 'active', "passed", "failed"],
-    selectedFilter: 0,
+    selectedFilter: 'all',
     proposals: [
       {
         index: 1,
@@ -109,7 +109,7 @@ export const Governance = observer(() => {
 
   const [myProposals, setProposals] = useState([])
 
-  const [proposal, setProposal] = useState({});
+  const [filtered, setFiltered] = useState([]);
 
   // console.log(state.selectedFilter);
 
@@ -118,8 +118,9 @@ export const Governance = observer(() => {
       const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
       const data = response.data.result;
       // console.log(data);
-      const result = data.map(proposal => {
+      const result = data.map((proposal, i) => {
         return {
+          index: i + 1,
           id: proposal._id,
           address: proposal.address,
           title: proposal.title,
@@ -139,31 +140,30 @@ export const Governance = observer(() => {
   // console.log(getProposals());
   // console.log(myProposals);
 
-  function setFilter(i: number): void {
+  function setFilter(i: string): void {
     setState({
       ...state,
       selectedFilter: i
     })
   }
 
-  const getAllProporsals = () => {
-    return proposals.map((proporsal) => {
-      return proporsal.title
-    });
-  }
 
-  const selectProposal = (id: string) => {
-    const proposal = myProposals.filter(ele => ele.id === id);
-    setProposal(proposal);
-  }
-
-  // console.log(getAllProporsals());
 
   const getProporsalsByStatus = (status: string) => {
-    return proposals.filter((proposal => proposal.status.includes(status)))
+    const filter = proposals.filter((proposal => proposal.status.includes(status)));
+
+    const allProposals = proposals;
+    if (state.selectedFilter === 'all') {
+      setFiltered(allProposals);
+    } else {
+      setFiltered(filter);
+    }
 
   }
+
+  console.log(filtered);
   // console.log(getProporsalsByStatus('passed'));
+  // console.log('Filtrado:', filtered);
 
   const apyString = (token: RewardsToken) => {
     const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
@@ -206,11 +206,19 @@ export const Governance = observer(() => {
   // console.log('Total Voting Power: ', totalLocked);
   // console.log('Reward Token:', rewardToken);
 
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   useEffect(() => {
     (async () => {
       await getProposals();
     })();
   }, [])
+
+  useEffect(() => {
+    getProporsalsByStatus(state.selectedFilter);
+  }, [state.selectedFilter])
 
   // console.log(myProposals);
 
@@ -243,7 +251,6 @@ export const Governance = observer(() => {
     })(rewardToken);
 
   }, [rewardToken])
-
 
   return (
     <BaseContainer>
@@ -295,16 +302,17 @@ export const Governance = observer(() => {
                 {
                   state?.filters.map((filter, i) => {
                     return (
-
                       <Button
                         key={`${i}${filter}`}
-                        onClick={() => { setFilter(i), getProporsalsByStatus(filter), console.log(filter) }}
+                        onClick={() => { setFilter(filter) }}
                         className={
-                          (i == state?.selectedFilter) ? 'active filter-button' : 'filter-button'
+                          (filter === state?.selectedFilter)
+                            ? 'active filter-button'
+                            : 'filter-button'
                         }
                       >
                         {/* {console.log(filter)} */}
-                        {filter} {`(${filter.length})`}
+                        {capitalizeFirstLetter(filter)}
                       </Button>
                     )
                   })
@@ -313,16 +321,17 @@ export const Governance = observer(() => {
             </div>
             <div className='list-proposal'>
               {
-                myProposals.map((p, index) => {
+                filtered.map((p, index) => {
                   return (
                     <ProposalRow
-                      key={p.id}
+                      key={p.index}
                       theme={theme}
                       index={index}
                       title={p.title}
                       endTime={p.end_date}
-                      status={'active'}
-                      id={p.id}
+                      // status={'active'}
+                      status={p.status}
+                      id={p.index}
                     />
                   )
                 })

@@ -2,6 +2,8 @@
   --font-p-color-neutral-01: #0E0E10;
   --font-p-color-neutral-03: #5F5F6B;
   --font-family: Poppins;
+  --font-p-color-green-01: #3EA248;
+  --font-p-color-pink-01: #FF726E;
 }
 
 body{
@@ -224,6 +226,30 @@ h5{
         }
     }
 
+    .user-info{
+
+        .address{
+            color: var(--font-p-color-pink-01);
+        }
+    }
+
+    .user-response{
+        display: grid;
+        grid-template-columns: 50% 50%;
+        justify-items: center;
+
+        .voting-power{
+            h3{
+                color: var(--font-p-color-neutral-03);
+            }
+        }
+
+        .vote-response{
+            h3 {
+                color: var(--font-p-color-green-01);
+            }
+        }
+    }
 
     .button-vote{
         margin-top: 10px;
@@ -240,7 +266,6 @@ h5{
         cursor: pointer;
     }
 }
-
 
 .card-results{
     margin-top: 16px;
@@ -263,10 +288,32 @@ h5{
         color: rgba(147, 147, 159, 1);
     }
 
-
     .endTime{
         display: grid;
         grid-template-columns: 50% 50%;
+    }
+
+    .closed-proposal{
+        display: grid;
+        grid-template-columns: 50% 50%;
+        justify-items: center;
+        margin-top: 16px;
+        
+        h3{
+            text-align: center;
+        }
+
+        p{
+            text-align: center;
+        }
+
+        .voted{
+            color: var(--font-p-color-neutral-03);
+        }
+
+        .result{
+            h3{ color: var(--font-p-color-green-01)}
+        }
     }
 }
 

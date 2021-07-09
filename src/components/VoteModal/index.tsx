@@ -10,7 +10,8 @@ const VoteModal = (props: {
     id: string,
     title: string,
     children: ReactChild,
-    address: string
+    address: string,
+    voteState: boolean
 }) => {
     const { theme, user } = useStores();
     const [open, setOpen] = React.useState(false);
@@ -53,7 +54,7 @@ const VoteModal = (props: {
                 <div className='center title'>
                     <h1>{props.title}</h1>
                 </div>
-                <div className='center '>
+                <div className='center'>
                     <Button onClick={() => vote(0)} className='vote-no'>No</Button>
                     <Button onClick={() => vote(1)} className='vote-yes'>Yes</Button>
                 </div>

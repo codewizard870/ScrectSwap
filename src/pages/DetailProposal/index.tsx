@@ -29,12 +29,18 @@ export const DetailProposal = observer((props) => {
         status: ''
     });
 
+    const [voteState, setVoteState] = React.useState(false);
+
     const getProposal = (id: string) => {
         const proposal = user.proposals?.find(ele => ele?.id == id);
         // console.log(proposal);
         if (proposal) {
             setProposal(proposal);
         }
+    }
+
+    const validateState = () => {
+
     }
 
     useEffect(() => {
@@ -68,7 +74,6 @@ export const DetailProposal = observer((props) => {
                     </div>
 
                     <div className={`cards ${theme.currentTheme}`}>
-
                         <div className="card card-info">
                             <div className="card-title"><h5>Information</h5></div>
                             <div className="card-row">
@@ -83,12 +88,27 @@ export const DetailProposal = observer((props) => {
                             </div>
                             <div className="card-row">
                                 <div className="label"><p>Proposed by</p></div>
-                                <div className="title"><p>{proposal.author_alias}</p></div>
+                                <div className="user-info">
+                                    <div className="title"><p>{proposal.author_alias}</p></div>
+                                    {/* <div className="address"><p>{proposal.author_address}</p></div> */}
+                                    <div className="address"><p>secret12xq...mxlsak</p></div>
+                                </div>
+                            </div>
+                            <div className="user-response">
+                                <div className="voting-power">
+                                    <div><h3>5,200 SEFI</h3></div>
+                                    <div className="label"><p>My Voting Power</p></div>
+                                </div>
+                                <div className="vote-response">
+                                    <div><h3>Yes</h3></div>
+                                    <div className="label"><p>My Vote</p></div>
+                                </div>
                             </div>
                             <VoteModal
                                 id={proposal.id}
                                 title={proposal.title}
                                 address={proposal.address}
+                                voteState={voteState}
                             >
                                 <Button
                                     className='button-vote g-button'
@@ -98,16 +118,28 @@ export const DetailProposal = observer((props) => {
                         </div>
 
                         <div className="card card-results">
+
                             <h5 className="card-title">Results</h5>
                             <p className="description">Results will be available when voting ends.</p>
+
                             <div className="endTime">
                                 <div className="label"><p>Voting End Time</p></div>
                                 <div className="title">
-                                    <p>{moment(proposal.end_date).format('ddd D MMM, h:mm a')}</p>
+                                    <p>{moment(proposal.end_date).format('ddd D MMM, h:mm')}</p>
+                                </div>
+                            </div>
+
+                            <div className="closed-proposal">
+                                <div className="voted">
+                                    <div><h3>78%</h3></div>
+                                    <div className="label"><p>Voted</p></div>
+                                </div>
+                                <div className="result">
+                                    <div><h3>67%</h3></div>
+                                    <div className="label"><p>Yes</p></div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </>

@@ -280,15 +280,21 @@ export const Governance = observer(() => {
 
             <div className='buttons'>
               <div className='buttons-container'>
-                <Button disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'>
-                  <Link to='/sefistaking'>Participate in Governance</Link>
-                </Button>
-                <Button className='g-button--outline'>
-                  <Link to='/proposal'>Create proposal</Link>
-                </Button>
+                <Link to='/sefistaking'>
+                  <Button
+                    disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
+                  >
+                    Participate in Governance
+                  </Button>
+                </Link>
+
+                <Link to='/proposal'>
+                  <Button className='g-button--outline'>Create proposal</Button>
+                </Link>
               </div>
             </div>
           </div>
+
           <div className='content-governance'>
             <div className='column content-governance__title'>
               <h3>{capitalizeFirstLetter(selectedFilter)} Proposals</h3>

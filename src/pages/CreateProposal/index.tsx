@@ -58,11 +58,10 @@ const CreateProposal = observer((props) => {
                     </div>
                 </div>
                 <div className='card-proposal'>
-                    <label htmlFor="title">Title</label>
                     <div className='form-title'>
+                        <label htmlFor="title">Title</label>
                         <input onChange={handleChange} id='title' name='title' type="text" />
                     </div>
-
                     <div className="form-proposal">
                         <label htmlFor="type">Proposal Type</label>
                         <label htmlFor="author_alias">Proposer Name: </label>
@@ -82,7 +81,8 @@ const CreateProposal = observer((props) => {
                             name="description"
                             id="description"
                             cols={60}
-                            rows={20} />
+                            rows={20}
+                        />
                     </div>
                 </div>
 

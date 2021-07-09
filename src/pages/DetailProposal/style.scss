@@ -8,6 +8,16 @@ body{
     font-family: var(--font-family);
 }
 
+h3{
+    font-family: Poppins;
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 42px;
+    letter-spacing: 0.01em;
+    text-align: left;
+}
+
 .proposal-container{
     display: grid;
     grid-template-columns: repeat(2, 70% 30%);
@@ -21,6 +31,7 @@ body{
         $font-gray:#5F5F6B;
         $card-background:white;
         background: $card-background;
+
         .vote-row{
             p{
                 color: $font-gray;
@@ -29,15 +40,6 @@ body{
         .proposal-content{
             .title,.description{
                 
-                h3{
-                    font-family: Poppins;
-                    font-size: 28px;
-                    font-style: normal;
-                    font-weight: 600;
-                    line-height: 42px;
-                    letter-spacing: 0.01em;
-                    text-align: left;
-                }
                 p{
                     color: $font-gray;
                 }
@@ -60,6 +62,9 @@ body{
                 p{
                     color: $font-gray;
                 }
+                h5{
+                    color: white;
+                }
             }
         }
     }
@@ -73,7 +78,6 @@ body{
         grid-auto-flow: column;
         align-items: center;
         justify-content: space-between;
-        padding: 11px 0;
         p,h3{
             margin: 0;
             font-weight: normal;
@@ -110,7 +114,7 @@ body{
         .description{
             display: grid;
             grid-auto-flow: row;
-            row-gap: 8px;
+            row-gap: 16px;
             padding-top: 26px;
             h5{
                 font-size: 20px;
@@ -120,6 +124,7 @@ body{
                 letter-spacing: 0em;
                 text-align: left;
                 color: var(--font-p-color-neutral-03);
+                margin: 0;
             }
             
             p{

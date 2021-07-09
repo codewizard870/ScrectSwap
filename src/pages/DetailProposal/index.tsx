@@ -16,7 +16,7 @@ export const DetailProposal = observer((props) => {
     const { id }: any = useParams();
     // console.log(useParams());
 
-    const [currentProposal, setCurrentProposal] = React.useState({
+    const [proposal, setProposal] = React.useState({
         id: '',
         address: '',
         title: '',
@@ -33,20 +33,9 @@ export const DetailProposal = observer((props) => {
         const proposal = user.proposals?.find(ele => ele?.id == id);
         // console.log(proposal);
         if (proposal) {
-            setCurrentProposal(proposal);
+            setProposal(proposal);
         }
     }
-
-    const [proposal, setProposal] = React.useState({
-        status: 'active',
-        status_message: 'Below Quorum',
-        id: '24',
-        type: 'SEFI Community Spending',
-        title: 'Designated Secrettipbot Development Proposal',
-        proposer: 'axyh4eoi3490812zxkwie',
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-
-    })
 
     useEffect(() => {
         getProposal(id);
@@ -61,19 +50,19 @@ export const DetailProposal = observer((props) => {
                     <div className={`proposal-detail ${theme.currentTheme}`}>
                         <div className='vote-row'>
                             <div className='proposal-id'>
-                                <p>#{currentProposal.id}</p>
+                                <p>#{proposal.id}</p>
                             </div>
                         </div>
                         <div className='proposal-content'>
                             <div className='title'>
-                                <h3>{currentProposal.title}</h3>
+                                <h3>{proposal.title}</h3>
                             </div>
-                            <div className="propsal-address">
-                                <p>Porposal Address: </p> <p>{currentProposal.author_address}</p>
-                            </div>
+                            {/* <div className="proposal-address">
+                                <p>Porposal Address: </p> <p>{proposal.author_address}</p>
+                            </div> */}
                             <div className='description'>
                                 <h5>Description</h5>
-                                <p>{currentProposal.description}</p>
+                                <p>{proposal.description}</p>
                             </div>
                         </div>
                     </div>
@@ -84,8 +73,8 @@ export const DetailProposal = observer((props) => {
                             <div className="card-title"><h5>Information</h5></div>
                             <div className="card-row">
                                 <div className="label"><p>Status</p></div>
-                                <div className={`proposal-status small status-${currentProposal.status}`}>
-                                    {currentProposal.status}
+                                <div className={`proposal-status small status-${proposal.status}`}>
+                                    {proposal.status}
                                 </div>
                             </div>
                             <div className="card-row">
@@ -94,12 +83,12 @@ export const DetailProposal = observer((props) => {
                             </div>
                             <div className="card-row">
                                 <div className="label"><p>Proposed by</p></div>
-                                <div className="title"><p>{currentProposal.author_alias}</p></div>
+                                <div className="title"><p>{proposal.author_alias}</p></div>
                             </div>
                             <VoteModal
-                                id={currentProposal.id}
-                                title={currentProposal.title}
-                                address={currentProposal.address}
+                                id={proposal.id}
+                                title={proposal.title}
+                                address={proposal.address}
                             >
                                 <Button
                                     className='button-vote g-button'
@@ -114,7 +103,7 @@ export const DetailProposal = observer((props) => {
                             <div className="endTime">
                                 <div className="label"><p>Voting End Time</p></div>
                                 <div className="title">
-                                    <p>{moment(currentProposal.end_date).format('ddd D MMM, h:mm a')}</p>
+                                    <p>{moment(proposal.end_date).format('ddd D MMM, h:mm a')}</p>
                                 </div>
                             </div>
                         </div>

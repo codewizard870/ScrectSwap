@@ -1,3 +1,20 @@
+:root {
+  --font-p-color-neutral-01: #0E0E10;
+  --font-p-color-neutral-03: #5F5F6B;
+  --font-family: Poppins;
+}
+
+body{
+    font-family: var(--font-family);
+}
+
+.proposal-container{
+    display: grid;
+    grid-template-columns: repeat(2, 70% 30%);
+    grid-gap: 16px;
+    margin-top: 32px;
+}
+
 .proposal-detail{
     &.light{
         box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
@@ -11,9 +28,20 @@
         }
         .proposal-content{
             .title,.description{
-                span{
+                
+                h3{
+                    font-family: Poppins;
+                    font-size: 28px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: 42px;
+                    letter-spacing: 0.01em;
+                    text-align: left;
+                }
+                p{
                     color: $font-gray;
                 }
+                
             }
         }
     }
@@ -29,7 +57,7 @@
         }
         .proposal-content{
             .title,.description{
-                span{
+                p{
                     color: $font-gray;
                 }
             }
@@ -38,7 +66,6 @@
 }
 
 .proposal-detail{
-    margin-top: 20px;
     padding: 26px;
     border-radius: 16px;
     .vote-row{
@@ -81,14 +108,161 @@
             }
         }
         .description{
-            padding-top: 26px;
-            font-size: 16px;
             display: grid;
             grid-auto-flow: row;
             row-gap: 8px;
+            padding-top: 26px;
+            h5{
+                font-size: 20px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 30px;
+                letter-spacing: 0em;
+                text-align: left;
+                color: var(--font-p-color-neutral-03);
+            }
+            
+            p{
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px;
+                letter-spacing: 0em;
+                text-align: left;
+                color: var(--font-p-color-neutral-01);
+            }
         }
     }
-    .button-vote{
-        max-width: 122px;
+    
+}
+
+h5{
+    font-family: var(--font-family);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 30px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
+.cards{
+
+    &.dark{
+        .card{
+            box-shadow: none;
+            background: #0E0E10;
+            
+            p{
+                color: #FFFFFF;
+            }
+        }
+    }
+
+    .label{
+        p{
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: 0em;
+            text-align: left;
+            color: var(--font-p-color-neutral-03);
+        }
+    }
+
+    .title{
+        p{
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: 0em;
+            text-align: left;
+            color: var(--font-p-color-neutral-01);
+        }
+    }
+
+    
+    .card{
+        background-color: white;
+        padding: 26px;
+        border-radius: 16px;
+        box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
     }
 }
+
+
+.card-info{
+
+    h5{
+        margin-bottom: 30px;
+    }
+
+    .card-row{
+        display: grid;
+        grid-template-columns: 50% 50%;
+        margin-bottom: 16px;
+    }
+
+    .proposal-status {
+        &.small {
+            font-size: 16px;
+            padding: 4;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 24px;
+            letter-spacing: 0em;
+            text-align: center;
+        }
+    }
+
+
+    .button-vote{
+        margin-top: 10px;
+        display: block;
+        width: 100%;
+        padding: 11px 42px;
+        font-family: var(--font-family);
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 24px;
+        letter-spacing: 0em;
+        text-align: center;
+        cursor: pointer;
+    }
+}
+
+
+.card-results{
+    margin-top: 16px;
+    display: grid;
+    grid-template-rows: repeat(2);
+
+    h5{
+        margin-bottom: 10px;
+    }
+
+    
+    p.description{
+        font-family: var(--font-family);;
+        font-size: 16px;
+        font-style: italic;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: rgba(147, 147, 159, 1);
+    }
+
+
+    .endTime{
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+}
+
+

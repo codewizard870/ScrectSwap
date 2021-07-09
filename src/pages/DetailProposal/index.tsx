@@ -1,7 +1,8 @@
 import ProposalLayout from 'components/ProposalLayout'
 import VoteModal from 'components/VoteModal'
-import { observer } from 'mobx-react'
+import moment from 'moment';
 import React, { useEffect } from 'react'
+import { observer } from 'mobx-react'
 import { useParams } from 'react-router'
 import { Button } from 'semantic-ui-react'
 import { useStores } from 'stores'
@@ -54,46 +55,75 @@ export const DetailProposal = observer((props) => {
 
     return (
         <ProposalLayout>
-            {!currentProposal
-                ?
-                <div>
-                    <h1>Loading Page</h1>
-                </div>
-                :
-                <div className={`proposal-detail ${theme.currentTheme}`}>
-                    <div className='vote-row'>
-                        <div className='proposal-id'>
-                            <p>#{currentProposal.id}</p>
-                            {/* <h3>{proposal.type}</h3> */}
-                        </div>
-                        <VoteModal id={currentProposal.id} title={currentProposal.title} address={currentProposal.address}>
-                            <Button
-                                className='button-vote g-button'>Vote</Button>
+            <>
+                <div className="proposal-container">
 
-                        </VoteModal>
+                    <div className={`proposal-detail ${theme.currentTheme}`}>
+                        <div className='vote-row'>
+                            <div className='proposal-id'>
+                                <p>#{currentProposal.id}</p>
+                            </div>
+                        </div>
+                        <div className='proposal-content'>
+                            <div className='title'>
+                                <h3>{currentProposal.title}</h3>
+                            </div>
+                            <div className="propsal-address">
+                                <p>Porposal Address: </p> <p>{currentProposal.author_address}</p>
+                            </div>
+                            <div className='description'>
+                                <h5>Description</h5>
+                                <p>{currentProposal.description}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className={`proposal-status small status-${currentProposal.status}`}>
-                        {currentProposal.status}
-                    </div>
-                    {/* <div className={`proposal-status small status-active`}>
-                        {'Active'}
-                    </div> */}
-                    <div className='proposal-content'>
-                        <div className="propsal-address">
-                            <h5>Porposal Address: </h5>
-                            <p>{currentProposal.author_address}</p>
+
+                    <div className={`cards ${theme.currentTheme}`}>
+
+                        <div className="card card-info">
+                            <div className="card-title"><h5>Information</h5></div>
+                            <div className="card-row">
+                                <div className="label"><p>Status</p></div>
+                                <div className={`proposal-status small status-${currentProposal.status}`}>
+                                    {currentProposal.status}
+                                </div>
+                            </div>
+                            <div className="card-row">
+                                <div className="label"><p>Type</p></div>
+                                <div className="title"><p>SEFI Community Spending</p></div>
+                            </div>
+                            <div className="card-row">
+                                <div className="label"><p>Proposed by</p></div>
+                                <div className="title"><p>{currentProposal.author_alias}</p></div>
+                            </div>
+                            <VoteModal
+                                id={currentProposal.id}
+                                title={currentProposal.title}
+                                address={currentProposal.address}
+                            >
+                                <Button
+                                    className='button-vote g-button'
+                                >Vote
+                                </Button>
+                            </VoteModal>
                         </div>
-                        <div className='title'>
-                            <h3>{currentProposal.title}</h3>
-                            <span>Porposed by: {currentProposal.author_alias}</span>
+
+                        <div className="card card-results">
+                            <h5 className="card-title">Results</h5>
+                            <p className="description">Results will be available when voting ends.</p>
+                            <div className="endTime">
+                                <div className="label"><p>Voting End Time</p></div>
+                                <div className="title">
+                                    <p>{moment(currentProposal.end_date).format('ddd D MMM, h:mm a')}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div className='description'>
-                            <h5>Description</h5>
-                            <p>{currentProposal.description}</p>
-                        </div>
+
                     </div>
                 </div>
-            }
+            </>
+
+
         </ProposalLayout>
     )
 })

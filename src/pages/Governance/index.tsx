@@ -7,6 +7,7 @@ import { useStores } from 'stores';
 import { observer } from 'mobx-react';
 import { Button } from 'semantic-ui-react';
 import { ProposalRow } from 'components/ProposalRow';
+import SpinnerLineHor from '../../ui/Spinner/SpinnerLineHor';
 import numeral from 'numeral';
 import './style.scss';
 import { calculateAPY, RewardsToken } from 'components/Earn/EarnRow';
@@ -242,28 +243,41 @@ export const Governance = observer(() => {
         >
           {/* <div className='governance '> */}
           <div className='hero-governance'>
-            <div className='column'>
-              <div>
-                {(rewardToken) ? <h1>{apyString(rewardToken)}</h1> : <></>}
-                <p>Staking APY</p>
+
+            <div className='column-stats'>
+              <div className="stats-apy">
+                {(rewardToken) ? <h1>{apyString(rewardToken)}</h1> : <SpinnerLineHor />}
+                <div>
+                  <p>Staking APY</p>
+                </div>
               </div>
-              <div>
+              <div className="stats-power">
+                <div>
+                  {
+                    votingPower ?
+                      (votingPower) && (votingPower?.includes(unlockToken) || !votingPower)
+                        ? unlockJsx({ onClick: createSefiViewingKey })
+                        : <h1>{numeral(votingPower).format('0,0.00')}
+                          <span className='pink'>SEFI </span>
+                          <span>({numeral((votingPower * 100) / totalLocked).format('0.00%')})</span>
+                        </h1>
+                      : <SpinnerLineHor />
+                  }
+                </div>
+                <div>
+                  <p>My Voting Power</p>
+                </div>
+              </div>
+              <div className="stats-voting">
                 {
-                  (votingPower)
-                    && (votingPower?.includes(unlockToken) || !votingPower)
-                    ? unlockJsx({ onClick: createSefiViewingKey })
-                    : <h1>{numeral(votingPower).format('0,0.00')}
-                      <span className='pink'>SEFI </span>
-                      <span>({numeral((votingPower * 100) / totalLocked).format('0.00%')})</span>
-                    </h1>
+                  totalLocked ?
+                    <h1>{numeral(formatNumber(totalLocked)).format('0,0.00')} <span className='pink'>SEFI</span></h1>
+                    : <SpinnerLineHor />
                 }
-                <p>My Voting Power</p>
-              </div>
-              <div>
-                <h1>{numeral(formatNumber(totalLocked)).format('0,0.00')} <span className='pink'>SEFI</span></h1>
                 <p>Total Voting Power</p>
               </div>
             </div>
+
             <div className='buttons'>
               <div className='buttons-container'>
                 <Button disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'>
@@ -320,6 +334,6 @@ export const Governance = observer(() => {
           {/* </div> */}
         </Box>
       </PageContainer>
-    </BaseContainer>
+    </BaseContainer >
   );
 });

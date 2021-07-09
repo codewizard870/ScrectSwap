@@ -89,9 +89,17 @@
     }
 }
 
-.column{
+.column-stats{
     display: grid;
-    grid-auto-flow: column;
+    grid-template-columns: repeat(3, 1fr);
+    
+    h1{
+        margin: 0
+    }
+    p{
+        position: absolute;
+    }
+    // grid-auto-flow: column;
 }
 .governance{
     max-width: 1162px;

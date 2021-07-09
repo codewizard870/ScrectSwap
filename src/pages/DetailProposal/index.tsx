@@ -39,8 +39,12 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    const validateState = () => {
-
+    const getAtuhorAddress = (): string => {
+        if (proposal.author_address) {
+            return (proposal?.author_address?.substring(0, 10) + '...' + proposal?.author_address?.substring(proposal?.author_address?.length - 3, proposal?.author_address?.length));
+        } else {
+            return '';
+        }
     }
 
     useEffect(() => {
@@ -91,7 +95,7 @@ export const DetailProposal = observer((props) => {
                                 <div className="user-info">
                                     <div className="title"><p>{proposal.author_alias}</p></div>
                                     {/* <div className="address"><p>{proposal.author_address}</p></div> */}
-                                    <div className="address"><p>secret12xq...mxlsak</p></div>
+                                    <div className="address"><p>{getAtuhorAddress()}</p></div>
                                 </div>
                             </div>
                             <div className="user-response">

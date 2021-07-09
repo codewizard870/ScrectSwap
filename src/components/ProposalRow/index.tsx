@@ -10,7 +10,7 @@ export const ProposalRow = (props: {
     theme: Theme,
     index: number,
     title: string,
-    endTime: Date,
+    endTime: number,
     status?: string,
     id: string,
 }) => {
@@ -25,7 +25,7 @@ export const ProposalRow = (props: {
                 <p>{props.index + 1}</p>
                 <p className='title'>{props.title}</p>
                 <div>
-                    <p>{moment(props.endTime).format('ddd D MMM, h:mm a')}</p>
+                    <p>{moment.unix(props.endTime).format('ddd D MMM, HH:mm')}</p>
                     <span>Voting End Time</span>
                 </div>
                 <div className={`proposal-status status-${props.status}`}>

@@ -252,7 +252,7 @@ export const Governance = observer(() => {
                   (votingPower)
                     && (votingPower?.includes(unlockToken) || !votingPower)
                     ? unlockJsx({ onClick: createSefiViewingKey })
-                    : <h1>{numeral(formatNumber(votingPower)).format('0,0.00')}
+                    : <h1>{numeral(votingPower).format('0,0.00')}
                       <span className='pink'>SEFI </span>
                       <span>({numeral((votingPower * 100) / totalLocked).format('0.00%')})</span>
                     </h1>

@@ -49,7 +49,6 @@ export const DetailProposal = observer((props) => {
 
     useEffect(() => {
         getProposal(id);
-        // getProposal('60e5d55cabf2383e205a2ef1');
     }, [user.proposals]);
 
     return (
@@ -129,7 +128,7 @@ export const DetailProposal = observer((props) => {
                             <div className="endTime">
                                 <div className="label"><p>Voting End Time</p></div>
                                 <div className="title">
-                                    <p>{moment(proposal.end_date).format('ddd D MMM, h:mm')}</p>
+                                    <p>{moment(props.end_date).format('ddd D MMM, HH:mm')}</p>
                                 </div>
                             </div>
 

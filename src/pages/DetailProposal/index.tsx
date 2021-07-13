@@ -21,6 +21,7 @@ export const DetailProposal = observer((props) => {
         address: '',
         title: '',
         description: '',
+        vote_type: '',
         author_address: '',
         author_alias: '',
         end_date: 0,
@@ -29,7 +30,14 @@ export const DetailProposal = observer((props) => {
         status: ''
     });
 
-    const [voteState, setVoteState] = React.useState(false);
+    const [userResult, setUserResult] = React.useState({
+        choice: 0,
+        voting_power: ''
+    });
+
+    const [choice, setChoice] = React.useState('')
+
+    // console.log(user.getTally(proposal.address));
 
     const getProposal = (id: string) => {
         const proposal = user.proposals?.find(ele => ele?.id == id);
@@ -39,6 +47,24 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    const getUserResponse = async () => {
+        try {
+            const result = await user.getUserVote(proposal?.address)
+            setUserResult(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
+    const transformChoice = (choiceSelected: number) => {
+
+        choiceSelected === 0 ? setChoice('No') : ('Yes')
+
+    }
+
+    // console.log('Addresss:', proposal.address);
+    // console.log('Author Adrress:', proposal.author_address);
+
     const getAtuhorAddress = (): string => {
         if (proposal.author_address) {
             return (proposal?.author_address?.substring(0, 10) + '...' + proposal?.author_address?.substring(proposal?.author_address?.length - 3, proposal?.author_address?.length));
@@ -47,8 +73,30 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    const transformProposalType = (): string => {
+        if (proposal.vote_type) {
+            let voteType;
+            switch (proposal.vote_type) {
+                case '1': voteType = 'SEFI Rewards Pool'; break;
+                case '2': voteType = 'SEFI Community Spending'; break;
+                case '3': voteType = 'SecretSwap Parameter Change'; break;
+                case '4': voteType = 'Other'; break;
+            }
+            return voteType
+        } else {
+            return '';
+        }
+    }
+
+    useEffect(() => {
+        getUserResponse();
+    }, [user.getUserVote(proposal?.address)]);
+
+
     useEffect(() => {
         getProposal(id);
+        transformChoice(userResult.choice);
+
     }, [user.proposals]);
 
     return (
@@ -87,23 +135,22 @@ export const DetailProposal = observer((props) => {
                             </div>
                             <div className="card-row">
                                 <div className="label"><p>Type</p></div>
-                                <div className="title"><p>SEFI Community Spending</p></div>
+                                <div className="title"><p>{transformProposalType()}</p></div>
                             </div>
                             <div className="card-row">
                                 <div className="label"><p>Proposed by</p></div>
                                 <div className="user-info">
                                     <div className="title"><p>{proposal.author_alias}</p></div>
-                                    {/* <div className="address"><p>{proposal.author_address}</p></div> */}
                                     <div className="address"><p>{getAtuhorAddress()}</p></div>
                                 </div>
                             </div>
                             <div className="user-response">
                                 <div className="voting-power">
-                                    <div><h3>5,200 SEFI</h3></div>
+                                    <div><h3>{userResult.voting_power} SEFI</h3></div>
                                     <div className="label"><p>My Voting Power</p></div>
                                 </div>
                                 <div className="vote-response">
-                                    <div><h3>Yes</h3></div>
+                                    <div><h3>{choice}</h3></div>
                                     <div className="label"><p>My Vote</p></div>
                                 </div>
                             </div>
@@ -111,7 +158,6 @@ export const DetailProposal = observer((props) => {
                                 id={proposal.id}
                                 title={proposal.title}
                                 address={proposal.address}
-                                voteState={voteState}
                             >
                                 <Button
                                     className='button-vote g-button'

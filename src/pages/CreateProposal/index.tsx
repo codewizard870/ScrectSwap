@@ -15,7 +15,7 @@ const CreateProposal = observer((props) => {
     const [formData, updateFormData] = React.useState({
         title: '',
         description: '',
-        type: '1',
+        vote_type: '1',
         author_alias: '',
     });
 
@@ -33,7 +33,7 @@ const CreateProposal = observer((props) => {
     async function createProposal(event) {
         event.preventDefault();
         try {
-            const result = await user.createProposal(formData.title, formData.description, formData.author_alias);
+            const result = await user.createProposal(formData.title, formData.description, formData.vote_type, formData.author_alias);
             if (result?.code) {
                 const message = extractError(result)
                 notify('error', message, 10, result.txhash, true)
@@ -54,7 +54,7 @@ const CreateProposal = observer((props) => {
                     <h1>Create proposal</h1>
                     <div className='title-section__buttons'>
                         <Button className='g-button--outline'><Link to='/governance'>Cancel</Link></Button>
-                        <Button disabled={!formData.title || !formData.description || !formData.type} className='g-button'>Create Proposal</Button>
+                        <Button disabled={!formData.title || !formData.description || !formData.vote_type} className='g-button'>Create Proposal</Button>
                     </div>
                 </div>
                 <div className='card-proposal'>
@@ -63,15 +63,21 @@ const CreateProposal = observer((props) => {
                         <input onChange={handleChange} id='title' name='title' type="text" />
                     </div>
                     <div className="form-proposal">
-                        <label htmlFor="type">Proposal Type</label>
+                        <label htmlFor="vote_type">Proposal Type</label>
                         <label htmlFor="author_alias">Proposer Name: </label>
-                        <select onChange={handleChange} name="type" id="proposal">
+
+                        <select onChange={handleChange} name="vote_type" id="proposal">
                             <option value="1">SEFI Rewards pool</option>
                             <option value="2">SEFI Community Spending</option>
                             <option value="3">SecretSwap Parameter Change</option>
                             <option value="4">Other</option>
                         </select>
-                        <input onChange={handleChange} id='author_alias' name='author_alias' type="text" />
+                        <input
+                            onChange={handleChange}
+                            id='author_alias'
+                            name='author_alias'
+                            type="text"
+                        />
                     </div>
                     <div className='form-description'>
                         <label htmlFor="description">Description</label>

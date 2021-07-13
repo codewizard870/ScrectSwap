@@ -56,6 +56,7 @@ export class UserStoreEx extends StoreConstructor {
     address: string,
     title: string,
     description: string,
+    vote_type: string,
     author_address: string,
     author_alias: string,
     end_date: number,
@@ -63,6 +64,7 @@ export class UserStoreEx extends StoreConstructor {
     valid: boolean,
     status: string,
   }>;
+
 
   @observable public scrtRate = 0;
   // @observable public ethRate = 0;
@@ -681,7 +683,54 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
-  public async createProposal(title: string, description: string, author_alias: string): Promise<any> {
+  public async getUserVote(contractAddress: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          "vote":
+          {
+            "voter": this.address,
+            "key": viewingKey
+          }
+        },
+      )
+      return {
+        choice: result.vote.choice,
+        voting_power: result.vote.voting_power
+      };
+    } else {
+      throw new Error('Not viewing key registered');
+    }
+  }
+
+  public async getTally(contractAddress: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          "tally": {}
+        },
+      )
+      return result;
+    } else {
+      throw new Error('Not viewing key registered')
+    }
+  }
+
+  public async createProposal(
+    title: string, description: string, vote_type: string, author_alias: string):
+    Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
@@ -695,8 +744,9 @@ export class UserStoreEx extends StoreConstructor {
             "poll_metadata": {
               "title": title,
               "description": description,
+              "vote_type": vote_type,
               "author": this.address,
-              "author_alias": author_alias
+              "author_alias": author_alias,
             },
             "poll_choices": ["Yes", "No"],
             "pool_viewing_key": viewingKey
@@ -723,6 +773,7 @@ export class UserStoreEx extends StoreConstructor {
           address: proposal.address,
           title: proposal.title,
           description: proposal.description,
+          vote_type: proposal.vote_type,
           author_address: proposal.author_addr,
           author_alias: proposal.author_alias,
           end_date: proposal.end_timestamp,

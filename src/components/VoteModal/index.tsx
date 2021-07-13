@@ -11,7 +11,7 @@ const VoteModal = (props: {
     title: string,
     children: ReactChild,
     address: string,
-    voteState: boolean
+
 }) => {
     const { theme, user } = useStores();
     const [open, setOpen] = React.useState(false);

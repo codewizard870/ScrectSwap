@@ -8,6 +8,7 @@ import { Button, Select } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import './style.scss';
 import { sleep } from 'utils';
+import SpinnerLineHor from '../../ui/Spinner/SpinnerLineHor';
 
 const CreateProposal = observer((props) => {
     const { theme, user } = useStores();
@@ -18,6 +19,8 @@ const CreateProposal = observer((props) => {
         vote_type: '1',
         author_alias: '',
     });
+
+    const [loading, setLoading] = React.useState<boolean>(false);
 
     function handleChange(e) {
         updateFormData({
@@ -31,20 +34,26 @@ const CreateProposal = observer((props) => {
     // console.log(formData);
 
     async function createProposal(event) {
+
         event.preventDefault();
+        setLoading(true);
+
         try {
             const result = await user.createProposal(formData.title, formData.description, formData.vote_type, formData.author_alias);
             if (result?.code) {
                 const message = extractError(result)
                 notify('error', message, 10, result.txhash, true)
+                setLoading(false);
             } else {
                 notify('success', 'Proposal created successfully', 10, '', true)
                 await sleep(3000)
+                setLoading(false);
                 history.push('/governance')
             }
         } catch (error) {
             console.error(error)
         }
+
     }
 
     return (
@@ -54,10 +63,16 @@ const CreateProposal = observer((props) => {
                     <h1>Create proposal</h1>
                     <div className='title-section__buttons'>
                         <Button className='g-button--outline'><Link to='/governance'>Cancel</Link></Button>
-                        <Button disabled={!formData.title || !formData.description || !formData.vote_type} className='g-button'>Create Proposal</Button>
+                        <Button
+                            loading={loading}
+                            disabled={!formData.title || !formData.description || !formData.vote_type}
+                            className='g-button'
+                        >Create Proposal
+                        </Button>
                     </div>
                 </div>
                 <div className='card-proposal'>
+
                     <div className='form-title'>
                         <label htmlFor="title">Title</label>
                         <input onChange={handleChange} id='title' name='title' type="text" />

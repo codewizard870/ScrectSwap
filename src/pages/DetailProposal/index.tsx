@@ -88,6 +88,34 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    // const validateStatus = () => {
+
+    //     let endDate = moment.unix(proposal.end_date)
+    //     let now = moment();
+    //     let result = ''
+
+    //     if (proposal.status === 'in progress' && endDate <= now) {
+    //         return result = 'validate works'
+    //     } else if (proposal.status === 'in progress' && endDate > now) {
+    //         return result = 'ended';
+    //     } else if (proposal.status === 'failed' && proposal.valid === true) {
+    //         return result = 'failed';
+    //     } else if (proposal.status === 'passed' && proposal.valid === false) {
+    //         return result = 'didnt reach quorum';
+    //     } else if (proposal.status === 'passed') {
+    //         return result = 'passed';
+    //     }
+
+    //     return setProposal({ ...proposal, status: result });
+    // }
+
+    // console.log(validateStatus());
+
+    // console.log(proposal.status);
+    // console.log(moment());
+    // console.log('Date Now: ', Date.now());
+    // console.log('End Date', proposal.end_date);
+
     useEffect(() => {
         getUserResponse();
     }, [user.getUserVote(proposal?.address)]);
@@ -96,8 +124,14 @@ export const DetailProposal = observer((props) => {
     useEffect(() => {
         getProposal(id);
         transformChoice(userResult.choice);
+        // validateStatus();
 
     }, [user.proposals]);
+
+    // useEffect(() => {
+    //     validateStatus();
+
+    // }, []);
 
     return (
         <ProposalLayout>
@@ -129,6 +163,9 @@ export const DetailProposal = observer((props) => {
                             <div className="card-title"><h5>Information</h5></div>
                             <div className="card-row">
                                 <div className="label"><p>Status</p></div>
+                                {/* <div className={`proposal-status small status-${proposal.status}`}>
+                                    {proposal.status}
+                                </div> */}
                                 <div className={`proposal-status small status-${proposal.status}`}>
                                     {proposal.status}
                                 </div>
@@ -174,7 +211,7 @@ export const DetailProposal = observer((props) => {
                             <div className="endTime">
                                 <div className="label"><p>Voting End Time</p></div>
                                 <div className="title">
-                                    <p>{moment(props.end_date).format('ddd D MMM, HH:mm')}</p>
+                                    <p>{moment.unix(proposal.end_date).format('ddd D MMM, HH:mm')}</p>
                                 </div>
                             </div>
 

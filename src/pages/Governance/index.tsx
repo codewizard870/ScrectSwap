@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import { Box } from 'grommet';
+import moment from 'moment';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
@@ -331,6 +332,8 @@ export const Governance = observer(() => {
                       endTime={p.end_date}
                       status={p.status}
                       id={p.id}
+                      ended={p.ended}
+                      valid={p.valid}
                     />
                   )
                 })

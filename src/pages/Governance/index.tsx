@@ -6,7 +6,7 @@ import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
 import { observer } from 'mobx-react';
-import { Button } from 'semantic-ui-react';
+import { Button, Popup } from 'semantic-ui-react';
 import { ProposalRow } from 'components/ProposalRow';
 import SpinnerLineHor from '../../ui/Spinner/SpinnerLineHor';
 import numeral from 'numeral';
@@ -281,13 +281,30 @@ export const Governance = observer(() => {
 
             <div className='buttons'>
               <div className='buttons-container'>
-                <Link to='/sefistaking'>
-                  <Button
-                    disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
-                  >
-                    Participate in Governance
-                  </Button>
-                </Link>
+                {
+                  votingPower === undefined ?
+                    <>
+                      <Popup
+                        // className="icon-info__popup"
+                        content='You need SEFI to participate in SecretSwap governance'
+                        trigger={<a>
+                          <Button
+                            disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
+                          >
+                            Participate in Governance
+                          </Button>
+                        </a>}
+                      />
+                    </>
+                    :
+                    <Link to='/sefistaking'>
+                      <Button
+                        disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
+                      >
+                        Participate in Governance
+                      </Button>
+                    </Link>
+                }
 
                 <Link to='/proposal'>
                   <Button className='g-button--outline'>Create proposal</Button>

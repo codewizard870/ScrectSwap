@@ -29,15 +29,33 @@ export const DetailProposal = observer((props) => {
         valid: false,
         status: ''
     });
-
     const [userResult, setUserResult] = React.useState({
         choice: 0,
         voting_power: ''
     });
-
     const [choice, setChoice] = React.useState('')
+    const [showAnswer, setShowAnswer] = React.useState(false);
+    const [showAllAnswers, setShowAllAnswers] = React.useState(false);
 
-    // console.log(user.getTally(proposal.address));
+    // console.log('Tally:', user.getTally(proposal.address));
+
+    const showHideAnswer = () => {
+        if (proposal.ended === true) {
+            setShowAnswer(true);
+        } else {
+            setShowAnswer(false);
+        }
+    }
+
+    const showHideAllAnswers = () => {
+        if (proposal.ended === true) {
+            setShowAllAnswers(true);
+        } else {
+            setShowAllAnswers(false);
+        }
+    }
+
+    // console.log(userResult);
 
     const getProposal = (id: string) => {
         const proposal = user.proposals?.find(ele => ele?.id == id);
@@ -57,9 +75,7 @@ export const DetailProposal = observer((props) => {
     }
 
     const transformChoice = (choiceSelected: number) => {
-
         choiceSelected === 0 ? setChoice('No') : ('Yes')
-
     }
 
     // console.log('Addresss:', proposal.address);
@@ -122,16 +138,16 @@ export const DetailProposal = observer((props) => {
 
 
     useEffect(() => {
-        getProposal(id);
         transformChoice(userResult.choice);
+        getProposal(id);
         // validateStatus();
 
     }, [user.proposals]);
 
-    // useEffect(() => {
-    //     validateStatus();
-
-    // }, []);
+    useEffect(() => {
+        showHideAnswer();
+        showHideAllAnswers();
+    }, []);
 
     return (
         <ProposalLayout>
@@ -181,50 +197,60 @@ export const DetailProposal = observer((props) => {
                                     <div className="address"><p>{getAtuhorAddress()}</p></div>
                                 </div>
                             </div>
-                            <div className="user-response">
-                                <div className="voting-power">
-                                    <div><h3>{userResult.voting_power} SEFI</h3></div>
-                                    <div className="label"><p>My Voting Power</p></div>
-                                </div>
-                                <div className="vote-response">
-                                    <div><h3>{choice}</h3></div>
-                                    <div className="label"><p>My Vote</p></div>
-                                </div>
-                            </div>
-                            <VoteModal
-                                id={proposal.id}
-                                title={proposal.title}
-                                address={proposal.address}
-                            >
-                                <Button
-                                    className='button-vote g-button'
-                                >Vote
-                                </Button>
-                            </VoteModal>
+                            {
+                                showAnswer ?
+                                    <div className="user-response">
+                                        <div className="voting-power">
+                                            <div><h3>{userResult.voting_power}</h3></div>
+                                            <div className="label"><p>My Voting Power</p></div>
+                                        </div>
+                                        <div className="vote-response">
+                                            <div><h3>{choice}</h3></div>
+                                            <div className="label"><p>My Vote</p></div>
+                                        </div>
+                                    </div>
+                                    :
+                                    <VoteModal
+                                        id={proposal.id}
+                                        title={proposal.title}
+                                        address={proposal.address}
+                                    >
+                                        <Button
+                                            className='button-vote g-button'
+                                        >Vote
+                                        </Button>
+                                    </VoteModal>
+                            }
                         </div>
 
                         <div className="card card-results">
 
                             <h5 className="card-title">Results</h5>
-                            <p className="description">Results will be available when voting ends.</p>
+                            {
+                                showAllAnswers === false
+                                    ?
+                                    <>
+                                        <p className="description">Results will be available when voting ends.</p>
+                                        <div className="endTime">
+                                            <div className="label"><p>Voting End Time</p></div>
+                                            <div className="title">
+                                                <p>{moment.unix(proposal.end_date).format('ddd D MMM, HH:mm')}</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                    :
+                                    <div className="closed-proposal">
+                                        <div className="voted">
+                                            <div><h3>78%</h3></div>
+                                            <div className="label"><p>Voted</p></div>
+                                        </div>
+                                        <div className="result">
+                                            <div><h3>67%</h3></div>
+                                            <div className="label"><p>Yes</p></div>
+                                        </div>
+                                    </div>
+                            }
 
-                            <div className="endTime">
-                                <div className="label"><p>Voting End Time</p></div>
-                                <div className="title">
-                                    <p>{moment.unix(proposal.end_date).format('ddd D MMM, HH:mm')}</p>
-                                </div>
-                            </div>
-
-                            <div className="closed-proposal">
-                                <div className="voted">
-                                    <div><h3>78%</h3></div>
-                                    <div className="label"><p>Voted</p></div>
-                                </div>
-                                <div className="result">
-                                    <div><h3>67%</h3></div>
-                                    <div className="label"><p>Yes</p></div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

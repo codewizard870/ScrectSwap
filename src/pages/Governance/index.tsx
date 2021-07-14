@@ -16,6 +16,7 @@ import { unlockJsx } from 'pages/Swap/utils';
 import { unlockToken, zeroDecimalsFormatter } from 'utils';
 import { rewardsDepositKey } from 'stores/UserStore';
 import axios from "axios";
+import { numberFormatter } from '../../utils/formatNumber'
 
 
 export const Governance = observer(() => {
@@ -258,7 +259,7 @@ export const Governance = observer(() => {
                     votingPower ?
                       (votingPower) && (votingPower?.includes(unlockToken) || !votingPower)
                         ? unlockJsx({ onClick: createSefiViewingKey })
-                        : <h1>{numeral(votingPower).format('0,0.00')}
+                        : <h1>{numberFormatter(votingPower, 3)}
                           <span className='pink'>SEFI </span>
                           <span>({numeral((votingPower * 100) / totalLocked).format('0.00%')})</span>
                         </h1>
@@ -272,7 +273,7 @@ export const Governance = observer(() => {
               <div className="stats-voting">
                 {
                   totalLocked ?
-                    <h1>{numeral(formatNumber(totalLocked)).format('0,0.00')} <span className='pink'>SEFI</span></h1>
+                    <h1>{numberFormatter(totalLocked, 3)} <span className='pink'>SEFI</span></h1>
                     : <SpinnerLineHor />
                 }
                 <p>Total Voting Power</p>

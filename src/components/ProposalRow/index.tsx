@@ -55,8 +55,8 @@ export const ProposalRow = (props: {
                     <p>{moment.unix(props.endTime).format('ddd D MMM, HH:mm')}</p>
                     <span>Voting End Time</span>
                 </div>
-                <div className={`proposal-status status-${capitalizeFirstLetter(validateStatus())}`}>
-                    {capitalizeFirstLetter(validateStatus())}
+                <div className={`proposal-status status-${capitalizeFirstLetter(props.status)}`}>
+                    {capitalizeFirstLetter(props.status)}
                 </div>
             </div>
         </Link>

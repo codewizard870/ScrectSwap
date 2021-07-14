@@ -29,6 +29,9 @@ export const DetailProposal = observer((props) => {
         valid: false,
         status: ''
     });
+
+    const [proposals, setProposals] = React.useState([]);
+
     const [userResult, setUserResult] = React.useState({
         choice: 0,
         voting_power: ''
@@ -58,7 +61,7 @@ export const DetailProposal = observer((props) => {
     // console.log(userResult);
 
     const getProposal = (id: string) => {
-        const proposal = user.proposals?.find(ele => ele?.id == id);
+        const proposal = proposals?.find(ele => ele?.id == id);
         // console.log(proposal);
         if (proposal) {
             setProposal(proposal);
@@ -132,6 +135,15 @@ export const DetailProposal = observer((props) => {
     // console.log('Date Now: ', Date.now());
     // console.log('End Date', proposal.end_date);
 
+
+    useEffect(() => {
+        (async () => {
+            const result = await user.getProposals();
+            // console.log(result);
+            setProposals(result);
+        })();
+    }, [])
+
     useEffect(() => {
         getUserResponse();
     }, [user.getUserVote(proposal?.address)]);
@@ -140,9 +152,7 @@ export const DetailProposal = observer((props) => {
     useEffect(() => {
         transformChoice(userResult.choice);
         getProposal(id);
-        // validateStatus();
-
-    }, [user.proposals]);
+    }, [proposals]);
 
     useEffect(() => {
         showHideAnswer();

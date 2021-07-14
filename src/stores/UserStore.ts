@@ -782,7 +782,7 @@ export class UserStoreEx extends StoreConstructor {
           status: proposal.status.toLowerCase(),
         }
       });
-      this.proposals = result;
+      return result;
       // console.log('Result:', result);
     } catch (error) {
       console.log('Error Message:', error);

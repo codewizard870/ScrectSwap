@@ -82,36 +82,6 @@ export const Governance = observer(() => {
 
   // console.log(selectedFilter);
 
-  const getProposals = async () => {
-    try {
-      const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
-      const data = response.data.result;
-      // console.log(data);
-      const result = data.map((proposal, i) => {
-        return {
-          index: i + 1,
-          id: proposal._id,
-          address: proposal.address,
-          title: proposal.title,
-          description: proposal.description,
-          author_address: proposal.author_addr,
-          author_alias: proposal.author_alias,
-          end_date: proposal.end_timestamp,
-          ended: proposal.ended,
-          valid: proposal.valid,
-          status: proposal.status.toLowerCase(),
-        }
-      });
-      // console.log(result);
-      return result;
-      // console.log('Result:', result);
-    } catch (error) {
-      console.log('Error Message:', error);
-    }
-  }
-
-  // console.log(getProposals());
-
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
   const getProporsalsByStatus = (proposals: Array<any>, status: string) => {
@@ -133,8 +103,6 @@ export const Governance = observer(() => {
       return proposals.filter(e => e.status === status.trim()).length;
     }
   }
-
-
   // console.log(filtered);
   // console.log(getProporsalsByStatus('passed'));
 
@@ -194,7 +162,7 @@ export const Governance = observer(() => {
 
   useEffect(() => {
     (async () => {
-      const result = await getProposals();
+      const result = await user.getProposals();
       // console.log(result);
       setProposals(result);
       getProporsalsByStatus(result, selectedFilter);

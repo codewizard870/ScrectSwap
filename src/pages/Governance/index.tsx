@@ -152,16 +152,8 @@ export const Governance = observer(() => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  const formatNumber = (num) => {
-    if (num > 999 && num < 1000000) {
-      return `${(num / 1000).toFixed(1)} ${'K'}`; // convert to K for number from > 1000 < 1 million
-    } else if (num > 1000000) {
-      return `${(num / 1000000).toFixed(1)} ${'M'}`; // convert to M for number from > 1 million
-    } else if (num < 900) {
-      return num; // if value < 1000, nothing to do
-    }
-  }
-
+  const result = (!votingPower || !totalLocked) ? 0 : ((votingPower / totalLocked) * 100);
+  const totalVotingPower = numeral(result).format('0.00%');
 
   useEffect(() => {
     (async () => {
@@ -232,7 +224,7 @@ export const Governance = observer(() => {
                         ? unlockJsx({ onClick: createSefiViewingKey })
                         : <h1>{numberFormatter(votingPower, 3)}
                           <span className='pink'>SEFI </span>
-                          <span>({((votingPower / totalLocked) * 100).toFixed(2) + '%'})</span>
+                          <span>({totalVotingPower})</span>
                         </h1>
                       : <SpinnerLineHor />
                   }

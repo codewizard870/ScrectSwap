@@ -82,10 +82,10 @@ const CreateProposal = observer((props) => {
                         <label htmlFor="author_alias">Proposer Name: </label>
 
                         <select onChange={handleChange} name="vote_type" id="proposal">
-                            <option value="1">SEFI Rewards pool</option>
-                            <option value="2">SEFI Community Spending</option>
-                            <option value="3">SecretSwap Parameter Change</option>
-                            <option value="4">Other</option>
+                            <option value="SEFI Rewards Pool">SEFI Rewards Pool</option>
+                            <option value="SEFI Community Spending">SEFI Community Spending</option>
+                            <option value="SecretSwap Parameter Change">SecretSwap Parameter Change</option>
+                            <option value="Othe">Other</option>
                         </select>
                         <input
                             onChange={handleChange}

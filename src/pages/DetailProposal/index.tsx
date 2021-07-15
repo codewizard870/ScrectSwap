@@ -92,20 +92,20 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    const transformProposalType = (): string => {
-        if (proposal.vote_type) {
-            let voteType;
-            switch (proposal.vote_type) {
-                case '1': voteType = 'SEFI Rewards Pool'; break;
-                case '2': voteType = 'SEFI Community Spending'; break;
-                case '3': voteType = 'SecretSwap Parameter Change'; break;
-                case '4': voteType = 'Other'; break;
-            }
-            return voteType
-        } else {
-            return '';
-        }
-    }
+    // const transformProposalType = (): string => {
+    //     if (proposal.vote_type) {
+    //         let voteType;
+    //         switch (proposal.vote_type) {
+    //             case '1': voteType = 'SEFI Rewards Pool'; break;
+    //             case '2': voteType = 'SEFI Community Spending'; break;
+    //             case '3': voteType = 'SecretSwap Parameter Change'; break;
+    //             case '4': voteType = 'Other'; break;
+    //         }
+    //         return voteType
+    //     } else {
+    //         return '';
+    //     }
+    // }
 
     // const validateStatus = () => {
 
@@ -147,6 +147,7 @@ export const DetailProposal = observer((props) => {
     useEffect(() => {
         getUserResponse();
     }, [user.getUserVote(proposal?.address)]);
+
 
 
     useEffect(() => {
@@ -198,7 +199,7 @@ export const DetailProposal = observer((props) => {
                             </div>
                             <div className="card-row">
                                 <div className="label"><p>Type</p></div>
-                                <div className="title"><p>{transformProposalType()}</p></div>
+                                <div className="title"><p>{proposal.vote_type}</p></div>
                             </div>
                             <div className="card-row">
                                 <div className="label"><p>Proposed by</p></div>
@@ -247,6 +248,10 @@ export const DetailProposal = observer((props) => {
                                                 <p>{moment.unix(proposal.end_date).format('ddd D MMM, HH:mm')}</p>
                                             </div>
                                         </div>
+                                        <Button
+                                            className='button-finalize-vote g-button'
+                                        >Finalize Vote
+                                        </Button>
                                     </>
                                     :
                                     <div className="closed-proposal">

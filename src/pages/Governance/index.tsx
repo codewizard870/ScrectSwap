@@ -146,6 +146,8 @@ export const Governance = observer(() => {
   // console.log('Total Voting Power: ', totalLocked);
   // console.log('Reward Token:', rewardToken);
 
+  // console.log(typeof totalLocked);
+
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -159,6 +161,7 @@ export const Governance = observer(() => {
       return num; // if value < 1000, nothing to do
     }
   }
+
 
   useEffect(() => {
     (async () => {
@@ -229,7 +232,7 @@ export const Governance = observer(() => {
                         ? unlockJsx({ onClick: createSefiViewingKey })
                         : <h1>{numberFormatter(votingPower, 3)}
                           <span className='pink'>SEFI </span>
-                          <span>({numeral((votingPower * 100) / totalLocked).format('0.00%')})</span>
+                          <span>({((votingPower / totalLocked) * 100).toFixed(2) + '%'})</span>
                         </h1>
                       : <SpinnerLineHor />
                   }

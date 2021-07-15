@@ -684,6 +684,29 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
+  public async sendFinalizeVote(contractAddress: string, rollingHash: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjsSend.asyncExecute(contractAddress,
+        {
+          "finalize": {
+            "rolling_hash:": rollingHash,
+          }
+        },
+        '',
+        [],
+        getFeeForExecute(550_000))
+      return result;
+    } else {
+      throw new Error('Not viewing key registered')
+    }
+  }
+
   public async getUserVote(contractAddress: string,): Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
@@ -700,6 +723,37 @@ export class UserStoreEx extends StoreConstructor {
             "key": viewingKey
           }
         },
+      )
+      return {
+        choice: result.vote.choice,
+        voting_power: result.vote.voting_power
+      };
+    } else {
+      throw new Error('Not viewing key registered');
+    }
+  }
+
+  public async getRevealCommitteInfo(contractAddress: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          Choices: {},
+          VoteInfo: {},
+          HasVoted: { voter: this.address },
+          Tally: {},
+          NumberOfVoters: {},
+          RevealCommittee: {},
+          Revealed: {},
+          RollingHash: {},
+
+          Vote: { voter: this.address, key: viewingKey },
+        }
       )
       return {
         choice: result.vote.choice,

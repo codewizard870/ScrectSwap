@@ -657,7 +657,7 @@ export class UserStoreEx extends StoreConstructor {
     return result;
 
   }
-  public async createVote(choice: number, contractAddress: string,): Promise<any> {
+  public async createVote(choice: number, contractAddress: string, salt: string): Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
@@ -670,7 +670,8 @@ export class UserStoreEx extends StoreConstructor {
           "vote":
           {
             "choice": choice,
-            "staking_pool_viewing_key": viewingKey
+            "staking_pool_viewing_key": viewingKey,
+            "salt": salt,
           }
         },
         '',

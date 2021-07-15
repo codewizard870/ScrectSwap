@@ -1,5 +1,5 @@
 import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
-import React, { ReactChild } from 'react'
+import React, { ReactChild, useEffect } from 'react'
 import { Button, Modal } from 'semantic-ui-react'
 import { useStores } from 'stores'
 import { ExitIcon } from 'ui/Icons/ExitIcon'
@@ -15,10 +15,28 @@ const VoteModal = (props: {
 }) => {
     const { theme, user } = useStores();
     const [open, setOpen] = React.useState(false);
+    const [salt, setSalt] = React.useState('');
+
+    // let randomString = Math.random().toString(36).substr(2, 16);
+    // setSalt(randomString);
+
+    function randomString(length) {
+        let result = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        setSalt(result);
+    }
+
+    useEffect(() => {
+        randomString(16);
+    }, [])
 
     const vote = async (choice: number) => {
         try {
-            const result = await user.createVote(choice, props.address);
+            const result = await user.createVote(choice, props.address, salt);
             console.log(result);
             setOpen(false);
             if (result?.code) {

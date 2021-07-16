@@ -16,6 +16,9 @@ export const DetailProposal = observer((props) => {
     const { id }: any = useParams();
     // console.log(useParams());
 
+    // Get Wallet Address
+    // console.log(user.address);
+
     const [proposal, setProposal] = React.useState({
         id: '',
         address: '',
@@ -81,7 +84,7 @@ export const DetailProposal = observer((props) => {
 
     const getInfo = async () => {
         try {
-            const result = await user.getRevealCommitteInfo(proposal?.address);
+            const result = await user.getRevealCommitte(proposal?.address);
             console.log(result);
         } catch (err) {
             console.log(err.message)
@@ -105,41 +108,18 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    console.log(proposals);
+    // console.log(proposals);
 
+    // useEffect(() => {
+    //     (async () => {
+    //         const result = await getInfo();
+    //         console.log(result);
+    //     })();
+    // }, [user.getRevealCommitteInfo(proposal?.address)])
 
-
-    // const validateStatus = () => {
-
-    //     let endDate = moment.unix(proposal.end_date)
-    //     let now = moment();
-    //     let result = ''
-
-    //     if (proposal.status === 'in progress' && endDate <= now) {
-    //         return result = 'validate works'
-    //     } else if (proposal.status === 'in progress' && endDate > now) {
-    //         return result = 'ended';
-    //     } else if (proposal.status === 'failed' && proposal.valid === true) {
-    //         return result = 'failed';
-    //     } else if (proposal.status === 'passed' && proposal.valid === false) {
-    //         return result = 'didnt reach quorum';
-    //     } else if (proposal.status === 'passed') {
-    //         return result = 'passed';
-    //     }
-
-    //     return setProposal({ ...proposal, status: result });
-    // }
-
-    // console.log(validateStatus());
-
-    // console.log(proposal.status);
-    // console.log(moment());
-    // console.log('Date Now: ', Date.now());
-    // console.log('End Date', proposal.end_date);
-
-    useEffect(() => {
-        getUserResponse();
-    }, [tokens.allData, user.getUserVote(proposal?.address)]);
+    // useEffect(() => {
+    //     getUserResponse();
+    // }, [tokens.allData, user.getUserVote(proposal?.address)]);
 
     useEffect(() => {
         (async () => {
@@ -159,7 +139,26 @@ export const DetailProposal = observer((props) => {
         showHideAllAnswers();
     }, []);
 
-    // console.log(user.getRevealCommitteInfo(proposal?.address));
+    //QUERIES
+    // console.log('User Vote:', user.getUserVote(proposal?.address));
+    console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address));
+
+    // All Vote Info: 
+    // console.log('Vote Info:', user.getVoteInfo(proposal?.address));
+    // console.log('Has Vote:', user.getHasVote(proposal?.address));
+    // console.log('Choices:', user.getChoices(proposal?.address));
+    // console.log('Number Of Voters:', user.getNumberOfVoters(proposal?.address));
+    // console.log('Revealed:', user.getRevealed(proposal?.address));
+    // console.log('Rollling Hash:', user.getRollingHash(proposal?.address));
+    // console.log('Vote:', user.getVote(proposal?.address));
+
+
+    // Tally: After Vote Finalized
+    // console.log('Tally:', user.getTally(proposal?.address));
+
+
+
+
     return (
         <ProposalLayout>
             <>

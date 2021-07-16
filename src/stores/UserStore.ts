@@ -684,102 +684,6 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
-  public async sendFinalizeVote(contractAddress: string, rollingHash: string): Promise<any> {
-    const viewingKey = await getViewingKey({
-      keplr: this.keplrWallet,
-      chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
-    });
-
-    if (viewingKey) {
-      const result = await this.secretjsSend.asyncExecute(contractAddress,
-        {
-          "finalize": {
-            "rolling_hash:": rollingHash,
-          }
-        },
-        '',
-        [],
-        getFeeForExecute(550_000))
-      return result;
-    } else {
-      throw new Error('Not viewing key registered')
-    }
-  }
-
-  public async getUserVote(contractAddress: string,): Promise<any> {
-    const viewingKey = await getViewingKey({
-      keplr: this.keplrWallet,
-      chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
-    });
-
-    if (viewingKey) {
-      const result = await this.secretjs.queryContractSmart(contractAddress,
-        {
-          "vote":
-          {
-            "voter": this.address,
-            "key": viewingKey
-          }
-        },
-      )
-      return {
-        choice: result.vote.choice,
-        voting_power: result.vote.voting_power
-      };
-    } else {
-      throw new Error(this.error);
-    }
-  }
-
-  public async getRevealCommitteInfo(contractAddress: string,): Promise<any> {
-    const viewingKey = await getViewingKey({
-      keplr: this.keplrWallet,
-      chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
-    });
-
-    if (viewingKey) {
-      const result = await this.secretjs.queryContractSmart(contractAddress,
-        {
-          choices: {},
-          vote_info: {},
-          has_voted: { voter: this.address },
-          tally: {},
-          number_of_voters: {},
-          reveal_committee: {},
-          revealed: {},
-          rolling_hash: {},
-
-          vote: { voter: this.address, key: viewingKey }
-        }
-      )
-      return result;
-    } else {
-      throw new Error(this.error);
-    }
-  }
-
-  public async getTally(contractAddress: string): Promise<any> {
-    const viewingKey = await getViewingKey({
-      keplr: this.keplrWallet,
-      chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
-    });
-
-    if (viewingKey) {
-      const result = await this.secretjs.queryContractSmart(contractAddress,
-        {
-          "tally": {}
-        },
-      )
-      return result;
-    } else {
-      throw new Error('Not viewing key registered')
-    }
-  }
-
   public async createProposal(
     title: string, description: string, vote_type: string, author_alias: string):
     Promise<any> {
@@ -814,6 +718,29 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
+  public async sendFinalizeVote(contractAddress: string, rollingHash: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjsSend.asyncExecute(contractAddress,
+        {
+          "finalize": {
+            "rolling_hash:": rollingHash,
+          }
+        },
+        '',
+        [],
+        getFeeForExecute(550_000))
+      return result;
+    } else {
+      throw new Error('Not viewing key registered')
+    }
+  }
+
   public getProposals = async () => {
     try {
       const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
@@ -841,7 +768,207 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
+  public async getUserVote(contractAddress: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
 
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          "vote":
+          {
+            "voter": this.address,
+            "key": viewingKey
+          }
+        },
+      )
+      return {
+        choice: result.vote.choice,
+        voting_power: result.vote.voting_power
+      };
+    } else {
+      throw new Error(this.error);
+    }
+  }
+
+  // Committe
+  public async getRevealCommitte(contractAddress: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          reveal_committee: {},
+        }
+      )
+      // return result.reveal_committee.committee.revealers;
+      return result;
+    } else {
+      throw new Error(this.error);
+    }
+  }
+
+  public async getChoices(contractAddress: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          choices: {}
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error);
+    }
+  }
+
+
+  public async getVoteInfo(contractAddress: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          vote_info: {}
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error);
+    }
+  }
+
+  public async getHasVote(contractAddress: string,): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          has_voted: {
+            voter: this.address
+          }
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error);
+    }
+  }
+
+  public async getTally(contractAddress: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          tally: {}
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error)
+    }
+  }
+
+  public async getNumberOfVoters(contractAddress: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          number_of_voters: {}
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error)
+    }
+  }
+
+  public async getRevealed(contractAddress: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          revealed: {}
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error)
+    }
+  }
+
+  public async getRollingHash(contractAddress: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          rolling_hash: {}
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error)
+    }
+  }
+
+  public async getVote(contractAddress: string): Promise<any> {
+    const viewingKey = await getViewingKey({
+      keplr: this.keplrWallet,
+      chainId: this.chainId,
+      address: process.env.SEFI_STAKING_CONTRACT,
+    });
+
+    if (viewingKey) {
+      const result = await this.secretjs.queryContractSmart(contractAddress,
+        {
+          vote: { voter: this.address, key: viewingKey }
+        },
+      )
+      return result;
+    } else {
+      throw new Error(this.error)
+    }
+  }
 
   public updateLocalCSHBKData(sefi: number, cashback: string) {
     const sefi_earned = localStorage.getItem('total_sefi_earned')

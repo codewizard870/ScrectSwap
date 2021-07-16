@@ -10,7 +10,7 @@ import './style.scss';
 
 export const DetailProposal = observer((props) => {
 
-    const { theme, user } = useStores();
+    const { theme, user, tokens } = useStores();
     // console.log('Proposals:', user.proposals);
 
     const { id }: any = useParams();
@@ -25,7 +25,7 @@ export const DetailProposal = observer((props) => {
         author_address: '',
         author_alias: '',
         end_date: 0,
-        ended: false,
+        finalized: false,
         valid: false,
         status: ''
     });
@@ -33,9 +33,10 @@ export const DetailProposal = observer((props) => {
     const [proposals, setProposals] = React.useState([]);
 
     const [userResult, setUserResult] = React.useState({
-        choice: 0,
+        choice: null,
         voting_power: ''
     });
+
     const [choice, setChoice] = React.useState('')
     const [showAnswer, setShowAnswer] = React.useState(false);
     const [showAllAnswers, setShowAllAnswers] = React.useState(false);
@@ -43,7 +44,7 @@ export const DetailProposal = observer((props) => {
     // console.log('Tally:', user.getTally(proposal.address));
 
     const showHideAnswer = () => {
-        if (proposal.ended === true) {
+        if (proposal.finalized === true) {
             setShowAnswer(true);
         } else {
             setShowAnswer(false);
@@ -51,7 +52,7 @@ export const DetailProposal = observer((props) => {
     }
 
     const showHideAllAnswers = () => {
-        if (proposal.ended === true) {
+        if (proposal.finalized === true) {
             setShowAllAnswers(true);
         } else {
             setShowAllAnswers(false);
@@ -77,6 +78,18 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+
+    const getInfo = async () => {
+        try {
+            const result = await user.getRevealCommitteInfo(proposal?.address);
+            console.log(result);
+        } catch (err) {
+            console.log(err.message)
+        }
+    }
+
+    // console.log('Reveal', getInfo());
+
     const transformChoice = (choiceSelected: number) => {
         choiceSelected === 0 ? setChoice('No') : ('Yes')
     }
@@ -92,20 +105,9 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    // const transformProposalType = (): string => {
-    //     if (proposal.vote_type) {
-    //         let voteType;
-    //         switch (proposal.vote_type) {
-    //             case '1': voteType = 'SEFI Rewards Pool'; break;
-    //             case '2': voteType = 'SEFI Community Spending'; break;
-    //             case '3': voteType = 'SecretSwap Parameter Change'; break;
-    //             case '4': voteType = 'Other'; break;
-    //         }
-    //         return voteType
-    //     } else {
-    //         return '';
-    //     }
-    // }
+    console.log(proposals);
+
+
 
     // const validateStatus = () => {
 
@@ -135,6 +137,9 @@ export const DetailProposal = observer((props) => {
     // console.log('Date Now: ', Date.now());
     // console.log('End Date', proposal.end_date);
 
+    useEffect(() => {
+        getUserResponse();
+    }, [tokens.allData, user.getUserVote(proposal?.address)]);
 
     useEffect(() => {
         (async () => {
@@ -143,12 +148,6 @@ export const DetailProposal = observer((props) => {
             setProposals(result);
         })();
     }, [])
-
-    useEffect(() => {
-        getUserResponse();
-    }, [user.getUserVote(proposal?.address)]);
-
-
 
     useEffect(() => {
         transformChoice(userResult.choice);
@@ -160,6 +159,7 @@ export const DetailProposal = observer((props) => {
         showHideAllAnswers();
     }, []);
 
+    // console.log(user.getRevealCommitteInfo(proposal?.address));
     return (
         <ProposalLayout>
             <>

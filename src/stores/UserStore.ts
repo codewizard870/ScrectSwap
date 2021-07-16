@@ -729,7 +729,7 @@ export class UserStoreEx extends StoreConstructor {
         voting_power: result.vote.voting_power
       };
     } else {
-      throw new Error('Not viewing key registered');
+      throw new Error(this.error);
     }
   }
 
@@ -743,24 +743,21 @@ export class UserStoreEx extends StoreConstructor {
     if (viewingKey) {
       const result = await this.secretjs.queryContractSmart(contractAddress,
         {
-          Choices: {},
-          VoteInfo: {},
-          HasVoted: { voter: this.address },
-          Tally: {},
-          NumberOfVoters: {},
-          RevealCommittee: {},
-          Revealed: {},
-          RollingHash: {},
+          choices: {},
+          vote_info: {},
+          has_voted: { voter: this.address },
+          tally: {},
+          number_of_voters: {},
+          reveal_committee: {},
+          revealed: {},
+          rolling_hash: {},
 
-          Vote: { voter: this.address, key: viewingKey },
+          vote: { voter: this.address, key: viewingKey }
         }
       )
-      return {
-        choice: result.vote.choice,
-        voting_power: result.vote.voting_power
-      };
+      return result;
     } else {
-      throw new Error('Not viewing key registered');
+      throw new Error(this.error);
     }
   }
 
@@ -817,7 +814,7 @@ export class UserStoreEx extends StoreConstructor {
     }
   }
 
-  @action public getProposals = async () => {
+  public getProposals = async () => {
     try {
       const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
       const data = response.data.result;
@@ -832,7 +829,7 @@ export class UserStoreEx extends StoreConstructor {
           author_address: proposal.author_addr,
           author_alias: proposal.author_alias,
           end_date: proposal.end_timestamp,
-          ended: proposal.ended,
+          finalized: proposal.finalized,
           valid: proposal.valid,
           status: proposal.status.toLowerCase(),
         }

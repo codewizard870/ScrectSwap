@@ -313,7 +313,7 @@ export const Governance = observer(() => {
                       endTime={p.end_date}
                       status={p.status}
                       id={p.id}
-                      ended={p.ended}
+                      finalized={p.finalized}
                       valid={p.valid}
                     />
                   )

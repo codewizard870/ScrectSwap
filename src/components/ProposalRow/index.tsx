@@ -13,7 +13,7 @@ export const ProposalRow = (props: {
     endTime: number,
     status?: string,
     id: string,
-    ended: boolean,
+    finalized: boolean,
     valid: boolean,
 }) => {
 

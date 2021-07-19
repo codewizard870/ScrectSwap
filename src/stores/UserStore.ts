@@ -749,6 +749,10 @@ export class UserStoreEx extends StoreConstructor {
       const result = data.map(proposal => {
         return {
           id: proposal._id,
+          reveal_com: {
+            revealers: proposal.reveal_com.revealers,
+            number: proposal.reveal_com.n
+          },
           address: proposal.address,
           title: proposal.title,
           description: proposal.description,
@@ -933,22 +937,16 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async getRollingHash(contractAddress: string): Promise<any> {
-    const viewingKey = await getViewingKey({
-      keplr: this.keplrWallet,
-      chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
-    });
-
-    if (viewingKey) {
-      const result = await this.secretjs.queryContractSmart(contractAddress,
-        {
-          rolling_hash: {}
-        },
-      )
-      return result;
-    } else {
-      throw new Error(this.error)
-    }
+    // console.log(contractAddress);
+    // console.log(this.secretjs);
+    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
+    const result = await client.queryContractSmart(contractAddress,
+      {
+        rolling_hash: {}
+      },
+    )
+    console.log(result);
+    return result.rolling_hash.hash;
   }
 
   public async getVote(contractAddress: string): Promise<any> {

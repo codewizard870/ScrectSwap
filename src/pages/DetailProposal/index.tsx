@@ -3,14 +3,18 @@ import VoteModal from 'components/VoteModal'
 import moment from 'moment';
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
-import { useParams } from 'react-router'
+import { useParams, useHistory } from 'react-router'
 import { Button } from 'semantic-ui-react'
 import { useStores } from 'stores'
+import { sleep } from 'utils';
+import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
+import axios from "axios";
 import './style.scss';
 
 export const DetailProposal = observer((props) => {
 
     const { theme, user, tokens } = useStores();
+    const history = useHistory();
     // console.log('Proposals:', user.proposals);
 
     const { id }: any = useParams();
@@ -19,19 +23,13 @@ export const DetailProposal = observer((props) => {
     // Get Wallet Address
     // console.log(user.address);
 
-    const [proposal, setProposal] = React.useState({
-        id: '',
-        address: '',
-        title: '',
-        description: '',
-        vote_type: '',
-        author_address: '',
-        author_alias: '',
-        end_date: 0,
-        finalized: false,
-        valid: false,
-        status: ''
-    });
+    const [proposal, setProposal] = React.useState({} as any);
+
+    console.log(proposal);
+
+    const [loading, setLoading] = React.useState<boolean>(false);
+
+    const contractAddress = proposal?.address;
 
     const [proposals, setProposals] = React.useState([]);
 
@@ -43,6 +41,15 @@ export const DetailProposal = observer((props) => {
     const [choice, setChoice] = React.useState('')
     const [showAnswer, setShowAnswer] = React.useState(false);
     const [showAllAnswers, setShowAllAnswers] = React.useState(false);
+
+    const [rollingHash, setRollingHash] = React.useState('');
+
+    const [countVotes, setCountVotes] = React.useState(0);
+
+    const [isRevealer, setIsRevealer] = React.useState(false);
+
+    // const [minimunNumbers, setMinimumNumbers] = React.useState();
+
 
     // console.log('Tally:', user.getTally(proposal.address));
 
@@ -82,15 +89,6 @@ export const DetailProposal = observer((props) => {
     }
 
 
-    const getInfo = async () => {
-        try {
-            const result = await user.getRevealCommitte(proposal?.address);
-            console.log(result);
-        } catch (err) {
-            console.log(err.message)
-        }
-    }
-
     // console.log('Reveal', getInfo());
 
     const transformChoice = (choiceSelected: number) => {
@@ -108,7 +106,65 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    async function FinalizeVote() {
+
+        setLoading(true);
+
+        try {
+            const result = await user.sendFinalizeVote(contractAddress, rollingHash);
+            if (result?.code) {
+                const message = extractError(result)
+                notify('error', message, 10, result.txhash, true)
+                setLoading(false);
+            } else {
+                notify('success', 'Your vote was sended succesfully', 10, '', true)
+                await sleep(3000);
+                setLoading(false);
+                history.push('/governance')
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
+    const sendVoteResults = async () => {
+        try {
+            const result = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${proposal.address}`);
+
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
+    const validateMinimumRevealers = () => {
+
+        const minimunNumbers = proposal.reveal_com.number;
+
+        if (countVotes < minimunNumbers) {
+            setCountVotes(countVotes + 1)
+        }
+    }
+
+    // console.log(validateMinimumRevealers());
+
+    const validateRevealer = () => {
+
+        const revealers = proposal.reveal_com.revealers;
+
+        if (revealers.includes(user.address)) {
+            setIsRevealer(true);
+            // console.log('Includes');
+        } else {
+            setIsRevealer(false);
+            // console.log('No Includes');|
+        }
+    }
+
+    // console.log(validateRevealer());
+
     // console.log(proposals);
+    // console.log(proposal);
+
 
     // useEffect(() => {
     //     (async () => {
@@ -130,9 +186,36 @@ export const DetailProposal = observer((props) => {
     }, [])
 
     useEffect(() => {
-        transformChoice(userResult.choice);
         getProposal(id);
+        transformChoice(userResult.choice);
     }, [proposals]);
+
+    const test = async () => {
+        const result = await user.getRollingHash(proposal.address);
+        setRollingHash(result);
+    }
+
+    useEffect(() => {
+
+        if (Object.keys(proposal).length > 0) {
+            test();
+            // console.log('Executing')
+            // user.getRollingHash(proposal.address).then((response) => console.log(response));
+            // console.log(proposal);
+        }
+        // (async () => {
+        //     try {
+        //         const result = await user.getRollingHash(contractAddress);
+        //         // console.log(result);
+        //         setRollingHash(result);
+        //     } catch (err) {
+        //         console.log(err.message)
+        //     }
+        // })();
+        // return () => { console.log('Finished.') }
+    }, [proposal]);
+
+    // console.log(rollingHash);
 
     useEffect(() => {
         showHideAnswer();
@@ -141,7 +224,7 @@ export const DetailProposal = observer((props) => {
 
     //QUERIES
     // console.log('User Vote:', user.getUserVote(proposal?.address));
-    console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address));
+    // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address));
 
     // All Vote Info: 
     // console.log('Vote Info:', user.getVoteInfo(proposal?.address));
@@ -178,7 +261,7 @@ export const DetailProposal = observer((props) => {
                                 <p>Porposal Address: </p> <p>{proposal.author_address}</p>
                             </div> */}
                             <div className='description'>
-                                <h5>Description</h5>
+                                <h5>{rollingHash}</h5>
                                 <p>{proposal.description}</p>
                             </div>
                         </div>
@@ -248,6 +331,7 @@ export const DetailProposal = observer((props) => {
                                             </div>
                                         </div>
                                         <Button
+                                            onClick={() => FinalizeVote()}
                                             className='button-finalize-vote g-button'
                                         >Finalize Vote
                                         </Button>

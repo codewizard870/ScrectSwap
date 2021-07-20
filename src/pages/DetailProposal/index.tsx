@@ -4,7 +4,7 @@ import moment from 'moment';
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import { useParams, useHistory } from 'react-router'
-import { Button } from 'semantic-ui-react'
+import { Button, Message } from 'semantic-ui-react';
 import { useStores } from 'stores'
 import { sleep } from 'utils';
 import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
@@ -50,7 +50,7 @@ export const DetailProposal = observer((props) => {
     const [proposals, setProposals] = React.useState([]);
 
     const [userResult, setUserResult] = React.useState({
-        choice: null,
+        choice: 0,
         voting_power: ''
     });
 
@@ -66,10 +66,12 @@ export const DetailProposal = observer((props) => {
 
     const [countVotes, setCountVotes] = React.useState(0);
 
+    const [hasVote, setHasVote] = React.useState<boolean>(false);
+
+    const [tally, setTally] = React.useState(null);
+
 
     // const [minimunNumbers, setMinimumNumbers] = React.useState();
-    console.log(rollingHash);
-
 
     // console.log('Tally:', user.getTally(proposal.address));
 
@@ -99,14 +101,6 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    const getUserResponse = async () => {
-        try {
-            const result = await user.getUserVote(proposal?.address)
-            setUserResult(result);
-        } catch (err) {
-            console.log(err.message);
-        }
-    }
 
 
     // console.log('Reveal', getInfo());
@@ -173,26 +167,48 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    const getRollingHash = async () => {
+        const result = await user.rollingHash(contractAddress);
+        setRollingHash(result);
+    }
+
+    const getUserVote = async () => {
+        try {
+            const result = await user.userVote(contractAddress);
+            // setUserResult({ choice: result.vote.choice, voting_power: result.vote.voting_power });
+            setUserResult(result);
+        } catch (err) {
+            console.log('User Vote Error:', err.message);
+        }
+    }
+
+    const getHasVote = async () => {
+        try {
+            const result = await user.hasVote(contractAddress);
+            setHasVote(result);
+        } catch (err) {
+            console.log('Has Vote Error:', err.message);
+        }
+    }
+
+    const getTally = async () => {
+        try {
+            const result = await user.tally(contractAddress);
+            setTally(result);
+        } catch (err) {
+            console.log('Tally Error:', err.message);
+        }
+    }
+
+
+
     // console.log(user.address);
     // console.log(proposal.reveal_com.revealers.includes(user.address));
-
 
     // console.log(validateRevealer());
 
     // console.log(proposals);
     // console.log(proposal);
-
-
-    // useEffect(() => {
-    //     (async () => {
-    //         const result = await getInfo();
-    //         console.log(result);
-    //     })();
-    // }, [user.getRevealCommitteInfo(proposal?.address)])
-
-    // useEffect(() => {
-    //     getUserResponse();
-    // }, [tokens.allData, user.getUserVote(proposal?.address)]);
 
     useEffect(() => {
         (async () => {
@@ -204,28 +220,24 @@ export const DetailProposal = observer((props) => {
 
     useEffect(() => {
         getProposal(id);
-        transformChoice(userResult.choice);
+        // transformChoice(userResult.choice);
     }, [proposals]);
 
-    const test = async () => {
-        const result = await user.getRollingHash(contractAddress);
-        setRollingHash(result);
-    }
-
     useEffect(() => {
-
         if (Object.keys(proposal).length > 0) {
-            test();
+            getRollingHash();
+            validateRevealer();
+            getUserVote();
+            getHasVote();
+            getTally();
         }
     }, [proposal]);
 
-    useEffect(() => {
-        validateRevealer();
-    }, [proposal])
-
     // console.log(isRevealer);
-
     // console.log(rollingHash);
+    // console.log(userResult);
+    // console.log(hasVote);
+    // console.log(tally);
 
     useEffect(() => {
         showHideAnswer();
@@ -233,21 +245,21 @@ export const DetailProposal = observer((props) => {
     }, []);
 
     //QUERIES
-    // console.log('User Vote:', user.getUserVote(proposal?.address));
-    // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address));
+    // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address))
 
     // All Vote Info: 
     // console.log('Vote Info:', user.getVoteInfo(proposal?.address));
-    // console.log('Has Vote:', user.getHasVote(proposal?.address));
+    // Normal Vote
+    // console.log('Has Vote:', user.hasVote(proposal?.address));
     // console.log('Choices:', user.getChoices(proposal?.address));
     // console.log('Number Of Voters:', user.getNumberOfVoters(proposal?.address));
     // console.log('Revealed:', user.getRevealed(proposal?.address));
     // console.log('Rollling Hash:', user.getRollingHash(proposal?.address));
-    // console.log('Vote:', user.getVote(proposal?.address));
+    // console.log('Vote:', user.userVote(proposal?.address));
 
 
     // Tally: After Vote Finalized
-    // console.log('Tally:', user.getTally(proposal?.address));
+    console.log('Tally:', user.tally(proposal?.address));
 
 
 

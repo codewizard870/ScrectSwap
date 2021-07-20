@@ -808,7 +808,7 @@ export class UserStoreEx extends StoreConstructor {
 
   }
 
-  public async getHasVote(contractAddress: string,): Promise<any> {
+  public async hasVote(contractAddress: string,): Promise<any> {
 
     const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
     const result = await client.queryContractSmart(contractAddress,
@@ -821,7 +821,7 @@ export class UserStoreEx extends StoreConstructor {
     return result.has_voted.has_voted;
   }
 
-  public async getTally(contractAddress: string): Promise<any> {
+  public async tally(contractAddress: string): Promise<any> {
 
     const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
     const result = await client.queryContractSmart(contractAddress,
@@ -856,7 +856,7 @@ export class UserStoreEx extends StoreConstructor {
     };
   }
 
-  public async getRollingHash(contractAddress: string): Promise<any> {
+  public async rollingHash(contractAddress: string): Promise<any> {
     // console.log(contractAddress);
     // console.log(this.secretjs);
     const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
@@ -869,7 +869,7 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   // Query Proposal Normal Vote
-  public async getUserVote(contractAddress: string): Promise<any> {
+  public async userVote(contractAddress: string): Promise<any> {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,

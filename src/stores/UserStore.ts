@@ -719,25 +719,22 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async sendFinalizeVote(contractAddress: string, rollingHash: string): Promise<any> {
-    const viewingKey = await getViewingKey({
-      keplr: this.keplrWallet,
-      chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
-    });
 
-    if (viewingKey) {
+    try {
       const result = await this.secretjsSend.asyncExecute(contractAddress,
         {
-          "finalize": {
-            "rolling_hash:": rollingHash,
+          finalize: {
+            rolling_hash: rollingHash,
           }
         },
         '',
         [],
         getFeeForExecute(550_000))
+      console.log(result);
       return result;
-    } else {
-      throw new Error('Not viewing key registered')
+    }
+    catch (err) {
+      console.log('Error:', err)
     }
   }
 

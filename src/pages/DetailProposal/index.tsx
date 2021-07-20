@@ -68,6 +68,7 @@ export const DetailProposal = observer((props) => {
 
 
     // const [minimunNumbers, setMinimumNumbers] = React.useState();
+    console.log(rollingHash);
 
 
     // console.log('Tally:', user.getTally(proposal.address));
@@ -126,14 +127,13 @@ export const DetailProposal = observer((props) => {
     }
 
     async function FinalizeVote() {
-
         try {
             const result = await user.sendFinalizeVote(contractAddress, rollingHash);
             if (result?.code) {
                 console.log(extractError(result));
+                console.log(rollingHash);
             } else {
-
-
+                console.log('Vote Finalized Successfully')
             }
         } catch (error) {
             console.error(error.message);
@@ -223,9 +223,9 @@ export const DetailProposal = observer((props) => {
         validateRevealer();
     }, [proposal])
 
-    console.log(isRevealer);
+    // console.log(isRevealer);
 
-    console.log(rollingHash);
+    // console.log(rollingHash);
 
     useEffect(() => {
         showHideAnswer();
@@ -271,7 +271,7 @@ export const DetailProposal = observer((props) => {
                                 <p>Porposal Address: </p> <p>{proposal.author_address}</p>
                             </div> */}
                             <div className='description'>
-                                <h5>rollingHash</h5>
+                                <h5>Description</h5>
                                 <p>{proposal.description}</p>
                             </div>
                         </div>

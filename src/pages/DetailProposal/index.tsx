@@ -50,7 +50,7 @@ export const DetailProposal = observer((props) => {
     const [proposals, setProposals] = React.useState([]);
 
     const [userResult, setUserResult] = React.useState({
-        choice: 0,
+        choice: null,
         voting_power: ''
     });
 
@@ -76,10 +76,10 @@ export const DetailProposal = observer((props) => {
     // console.log('Tally:', user.getTally(proposal.address));
 
     const showHideAnswer = () => {
-        if (proposal.finalized === true) {
-            setShowAnswer(true);
-        } else {
+        if (proposal.finalized === true || hasVote === true) {
             setShowAnswer(false);
+        } else {
+            setShowAnswer(true);
         }
     }
 
@@ -125,14 +125,20 @@ export const DetailProposal = observer((props) => {
             const result = await user.sendFinalizeVote(contractAddress, rollingHash);
             if (result?.code) {
                 console.log(extractError(result));
-                console.log(rollingHash);
             } else {
+                if (countVotes === proposal.reveal_com.number) {
+                    sendVoteResults();
+                } else {
+                    setCountVotes(countVotes + 1);
+                }
                 console.log('Vote Finalized Successfully')
             }
         } catch (error) {
             console.error(error.message);
         }
     }
+
+    // console.log(countVotes === proposal.reveal_com.number ? 'Sending Post' : 'Counting');
 
     const sendVoteResults = async () => {
         try {
@@ -141,17 +147,6 @@ export const DetailProposal = observer((props) => {
             console.log(err.message);
         }
     }
-
-    const validateMinimumRevealers = () => {
-
-        const minimunNumbers = proposal.reveal_com.number;
-
-        if (countVotes < minimunNumbers) {
-            setCountVotes(countVotes + 1)
-        }
-    }
-
-    // console.log(validateMinimumRevealers());
 
     const validateRevealer = () => {
 
@@ -199,8 +194,6 @@ export const DetailProposal = observer((props) => {
             console.log('Tally Error:', err.message);
         }
     }
-
-
 
     // console.log(user.address);
     // console.log(proposal.reveal_com.revealers.includes(user.address));
@@ -259,8 +252,9 @@ export const DetailProposal = observer((props) => {
 
 
     // Tally: After Vote Finalized
-    console.log('Tally:', user.tally(proposal?.address));
+    // console.log('Tally:', user.tally(proposal?.address));
 
+    // console.log(showAnswer)
 
 
 
@@ -320,7 +314,7 @@ export const DetailProposal = observer((props) => {
                                             <div className="label"><p>My Voting Power</p></div>
                                         </div>
                                         <div className="vote-response">
-                                            <div><h3>{choice}</h3></div>
+                                            <div><h3>{userResult.choice}</h3></div>
                                             <div className="label"><p>My Vote</p></div>
                                         </div>
                                     </div>

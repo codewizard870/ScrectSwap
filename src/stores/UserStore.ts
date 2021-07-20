@@ -945,7 +945,6 @@ export class UserStoreEx extends StoreConstructor {
         rolling_hash: {}
       },
     )
-    console.log(result);
     return result.rolling_hash.hash;
   }
 

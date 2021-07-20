@@ -23,9 +23,25 @@ export const DetailProposal = observer((props) => {
     // Get Wallet Address
     // console.log(user.address);
 
-    const [proposal, setProposal] = React.useState({} as any);
+    const [proposal, setProposal] = React.useState({
+        id: '',
+        reveal_com: {
+            revealers: [],
+            number: 0
+        },
+        address: '',
+        title: '',
+        description: '',
+        vote_type: '',
+        author_address: '',
+        author_alias: '',
+        end_date: 0,
+        finalized: false,
+        valid: false,
+        status: ''
+    });
 
-    console.log(proposal);
+    // console.log(proposal);
 
     const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -39,14 +55,17 @@ export const DetailProposal = observer((props) => {
     });
 
     const [choice, setChoice] = React.useState('')
+
     const [showAnswer, setShowAnswer] = React.useState(false);
+
     const [showAllAnswers, setShowAllAnswers] = React.useState(false);
 
     const [rollingHash, setRollingHash] = React.useState('');
 
+    const [isRevealer, setIsRevealer] = React.useState<boolean>(false);
+
     const [countVotes, setCountVotes] = React.useState(0);
 
-    const [isRevealer, setIsRevealer] = React.useState(false);
 
     // const [minimunNumbers, setMinimumNumbers] = React.useState();
 
@@ -108,19 +127,13 @@ export const DetailProposal = observer((props) => {
 
     async function FinalizeVote() {
 
-        setLoading(true);
-
         try {
             const result = await user.sendFinalizeVote(contractAddress, rollingHash);
             if (result?.code) {
-                const message = extractError(result)
-                notify('error', message, 10, result.txhash, true)
-                setLoading(false);
+                console.log(extractError(result));
             } else {
-                notify('success', 'Your vote was sended succesfully', 10, '', true)
-                await sleep(3000);
-                setLoading(false);
-                history.push('/governance')
+
+
             }
         } catch (error) {
             console.error(error.message);
@@ -129,8 +142,7 @@ export const DetailProposal = observer((props) => {
 
     const sendVoteResults = async () => {
         try {
-            const result = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${proposal.address}`);
-
+            await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${proposal.address}`);
         } catch (err) {
             console.log(err.message);
         }
@@ -150,15 +162,20 @@ export const DetailProposal = observer((props) => {
     const validateRevealer = () => {
 
         const revealers = proposal.reveal_com.revealers;
+        // console.log(revealers);
 
         if (revealers.includes(user.address)) {
             setIsRevealer(true);
             // console.log('Includes');
         } else {
+            // console.log('no includes')
             setIsRevealer(false);
-            // console.log('No Includes');|
         }
     }
+
+    // console.log(user.address);
+    // console.log(proposal.reveal_com.revealers.includes(user.address));
+
 
     // console.log(validateRevealer());
 
@@ -191,7 +208,7 @@ export const DetailProposal = observer((props) => {
     }, [proposals]);
 
     const test = async () => {
-        const result = await user.getRollingHash(proposal.address);
+        const result = await user.getRollingHash(contractAddress);
         setRollingHash(result);
     }
 
@@ -199,23 +216,16 @@ export const DetailProposal = observer((props) => {
 
         if (Object.keys(proposal).length > 0) {
             test();
-            // console.log('Executing')
-            // user.getRollingHash(proposal.address).then((response) => console.log(response));
-            // console.log(proposal);
         }
-        // (async () => {
-        //     try {
-        //         const result = await user.getRollingHash(contractAddress);
-        //         // console.log(result);
-        //         setRollingHash(result);
-        //     } catch (err) {
-        //         console.log(err.message)
-        //     }
-        // })();
-        // return () => { console.log('Finished.') }
     }, [proposal]);
 
-    // console.log(rollingHash);
+    useEffect(() => {
+        validateRevealer();
+    }, [proposal])
+
+    console.log(isRevealer);
+
+    console.log(rollingHash);
 
     useEffect(() => {
         showHideAnswer();
@@ -261,7 +271,7 @@ export const DetailProposal = observer((props) => {
                                 <p>Porposal Address: </p> <p>{proposal.author_address}</p>
                             </div> */}
                             <div className='description'>
-                                <h5>{rollingHash}</h5>
+                                <h5>rollingHash</h5>
                                 <p>{proposal.description}</p>
                             </div>
                         </div>
@@ -330,11 +340,15 @@ export const DetailProposal = observer((props) => {
                                                 <p>{moment.unix(proposal.end_date).format('ddd D MMM, HH:mm')}</p>
                                             </div>
                                         </div>
-                                        <Button
-                                            onClick={() => FinalizeVote()}
-                                            className='button-finalize-vote g-button'
-                                        >Finalize Vote
-                                        </Button>
+                                        {
+                                            isRevealer ?
+                                                <Button
+                                                    onClick={() => FinalizeVote()}
+                                                    className='button-finalize-vote g-button'
+                                                >Finalize Vote
+                                                </Button>
+                                                : null
+                                        }
                                     </>
                                     :
                                     <div className="closed-proposal">

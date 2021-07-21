@@ -46,6 +46,7 @@ export const DetailProposal = observer((props) => {
     const [loading, setLoading] = React.useState<boolean>(false);
 
     const contractAddress = proposal?.address;
+    console.log(contractAddress);
 
     const [proposals, setProposals] = React.useState([]);
 
@@ -54,19 +55,27 @@ export const DetailProposal = observer((props) => {
         voting_power: ''
     });
 
-    const [choice, setChoice] = React.useState('')
+    const [choice, setChoice] = React.useState<string>('');
 
-    const [showAnswer, setShowAnswer] = React.useState(false);
+    const [showAnswer, setShowAnswer] = React.useState<boolean>(false);
 
-    const [showAllAnswers, setShowAllAnswers] = React.useState(false);
+    const [showAllAnswers, setShowAllAnswers] = React.useState<boolean>(false);
 
-    const [rollingHash, setRollingHash] = React.useState('');
+    const [rollingHash, setRollingHash] = React.useState<string>('');
 
     const [isRevealer, setIsRevealer] = React.useState<boolean>(false);
 
     const [countVotes, setCountVotes] = React.useState(0);
 
     const [hasVote, setHasVote] = React.useState<boolean>(false);
+
+    const [revealed, setRevealed] = React.useState({
+        num_revealed: 0,
+        required: 0,
+        revelead: []
+    });
+
+    // console.log(proposal.reveal_com.number >= revealed.num_revealed );
 
     const [tally, setTally] = React.useState(null);
 
@@ -76,7 +85,7 @@ export const DetailProposal = observer((props) => {
     // console.log('Tally:', user.getTally(proposal.address));
 
     const showHideAnswer = () => {
-        if (proposal.finalized === true || hasVote === false) {
+        if (proposal.finalized === true /*|| hasVote === false*/) {
             setShowAnswer(true);
         } else {
             setShowAnswer(false);
@@ -128,7 +137,6 @@ export const DetailProposal = observer((props) => {
                     sendVoteResults();
                     console.log('Post Sended')
                 } else {
-                    setCountVotes(countVotes + 1);
                     console.log('Vote Counted')
                 }
             }
@@ -182,6 +190,15 @@ export const DetailProposal = observer((props) => {
             setHasVote(result);
         } catch (err) {
             console.log('Has Vote Error:', err.message);
+        }
+    }
+
+    const getRevealed = async () => {
+        try {
+            const result = await user.revealed(contractAddress);
+            setRevealed(result);
+        } catch (err) {
+            console.log('Revealed Error:', err.message);
         }
     }
 
@@ -242,6 +259,7 @@ export const DetailProposal = observer((props) => {
             getUserVote();
             getHasVote();
             getTally();
+            getRevealed();
         }
     }, [proposal]);
 
@@ -265,7 +283,7 @@ export const DetailProposal = observer((props) => {
     // console.log('Has Vote:', user.hasVote(proposal?.address));
     // console.log('Choices:', user.getChoices(proposal?.address));
     // console.log('Number Of Voters:', user.getNumberOfVoters(proposal?.address));
-    // console.log('Revealed:', user.getRevealed(proposal?.address));
+    // console.log('Revealed:', user.revealed(proposal?.address));
     // console.log('Rollling Hash:', user.getRollingHash(proposal?.address));
     // console.log('Vote:', user.userVote(proposal?.address));
 
@@ -274,6 +292,7 @@ export const DetailProposal = observer((props) => {
     // console.log('Tally:', user.tally(proposal?.address));
 
     // console.log(showAnswer)
+
 
 
 

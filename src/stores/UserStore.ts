@@ -731,6 +731,8 @@ export class UserStoreEx extends StoreConstructor {
         [],
         getFeeForExecute(550_000))
       console.log(result);
+      const decoder = new TextDecoder();
+      console.log(decoder.decode(result.data));
       return result;
     }
     catch (err) {
@@ -842,7 +844,7 @@ export class UserStoreEx extends StoreConstructor {
     return result.number_of_voters.count;
   }
 
-  public async getRevealed(contractAddress: string): Promise<any> {
+  public async revealed(contractAddress: string): Promise<any> {
     const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
     const result = await client.queryContractSmart(contractAddress,
       {

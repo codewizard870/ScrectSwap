@@ -76,10 +76,10 @@ export const DetailProposal = observer((props) => {
     // console.log('Tally:', user.getTally(proposal.address));
 
     const showHideAnswer = () => {
-        if (proposal.finalized === true || hasVote === true) {
-            setShowAnswer(false);
-        } else {
+        if (proposal.finalized === true || hasVote === false) {
             setShowAnswer(true);
+        } else {
+            setShowAnswer(false);
         }
     }
 
@@ -101,11 +101,9 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-
-
     // console.log('Reveal', getInfo());
 
-    const transformChoice = (choiceSelected: number) => {
+    const convertChoiceToString = (choiceSelected: number) => {
         choiceSelected === 0 ? setChoice('No') : ('Yes')
     }
 
@@ -126,12 +124,13 @@ export const DetailProposal = observer((props) => {
             if (result?.code) {
                 console.log(extractError(result));
             } else {
-                if (countVotes === proposal.reveal_com.number) {
+                if (proposal.reveal_com.number === 1) {
                     sendVoteResults();
+                    console.log('Post Sended')
                 } else {
                     setCountVotes(countVotes + 1);
+                    console.log('Vote Counted')
                 }
-                console.log('Vote Finalized Successfully')
             }
         } catch (error) {
             console.error(error.message);
@@ -142,7 +141,7 @@ export const DetailProposal = observer((props) => {
 
     const sendVoteResults = async () => {
         try {
-            await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${proposal.address}`);
+            await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/`, `${proposal.address}`);
         } catch (err) {
             console.log(err.message);
         }
@@ -173,7 +172,7 @@ export const DetailProposal = observer((props) => {
             // setUserResult({ choice: result.vote.choice, voting_power: result.vote.voting_power });
             setUserResult(result);
         } catch (err) {
-            console.log('User Vote Error:', err.message);
+            console.log('User Vote Error:', err);
         }
     }
 
@@ -195,6 +194,26 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    const validateStatus = (status: string) => {
+
+        let endDate = moment.unix(proposal.end_date)
+        let now = moment();
+
+        if (status === 'in progress' && endDate > now) {
+            return 'in progress'
+        } else if (status === 'in progress' && endDate <= now) {
+            return 'ended';
+        } else if (status === 'failed' && proposal.valid === true) {
+            return 'failed';
+        } else if (status === 'passed' && proposal.valid === false) {
+            return 'didnt reach quorum';
+        } else if (status === 'passed') {
+            return 'passed';
+        }
+
+        return '';
+    }
+
     // console.log(user.address);
     // console.log(proposal.reveal_com.revealers.includes(user.address));
 
@@ -213,7 +232,7 @@ export const DetailProposal = observer((props) => {
 
     useEffect(() => {
         getProposal(id);
-        // transformChoice(userResult.choice);
+        convertChoiceToString(userResult.choice);
     }, [proposals]);
 
     useEffect(() => {
@@ -292,7 +311,7 @@ export const DetailProposal = observer((props) => {
                                     {proposal.status}
                                 </div> */}
                                 <div className={`proposal-status small status-${proposal.status}`}>
-                                    {proposal.status}
+                                    {validateStatus(proposal.status)}
                                 </div>
                             </div>
                             <div className="card-row">

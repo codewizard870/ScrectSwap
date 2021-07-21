@@ -15,36 +15,12 @@ export const ProposalRow = (props: {
     id: string,
     finalized: boolean,
     valid: boolean,
+    currentStatus: string
 }) => {
 
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
-
-    const validateStatus = () => {
-
-        let endDate = moment.unix(props.endTime)
-        let now = moment();
-        let result = ''
-
-        if (props.status === 'in progress' && endDate > now) {
-            return result = 'in progress'
-        } else if (props.status === 'in progress' && endDate <= now) {
-            return result = 'ended';
-        } else if (props.status === 'failed' && props.valid === true) {
-            return result = 'failed';
-        } else if (props.status === 'passed' && props.valid === false) {
-            return result = 'didnt reach quorum';
-        } else if (props.status === 'passed') {
-            return result = 'passed';
-        }
-
-        return result;
-    }
-
-    useEffect(() => {
-        validateStatus();
-    }, []);
 
     return (
         <Link to={`/proposal/${props.id}`} style={{ textDecoration: 'none' }}>
@@ -56,7 +32,8 @@ export const ProposalRow = (props: {
                     <span>Voting End Time</span>
                 </div>
                 <div className={`proposal-status status-${capitalizeFirstLetter(props.status)}`}>
-                    {capitalizeFirstLetter(props.status)}
+                    {/* {capitalizeFirstLetter(validateStatus(props.status))} */}
+                    {capitalizeFirstLetter(props.currentStatus)}
                 </div>
             </div>
         </Link>

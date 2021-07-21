@@ -17,6 +17,8 @@ import { unlockToken, zeroDecimalsFormatter } from 'utils';
 import { rewardsDepositKey } from 'stores/UserStore';
 import axios from "axios";
 import { numberFormatter } from '../../utils/formatNumber'
+import { validate } from 'webpack';
+import { STATUS } from '../../stores/interfaces';
 
 
 export const Governance = observer(() => {
@@ -89,7 +91,7 @@ export const Governance = observer(() => {
       setFiltered(proposals);
       // console.log('all');
     } else {
-      const filter = proposals.filter((proposal => proposal.status.includes(status)));
+      const filter = proposals.filter((proposal => proposal.currentStatus.includes(status)));
       setFiltered(filter);
       // console.log('filtered');
     }
@@ -100,7 +102,7 @@ export const Governance = observer(() => {
     if (status == 'all') {
       return proposals.length;
     } else {
-      return proposals.filter(e => e.status === status.trim()).length;
+      return proposals.filter(e => e.currentStatus === status.trim()).length;
     }
   }
   // console.log(filtered);
@@ -155,20 +157,36 @@ export const Governance = observer(() => {
   const result = (!votingPower || !totalLocked) ? 0 : ((votingPower / totalLocked) * 100);
   const totalVotingPower = numeral(result).format('0.00%');
 
+  const calculateState = (prop) => {
+    let endDate = moment.unix(prop.end_date)
+    let now = moment();
+
+    if (prop.status === 'in progress' && endDate > now) {
+      return 'in progress'
+    } else if (prop.status === 'in progress' && endDate <= now) {
+      return 'ended';
+    } else if (prop.status === 'failed' && prop.valid === true) {
+      return 'failed';
+    } else if (prop.status === 'passed' && prop.valid === false) {
+      return 'didnt reach quorum';
+    } else if (prop.status === 'passed') {
+      return 'passed';
+    }
+    return '';
+  }
+
   useEffect(() => {
     (async () => {
-      const result = await user.getProposals();
-      // console.log(result);
-      setProposals(result);
-      getProporsalsByStatus(result, selectedFilter);
+      const proposals = await user.getProposals();
+      proposals.forEach(prop => prop.currentStatus = calculateState(prop));
+      setProposals(proposals);
+      getProporsalsByStatus(proposals, selectedFilter);
     })();
   }, [])
 
   useEffect(() => {
     getProporsalsByStatus(proposals, selectedFilter);
   }, [selectedFilter])
-
-  // console.log(myProposals);
 
   //fetch total locked and Staking APY
   useEffect(() => {
@@ -197,6 +215,8 @@ export const Governance = observer(() => {
     })(rewardToken);
 
   }, [rewardToken])
+
+  console.log(filtered);
 
   return (
     <BaseContainer>
@@ -315,6 +335,7 @@ export const Governance = observer(() => {
                       id={p.id}
                       finalized={p.finalized}
                       valid={p.valid}
+                      currentStatus={p.currentStatus}
                     />
                   )
                 })

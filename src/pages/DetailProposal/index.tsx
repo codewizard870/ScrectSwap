@@ -16,13 +16,8 @@ export const DetailProposal = observer((props) => {
 
     const { theme, user, tokens } = useStores();
     const history = useHistory();
-    // console.log('Proposals:', user.proposals);
 
     const { id }: any = useParams();
-    // console.log(useParams());
-
-    // Get Wallet Address
-    // console.log(user.address);
 
     const [proposal, setProposal] = React.useState({
         id: '',
@@ -70,17 +65,11 @@ export const DetailProposal = observer((props) => {
     });
 
     const [voteStatus, setVoteStatus] = React.useState({
-        finalized: false,
-        valid: false
+        finalized: null,
+        valid: null
     });
 
     const [tally, setTally] = React.useState(null);
-
-    // console.log(tally);
-
-    // console.log(voteStatus);
-    // console.log(showAllAnswers);
-    // console.log(voteStatus.finalized === true)
 
     const showHideAnswer = () => {
         if (hasVote === true) {
@@ -100,7 +89,6 @@ export const DetailProposal = observer((props) => {
 
     const getProposal = (id: string) => {
         const proposal = proposals?.find(ele => ele?.id == id);
-        // console.log(proposal);
         if (proposal) {
             setProposal(proposal);
         }
@@ -179,12 +167,14 @@ export const DetailProposal = observer((props) => {
     }
 
     const getUserVote = async () => {
+        if (!contractAddress) return;
         try {
             const result = await user.userVote(contractAddress);
-            // setUserResult({ choice: result.vote.choice, voting_power: result.vote.voting_power });
-            setUserResult(result);
+            if (result) {
+                setUserResult(result);
+            }
         } catch (err) {
-            console.log('User Vote Error:', err);
+            console.error('User Vote Error:', err);
         }
     }
 
@@ -235,10 +225,6 @@ export const DetailProposal = observer((props) => {
         return '';
     }
 
-    console.log('Valid:', voteStatus.valid);
-    console.log('Finalized', voteStatus.finalized);
-
-
     const getVoteStatus = async () => {
         try {
             const result = await user.voteInfo(contractAddress);
@@ -281,15 +267,9 @@ export const DetailProposal = observer((props) => {
         }
     }, [proposal]);
 
-    // console.log(isRevealer);
-    // console.log(rollingHash);
-    // console.log(userResult);
-    // console.log(hasVote);
-    // console.log(tally);
-
     useEffect(() => {
         showHideAllAnswers();
-    }, []);
+    }, [voteStatus]);
 
     useEffect(() => {
         showHideAnswer();
@@ -314,6 +294,11 @@ export const DetailProposal = observer((props) => {
 
     // console.log(showAnswer)
 
+    function formatUserChoice() {
+        const { choice } = userResult;
+        if (choice == null) return (<>---</>);
+        return choice == 1 ? 'Yes' : 'No';
+    }
 
     return (
         <ProposalLayout>
@@ -363,8 +348,6 @@ export const DetailProposal = observer((props) => {
                                     <div className="address"><p>{getAtuhorAddress()}</p></div>
                                 </div>
                             </div>
-                            {
-                                showAnswer ?
                                     <div className="user-response">
                                         <div className="voting-power">
                                             <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
@@ -376,7 +359,7 @@ export const DetailProposal = observer((props) => {
                                         <div className="vote-response">
 
                                             <div>
-                                                <h3>{userResult.choice === 1 ? 'Yes' : 'No'}</h3>
+                                                <h3>{formatUserChoice()}</h3>
                                             </div>
                                             {hasVote ?
                                                 <div className="label"><p>My Vote</p></div>
@@ -384,18 +367,17 @@ export const DetailProposal = observer((props) => {
                                             }
                                         </div>
                                     </div>
-                                    :
                                     <VoteModal
                                         id={proposal.id}
                                         title={proposal.title}
                                         address={proposal.address}
+                                        onVoteEmmited={getUserVote}
                                     >
                                         <Button
                                             className='button-vote g-button'
                                         >Vote
                                         </Button>
                                     </VoteModal>
-                            }
                         </div>
 
                         <div className="card card-results">

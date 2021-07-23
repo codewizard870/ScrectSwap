@@ -93,7 +93,30 @@ export class UserStoreEx extends StoreConstructor {
     this.stores.tokens.filters = {};
     this.stores.tokens.fetch();
 
-    const keplrCheckPromise = new Promise<void>((accept, _reject) => {
+
+    const session = localStorage.getItem('keplr_session');
+
+    const sessionObj = JSON.parse(session);
+
+    if (sessionObj) {
+      this.address = sessionObj.address;
+      this.isInfoReading = sessionObj.isInfoReading;
+      this.isInfoEarnReading = sessionObj.isInfoEarnReading;
+      this.keplrCheckPromise.then(async () => {
+        await this.signIn();
+
+        this.getRates();
+        this.getBalances();
+
+        //this.websocketInit();
+      });
+    } else {
+      console.log("Couln't find a session")
+      this.isUnconnected = 'true';
+    }
+  }
+
+  public keplrCheckPromise = new Promise<void>((accept, _reject) => {
       // 1. Every one second, check if Keplr was injected to the page
       const keplrCheckInterval = setInterval(async () => {
         this.isKeplrWallet =
@@ -116,29 +139,6 @@ export class UserStoreEx extends StoreConstructor {
         }
       }, 1000);
     });
-
-    const session = localStorage.getItem('keplr_session');
-
-    const sessionObj = JSON.parse(session);
-
-    if (sessionObj) {
-      this.address = sessionObj.address;
-      this.isInfoReading = sessionObj.isInfoReading;
-      this.isInfoEarnReading = sessionObj.isInfoEarnReading;
-      keplrCheckPromise.then(async () => {
-        await this.signIn();
-
-        this.getRates();
-        this.getBalances();
-
-        //this.websocketInit();
-      });
-    } else {
-      console.log("Couln't find a session")
-      this.isUnconnected = 'true';
-    }
-  }
-
   @action public setSnip20Balance(balance: string) {
     this.snip20Balance = balance;
   }
@@ -773,9 +773,9 @@ export class UserStoreEx extends StoreConstructor {
 
   // Query Committe Finalize Vote
   public async getRevealCommitte(contractAddress: string,): Promise<any> {
+    await this.prepareDeps();
 
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-    const result = await client.queryContractSmart(contractAddress,
+    const result = await this.secretjs.queryContractSmart(contractAddress,
       {
         reveal_committee: {},
       }
@@ -788,9 +788,9 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async getChoices(contractAddress: string,): Promise<any> {
+    await this.prepareDeps();
 
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-    const result = await client.queryContractSmart(contractAddress,
+    const result = await this.secretjs.queryContractSmart(contractAddress,
       {
         choices: {}
       },
@@ -799,9 +799,8 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async voteInfo(contractAddress: string,): Promise<any> {
-
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-    const result = await client.queryContractSmart(contractAddress,
+    await this.prepareDeps();
+    const result = await this.secretjs.queryContractSmart(contractAddress,
       {
         vote_info: {}
       },
@@ -827,9 +826,9 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async tally(contractAddress: string): Promise<any> {
+    await this.prepareDeps();
 
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-    const result = await client.queryContractSmart(contractAddress,
+    const result = await this.secretjs.queryContractSmart(contractAddress,
       {
         tally: {}
       },
@@ -839,8 +838,8 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async getNumberOfVoters(contractAddress: string): Promise<any> {
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-    const result = await client.queryContractSmart(contractAddress,
+    await this.prepareDeps();
+    const result = await this.secretjs.queryContractSmart(contractAddress,
       {
         number_of_voters: {}
       },
@@ -849,8 +848,8 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async revealed(contractAddress: string): Promise<any> {
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-    const result = await client.queryContractSmart(contractAddress,
+    await this.prepareDeps();
+    const result = await this.secretjs.queryContractSmart(contractAddress,
       {
         revealed: {}
       },
@@ -863,10 +862,8 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async rollingHash(contractAddress: string): Promise<any> {
-    // console.log(contractAddress);
-    // console.log(this.secretjs);
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-    const result = await client.queryContractSmart(contractAddress,
+    await this.prepareDeps();
+    const result = await this.secretjs.queryContractSmart(contractAddress,
       {
         rolling_hash: {}
       },
@@ -874,32 +871,37 @@ export class UserStoreEx extends StoreConstructor {
     return result.rolling_hash.hash;
   }
 
+  prepareDeps = async () => {
+    await this.keplrCheckPromise;
+    this.secretjs = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
+  }
+
   // Query Proposal Normal Vote
   public async userVote(contractAddress: string): Promise<any> {
+    // TODO This is not supposed to be here, but was neccesary, cuz, the way it is
+    // right now, doesn't work. Please be kind, do not remove this line :).
+    await this.prepareDeps();
+
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
       address: process.env.SEFI_STAKING_CONTRACT,
     });
 
-    if (viewingKey) {
-      const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
-      const result = await client.queryContractSmart(contractAddress,
-        {
-          vote: {
-            voter: this.address,
-            key: viewingKey
-          }
-        },
-      )
-      // return result;
-      console.log('User Vote', result);
-      return {
-        choice: parseInt(result.vote.choice),
-        voting_power: parseFloat(result.vote.voting_power)
+    if (!viewingKey) return;
+
+    const query = {
+      vote: {
+        voter: this.address,
+        key: viewingKey
       }
-    } else {
-      throw new Error(this.error)
+    };
+
+    const result = await this.secretjs.queryContractSmart(contractAddress, query);
+
+    return {
+      choice: parseInt(result.vote.choice),
+      voting_power: parseFloat(result.vote.voting_power)
     }
   }
 

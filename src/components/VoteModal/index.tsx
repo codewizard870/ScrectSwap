@@ -12,6 +12,7 @@ const VoteModal = (props: {
     title: string,
     children: ReactChild,
     address: string,
+    onVoteEmmited: Function
 
 }) => {
     const { theme, user } = useStores();
@@ -47,10 +48,12 @@ const VoteModal = (props: {
                 setLoading(false);
             } else {
                 notify('success', 'Vote Registered', 10, '', true)
+                await props.onVoteEmmited();
                 setLoading(false);
             }
         } catch (error) {
             console.log('Error:', error);
+            setLoading(false);
         }
     }
 

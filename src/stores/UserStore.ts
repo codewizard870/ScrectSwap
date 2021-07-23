@@ -798,7 +798,7 @@ export class UserStoreEx extends StoreConstructor {
     return result;
   }
 
-  public async getVoteInfo(contractAddress: string,): Promise<any> {
+  public async voteInfo(contractAddress: string,): Promise<any> {
 
     const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
     const result = await client.queryContractSmart(contractAddress,
@@ -806,7 +806,10 @@ export class UserStoreEx extends StoreConstructor {
         vote_info: {}
       },
     )
-    return result;
+    return {
+      finalized: result.vote_info.config.finalized,
+      valid: result.vote_info.config.valid
+    }
 
   }
 

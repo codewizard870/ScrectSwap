@@ -41,12 +41,12 @@ export const DetailProposal = observer((props) => {
         status: ''
     });
 
+    const contractAddress = proposal?.address;
+    console.log('Contract Addres:', contractAddress);
+
     // console.log(proposal);
 
     const [loading, setLoading] = React.useState<boolean>(false);
-
-    const contractAddress = proposal?.address;
-    console.log(contractAddress);
 
     const [proposals, setProposals] = React.useState([]);
 
@@ -75,10 +75,15 @@ export const DetailProposal = observer((props) => {
         revelead: []
     });
 
+    const [voteStatus, setVoteStatus] = React.useState({
+        finalized: false,
+        valid: false
+    });
+
     // console.log(proposal.reveal_com.number >= revealed.num_revealed );
 
     const [tally, setTally] = React.useState(null);
-
+    console.log('Tally', tally);
 
     // const [minimunNumbers, setMinimumNumbers] = React.useState();
 
@@ -146,14 +151,17 @@ export const DetailProposal = observer((props) => {
     }
 
     // console.log(countVotes === proposal.reveal_com.number ? 'Sending Post' : 'Counting');
+    // console.log(proposal.reveal_com.number);
 
     const sendVoteResults = async () => {
         try {
-            await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/`, `${proposal.address}`);
+            const res = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${contractAddress}`);
+            console.log('Post Response Success: ', res.data);
         } catch (err) {
-            console.log(err.message);
+            console.log('Post Response Error:', err);
         }
     }
+    // console.log(sendVoteResults());
 
     const validateRevealer = () => {
 
@@ -220,9 +228,9 @@ export const DetailProposal = observer((props) => {
             return 'in progress'
         } else if (status === 'in progress' && endDate <= now) {
             return 'ended';
-        } else if (status === 'failed' && proposal.valid === true) {
+        } else if (status === 'failed' && voteStatus.valid === true) {
             return 'failed';
-        } else if (status === 'passed' && proposal.valid === false) {
+        } else if (status === 'failed' && voteStatus.valid === false) {
             return 'didnt reach quorum';
         } else if (status === 'passed') {
             return 'passed';
@@ -230,6 +238,18 @@ export const DetailProposal = observer((props) => {
 
         return '';
     }
+
+
+    const getVoteStatus = async () => {
+        try {
+            const result = await user.voteInfo(contractAddress);
+            setVoteStatus(result);
+        } catch (err) {
+            console.log('Vote Status:', err.message);
+        }
+    }
+
+    console.log('Vote Status: ', voteStatus);
 
     // console.log(user.address);
     // console.log(proposal.reveal_com.revealers.includes(user.address));
@@ -260,6 +280,7 @@ export const DetailProposal = observer((props) => {
             getHasVote();
             getTally();
             getRevealed();
+            getVoteStatus();
         }
     }, [proposal]);
 
@@ -278,7 +299,7 @@ export const DetailProposal = observer((props) => {
     // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address))
 
     // All Vote Info: 
-    // console.log('Vote Info:', user.getVoteInfo(proposal?.address));
+    // console.log('Vote Info:', user.voteInfo(proposal?.address));
     // Normal Vote
     // console.log('Has Vote:', user.hasVote(proposal?.address));
     // console.log('Choices:', user.getChoices(proposal?.address));

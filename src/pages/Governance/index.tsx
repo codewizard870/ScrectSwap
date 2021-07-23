@@ -167,7 +167,7 @@ export const Governance = observer(() => {
       return 'ended';
     } else if (prop.status === 'failed' && prop.valid === true) {
       return 'failed';
-    } else if (prop.status === 'passed' && prop.valid === false) {
+    } else if (prop.status === 'failed' && prop.valid === false) {
       return 'didnt reach quorum';
     } else if (prop.status === 'passed') {
       return 'passed';

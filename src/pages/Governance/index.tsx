@@ -266,7 +266,7 @@ export const Governance = observer(() => {
             <div className='buttons'>
               <div className='buttons-container'>
                 {
-                  votingPower === undefined ?
+                  votingPower === undefined || votingPower === 0 ?
                     <>
                       <Popup
                         // className="icon-info__popup"

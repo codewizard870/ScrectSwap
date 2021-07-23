@@ -145,8 +145,9 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    // console.log(countVotes === proposal.reveal_com.number ? 'Sending Post' : 'Counting');
-    // console.log(proposal.reveal_com.number);
+    // console.log('Reveal Requeried', revealed.required);
+    // console.log('Total Revealears', proposal.reveal_com.revealers.length);
+    // console.log('Validate', proposal.reveal_com.revealers.length >= revealed.required);
 
     const sendVoteResults = async () => {
         try {
@@ -234,6 +235,9 @@ export const DetailProposal = observer((props) => {
         return '';
     }
 
+    console.log('Valid:', voteStatus.valid);
+    console.log('Finalized', voteStatus.finalized);
+
 
     const getVoteStatus = async () => {
         try {
@@ -280,7 +284,7 @@ export const DetailProposal = observer((props) => {
     // console.log(isRevealer);
     // console.log(rollingHash);
     // console.log(userResult);
-    console.log(hasVote);
+    // console.log(hasVote);
     // console.log(tally);
 
     useEffect(() => {

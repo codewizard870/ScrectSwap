@@ -9,6 +9,7 @@ import { useStores } from 'stores'
 import { sleep } from 'utils';
 import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
 import axios from "axios";
+import { numberFormatter } from '../../utils/formatNumber'
 import './style.scss';
 
 export const DetailProposal = observer((props) => {
@@ -52,7 +53,7 @@ export const DetailProposal = observer((props) => {
 
     const [userResult, setUserResult] = React.useState({
         choice: null,
-        voting_power: ''
+        voting_power: 0
     });
 
     const [choice, setChoice] = React.useState<string>('');
@@ -90,7 +91,7 @@ export const DetailProposal = observer((props) => {
     // console.log('Tally:', user.getTally(proposal.address));
 
     const showHideAnswer = () => {
-        if (proposal.finalized === true /*|| hasVote === false*/) {
+        if (proposal.status !== 'in progress' || hasVote === true) {
             setShowAnswer(true);
         } else {
             setShowAnswer(false);
@@ -369,12 +370,21 @@ export const DetailProposal = observer((props) => {
                                 showAnswer ?
                                     <div className="user-response">
                                         <div className="voting-power">
-                                            <div><h3>{userResult.voting_power}</h3></div>
-                                            <div className="label"><p>My Voting Power</p></div>
+                                            <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
+                                            {hasVote ?
+                                                <div className="label"><p>My Voting Power</p></div>
+                                                : null
+                                            }
                                         </div>
                                         <div className="vote-response">
-                                            <div><h3>{userResult.choice}</h3></div>
-                                            <div className="label"><p>My Vote</p></div>
+
+                                            <div>
+                                                <h3>{userResult.choice === 1 ? 'Yes' : 'No'}</h3>
+                                            </div>
+                                            {hasVote ?
+                                                <div className="label"><p>My Vote</p></div>
+                                                : null
+                                            }
                                         </div>
                                     </div>
                                     :

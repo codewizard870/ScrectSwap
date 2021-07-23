@@ -893,8 +893,8 @@ export class UserStoreEx extends StoreConstructor {
       )
       // return result;
       return {
-        choice: result.vote.choice,
-        voting_power: result.vote.voting_power
+        choice: parseInt(result.vote.choice),
+        voting_power: parseFloat(result.vote.voting_power)
       }
     } else {
       throw new Error(this.error)

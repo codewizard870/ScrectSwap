@@ -216,7 +216,7 @@ export const Governance = observer(() => {
 
   }, [rewardToken])
 
-  console.log(filtered);
+  // console.log(filtered);
 
   return (
     <BaseContainer>

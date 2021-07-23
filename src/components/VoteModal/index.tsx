@@ -3,6 +3,7 @@ import React, { ReactChild, useEffect } from 'react'
 import { Button, Modal } from 'semantic-ui-react'
 import { useStores } from 'stores'
 import { ExitIcon } from 'ui/Icons/ExitIcon'
+import SpinnerCircle from '../../ui/Spinner/SpinnerCircle';
 import { useHistory } from "react-router-dom";
 import './style.scss';
 
@@ -34,7 +35,7 @@ const VoteModal = (props: {
 
     const vote = async (choice: number) => {
 
-        setLoading(true);
+        setLoading(true)
 
         try {
             const result = await user.createVote(choice, props.address, salt);
@@ -53,10 +54,10 @@ const VoteModal = (props: {
         }
     }
 
-    const wrapperFunction = (choice: number) => {
-        vote(choice);
-        setOpen(false);
-    }
+    // const wrapperFunction = (choice: number) => {
+    //     vote(choice);
+    //     setOpen(false);
+    // }
 
     return (
         <Modal
@@ -79,19 +80,24 @@ const VoteModal = (props: {
                 <div className='center title'>
                     <h1>{props.title}</h1>
                 </div>
+
                 <div className='center'>
-                    <Button
-                        loading={loading}
-                        onClick={() => wrapperFunction(0)}
-                        className='vote-no'
-                    >No
-                    </Button>
-                    <Button
-                        loading={loading}
-                        onClick={() => wrapperFunction(1)}
-                        className='vote-yes'
-                    >Yes
-                    </Button>
+                    {loading ? <SpinnerCircle /> :
+                        <>
+                            <Button
+                                // loading={loading}
+                                onClick={() => vote(0)}
+                                className='vote-no'
+                            >No
+                            </Button>
+                            <Button
+                                // loading={loading}
+                                onClick={() => vote(1)}
+                                className='vote-yes'
+                            >Yes
+                            </Button>
+                        </>
+                    }
                 </div>
             </Modal.Content>
         </Modal>

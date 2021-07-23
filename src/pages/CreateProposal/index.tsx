@@ -16,7 +16,7 @@ const CreateProposal = observer((props) => {
     const [formData, updateFormData] = React.useState({
         title: '',
         description: '',
-        vote_type: '1',
+        vote_type: '',
         author_alias: '',
     });
 

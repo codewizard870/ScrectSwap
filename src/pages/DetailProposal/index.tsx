@@ -50,7 +50,7 @@ export const DetailProposal = observer((props) => {
 
     const [userResult, setUserResult] = React.useState({
         choice: null,
-        voting_power: 0
+        voting_power: null
     });
 
     const [showAnswer, setShowAnswer] = React.useState<boolean>(false);
@@ -76,17 +76,17 @@ export const DetailProposal = observer((props) => {
 
     const [tally, setTally] = React.useState(null);
 
-    console.log(tally);
+    // console.log(tally);
 
     // console.log(voteStatus);
     // console.log(showAllAnswers);
-    console.log(voteStatus.finalized === true)
+    // console.log(voteStatus.finalized === true)
 
     const showHideAnswer = () => {
-        if (proposal.status !== 'in progress' || hasVote === true) {
-            setShowAnswer(false);
-        } else {
+        if (hasVote === true) {
             setShowAnswer(true);
+        } else {
+            setShowAnswer(false);
         }
     }
 
@@ -115,16 +115,29 @@ export const DetailProposal = observer((props) => {
     }
 
     async function FinalizeVote() {
+
+        setLoading(true);
+
         try {
             const result = await user.sendFinalizeVote(contractAddress, rollingHash);
             if (result?.code) {
+                const message = extractError(result)
                 console.log(extractError(result));
+                notify('error', message, 10, result.txhash, true);
+                setLoading(false);
             } else {
                 if (proposal.reveal_com.number === 1) {
                     sendVoteResults();
-                    console.log('Post Sended')
+                    notify('success', 'Finalized Vote Sended', 10, '', true);
+                    await sleep(3000);
+                    setLoading(false);
+                    setShowAllAnswers(true);
+                    console.log('Post Sended');
                 } else {
-                    console.log('Vote Counted')
+                    notify('success', 'Finalized Vote Sended', 10, '', true);
+                    await sleep(3000);
+                    setLoading(false);
+                    console.log('Vote Counted');
                 }
             }
         } catch (error) {
@@ -138,7 +151,7 @@ export const DetailProposal = observer((props) => {
     const sendVoteResults = async () => {
         try {
             const res = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${contractAddress}`);
-            console.log('Post Response Success: ', res.data);
+            console.log('Post Response Success: ', res);
         } catch (err) {
             console.log('Post Response Error:', err);
         }
@@ -267,14 +280,16 @@ export const DetailProposal = observer((props) => {
     // console.log(isRevealer);
     // console.log(rollingHash);
     // console.log(userResult);
-    // console.log(hasVote);
+    console.log(hasVote);
     // console.log(tally);
 
     useEffect(() => {
-        showHideAnswer();
         showHideAllAnswers();
-
     }, []);
+
+    useEffect(() => {
+        showHideAnswer();
+    }, [hasVote]);
 
     //QUERIES
     // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address))
@@ -357,7 +372,7 @@ export const DetailProposal = observer((props) => {
                                         <div className="vote-response">
 
                                             <div>
-                                                <h3>{userResult.choice === 1 ? 'No' : 'Yes'}</h3>
+                                                <h3>{userResult.choice === 1 ? 'Yes' : 'No'}</h3>
                                             </div>
                                             {hasVote ?
                                                 <div className="label"><p>My Vote</p></div>
@@ -396,7 +411,11 @@ export const DetailProposal = observer((props) => {
                                         {
                                             isRevealer ?
                                                 <Button
+                                                    loading={loading}
                                                     onClick={() => FinalizeVote()}
+                                                    disabled={
+                                                        moment.unix(proposal.end_date) > moment()
+                                                    }
                                                     className='button-finalize-vote g-button'
                                                 >Finalize Vote
                                                 </Button>

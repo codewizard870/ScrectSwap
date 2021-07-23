@@ -1,0 +1,36 @@
+.messsage-body{
+    background: #F8EC99;
+    display: grid;
+    grid-template-columns: 95% 5%;
+    justify-content: center;
+    align-items: center;
+
+    p{
+        font-family: Poppins;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: #303036;
+        margin: 0;
+    }
+
+    .subtitle{
+        a{
+            color: #FF726E;
+        }
+    }   
+}
+
+.message-content{
+    padding: 16px 0 16px 16px;
+}
+
+.close-content{
+    p{
+        cursor: pointer;
+        color: #0E0E10;
+    }
+}

@@ -84,9 +84,9 @@ export const DetailProposal = observer((props) => {
 
     const showHideAnswer = () => {
         if (proposal.status !== 'in progress' || hasVote === true) {
-            setShowAnswer(true);
-        } else {
             setShowAnswer(false);
+        } else {
+            setShowAnswer(true);
         }
     }
 

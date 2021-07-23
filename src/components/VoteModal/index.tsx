@@ -53,8 +53,8 @@ const VoteModal = (props: {
         }
     }
 
-    const wrapperFunction = () => {
-        vote(1);
+    const wrapperFunction = (choice: number) => {
+        vote(choice);
         setOpen(false);
     }
 
@@ -80,10 +80,15 @@ const VoteModal = (props: {
                     <h1>{props.title}</h1>
                 </div>
                 <div className='center'>
-                    <Button onClick={() => vote(0)} className='vote-no'>No</Button>
                     <Button
                         loading={loading}
-                        onClick={() => wrapperFunction()}
+                        onClick={() => wrapperFunction(0)}
+                        className='vote-no'
+                    >No
+                    </Button>
+                    <Button
+                        loading={loading}
+                        onClick={() => wrapperFunction(1)}
                         className='vote-yes'
                     >Yes
                     </Button>

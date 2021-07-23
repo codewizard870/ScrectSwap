@@ -85,7 +85,7 @@ const CreateProposal = observer((props) => {
                             <option value="SEFI Rewards Pool">SEFI Rewards Pool</option>
                             <option value="SEFI Community Spending">SEFI Community Spending</option>
                             <option value="SecretSwap Parameter Change">SecretSwap Parameter Change</option>
-                            <option value="Othe">Other</option>
+                            <option value="Other">Other</option>
                         </select>
                         <input
                             onChange={handleChange}

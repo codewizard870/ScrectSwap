@@ -834,6 +834,7 @@ export class UserStoreEx extends StoreConstructor {
         tally: {}
       },
     )
+    console.log('Tally Response: ', result);
     return result;
   }
 
@@ -892,6 +893,7 @@ export class UserStoreEx extends StoreConstructor {
         },
       )
       // return result;
+      console.log('User Vote', result);
       return {
         choice: parseInt(result.vote.choice),
         voting_power: parseFloat(result.vote.voting_power)

@@ -43,9 +43,6 @@ export const DetailProposal = observer((props) => {
     });
 
     const contractAddress = proposal?.address;
-    console.log('Contract Addres:', contractAddress);
-
-    // console.log(proposal);
 
     const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -56,8 +53,6 @@ export const DetailProposal = observer((props) => {
         voting_power: 0
     });
 
-    const [choice, setChoice] = React.useState<string>('');
-
     const [showAnswer, setShowAnswer] = React.useState<boolean>(false);
 
     const [showAllAnswers, setShowAllAnswers] = React.useState<boolean>(false);
@@ -65,8 +60,6 @@ export const DetailProposal = observer((props) => {
     const [rollingHash, setRollingHash] = React.useState<string>('');
 
     const [isRevealer, setIsRevealer] = React.useState<boolean>(false);
-
-    const [countVotes, setCountVotes] = React.useState(0);
 
     const [hasVote, setHasVote] = React.useState<boolean>(false);
 
@@ -81,14 +74,13 @@ export const DetailProposal = observer((props) => {
         valid: false
     });
 
-    // console.log(proposal.reveal_com.number >= revealed.num_revealed );
-
     const [tally, setTally] = React.useState(null);
-    console.log('Tally', tally);
 
-    // const [minimunNumbers, setMinimumNumbers] = React.useState();
+    console.log(tally);
 
-    // console.log('Tally:', user.getTally(proposal.address));
+    // console.log(voteStatus);
+    // console.log(showAllAnswers);
+    console.log(voteStatus.finalized === true)
 
     const showHideAnswer = () => {
         if (proposal.status !== 'in progress' || hasVote === true) {
@@ -99,14 +91,12 @@ export const DetailProposal = observer((props) => {
     }
 
     const showHideAllAnswers = () => {
-        if (proposal.finalized === true) {
+        if (voteStatus.finalized === true && voteStatus.valid === true) {
             setShowAllAnswers(true);
         } else {
             setShowAllAnswers(false);
         }
     }
-
-    // console.log(userResult);
 
     const getProposal = (id: string) => {
         const proposal = proposals?.find(ele => ele?.id == id);
@@ -115,15 +105,6 @@ export const DetailProposal = observer((props) => {
             setProposal(proposal);
         }
     }
-
-    // console.log('Reveal', getInfo());
-
-    const convertChoiceToString = (choiceSelected: number) => {
-        choiceSelected === 0 ? setChoice('No') : ('Yes')
-    }
-
-    // console.log('Addresss:', proposal.address);
-    // console.log('Author Adrress:', proposal.author_address);
 
     const getAtuhorAddress = (): string => {
         if (proposal.author_address) {
@@ -250,7 +231,7 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    console.log('Vote Status: ', voteStatus);
+    // console.log('Vote Status: ', voteStatus);
 
     // console.log(user.address);
     // console.log(proposal.reveal_com.revealers.includes(user.address));
@@ -263,25 +244,23 @@ export const DetailProposal = observer((props) => {
     useEffect(() => {
         (async () => {
             const result = await user.getProposals();
-            // console.log(result);
             setProposals(result);
         })();
     }, [])
 
     useEffect(() => {
         getProposal(id);
-        convertChoiceToString(userResult.choice);
     }, [proposals]);
 
     useEffect(() => {
         if (Object.keys(proposal).length > 0) {
+            getVoteStatus();
             getRollingHash();
             validateRevealer();
             getUserVote();
             getHasVote();
             getTally();
             getRevealed();
-            getVoteStatus();
         }
     }, [proposal]);
 
@@ -294,6 +273,7 @@ export const DetailProposal = observer((props) => {
     useEffect(() => {
         showHideAnswer();
         showHideAllAnswers();
+
     }, []);
 
     //QUERIES
@@ -314,8 +294,6 @@ export const DetailProposal = observer((props) => {
     // console.log('Tally:', user.tally(proposal?.address));
 
     // console.log(showAnswer)
-
-
 
 
     return (
@@ -379,7 +357,7 @@ export const DetailProposal = observer((props) => {
                                         <div className="vote-response">
 
                                             <div>
-                                                <h3>{userResult.choice === 1 ? 'Yes' : 'No'}</h3>
+                                                <h3>{userResult.choice === 1 ? 'No' : 'Yes'}</h3>
                                             </div>
                                             {hasVote ?
                                                 <div className="label"><p>My Vote</p></div>

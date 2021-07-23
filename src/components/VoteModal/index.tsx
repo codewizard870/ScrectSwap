@@ -15,10 +15,8 @@ const VoteModal = (props: {
 }) => {
     const { theme, user } = useStores();
     const [open, setOpen] = React.useState(false);
+    const [loading, setLoading] = React.useState<boolean>(false);
     const [salt, setSalt] = React.useState('');
-
-    // let randomString = Math.random().toString(36).substr(2, 16);
-    // setSalt(randomString);
 
     function randomString(length) {
         let result = '';
@@ -35,6 +33,9 @@ const VoteModal = (props: {
     }, [])
 
     const vote = async (choice: number) => {
+
+        setLoading(true);
+
         try {
             const result = await user.createVote(choice, props.address, salt);
             console.log(result);
@@ -42,14 +43,20 @@ const VoteModal = (props: {
             if (result?.code) {
                 const message = extractError(result)
                 notify('error', message, 10, result.txhash, true);
+                setLoading(false);
             } else {
                 notify('success', 'Vote Registered', 10, '', true)
+                setLoading(false);
             }
         } catch (error) {
             console.log('Error:', error);
         }
     }
 
+    const wrapperFunction = () => {
+        vote(1);
+        setOpen(false);
+    }
 
     return (
         <Modal
@@ -74,7 +81,12 @@ const VoteModal = (props: {
                 </div>
                 <div className='center'>
                     <Button onClick={() => vote(0)} className='vote-no'>No</Button>
-                    <Button onClick={() => vote(1)} className='vote-yes'>Yes</Button>
+                    <Button
+                        loading={loading}
+                        onClick={() => wrapperFunction()}
+                        className='vote-yes'
+                    >Yes
+                    </Button>
                 </div>
             </Modal.Content>
         </Modal>

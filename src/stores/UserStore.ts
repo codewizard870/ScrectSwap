@@ -680,7 +680,7 @@ export class UserStoreEx extends StoreConstructor {
 
       return result;
     } else {
-      throw new Error('Not viewing key registered')
+      throw new Error(this.error);
     }
   }
 

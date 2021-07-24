@@ -378,10 +378,14 @@ export const DetailProposal = observer((props) => {
                                 address={proposal.address}
                                 onVoteEmmited={getUserVote}
                             >
-                                <Button
-                                    className='button-vote g-button'
-                                >Vote
-                                </Button>
+                                {
+                                    moment.unix(proposal.end_date) < moment() ? null
+                                        :
+                                        <Button
+                                            className='button-vote g-button'
+                                        >Vote
+                                        </Button>
+                                }
                             </VoteModal>
                         </div>
 

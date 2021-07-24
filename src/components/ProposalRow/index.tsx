@@ -76,7 +76,7 @@ export const ProposalRow = (props: {
                                 isNaN(negativeVotes) ? null :
                                     <div className="negative-results">
                                         <p> {negativeVotes.toString() + '%'}</p>
-                                        <span>Yes</span>
+                                        <span>No</span>
                                     </div>
                             }
                             {

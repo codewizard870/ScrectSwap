@@ -211,9 +211,9 @@ export const DetailProposal = observer((props) => {
         let now = moment();
 
         if (status === 'in progress' && endDate > now) {
-            return 'in progress'
+            return 'active'
         } else if (status === 'in progress' && endDate <= now) {
-            return 'ended';
+            return 'tally in progress';
         } else if (status === 'failed' && voteStatus.valid === true) {
             return 'failed';
         } else if (status === 'failed' && voteStatus.valid === false) {
@@ -330,10 +330,7 @@ export const DetailProposal = observer((props) => {
                             <div className="card-title"><h5>Information</h5></div>
                             <div className="card-row">
                                 <div className="label"><p>Status</p></div>
-                                {/* <div className={`proposal-status small status-${proposal.status}`}>
-                                    {proposal.status}
-                                </div> */}
-                                <div className={`proposal-status small status-${proposal.status}`}>
+                                <div className={`proposal-status small status-${validateStatus(proposal.status)}`}>
                                     {validateStatus(proposal.status)}
                                 </div>
                             </div>
@@ -348,36 +345,36 @@ export const DetailProposal = observer((props) => {
                                     <div className="address"><p>{getAtuhorAddress()}</p></div>
                                 </div>
                             </div>
-                                    <div className="user-response">
-                                        <div className="voting-power">
-                                            <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
-                                            {hasVote ?
-                                                <div className="label"><p>My Voting Power</p></div>
-                                                : null
-                                            }
-                                        </div>
-                                        <div className="vote-response">
+                            <div className="user-response">
+                                <div className="voting-power">
+                                    <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
+                                    {hasVote ?
+                                        <div className="label"><p>My Voting Power</p></div>
+                                        : null
+                                    }
+                                </div>
+                                <div className="vote-response">
 
-                                            <div>
-                                                <h3>{formatUserChoice()}</h3>
-                                            </div>
-                                            {hasVote ?
-                                                <div className="label"><p>My Vote</p></div>
-                                                : null
-                                            }
-                                        </div>
+                                    <div>
+                                        <h3>{formatUserChoice()}</h3>
                                     </div>
-                                    <VoteModal
-                                        id={proposal.id}
-                                        title={proposal.title}
-                                        address={proposal.address}
-                                        onVoteEmmited={getUserVote}
-                                    >
-                                        <Button
-                                            className='button-vote g-button'
-                                        >Vote
-                                        </Button>
-                                    </VoteModal>
+                                    {hasVote ?
+                                        <div className="label"><p>My Vote</p></div>
+                                        : null
+                                    }
+                                </div>
+                            </div>
+                            <VoteModal
+                                id={proposal.id}
+                                title={proposal.title}
+                                address={proposal.address}
+                                onVoteEmmited={getUserVote}
+                            >
+                                <Button
+                                    className='button-vote g-button'
+                                >Vote
+                                </Button>
+                            </VoteModal>
                         </div>
 
                         <div className="card card-results">

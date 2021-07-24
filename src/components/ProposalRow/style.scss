@@ -2,6 +2,7 @@
     //Colors
     $color-primary : #0E0E10;
     $color-secondary : #5F5F6B;
+    $color-tally: #0E0E10;
     $color-success:#3EA248;
     $color-active:#42A8E1;
     $color-failed:#D94C48;
@@ -26,9 +27,20 @@
         }
     }
     .status{
-        &-passed{
-            background: $background-success;
-            color: $color-success;
+        &-active{
+           background: $background-active;
+            color: $color-active;
+        }
+        &-tally{
+            &.in{
+               &.progress{
+                    background:  $background-card;
+                    color: $color-tally;
+                    border: 1px solid $color-tally;
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+            }
         }
         &-in{
             &.progress{
@@ -39,6 +51,10 @@
         &-failed{
             background: $background-failed;
             color: $color-failed;
+        }
+        &-passed{
+            background: $background-success;
+            color: $color-success;
         }
     }
 }

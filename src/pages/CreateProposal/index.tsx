@@ -4,7 +4,7 @@ import ProposalLayout from 'components/ProposalLayout';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Select } from 'semantic-ui-react';
+import { Button, Select, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import './style.scss';
 import { sleep } from 'utils';
@@ -22,10 +22,12 @@ const CreateProposal = observer((props) => {
 
     const [loading, setLoading] = React.useState<boolean>(false);
 
+    const [error, setError] = React.useState<boolean>(false);
+
     function handleChange(e) {
+
         updateFormData({
             ...formData,
-
             // Trimming any whitespace
             [e.target.name]: e.target.value.trim()
         });
@@ -62,13 +64,18 @@ const CreateProposal = observer((props) => {
                 <div className='title-section'>
                     <h1>Create proposal</h1>
                     <div className='title-section__buttons'>
-                        <Button className='g-button--outline'><Link to='/governance'>Cancel</Link></Button>
+                        <Button
+                            className='g-button--outline'>
+                            <Link to='/governance'>Cancel</Link>
+                        </Button>
+
                         <Button
                             loading={loading}
-                            disabled={!formData.title || !formData.description || !formData.vote_type}
+                            disabled={!formData.title || !formData.description || !formData.vote_type || formData.description.length < 10}
                             className='g-button'
                         >Create Proposal
                         </Button>
+
                     </div>
                 </div>
                 <div className='card-proposal'>
@@ -82,6 +89,7 @@ const CreateProposal = observer((props) => {
                         <label htmlFor="author_alias">Proposer Name: </label>
 
                         <select onChange={handleChange} name="vote_type" id="proposal">
+                            <option value="">-- Choose One --</option>
                             <option value="SEFI Rewards Pool">SEFI Rewards Pool</option>
                             <option value="SEFI Community Spending">SEFI Community Spending</option>
                             <option value="SecretSwap Parameter Change">SecretSwap Parameter Change</option>

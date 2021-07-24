@@ -69,7 +69,7 @@ export const Governance = observer(() => {
   const [totalLocked, setTotalLocked] = React.useState(0.0);
   const [votingPower, setVotingPower] = React.useState(undefined);
 
-  const filters = ['all', 'in progress', "passed", "failed"];
+  const filters = ['all', 'active', "passed", "failed"];
 
   const [proposals, setProposals] = useState([]);
 
@@ -162,9 +162,9 @@ export const Governance = observer(() => {
     let now = moment();
 
     if (prop.status === 'in progress' && endDate > now) {
-      return 'in progress'
+      return 'active'
     } else if (prop.status === 'in progress' && endDate <= now) {
-      return 'ended';
+      return 'tally in progress';
     } else if (prop.status === 'failed' && prop.valid === true) {
       return 'failed';
     } else if (prop.status === 'failed' && prop.valid === false) {

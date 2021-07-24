@@ -175,6 +175,20 @@ export const Governance = observer(() => {
     return '';
   }
 
+  // const calculateTally = (prop) => {
+
+  // }
+
+
+
+  // console.log(tally);
+  // console.log(filtered);
+
+  // const totalVote = tally.positive + tally.negative;
+  // const positiveVotes = Math.round(((tally.positive * 100) / (totalVote)));
+  // const negativeVotes = Math.round(((tally.negative * 100) / (totalVote)));
+
+
   useEffect(() => {
     (async () => {
       const proposals = await user.getProposals();
@@ -328,6 +342,7 @@ export const Governance = observer(() => {
                     <ProposalRow
                       key={p.id}
                       index={index}
+                      address={p.address}
                       theme={theme}
                       title={p.title}
                       endTime={p.end_date}

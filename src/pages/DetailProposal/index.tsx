@@ -228,6 +228,7 @@ export const DetailProposal = observer((props) => {
         return '';
     }
 
+
     const getVoteStatus = async () => {
         try {
             const result = await user.voteInfo(contractAddress);

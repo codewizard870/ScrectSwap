@@ -90,6 +90,17 @@
             background: $background-success;
             color: $color-success;
         }
+        &-tally{
+            &.in{
+               &.progress{
+                    background:  $background-card;
+                    color: $color-primary;
+                    border: 1px solid $color-primary;
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+            }
+        }
         &-active{
             background: $background-active;
             color: $color-active;
@@ -112,7 +123,7 @@
     padding: 26px;
     width: 100%;
     column-gap: 52px;
-    grid-template-columns: 5% calc(40% - 52px) calc(35% - 52px) calc(20% - 52px);
+    grid-template-columns: 5% 40% 22% 20%;
     p{
         font-weight: 600;
         font-size: 22px;
@@ -126,6 +137,16 @@
         row-gap: 4px;
     }
 }
+.vote-result{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    .positive-results{
+        p{
+            color: #3EA248;
+        }
+    }
+}
 .proposal-status{
     max-width: 200px;
     font-size: 22px; 
@@ -135,5 +156,4 @@
     display: grid;
     align-items: center;
     justify-content: center;
-    
 }

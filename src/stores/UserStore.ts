@@ -117,28 +117,28 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public keplrCheckPromise = new Promise<void>((accept, _reject) => {
-      // 1. Every one second, check if Keplr was injected to the page
-      const keplrCheckInterval = setInterval(async () => {
-        this.isKeplrWallet =
-          // @ts-ignore
-          !!window.keplr &&
-          // @ts-ignore
-          !!window.getOfflineSigner &&
-          // @ts-ignore
-          !!window.getEnigmaUtils;
+    // 1. Every one second, check if Keplr was injected to the page
+    const keplrCheckInterval = setInterval(async () => {
+      this.isKeplrWallet =
         // @ts-ignore
-        this.keplrWallet = window.keplr;
+        !!window.keplr &&
+        // @ts-ignore
+        !!window.getOfflineSigner &&
+        // @ts-ignore
+        !!window.getEnigmaUtils;
+      // @ts-ignore
+      this.keplrWallet = window.keplr;
 
-        if (this.isKeplrWallet) {
-          // Keplr is present, stop checking
-          clearInterval(keplrCheckInterval)
-          accept();
-        } else {
-          console.log("Keplr is not installed")
-          this.isUnconnected = 'UNINSTALLED';
-        }
-      }, 1000);
-    });
+      if (this.isKeplrWallet) {
+        // Keplr is present, stop checking
+        clearInterval(keplrCheckInterval)
+        accept();
+      } else {
+        console.log("Keplr is not installed")
+        this.isUnconnected = 'UNINSTALLED';
+      }
+    }, 1000);
+  });
   @action public setSnip20Balance(balance: string) {
     this.snip20Balance = balance;
   }
@@ -833,8 +833,10 @@ export class UserStoreEx extends StoreConstructor {
         tally: {}
       },
     )
-    console.log('Tally Response: ', result);
-    return result;
+    return {
+      negative: parseFloat(result.tally.tally[0]),
+      positive: parseFloat(result.tally.tally[1])
+    };
   }
 
   public async getNumberOfVoters(contractAddress: string): Promise<any> {

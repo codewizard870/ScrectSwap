@@ -69,7 +69,10 @@ export const DetailProposal = observer((props) => {
         valid: null
     });
 
-    const [tally, setTally] = React.useState(null);
+    const [tally, setTally] = React.useState({
+        negative: null,
+        positive: null,
+    });
 
     const showHideAnswer = () => {
         if (hasVote === true) {
@@ -233,6 +236,10 @@ export const DetailProposal = observer((props) => {
             console.log('Vote Status:', err.message);
         }
     }
+
+    const totalVote = tally.positive + tally.negative;
+    const positiveVotes = Math.round(((tally.positive * 100) / (totalVote)));
+    const negativeVotes = Math.round(((tally.negative * 100) / (totalVote)));
 
     // console.log('Vote Status: ', voteStatus);
 
@@ -408,11 +415,15 @@ export const DetailProposal = observer((props) => {
                                     :
                                     <div className="closed-proposal">
                                         <div className="voted">
-                                            <div><h3>78%</h3></div>
-                                            <div className="label"><p>Voted</p></div>
+                                            <div>
+                                                <h3>{negativeVotes}%</h3>
+                                            </div>
+                                            <div className="label"><p>No</p></div>
                                         </div>
                                         <div className="result">
-                                            <div><h3>67%</h3></div>
+                                            <div>
+                                                <h3>{positiveVotes}%</h3>
+                                            </div>
                                             <div className="label"><p>Yes</p></div>
                                         </div>
                                     </div>

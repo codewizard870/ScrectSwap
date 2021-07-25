@@ -240,6 +240,8 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    const belowQuorum = proposal.status === 'failed' && voteStatus.valid === false;
+
     const totalVote = tally.positive + tally.negative;
     const positiveVotes = Math.round(((tally.positive * 100) / (totalVote)));
     const negativeVotes = Math.round(((tally.negative * 100) / (totalVote)));
@@ -342,9 +344,16 @@ export const DetailProposal = observer((props) => {
                             <div className="card-title"><h5>Information</h5></div>
                             <div className="card-row">
                                 <div className="label"><p>Status</p></div>
-                                <div className={`proposal-status small status-${validateStatus(proposal.status)}`}>
-                                    {validateStatus(proposal.status)}
-                                </div>
+                                {
+                                    belowQuorum ?
+                                        <div className={`proposal-status small status-failed`}>
+                                            Failed
+                                        </div>
+                                        :
+                                        <div className={`proposal-status small status-${validateStatus(proposal.status)}`}>
+                                            {validateStatus(proposal.status)}
+                                        </div>
+                                }
                             </div>
                             <div className="card-row">
                                 <div className="label"><p>Type</p></div>

@@ -31,16 +31,16 @@ export const ProposalRow = (props: {
     });
 
     const getTally = async () => {
-      const ended = ['failed', 'passed'].includes(props.status);
-      if (!(ended && props.valid)) return;
+        const ended = ['failed', 'passed'].includes(props.status);
+        if (!(ended && props.valid)) return;
 
-      try {
-          const result = await user.tally(props.address);
-          setTally(result);
-      } catch (err) {
-          console.error(err?.message);
-          setShowResult(false);
-      }
+        try {
+            const result = await user.tally(props.address);
+            setTally(result);
+        } catch (err) {
+            console.error(err?.message);
+            setShowResult(false);
+        }
     }
 
     const totalTally = tally.positive + tally.negative;
@@ -48,6 +48,8 @@ export const ProposalRow = (props: {
     const positiveVotes = Math.round(((tally.positive * 100) / (totalTally)));
     const negativeVotes = Math.round(((tally.negative * 100) / (totalTally)));
     const result = props.status === 'passed' ? positiveVotes : negativeVotes;
+
+    const belowQuorum = props.status === 'failed' && props.valid === false;
 
     const showProposalResult = () => {
         if (props.currentStatus != 'active') {
@@ -76,7 +78,14 @@ export const ProposalRow = (props: {
                             <span>Voting End Time</span>
                         </div>
                         :
-                        <div className="vote-result">
+                        <div className={belowQuorum ? 'vote-result-failed' : "vote-result"}>
+                            {belowQuorum ?
+                                <div>
+                                    <p>Below Quorum</p>
+                                    <span>Voted</span>
+                                </div>
+                                : null
+                            }
                             {
                                 isNaN(negativeVotes) ? null :
                                     <div className="negative-results">
@@ -88,15 +97,22 @@ export const ProposalRow = (props: {
                                 isNaN(positiveVotes) ? null :
                                     <div className="positive-results">
                                         <p> {result.toString() + '%'}</p>
-                                        <span>{ props.status === 'passed' ? 'Yes' : 'No' }</span>
+                                        <span>{props.status === 'passed' ? 'Yes' : 'No'}</span>
                                     </div>
                             }
                         </div>
                 }
-                <div className={`proposal-status status-${(props.currentStatus)}`}>
-                    {/* {capitalizeFirstLetter(validateStatus(props.status))} */}
-                    {capitalizeFirstLetter(props.currentStatus)}
-                </div>
+                {
+                    belowQuorum ?
+                        <div className={`proposal-status status-failed`}>
+                            Failed
+                        </div>
+                        :
+                        <div className={`proposal-status status-${(props.currentStatus)}`}>
+                            {capitalizeFirstLetter(props.currentStatus)}
+                        </div>
+
+                }
             </div>
         </Link>
     )

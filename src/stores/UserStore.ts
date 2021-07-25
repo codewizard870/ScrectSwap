@@ -404,6 +404,8 @@ export class UserStoreEx extends StoreConstructor {
   };
 
   @action public getSnip20Balance = async (snip20Address: string, decimals?: string | number): Promise<string> => {
+    await this.prepareDeps();
+
     if (!this.secretjs) {
       return '0';
     }

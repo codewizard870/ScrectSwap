@@ -184,7 +184,6 @@ export const EarnRewards = observer((props: any) => {
                 if (!token) {
                   return null;
                 }
-
                 return {
                   rewardsContract: rewardToken.pool_address,
                   lockedAsset: rewardToken.inc_token.symbol,

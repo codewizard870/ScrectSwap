@@ -1,17 +1,116 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from "react-router-dom";
 import { Box } from 'grommet';
-import moment from 'moment';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
 import { observer } from 'mobx-react';
-import { Button, Container } from 'semantic-ui-react';
-import SpinnerLineHor from '../../ui/Spinner/SpinnerLineHor';
 import './style.scss';
+import WithdrawButton from './WithdrawButton';
+import EarnButton from './EarnButton';
+import { sleep } from 'utils';
+import { notify } from '../Earn';
+import { Redeem } from '../../blockchain-bridge/scrt';
+import { DepositRewards } from '../../blockchain-bridge/scrt';
+
+const MIGRATED_AMOUNT_KEY = '___sw_migrated_amount';
 
 export const Migration = observer(() => {
-  let { theme } = useStores();
+  const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
+  const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
+
+  const { theme, user, rewards } = useStores();
+
+  const [isWithdrawDisabled, setWithdrawDisabled] = useState(false);
+  const [isEarnDisabled, setEarnDisabled] = useState(false);
+
+  async function updateWithdrawButtonState() {
+    const balance = await user.getSnip20Balance(oldRewardsContract);
+    if (balance) {
+      const theBalance = parseInt(balance);
+      if (theBalance <= 0) setWithdrawDisabled(true);
+    } else {
+      setWithdrawDisabled(false);
+    }
+  }
+
+  function updateEarnButtonState() {
+    const balance = localStorage.getItem(MIGRATED_AMOUNT_KEY);
+    if (!balance) {
+      setEarnDisabled(true);
+    } else {
+      setEarnDisabled(false);
+    }
+  }
+
+  async function updateButtonsStates() {
+    await updateWithdrawButtonState();
+    updateEarnButtonState();
+  }
+
+  async function initRewards() {
+    rewards.init({
+      isLocal: true,
+      sorter: 'none',
+      pollingInterval: 20000,
+    });
+
+    rewards.fetch();
+
+    while (rewards.isPending) {
+      await sleep(100);
+    }
+
+    await updateButtonsStates();
+  }
+
+  async function withdraw() {
+    const pool = rewards.allData.find(it => it.pool_address === oldRewardsContract);
+
+    if (pool) {
+      const balance = await user.getSnip20Balance(oldRewardsContract);
+
+      await Redeem({
+        secretjs: user.secretjsSend,
+        address: oldRewardsContract,
+        amount: balance,
+      }).then(() => {
+        notify('success', `Removed ${balance} s${pool.rewards_token.symbol} from the expired pool.`);
+        localStorage.setItem(MIGRATED_AMOUNT_KEY, balance);
+        return updateButtonsStates();
+      }).catch(reason => {
+        notify('error', `Failed to withdraw: ${reason}`);
+      });
+    }
+  }
+
+  async function deposit() {
+    const balance = localStorage.getItem(MIGRATED_AMOUNT_KEY);
+
+    if (!balance) return;
+
+    const pool = rewards.allData.find(it => it.pool_address === newRewardsContract);
+
+    if (pool) {
+      await DepositRewards({
+        secretjs: user.secretjsSend,
+        recipient: newRewardsContract,
+        address: pool.rewards_token.address,
+        amount: balance,
+      })
+      .then(() => {
+        notify('success', `Staked ${balance} s${pool.rewards_token.symbol} in the new pool`);
+        localStorage.removeItem(MIGRATED_AMOUNT_KEY);
+        return updateButtonsStates();
+      })
+      .catch(reason => {
+        notify('error', `Failed to deposit: ${reason}`);
+      });
+    }
+  }
+
+  useEffect(() => {
+    initRewards();
+  }, []);
 
   return (
     <BaseContainer>
@@ -47,7 +146,10 @@ export const Migration = observer(() => {
             <div className={`box ${theme.currentTheme}`}>
               <h2>Step 1</h2>
               <h4>Withdraw tokens from expired pools</h4>
-              <Button className="g-button">Withdraw</Button>
+              <WithdrawButton
+                withdraw={withdraw}
+                isDisabled={isWithdrawDisabled}
+              />
             </div>
 
             <img src="/static/arrow-right.svg" alt="arrow right icon" />
@@ -55,7 +157,10 @@ export const Migration = observer(() => {
             <div className={`box ${theme.currentTheme}`}>
               <h2>Step 2</h2>
               <h4>Earn rewards in new pools</h4>
-              <Button className="g-button">Earn</Button>
+              <EarnButton
+                deposit={deposit}
+                isDisabled={isEarnDisabled}
+              />
             </div>
 
           </div>

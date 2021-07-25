@@ -18,6 +18,7 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
       className={`${styles.button} ${styles[theme.currentTheme]}`}
       disabled={Number(value) === 0 || isNaN(value)}
       onClick={async () => {
+        console.log(props);
         setLoading(true);
         await DepositRewards({
           secretjs: props.userStore.secretjsSend,

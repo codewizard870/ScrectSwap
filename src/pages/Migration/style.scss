@@ -88,28 +88,25 @@ $color-green-inactive: #79CC81;
       }
     }
   }
-}
 
-.box {
-  width: 100%;
-  border-radius: 16px;
-  padding: 26px;
-
-  &.light {
-    background: white;
-    box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+  .ui.button {
+    font-size: 16px;
+    line-height: 24px;
+    width: 100%;
   }
 
-  &.dark {
-    background: #0e0e10;
+  .box {
+    width: 100%;
+    border-radius: 16px;
+    padding: 26px;
+
+    &.light {
+      background: white;
+      box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+    }
+
+    &.dark {
+      background: #0e0e10;
+    }
   }
-}
-
-.g-button {
-  width: 100%;
-}
-
-.ui.button {
-  font-size: 16px;
-  line-height: 24px;
 }

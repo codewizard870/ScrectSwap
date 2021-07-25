@@ -16,9 +16,9 @@ const MessageDismiss = () => {
         visible ?
           <div className="messsage-body">
             <div className="message-content">
-              <p className="header">SecretSwap X pool has been upgraded.</p>
+              <p className="header">SecretSwap SEFI STAKING pool has been upgraded.</p>
               <p className="subtitle">
-                <a>Migrate your tokens</a> to continue to earn rewards.
+                <Link to={"/migration"}>Migrate your tokens</Link> to continue to earn rewards.
               </p>
             </div>
             <div className="close-content">

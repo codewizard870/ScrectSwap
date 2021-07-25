@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import './style.scss';
 import WithdrawButton from './WithdrawButton';
 import EarnButton from './EarnButton';
-import { sleep } from 'utils';
+import { sleep, unlockToken } from 'utils';
 import { notify } from '../Earn';
 import { Redeem } from '../../blockchain-bridge/scrt';
 import { DepositRewards } from '../../blockchain-bridge/scrt';
@@ -24,7 +24,7 @@ export const Migration = observer(() => {
   const [isEarnDisabled, setEarnDisabled] = useState(false);
 
   async function updateWithdrawButtonState() {
-    const balance = await user.getSnip20Balance(oldRewardsContract);
+    const balance = await getBalance(oldRewardsContract);
     if (balance) {
       const theBalance = parseInt(balance);
       if (theBalance <= 0) setWithdrawDisabled(true);
@@ -63,18 +63,32 @@ export const Migration = observer(() => {
     await updateButtonsStates();
   }
 
+  async function getBalance(contract) {
+    const result = await user.getSnip20Balance(contract);
+    if (result === 'Unlock') {
+      return null;
+    }
+    return result;
+  }
+
   async function withdraw() {
     const pool = rewards.allData.find(it => it.pool_address === oldRewardsContract);
 
     if (pool) {
-      const balance = await user.getSnip20Balance(oldRewardsContract);
+      let balance = await getBalance(oldRewardsContract);
+
+      if (!balance) {
+        await user.keplrWallet.suggestToken(process.env.CHAIN_ID, oldRewardsContract);
+        balance = await getBalance(oldRewardsContract);
+      }
 
       await Redeem({
         secretjs: user.secretjsSend,
         address: oldRewardsContract,
         amount: balance,
       }).then(() => {
-        notify('success', `Removed ${balance} s${pool.rewards_token.symbol} from the expired pool.`);
+        const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);
+        notify('success', `Removed ${formattedBalance} s${pool.rewards_token.symbol} from the expired pool`);
         localStorage.setItem(MIGRATED_AMOUNT_KEY, balance);
         return updateButtonsStates();
       }).catch(reason => {
@@ -98,7 +112,8 @@ export const Migration = observer(() => {
         amount: balance,
       })
       .then(() => {
-        notify('success', `Staked ${balance} s${pool.rewards_token.symbol} in the new pool`);
+        const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);
+        notify('success', `Staked ${formattedBalance} s${pool.rewards_token.symbol} in the new pool`);
         localStorage.removeItem(MIGRATED_AMOUNT_KEY);
         return updateButtonsStates();
       })

@@ -17,7 +17,7 @@ const EarnButton = ({ isDisabled, deposit }: any) => {
         setLoading(false);
       }}
     >
-      Earn
+      { isDisabled ? "Nothing to migrate" : 'Earn'}
     </Button>
   );
 };

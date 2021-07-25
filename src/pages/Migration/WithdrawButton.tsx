@@ -18,7 +18,7 @@ const WithdrawButton = ({ isDisabled, withdraw }: any) => {
         setLoading(false);
       }}
     >
-      Withdraw
+      { isDisabled ? "Nothing to migrate" : 'Withdraw'}
     </Button>
   );
 };

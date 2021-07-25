@@ -1,0 +1,115 @@
+$color-neutral-01: #303036;
+$color-neutral-03: #5F5F6B;
+$color-neutral-05: #DEDEDE;
+$color-green-active: #3EA248;
+$color-green-inactive: #79CC81;
+
+.migration {
+
+  // Fonts defaults
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: $color-neutral-03;
+
+  h4 {
+  }
+
+  &.dark {
+    color: $color-neutral-05;
+  }
+
+  .steps {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr min-content 1fr;
+    grid-column-gap: 19px;
+    align-items: center;
+
+    margin-bottom: 32px;
+
+
+
+    &--top {
+      align-items: start;
+    }
+
+    &__instructions {
+      h1 {
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 42px;
+        letter-spacing: 0.01em;
+      }
+    }
+
+    &__pool {
+      display: grid;
+      align-items: start;
+      justify-items: end;
+
+      div {
+        display: flex;
+        align-items: center;
+        column-gap: 16px;
+
+        img {
+          width: 24px;
+        }
+
+        span {
+          font-weight: 600;
+        }
+      }
+    }
+
+    .box {
+      h2 {
+        color: $color-green-inactive;
+
+        &.active {
+          color: $color-green-active;
+        }
+      }
+
+      h4 {
+        font-size: 22px;
+        line-height: 26.6px;
+        margin-bottom: 26px;
+        font-weight: 600;
+
+        &.light {
+          color: $color-neutral-01;
+        }
+
+        &.dark {
+          color: $color-neutral-03;
+        }
+      }
+    }
+  }
+}
+
+.box {
+  width: 100%;
+  border-radius: 16px;
+  padding: 26px;
+
+  &.light {
+    background: white;
+    box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+  }
+
+  &.dark {
+    background: #0e0e10;
+  }
+}
+
+.g-button {
+  width: 100%;
+}
+
+.ui.button {
+  font-size: 16px;
+  line-height: 24px;
+}

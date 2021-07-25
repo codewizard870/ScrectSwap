@@ -74,6 +74,7 @@ export const DetailProposal = observer((props) => {
         positive: null,
     });
 
+
     const showHideAnswer = () => {
         if (hasVote === true) {
             setShowAnswer(true);
@@ -83,7 +84,7 @@ export const DetailProposal = observer((props) => {
     }
 
     const showHideAllAnswers = () => {
-        if (voteStatus.finalized === true && voteStatus.valid === true) {
+        if (voteStatus.finalized === true && voteStatus.valid === true || proposal.status === 'failed') {
             setShowAllAnswers(true);
         } else {
             setShowAllAnswers(false);
@@ -133,6 +134,7 @@ export const DetailProposal = observer((props) => {
             }
         } catch (error) {
             console.error(error.message);
+            setLoading(false);
         }
     }
 
@@ -299,8 +301,10 @@ export const DetailProposal = observer((props) => {
 
     // Tally: After Vote Finalized
     // console.log('Tally:', user.tally(proposal?.address));
+    console.log('vote', userResult)
 
     // console.log(showAnswer)
+    console.log(tally);
 
     function formatUserChoice() {
         const { choice } = userResult;
@@ -392,6 +396,7 @@ export const DetailProposal = observer((props) => {
                         <div className="card card-results">
 
                             <h5 className="card-title">Results</h5>
+                            {proposal.status === 'failed' && voteStatus.valid === false ? <p>Votes Didn't Reach Quorum</p> : null}
                             {
                                 showAllAnswers === false
                                     ?
@@ -419,18 +424,36 @@ export const DetailProposal = observer((props) => {
                                     </>
                                     :
                                     <div className="closed-proposal">
-                                        <div className="voted">
-                                            <div>
-                                                <h3>{negativeVotes}%</h3>
+                                        {tally.negative ?
+                                            <div className="voted">
+                                                <div>
+                                                    <h3> {negativeVotes}%</h3>
+                                                </div>
+                                                <div className="label"><p>No</p></div>
                                             </div>
-                                            <div className="label"><p>No</p></div>
-                                        </div>
-                                        <div className="result">
-                                            <div>
-                                                <h3>{positiveVotes}%</h3>
+                                            :
+                                            <div className="voted">
+                                                <div>
+                                                    <h3> 0%</h3>
+                                                </div>
+                                                <div className="label"><p>No</p></div>
                                             </div>
-                                            <div className="label"><p>Yes</p></div>
-                                        </div>
+                                        }
+                                        {tally.positive ?
+                                            <div className="result">
+                                                <div>
+                                                    <h3>{positiveVotes}%</h3>
+                                                </div>
+                                                <div className="label"><p>Yes</p></div>
+                                            </div>
+                                            :
+                                            < div className="result">
+                                                <div>
+                                                    <h3>0%</h3>
+                                                </div>
+                                                <div className="label"><p>Yes</p></div>
+                                            </div>
+                                        }
                                     </div>
                             }
 

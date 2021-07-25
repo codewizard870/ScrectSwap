@@ -17,7 +17,8 @@ export const ProposalRow = (props: {
     id: string,
     finalized: boolean,
     valid: boolean,
-    currentStatus: string
+    currentStatus: string,
+    totalLocked: number
 }) => {
 
     const [showResults, setShowResult] = React.useState(false);
@@ -30,19 +31,23 @@ export const ProposalRow = (props: {
     });
 
     const getTally = async () => {
-        try {
-            const result = await user.tally(props.address);
-            // console.log(result);
-            setTally(result);
-        } catch (err) {
-            console.error(err?.message);
-            setShowResult(false);
-        }
+      const ended = ['failed', 'passed'].includes(props.status);
+      if (!(ended && props.valid)) return;
+
+      try {
+          const result = await user.tally(props.address);
+          setTally(result);
+      } catch (err) {
+          console.error(err?.message);
+          setShowResult(false);
+      }
     }
 
-    const totalVote = tally.positive + tally.negative;
-    const positiveVotes = Math.round(((tally.positive * 100) / (totalVote)));
-    const negativeVotes = Math.round(((tally.negative * 100) / (totalVote)));
+    const totalTally = tally.positive + tally.negative;
+    const voted = totalTally * 100 / props.totalLocked;
+    const positiveVotes = Math.round(((tally.positive * 100) / (totalTally)));
+    const negativeVotes = Math.round(((tally.negative * 100) / (totalTally)));
+    const result = props.status === 'passed' ? positiveVotes : negativeVotes;
 
     const showProposalResult = () => {
         if (props.currentStatus != 'active') {
@@ -75,15 +80,15 @@ export const ProposalRow = (props: {
                             {
                                 isNaN(negativeVotes) ? null :
                                     <div className="negative-results">
-                                        <p> {negativeVotes.toString() + '%'}</p>
-                                        <span>No</span>
+                                        <p> {voted.toFixed(0).toString() + '%'}</p>
+                                        <span>Voted</span>
                                     </div>
                             }
                             {
                                 isNaN(positiveVotes) ? null :
                                     <div className="positive-results">
-                                        <p> {positiveVotes.toString() + '%'}</p>
-                                        <span>Yes</span>
+                                        <p> {result.toString() + '%'}</p>
+                                        <span>{ props.status === 'passed' ? 'Yes' : 'No' }</span>
                                     </div>
                             }
                         </div>

@@ -18,7 +18,7 @@ const MessageDismiss = () => {
         visible ?
           <div className={`messsage-body ${theme.currentTheme}`}>
             <div className="message-content">
-              <p className="header">SecretSwap SEFI STAKING pool has been upgraded.</p>
+              <p className="header">🚨SEFI staking pool has been upgraded to support governance!🚨</p>
               <p className="subtitle">
                 <Link to={"/migration"}>Migrate your tokens</Link> to continue earning.
               </p>

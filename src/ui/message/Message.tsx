@@ -18,7 +18,7 @@ const MessageDismiss = () => {
             <div className="message-content">
               <p className="header">SecretSwap SEFI STAKING pool has been upgraded.</p>
               <p className="subtitle">
-                <Link to={"/migration"}>Migrate your tokens</Link> to continue to earn rewards.
+                <Link to={"/migration"}>Migrate your tokens</Link> to continue earning.
               </p>
             </div>
             <div className="close-content">

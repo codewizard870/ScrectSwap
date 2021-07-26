@@ -19,6 +19,7 @@ import axios from "axios";
 import { numberFormatter } from '../../utils/formatNumber'
 import { validate } from 'webpack';
 import { STATUS } from '../../stores/interfaces';
+import { HowItWorksModal } from './HowItWorksModal';
 
 
 export const Governance = observer(() => {
@@ -240,18 +241,21 @@ export const Governance = observer(() => {
                       />
                     </>
                     :
-                    <Link to='/sefistaking'>
+                    (<Link to='/sefistaking'>
                       <Button
                         disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
                       >
                         Participate in Governance
                       </Button>
                     </Link>
+                    )
                 }
 
                 <Link to='/proposal'>
                   <Button className='g-button--outline'>Create proposal</Button>
                 </Link>
+
+                <HowItWorksModal/>
               </div>
             </div>
           </div>

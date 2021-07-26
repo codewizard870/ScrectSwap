@@ -170,6 +170,7 @@
         display: grid;
         grid-auto-flow: column;
     }
+
 }
 .row{ 
     display: grid;
@@ -199,4 +200,12 @@ h1,h2,h3,h4,h5,h6{
 .ui.button > a{
     text-decoration: none;
     color: inherit;
+}
+
+.modal .content {
+  padding: unset !important;
+}
+.ui.modal>.actions {
+  background: white;
+  padding: 16px !important;
 }

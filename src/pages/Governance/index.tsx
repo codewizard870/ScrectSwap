@@ -130,20 +130,6 @@ export const Governance = observer(() => {
     return '';
   }
 
-  // const calculateTally = (prop) => {
-
-  // }
-
-
-
-  // console.log(tally);
-  // console.log(filtered);
-
-  // const totalVote = tally.positive + tally.negative;
-  // const positiveVotes = Math.round(((tally.positive * 100) / (totalVote)));
-  // const negativeVotes = Math.round(((tally.negative * 100) / (totalVote)));
-
-
   useEffect(() => {
     (async () => {
       const proposals = await user.getProposals();
@@ -177,8 +163,8 @@ export const Governance = observer(() => {
       if (a) {
         await user.refreshTokenBalanceByAddress(a.lockedAssetAddress);
         await user.refreshRewardsBalances('', a.rewardsContract);
-        setVotingPower(user.balanceToken[a.lockedAssetAddress]);
-        // setVotingPower(user.balanceRewards[rewardsDepositKey(a.rewardsContract)]); //SEFI Staking
+        // setVotingPower(user.balanceToken[a.lockedAssetAddress]); //SEFI
+        setVotingPower(user.balanceRewards[rewardsDepositKey(a.rewardsContract)]); //SEFI Staking
       }
 
     })(rewardToken);
@@ -211,7 +197,7 @@ export const Governance = observer(() => {
                     votingPower ?
                       (votingPower) && (votingPower?.includes(unlockToken) || !votingPower)
                         ? unlockJsx({ onClick: createSefiViewingKey })
-                        : <h1>{numberFormatter(votingPower, 3)}
+                        : <h1>{numberFormatter(votingPower, 2)}
                           <span className='pink'>SEFI </span>
                           <span>({totalVotingPower})</span>
                         </h1>

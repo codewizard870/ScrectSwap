@@ -168,7 +168,7 @@ export const Governance = observer(() => {
     } else if (prop.status === 'failed' && prop.valid === true) {
       return 'failed';
     } else if (prop.status === 'failed' && prop.valid === false) {
-      return 'didnt reach quorum';
+      return 'failed';
     } else if (prop.status === 'passed') {
       return 'passed';
     }
@@ -358,7 +358,7 @@ export const Governance = observer(() => {
                   })
                   :
                   null
-                }
+              }
             </div>
           </div>
           {/* </div> */}

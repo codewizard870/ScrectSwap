@@ -21,7 +21,15 @@
         a{
             color: #FF726E;
         }
-    }   
+    }
+
+    &.dark {
+      background: #5F5F6B;
+
+      p {
+        color: #F9FAFA;
+      }
+    }
 }
 
 .message-content{

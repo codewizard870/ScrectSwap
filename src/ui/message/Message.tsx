@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import './styles.scss';
 import { Link } from 'react-router-dom';
+import { useStores } from 'stores';
 
 const MessageDismiss = () => {
+  const { theme } = useStores();
   const [visible, setVisible] = useState(true);
 
   const handleDismiss = (e) => {
@@ -14,7 +16,7 @@ const MessageDismiss = () => {
     <>
       {
         visible ?
-          <div className="messsage-body">
+          <div className={`messsage-body ${theme.currentTheme}`}>
             <div className="message-content">
               <p className="header">SecretSwap SEFI STAKING pool has been upgraded.</p>
               <p className="subtitle">

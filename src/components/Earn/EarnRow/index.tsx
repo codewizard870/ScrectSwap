@@ -15,6 +15,10 @@ import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
 import { useStores } from 'stores';
 import Theme from 'themes';
+import {Link} from 'react-router-dom'
+
+const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
+const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
 
 export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))
@@ -245,6 +249,13 @@ class EarnRow extends Component<
       tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
 
     }
+
+    let title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName;
+    if (this.props.token.rewardsContract === oldRewardsContract) {
+      title = 'SEFI STAKING (OLD)';
+    }
+    const isOldContract = this.props.token.rewardsContract === oldRewardsContract;
+
     return (
       <Accordion
         className={cn(style)}
@@ -270,9 +281,7 @@ class EarnRow extends Component<
 
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
-                title={
-                  this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName
-                }
+                title={title}
                 subTitle='    '
               />
             </div>
@@ -372,37 +381,48 @@ class EarnRow extends Component<
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
                 <Grid.Column>
-                  <DepositContainer
-                    title='Earn'
-                    value={this.state.depositValue}
-                    action={
-                      <Grid columns={1} stackable relaxed={'very'}>
-                        <Grid.Column
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                          }}
-                        >
-                          <EarnButton
-                            props={this.props}
-                            value={this.state.depositValue}
-                            changeValue={this.handleChangeDeposit}
-                            togglePulse={this.togglePulse}
-                            setPulseInterval={this.setPulseInterval}
-                          />
-                        </Grid.Column>
-                      </Grid>
-                    }
-                    onChange={this.handleChangeDeposit}
-                    balance={this.props.token.balance}
-                    currency={this.props.token.lockedAsset}
-                    price={this.props.token.price}
-                    balanceText="Available"
-                    unlockPopupText='Staking balance and rewards require an additional viewing key.'
-                    tokenAddress={this.props.token.lockedAssetAddress} 
-                    userStore={this.props.userStore}
-                    theme={this.props.theme}
-                  />
+                  { isOldContract ?
+                    (
+                      <>
+                        <h1>Earn on the new pool!</h1>
+                        <p>Migrate your tokens <Link to={"/migration"}>here</Link>.</p>
+                      </>
+                    )
+                  :
+
+                    <DepositContainer
+                      title='Earn'
+                      value={this.state.depositValue}
+                      action={
+                        <Grid columns={1} stackable relaxed={'very'}>
+                          <Grid.Column
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'flex-start',
+                            }}
+                          >
+                            <EarnButton
+                              props={this.props}
+                              value={this.state.depositValue}
+                              changeValue={this.handleChangeDeposit}
+                              togglePulse={this.togglePulse}
+                              setPulseInterval={this.setPulseInterval}
+                            />
+                          </Grid.Column>
+                        </Grid>
+                      }
+                      onChange={this.handleChangeDeposit}
+                      balance={this.props.token.balance}
+                      currency={this.props.token.lockedAsset}
+                      price={this.props.token.price}
+                      balanceText="Available"
+                      unlockPopupText='Staking balance and rewards require an additional viewing key.'
+                      tokenAddress={this.props.token.lockedAssetAddress} 
+                      userStore={this.props.userStore}
+                      theme={this.props.theme}
+                    />
+
+                  }
                 </Grid.Column>
                 <Grid.Column>
                   <DepositContainer

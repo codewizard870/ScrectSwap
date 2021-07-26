@@ -1,5 +1,5 @@
 import { CosmWasmClient, ExecuteResult, SigningCosmWasmClient } from 'secretjs';
-import { JsonObject } from 'secretjs/types/types';
+import { JsonObject, StdFee } from 'secretjs/types/types';
 import { Snip20Send } from './snip20';
 import { AsyncSender } from './asyncSender';
 
@@ -80,6 +80,7 @@ export const DepositRewards = async (params: {
   recipient: string;
   address: string;
   amount: string;
+  fee?: StdFee;
 }): Promise<string> => {
   const tx = await Snip20Send({
     msg: 'eyJkZXBvc2l0Ijp7fX0K', // '{"deposit":{}}' -> base64
@@ -93,14 +94,15 @@ export const Redeem = async (params: {
   secretjs: AsyncSender;
   address: string;
   amount: string;
+  fee?: StdFee;
 }): Promise<ExecuteResult> => {
-  const { secretjs, address, amount } = params;
+  const { secretjs, address, amount, fee } = params;
 
   let result = await secretjs.asyncExecute(address, {
     redeem: {
       amount,
     },
-  });
+  }, undefined, undefined, fee);
 
   return result;
 };

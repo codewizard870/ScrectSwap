@@ -23,6 +23,11 @@ export const Migration = observer(() => {
   const [isWithdrawDisabled, setWithdrawDisabled] = useState(false);
   const [isEarnDisabled, setEarnDisabled] = useState(false);
 
+  const fee = {
+    amount: [{ amount: '750000', denom: 'uscrt' }],
+    gas: '750000',
+  };
+
   async function updateWithdrawButtonState() {
     const balance = await getBalance(oldRewardsContract);
     if (balance) {
@@ -86,6 +91,7 @@ export const Migration = observer(() => {
         secretjs: user.secretjsSend,
         address: oldRewardsContract,
         amount: balance,
+        fee
       }).then(() => {
         const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);
         notify('success', `Removed ${formattedBalance} s${pool.rewards_token.symbol} from the expired pool`);
@@ -110,6 +116,7 @@ export const Migration = observer(() => {
         recipient: newRewardsContract,
         address: pool.rewards_token.address,
         amount: balance,
+        fee
       })
       .then(() => {
         const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);

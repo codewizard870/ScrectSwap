@@ -12,13 +12,22 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
   const {theme}= useStores();
+
+  let fee;
+
+  if (props.token.display_props.symbol === 'SEFI') {
+    fee = {
+      amount: [{ amount: '750000', denom: 'uscrt' }],
+      gas: '750000',
+    };
+  }
+
   return (
     <Button
       loading={loading}
       className={`${styles.button} ${styles[theme.currentTheme]}`}
       disabled={Number(value) === 0 || isNaN(value)}
       onClick={async () => {
-        console.log(props);
         setLoading(true);
         await DepositRewards({
           secretjs: props.userStore.secretjsSend,
@@ -26,6 +35,7 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
           address: props.token.lockedAssetAddress,
           // maximum precision for the contract is 6 decimals
           amount: valueToDecimals(amount, props.token.decimals),
+          fee
         })
           .then(_ => {
             changeValue({

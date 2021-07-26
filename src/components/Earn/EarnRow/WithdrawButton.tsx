@@ -10,6 +10,16 @@ const WithdrawButton = ({ props, value, changeValue }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
   const {theme}= useStores();
+
+  let fee;
+
+  if (props.token.display_props.symbol === 'SEFI') {
+    fee = {
+      amount: [{ amount: '750000', denom: 'uscrt' }],
+      gas: '750000',
+    };
+  }
+
   return (
     <Button
       loading={loading}
@@ -21,6 +31,7 @@ const WithdrawButton = ({ props, value, changeValue }) => {
           secretjs: props.userStore.secretjsSend,
           address: props.token.rewardsContract,
           amount: valueToDecimals(amount, props.token.decimals),
+          fee
         })
           .then(_ => {
             props.userStore.updateScrtBalance();

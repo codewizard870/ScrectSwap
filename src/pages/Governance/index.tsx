@@ -23,45 +23,6 @@ import { STATUS } from '../../stores/interfaces';
 
 export const Governance = observer(() => {
 
-  const proposalsTest = [
-    {
-      index: 1,
-      title: 'Awareness Committee Funding',
-      endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'failed',
-    },
-    {
-      index: 2,
-      title: 'Awareness Committee Funding',
-      endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'in progress',
-    },
-    {
-      index: 3,
-      title: 'Awareness Committee Funding',
-      endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'passed',
-    },
-    {
-      index: 4,
-      title: 'Awareness Committee Funding',
-      endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'failed',
-    },
-    {
-      index: 5,
-      title: 'Awareness Committee Funding',
-      endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'in progress',
-    },
-    {
-      index: 6,
-      title: 'Awareness Committee Funding',
-      endTime: randomDate(new Date(2012, 0, 1), new Date()),
-      status: 'passed',
-    },
-  ]
-
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, theme, tokens } = useStores();
   let query = new URLSearchParams(useLocation().search);
@@ -128,12 +89,6 @@ export const Governance = observer(() => {
     }
     return `${apyStr}%`;
   };
-
-
-  //Temp function
-  function randomDate(start, end) {
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-  }
 
   async function createSefiViewingKey() {
     try {

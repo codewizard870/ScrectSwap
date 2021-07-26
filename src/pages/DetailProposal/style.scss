@@ -123,6 +123,11 @@ h3{
             grid-auto-flow: row;
             row-gap: 16px;
             padding-top: 26px;
+
+            .wrap-space{
+                white-space: pre-line;
+            }
+            
             h5{
                 font-size: 20px;
                 font-style: normal;

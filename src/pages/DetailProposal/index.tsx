@@ -150,7 +150,6 @@ export const DetailProposal = observer((props) => {
             console.log('Post Response Error:', err);
         }
     }
-    // console.log(sendVoteResults());
 
     const validateRevealer = () => {
 
@@ -311,7 +310,7 @@ export const DetailProposal = observer((props) => {
     function formatUserChoice() {
         const { choice } = userResult;
         if (choice == null) return (<>---</>);
-        return choice == 1 ? 'Yes' : 'No';
+        return choice == 0 ? 'Yes' : 'No';
     }
 
     return (
@@ -334,7 +333,7 @@ export const DetailProposal = observer((props) => {
                             </div> */}
                             <div className='description'>
                                 <h5>Description</h5>
-                                <p>{proposal.description}</p>
+                                <p className="wrap-space">{proposal.description}</p>
                             </div>
                         </div>
                     </div>

@@ -53,7 +53,9 @@ const CreateProposal = observer((props) => {
                 history.push('/governance')
             }
         } catch (error) {
-            console.error(error)
+            console.error(error);
+            notify('error', error.msg, 10, '', true);
+            setLoading(false);
         }
 
     }
@@ -82,7 +84,7 @@ const CreateProposal = observer((props) => {
 
                     <div className='form-title'>
                         <label htmlFor="title">Title</label>
-                        <input onChange={handleChange} id='title' name='title' type="text" />
+                        <input onChange={handleChange} id='title' name='title' type="text" autoComplete="off" />
                     </div>
                     <div className="form-proposal">
                         <label htmlFor="vote_type">Proposal Type</label>
@@ -100,6 +102,7 @@ const CreateProposal = observer((props) => {
                             id='author_alias'
                             name='author_alias'
                             type="text"
+                            autoComplete="off"
                         />
                     </div>
                     <div className='form-description'>

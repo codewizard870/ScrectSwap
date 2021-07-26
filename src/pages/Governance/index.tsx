@@ -49,11 +49,13 @@ export const Governance = observer(() => {
 
   const getProporsalsByStatus = (proposals: Array<any>, status: string) => {
     if (selectedFilter === 'all') {
-      setFiltered(proposals);
+      const sortAllDataNewewstToOldest = proposals.sort((a, b) => b.end_date - a.end_date)
+      setFiltered(sortAllDataNewewstToOldest);
       // console.log('all');
     } else {
       const filter = proposals.filter((proposal => proposal.currentStatus.includes(status)));
-      setFiltered(filter);
+      const sortAllDataNewewstToOldest = filter.sort((a, b) => b.end_date - a.end_date)
+      setFiltered(sortAllDataNewewstToOldest);
       // console.log('filtered');
     }
 
@@ -129,6 +131,8 @@ export const Governance = observer(() => {
     }
     return '';
   }
+
+  // console.log('Filteres Proposals:', filtered.sort((a, b) => b.end_date - a.end_date));
 
   useEffect(() => {
     (async () => {
@@ -278,27 +282,26 @@ export const Governance = observer(() => {
             </div>
             <div className='list-proposal'>
               {
-                totalLocked > 0 ?
-                  filtered.map((p, index) => {
-                    return (
-                      <ProposalRow
-                        key={p.id}
-                        index={index}
-                        address={p.address}
-                        theme={theme}
-                        title={p.title}
-                        endTime={p.end_date}
-                        status={p.status}
-                        id={p.id}
-                        finalized={p.finalized}
-                        valid={p.valid}
-                        currentStatus={p.currentStatus}
-                        totalLocked={totalLocked}
-                      />
-                    )
-                  })
-                  :
-                  null
+
+                filtered.map((p, index) => {
+                  return (
+                    <ProposalRow
+                      key={p.id}
+                      index={index}
+                      address={p.address}
+                      theme={theme}
+                      title={p.title}
+                      endTime={p.end_date}
+                      status={p.status}
+                      id={p.id}
+                      finalized={p.finalized}
+                      valid={p.valid}
+                      currentStatus={p.currentStatus}
+                      totalLocked={totalLocked}
+                    />
+                  )
+                })
+
               }
             </div>
           </div>

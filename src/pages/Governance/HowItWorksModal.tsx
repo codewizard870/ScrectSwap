@@ -21,6 +21,7 @@ import { validate } from 'webpack';
 import { STATUS } from '../../stores/interfaces';
 
 export const HowItWorksModal = observer(() => {
+  const { theme } = useStores();
   const [open, setOpen] = useState(false);
 
   return (
@@ -35,7 +36,7 @@ export const HowItWorksModal = observer(() => {
       <Modal.Content>
         <img style={{ width: '100%' }} src="/static/how_it_works.png" alt="how it works infogram" />
       </Modal.Content>
-      <Modal.Actions>
+      <Modal.Actions className={theme.currentTheme}>
         <Button onClick={() => setOpen(false)}>Close</Button>
       </Modal.Actions>
     </Modal>

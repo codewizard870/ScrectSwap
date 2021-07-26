@@ -208,4 +208,8 @@ h1,h2,h3,h4,h5,h6{
 .ui.modal>.actions {
   background: white;
   padding: 16px !important;
+
+  &.dark {
+    background: rgb(14, 14, 16);
+  }
 }

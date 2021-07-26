@@ -89,13 +89,13 @@ const VoteModal = (props: {
                         <>
                             <Button
                                 // loading={loading}
-                                onClick={() => vote(0)}
+                                onClick={() => vote(1)}
                                 className='vote-no'
                             >No
                             </Button>
                             <Button
                                 // loading={loading}
-                                onClick={() => vote(1)}
+                                onClick={() => vote(0)}
                                 className='vote-yes'
                             >Yes
                             </Button>

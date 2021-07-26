@@ -836,8 +836,8 @@ export class UserStoreEx extends StoreConstructor {
       },
     )
     return {
-      negative: parseFloat(result.tally.tally[0]),
-      positive: parseFloat(result.tally.tally[1])
+      positive: parseFloat(result.tally.tally[0]),
+      negative: parseFloat(result.tally.tally[1])
     };
   }
 

@@ -47,37 +47,33 @@ const changeInput = (balance, percentage, onChange) => {
   onChange(event);
 };
 const DepositContainer = props => {
-
-  const createViewingKey = ()=>{
+  const createViewingKey = () => {
     return unlockJsx({
-      onClick:async()=>{
+      onClick: async () => {
         try {
           let currency;
-          if(props.currency == 'SEFI'){
-            currency=props.currency;
-          }else{
-            currency=props.currency.toLowerCase();
+          if (props.currency == 'SEFI') {
+            currency = props.currency;
+          } else {
+            currency = props.currency.toLowerCase();
           }
-          
+
           await props.userStore?.keplrWallet?.suggestToken(props.userStore?.chainId, props.tokenAddress);
-          props.userStore.updateBalanceForSymbol(currency);
-          props.userStore.refreshRewardsBalances(currency);
+          props.userStore.refreshTokenBalanceByAddress(props.tokenAddress);
+          props.userStore.refreshRewardsBalances('', props.tokenAddress);
           props.userStore.updateScrtBalance();
-          
         } catch (error) {
-          console.error("failed")
+          console.error('failed');
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   return (
     <div className={`${styles.changeBalance} ${styles[props.theme.currentTheme]}`}>
       <div className={cn(styles.deposit_content)}>
         <div className={cn(styles.balanceRow)}>
-          <div className={cn(styles.title)}> 
-            {props.title}
-          </div>
+          <div className={cn(styles.title)}>{props.title}</div>
         </div>
         <div className={cn(styles.balanceRow)}>
           <div className={cn(styles.h4)}>
@@ -90,28 +86,23 @@ const DepositContainer = props => {
               popupText={props.unlockPopupText}
               createKey={createViewingKey}
             />
-            {
-              (props.balance?.includes(unlockToken))&&
+            {props.balance?.includes(unlockToken) && (
               <Popup
                 content={props.unlockPopupText}
                 className={styles.iconinfo__popup}
-                trigger={ 
-                  <Icon
-                      className={styles.icon_info}
-                      name="info"
-                      circular
-                      size="tiny"
-                    />
-                }
+                trigger={<Icon className={styles.icon_info} name="info" circular size="tiny" />}
               />
-            }
+            )}
           </div>
-          <div className={cn(styles.subtitle)}>
-            {props.balanceText}
-          </div>
+          <div className={cn(styles.subtitle)}>{props.balanceText}</div>
         </div>
         <div>
-          <Input placeholder="0.0" className={`${styles.form} ${styles[props.theme.currentTheme]}`} value={props.value} onChange={props.onChange}>
+          <Input
+            placeholder="0.0"
+            className={`${styles.form} ${styles[props.theme.currentTheme]}`}
+            value={props.value}
+            onChange={props.onChange}
+          >
             <input style={{ borderRadius: '4px', height: '40px' }} />
           </Input>
         </div>

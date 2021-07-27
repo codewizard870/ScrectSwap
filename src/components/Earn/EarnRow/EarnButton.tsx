@@ -11,7 +11,7 @@ import { useStores } from 'stores';
 const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
-  const {theme}= useStores();
+  const { theme } = useStores();
 
   let fee;
 
@@ -35,7 +35,7 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
           address: props.token.lockedAssetAddress,
           // maximum precision for the contract is 6 decimals
           amount: valueToDecimals(amount, props.token.decimals),
-          fee
+          fee,
         })
           .then(_ => {
             changeValue({
@@ -55,9 +55,10 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
             props.notify('error', `Failed to deposit: ${reason}`);
             console.log(`Failed to deposit: ${reason}`);
           });
+        ///TODO:FIX THIS
         await Promise.all([
-          props.userStore.refreshRewardsBalances(props.token.display_props.symbol),
-          props.userStore.refreshTokenBalance(props.token.display_props.symbol),
+          props.userStore.refreshTokenBalanceByAddress(props.token.rewardsContract),
+          props.userStore.refreshRewardsBalances('', props.token.rewardsContract),
         ]);
         setLoading(false);
       }}

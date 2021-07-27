@@ -9,7 +9,7 @@ import { useStores } from 'stores';
 const WithdrawButton = ({ props, value, changeValue }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
-  const {theme}= useStores();
+  const { theme } = useStores();
 
   let fee;
 
@@ -31,7 +31,7 @@ const WithdrawButton = ({ props, value, changeValue }) => {
           secretjs: props.userStore.secretjsSend,
           address: props.token.rewardsContract,
           amount: valueToDecimals(amount, props.token.decimals),
-          fee
+          fee,
         })
           .then(_ => {
             props.userStore.updateScrtBalance();
@@ -47,9 +47,10 @@ const WithdrawButton = ({ props, value, changeValue }) => {
             console.log(`Failed to withdraw: ${reason}`);
             setLoading(false);
           });
+        //TODO FIX THIS
         await Promise.all([
-          props.userStore.refreshRewardsBalances(props.token.display_props.symbol),
-          props.userStore.refreshTokenBalance(props.token.display_props.symbol),
+          props.userStore.refreshTokenBalanceByAddress(props.token.rewardsContract),
+          props.userStore.refreshRewardsBalances('', props.token.rewardsContract),
         ]).catch(() => setLoading(false));
         setLoading(false);
       }}

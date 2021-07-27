@@ -113,8 +113,8 @@ export const Governance = observer(() => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  const result = (!votingPower || !totalLocked) ? 0 : ((votingPower / totalLocked) * 100);
-  const totalVotingPower = numeral(result).format('0.00%');
+  const calculateVotingPower = (!votingPower || !totalLocked) ? 0 : ((votingPower / totalLocked) * 100);
+  const totalVotingPower = calculateVotingPower.toFixed(2);
 
   const calculateState = (prop) => {
     let endDate = moment.unix(prop.end_date)
@@ -209,7 +209,7 @@ export const Governance = observer(() => {
                         ? unlockJsx({ onClick: createSefiViewingKey })
                         : <h1>{numberFormatter(votingPower, 2)}
                           <span className='pink'>SEFI </span>
-                          <span>({totalVotingPower})</span>
+                          <span>({totalVotingPower} %)</span>
                         </h1>
                       : <SpinnerLineHor />
                   }

@@ -2,7 +2,7 @@ import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
 import { useHistory } from "react-router-dom";
 import ProposalLayout from 'components/ProposalLayout';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Select, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
@@ -11,18 +11,27 @@ import { sleep } from 'utils';
 import SpinnerLineHor from '../../ui/Spinner/SpinnerLineHor';
 
 const CreateProposal = observer((props) => {
-    const { theme, user } = useStores();
+    const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
     const history = useHistory();
+
+    const { theme, user } = useStores();
     const [formData, updateFormData] = React.useState({
         title: '',
         description: '',
         vote_type: '',
         author_alias: '',
     });
-
     const [loading, setLoading] = React.useState<boolean>(false);
+    const [amounts, setAmounts] = React.useState({} as any);
 
-    const [error, setError] = React.useState<boolean>(false);
+
+    async function getBalance(contract) {
+        const result = await user.getSnip20Balance(contract);
+        if (result === 'Unlock') {
+            return null;
+        }
+        return result;
+    }
 
     function handleChange(e) {
 
@@ -32,8 +41,6 @@ const CreateProposal = observer((props) => {
             [e.target.name]: e.target.value.trim()
         });
     };
-
-    // console.log(formData);
 
     async function createProposal(event) {
 
@@ -57,8 +64,63 @@ const CreateProposal = observer((props) => {
             notify('error', error.msg, 10, '', true);
             setLoading(false);
         }
-
     }
+
+    useEffect(() => {
+      (async () => {
+          const balance = await getBalance(newRewardsContract);
+          const minimumStake = await user.getMinimumStake();
+          setAmounts({
+            balance: parseInt(balance),
+            minimumStake: parseInt(minimumStake)
+          });
+      })();
+    }, [])
+
+    useEffect(() => {
+      (async () => {
+      })();
+    }, [])
+
+    function isValid() {
+      return !formData.title
+        || !formData.description
+        || !formData.vote_type
+        || formData.description.length < 10
+        || amounts.minimumStake > amounts.balance;
+    }
+
+    const [errors, setErrors] = useState([]);
+
+    function formatErrors() {
+      return errors.map((e, i) => {
+        return (
+          <p key={i}>{e.msg}</p>
+        );
+      });
+    }
+
+    function validate() {
+      const result = [];
+
+      // Validate minimum stake.
+      if (amounts.minimumStake > amounts.balance) {
+        const theMinimum = amounts.minimumStake / 1e6;
+        result.push({
+          type: 'minimumStake',
+          msg: `You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`
+        });
+      } else {
+        const idx = errors.findIndex(it => it.type === 'minimumStake');
+        if (idx !== -1) result.splice(idx, 1);
+      }
+
+      setErrors(result);
+    }
+
+    useEffect(() => {
+      validate();
+    }, [formData, amounts]);
 
     return (
         <ProposalLayout width='1168px'>
@@ -71,13 +133,20 @@ const CreateProposal = observer((props) => {
                             <Link to='/governance'>Cancel</Link>
                         </Button>
 
-                        <Button
-                            loading={loading}
-                            disabled={!formData.title || !formData.description || !formData.vote_type || formData.description.length < 10}
-                            className='g-button'
-                        >Create Proposal
-                        </Button>
-
+                        <Popup
+                          style={{ color: 'red' }}
+                          content={formatErrors()}
+                          disabled={errors.length <= 0}
+                          trigger={<a>
+                            <Button
+                              loading={loading}
+                              disabled={isValid()}
+                              className='g-button'
+                            >
+                              Create Proposal
+                            </Button>
+                          </a>}
+                        />
                     </div>
                 </div>
                 <div className='card-proposal'>

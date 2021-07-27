@@ -880,6 +880,16 @@ export class UserStoreEx extends StoreConstructor {
     return result.rolling_hash.hash;
   }
 
+  public async getMinimumStake(): Promise<any> {
+    await this.prepareDeps();
+    const result = await this.secretjs.queryContractSmart(process.env.FACTORY_CONTRACT,
+      {
+        minimum_stake: {}
+      },
+    )
+    return parseInt(result.minimum_stake.amount);
+  }
+
   prepareDeps = async () => {
     await this.keplrCheckPromise;
     this.secretjs = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);

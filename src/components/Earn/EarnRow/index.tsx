@@ -381,7 +381,7 @@ class EarnRow extends Component<
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
                 <Grid.Column>
-                  { false ?
+                  { isOldContract ?
                     (
                       <>
                         <h1>Earn on the new pool!</h1>

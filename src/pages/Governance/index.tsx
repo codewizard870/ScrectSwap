@@ -155,9 +155,10 @@ export const Governance = observer(() => {
       const sefi_reward_token = await user.getRewardToken('SEFI')
       const { total_locked } = await user?.secretjs?.queryContractSmart(process.env.SEFI_STAKING_CONTRACT, { "total_locked": {} })
       const totalLocked = total_locked?.amount;
+      const convertTotalLocked = totalLocked / (Math.pow(10, 6));
 
       setRewardToken(sefi_reward_token)
-      setTotalLocked(totalLocked)
+      setTotalLocked(convertTotalLocked)
 
     })();
 
@@ -177,6 +178,10 @@ export const Governance = observer(() => {
   }, [rewardToken])
 
   // console.log(filtered);
+  // console.log(totalLocked);
+  // console.log(rewardToken);
+
+  // console.log(totalLocked / (Math.pow(10, 6)))
 
   return (
     <BaseContainer>
@@ -216,7 +221,7 @@ export const Governance = observer(() => {
               <div className="stats-voting">
                 {
                   totalLocked ?
-                    <h1>{numberFormatter(rewardToken?.totalLockedRewards, 2)} <span className='pink'> SEFI</span></h1>
+                    <h1>{numberFormatter(totalLocked, 2)} <span className='pink'> SEFI</span></h1>
                     : <SpinnerLineHor />
                 }
                 <p>Total Voting Power</p>

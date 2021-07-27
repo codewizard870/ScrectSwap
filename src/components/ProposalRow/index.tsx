@@ -52,7 +52,9 @@ export const ProposalRow = (props: {
     const belowQuorum = props.status === 'failed' && props.valid === false;
 
     const showProposalResult = () => {
-        if (props.currentStatus != 'active') {
+        if (props.currentStatus === 'active' || props.currentStatus === 'tally in progress') {
+            setShowResult(false);
+        } else {
             setShowResult(true);
         }
     }

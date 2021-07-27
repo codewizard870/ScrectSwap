@@ -239,6 +239,10 @@ export const DetailProposal = observer((props) => {
         }
     }
 
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     const belowQuorum = proposal.status === 'failed' && voteStatus.valid === false;
 
     const totalVote = tally.positive + tally.negative;
@@ -302,10 +306,10 @@ export const DetailProposal = observer((props) => {
 
     // Tally: After Vote Finalized
     // console.log('Tally:', user.tally(proposal?.address));
-    console.log('vote', userResult)
+    // console.log('vote', userResult)
 
     // console.log(showAnswer)
-    console.log(tally);
+    // console.log(tally);
 
     function formatUserChoice() {
         const { choice } = userResult;
@@ -350,7 +354,7 @@ export const DetailProposal = observer((props) => {
                                         </div>
                                         :
                                         <div className={`proposal-status small status-${validateStatus(proposal.status)}`}>
-                                            {validateStatus(proposal.status)}
+                                            {capitalizeFirstLetter(validateStatus(proposal.status))}
                                         </div>
                                 }
                             </div>
@@ -432,7 +436,7 @@ export const DetailProposal = observer((props) => {
                                     </>
                                     :
                                     <div className="closed-proposal">
-                                        {tally.negative ?
+                                        {tally?.negative ?
                                             <div className="voted">
                                                 <div>
                                                     <h3> {negativeVotes}%</h3>
@@ -440,14 +444,9 @@ export const DetailProposal = observer((props) => {
                                                 <div className="label"><p>No</p></div>
                                             </div>
                                             :
-                                            <div className="voted">
-                                                <div>
-                                                    <h3> 0%</h3>
-                                                </div>
-                                                <div className="label"><p>No</p></div>
-                                            </div>
+                                            null
                                         }
-                                        {tally.positive ?
+                                        {tally?.positive ?
                                             <div className="result">
                                                 <div>
                                                     <h3>{positiveVotes}%</h3>
@@ -455,12 +454,7 @@ export const DetailProposal = observer((props) => {
                                                 <div className="label"><p>Yes</p></div>
                                             </div>
                                             :
-                                            < div className="result">
-                                                <div>
-                                                    <h3>0%</h3>
-                                                </div>
-                                                <div className="label"><p>Yes</p></div>
-                                            </div>
+                                            null
                                         }
                                     </div>
                             }

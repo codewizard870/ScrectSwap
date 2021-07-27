@@ -110,7 +110,10 @@ export const Migration = observer(() => {
 
     const pool = rewards.allData.find(it => it.pool_address === newRewardsContract);
 
+
     if (pool) {
+      await user.keplrWallet.suggestToken(process.env.CHAIN_ID, newRewardsContract);
+
       await DepositRewards({
         secretjs: user.secretjsSend,
         recipient: newRewardsContract,

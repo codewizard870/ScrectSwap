@@ -11,7 +11,7 @@ const Confirmation = (props:{
   const {theme} = useStores();
 
   let scrt_sefi_apy_string,sefi_apy_string = '0%'
-  const sefi_apy:RewardsToken = props.data.apys.find((t)=>t.lockedAsset==='SEFI')
+  const sefi_apy:RewardsToken = props.data.apys.find((t)=>t.rewardsContract===process.env.SEFI_STAKING_CONTRACT)
   const scrt_sefi_apy:RewardsToken = props.data.apys.find((t)=>t.lockedAsset==='LP-sSCRT-SEFI')
 
   try {

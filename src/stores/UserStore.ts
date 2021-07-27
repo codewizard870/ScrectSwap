@@ -647,7 +647,7 @@ export class UserStoreEx extends StoreConstructor {
           amount: canonicalizeCHSBK,
         },
       }, '', [],
-      getFeeForExecute(200_000),
+      getFeeForExecute(450_000),
     );
 
     if (result?.code) {

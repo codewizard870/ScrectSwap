@@ -24,6 +24,8 @@ import { HowItWorksModal } from './HowItWorksModal';
 
 export const Governance = observer(() => {
 
+  const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
+
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, theme, tokens } = useStores();
   let query = new URLSearchParams(useLocation().search);
@@ -35,16 +37,12 @@ export const Governance = observer(() => {
 
   const [proposals, setProposals] = useState([]);
 
-  // console.log(filters);
-  // console.log(proposals);
-
   const [filtered, setFiltered] = useState(proposals);
 
   // Get the actual filter on click button
   const [selectedFilter, setSelectedFilter] = useState('all');
-  // console.log(filtered);
 
-  // console.log(selectedFilter);
+  const [amounts, setAmounts] = React.useState({} as any);
 
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
@@ -134,7 +132,15 @@ export const Governance = observer(() => {
     return '';
   }
 
-  // console.log('Filteres Proposals:', filtered.sort((a, b) => b.end_date - a.end_date));
+  async function getBalance(contract) {
+    const result = await user.getSnip20Balance(contract);
+    if (result === 'Unlock') {
+      return null;
+    }
+    return result;
+  }
+
+  const theMinimum = amounts.minimumStake / 1e6;
 
   useEffect(() => {
     (async () => {
@@ -176,6 +182,17 @@ export const Governance = observer(() => {
     })(rewardToken);
 
   }, [rewardToken])
+
+  useEffect(() => {
+    (async () => {
+      const balance = await getBalance(newRewardsContract);
+      const minimumStake = await user.getMinimumStake();
+      setAmounts({
+        balance: parseInt(balance),
+        minimumStake: parseInt(minimumStake)
+      });
+    })();
+  }, [])
 
   // console.log(filtered);
   // console.log(totalLocked);
@@ -255,11 +272,32 @@ export const Governance = observer(() => {
                     </Link>
                     )
                 }
+                {
+                  amounts.minimumStake > amounts.balance
+                    ?
+                    <Popup
+                      style={{ color: 'red' }}
+                      content={`You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`}
 
-                <Link to='/proposal'>
-                  <Button className='g-button--outline'>Create proposal</Button>
-                </Link>
+                      trigger={<a>
+                        <Button
+                          disabled={true}
+                          className='g-button--outline'
+                        >
+                          Create Proposal
+                        </Button>
+                      </a>}
+                    />
+                    :
+                    <Link to="/proposal">
+                      <Button
+                        className='g-button--outline'
+                      >
+                        Create Proposal
+                      </Button>
+                    </Link>
 
+                }
                 <HowItWorksModal />
               </div>
             </div>

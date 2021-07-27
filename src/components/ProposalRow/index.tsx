@@ -43,10 +43,13 @@ export const ProposalRow = (props: {
         }
     }
 
-    const totalTally = tally.positive + tally.negative;
-    const voted = totalTally * 100 / props.totalLocked;
-    const positiveVotes = Math.round(((tally.positive * 100) / (totalTally)));
-    const negativeVotes = Math.round(((tally.negative * 100) / (totalTally)));
+    const totalTally = parseFloat(tally.positive + tally.negative) / (Math.pow(10, 6));
+    const totalLocked = props.totalLocked;
+    const voted = Math.round(totalTally / totalLocked * 100);
+
+    const positiveVotes = Math.round((((tally.positive / (Math.pow(10, 6))) * 100) / (totalTally)));
+    const negativeVotes = Math.round((((tally.negative / (Math.pow(10, 6))) * 100) / (totalTally)));
+
     const result = props.status === 'passed' ? positiveVotes : negativeVotes;
 
     const belowQuorum = props.status === 'failed' && props.valid === false;
@@ -91,14 +94,14 @@ export const ProposalRow = (props: {
                             {
                                 isNaN(negativeVotes) ? null :
                                     <div className="negative-results">
-                                        <p> {voted.toFixed(0).toString() + '%'}</p>
+                                        <p> {voted + '%'}</p>
                                         <span>Voted</span>
                                     </div>
                             }
                             {
                                 isNaN(positiveVotes) ? null :
                                     <div className="positive-results">
-                                        <p> {result.toString() + '%'}</p>
+                                        <p> {result + '%'}</p>
                                         <span>{props.status === 'passed' ? 'Yes' : 'No'}</span>
                                     </div>
                             }

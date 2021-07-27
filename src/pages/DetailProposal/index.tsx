@@ -444,7 +444,12 @@ export const DetailProposal = observer((props) => {
                                                 <div className="label"><p>No</p></div>
                                             </div>
                                             :
-                                            null
+                                            <div className="voted">
+                                                <div>
+                                                    <h3>0%</h3>
+                                                </div>
+                                                <div className="label"><p>No</p></div>
+                                            </div>
                                         }
                                         {tally?.positive ?
                                             <div className="result">
@@ -454,7 +459,12 @@ export const DetailProposal = observer((props) => {
                                                 <div className="label"><p>Yes</p></div>
                                             </div>
                                             :
-                                            null
+                                            <div className="result">
+                                                <div>
+                                                    <h3>0%</h3>
+                                                </div>
+                                                <div className="label"><p>Yes</p></div>
+                                            </div>
                                         }
                                     </div>
                             }

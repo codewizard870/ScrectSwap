@@ -95,9 +95,10 @@ export const Governance = observer(() => {
 
   async function createSefiViewingKey() {
     try {
-      await user.keplrWallet.suggestToken(user.chainId, rewardToken.lockedAssetAddress);
-      await user.updateScrtBalance();
+      await user.keplrWallet?.suggestToken(user.chainId, process.env.SEFI_STAKING_CONTRACT);
       await user.updateBalanceForSymbol('SEFI');
+      await user.refreshRewardsBalances('SEFI');
+      await user.updateScrtBalance();
     } catch (e) {
       console.error("Error at creating new viewing key ", e)
     }
@@ -168,7 +169,6 @@ export const Governance = observer(() => {
       if (a) {
         await user.refreshTokenBalanceByAddress(a.lockedAssetAddress);
         await user.refreshRewardsBalances('', a.rewardsContract);
-        // setVotingPower(user.balanceToken[a.lockedAssetAddress]); //SEFI
         setVotingPower(user.balanceRewards[rewardsDepositKey(a.rewardsContract)]); //SEFI Staking
       }
 

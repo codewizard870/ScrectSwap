@@ -216,7 +216,7 @@ export const Governance = observer(() => {
               <div className="stats-voting">
                 {
                   totalLocked ?
-                    <h1>{numberFormatter(totalLocked, 3)} <span className='pink'>SEFI</span></h1>
+                    <h1>{numberFormatter(rewardToken?.totalLockedRewards, 2)} <span className='pink'> SEFI</span></h1>
                     : <SpinnerLineHor />
                 }
                 <p>Total Voting Power</p>
@@ -255,7 +255,7 @@ export const Governance = observer(() => {
                   <Button className='g-button--outline'>Create proposal</Button>
                 </Link>
 
-                <HowItWorksModal/>
+                <HowItWorksModal />
               </div>
             </div>
           </div>

@@ -60,9 +60,9 @@ const CreateProposal = observer((props) => {
                 history.push('/governance')
             }
         } catch (error) {
-            console.error(error);
-            notify('error', error.msg, 10, '', true);
-            setLoading(false);
+          notify('error', error.toString(), 10, '', true);
+        } finally {
+          setLoading(false);
         }
     }
 

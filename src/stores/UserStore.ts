@@ -689,40 +689,45 @@ export class UserStoreEx extends StoreConstructor {
   public async createProposal(
     title: string, description: string, vote_type: string, author_alias: string):
     Promise<any> {
-    const viewingKey = await getViewingKey({
+    let viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
       address: process.env.SEFI_STAKING_CONTRACT,
     });
 
-    if (viewingKey) {
-      const result = await this.secretjsSend.asyncExecute(process.env.FACTORY_CONTRACT,
-        {
-          "new_poll": {
-            "poll_metadata": {
-              "title": title,
-              "description": description,
-              "vote_type": vote_type,
-              "author": this.address,
-              "author_alias": author_alias,
-            },
-            "poll_choices": ["Yes", "No"],
-            "pool_viewing_key": viewingKey
-          }
-        },
-        '',
-        [],
-        getFeeForExecute(450_000))
-
-        const newPoll = result.logs[0]?.events[1]?.attributes[5]?.value;
-        if (newPoll) {
-          await axios.post(`${process.env.BACKEND_URL}/secret_votes/${newPoll}`);
-        }
-
-      return result;
-    } else {
-      throw new Error(this.error);
+    if (!viewingKey) {
+      await this.keplrWallet.suggestToken(this.chainId, process.env.SEFI_STAKING_CONTRACT);
+      viewingKey = await getViewingKey({
+        keplr: this.keplrWallet,
+        chainId: this.chainId,
+        address: process.env.SEFI_STAKING_CONTRACT,
+      });
     }
+
+    const result = await this.secretjsSend.asyncExecute(process.env.FACTORY_CONTRACT,
+      {
+        "new_poll": {
+          "poll_metadata": {
+            "title": title,
+            "description": description,
+            "vote_type": vote_type,
+            "author": this.address,
+            "author_alias": author_alias,
+          },
+          "poll_choices": ["Yes", "No"],
+          "pool_viewing_key": viewingKey
+        }
+      },
+      '',
+      [],
+      getFeeForExecute(450_000))
+
+    const newPoll = result.logs[0]?.events[1]?.attributes[5]?.value;
+    if (newPoll) {
+      await axios.post(`${process.env.BACKEND_URL}/secret_votes/${newPoll}`);
+    }
+
+    return result;
   }
 
   public async sendFinalizeVote(contractAddress: string, rollingHash: string): Promise<any> {

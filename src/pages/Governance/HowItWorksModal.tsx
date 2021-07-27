@@ -32,6 +32,7 @@ export const HowItWorksModal = observer(() => {
       trigger={<Button>How does this work?</Button>}
       dimmer={'blurring'}
       style={{ width: '700px', display: 'flex' }}
+      className="how-it-works"
     >
       <Modal.Content>
         <img style={{ width: '100%' }} src="/static/how_it_works.png" alt="how it works infogram" />

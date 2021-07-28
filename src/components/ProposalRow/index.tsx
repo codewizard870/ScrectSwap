@@ -66,6 +66,13 @@ export const ProposalRow = (props: {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
+    let colorResult = '#D94C48';
+    if (props.currentStatus === 'failed') {
+        colorResult = '#D94C48';
+    } else if (props.currentStatus === 'passed') {
+        colorResult = 'green';
+    }
+
     useEffect(() => {
         showProposalResult();
         getTally();
@@ -101,8 +108,10 @@ export const ProposalRow = (props: {
                             {
                                 isNaN(positiveVotes) ? null :
                                     <div className="positive-results">
-                                        <p> {result + '%'}</p>
-                                        <span>{props.status === 'passed' ? 'Yes' : 'No'}</span>
+                                        <p style={{ color: colorResult }}> {result + '%'}</p>
+                                        <span>
+                                            {props.status === 'passed' ? 'Yes' : 'No'}
+                                        </span>
                                     </div>
                             }
                         </div>

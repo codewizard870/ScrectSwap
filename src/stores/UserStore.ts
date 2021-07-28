@@ -925,7 +925,7 @@ export class UserStoreEx extends StoreConstructor {
 
     return {
       choice: parseInt(result.vote.choice),
-      voting_power: parseFloat(result.vote.voting_power)
+      voting_power: parseFloat(result.vote.voting_power) / (Math.pow(10, 6))
     }
   }
 

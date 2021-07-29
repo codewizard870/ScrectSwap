@@ -288,6 +288,11 @@ h5{
 
         .address{
             color: var(--font-p-color-pink-01);
+
+            a{
+                text-decoration: none;
+                color: var(--font-p-color-pink-01);
+            }
         }
     }
 

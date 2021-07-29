@@ -89,6 +89,17 @@ $color-green-inactive: #79CC81;
     }
   }
 
+  .data{
+    display: flex;
+    align-content: center;
+    justify-content: left;
+     p{
+        font-weight: 600;
+        margin: 0;
+      }
+      
+  }
+
   .ui.button {
     font-size: 16px;
     line-height: 24px;

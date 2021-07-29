@@ -81,7 +81,7 @@ export const ProposalRow = (props: {
     return (
         <Link to={`/proposal/${props.id}`} style={{ textDecoration: 'none' }}>
             <div className={`proposal-row ${props.theme.currentTheme}`}>
-                <p>{props.index + 1}</p>
+                <p>{props.index}</p>
                 <p className='title'>{props.title}</p>
                 {
                     !showResults ?

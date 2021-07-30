@@ -1,5 +1,5 @@
 import { Redeem } from '../../../blockchain-bridge/scrt';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { valueToDecimals } from '../../../utils';
 import cn from 'classnames';
 import * as styles from './styles.styl';
@@ -9,16 +9,34 @@ import { useStores } from 'stores';
 const WithdrawButton = ({ props, value, changeValue }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
-  const { theme } = useStores();
+  const { theme, user } = useStores();
 
-  let fee;
+  const [fee, setFee] = useState({
+    amount: [{ amount: '750000', denom: 'uscrt' }],
+    gas: '750000'
+  } as any)
 
-  if (props.token.display_props.symbol === 'SEFI') {
-    fee = {
-      amount: [{ amount: '750000', denom: 'uscrt' }],
-      gas: '750000',
-    };
+  const activeNumbers = user.numOfActiveProposals;
+  const rewardsContact = props.token.rewardsContract;
+  const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
+
+  const setGasFee = () => {
+
+    if (rewardsContact === newPoolContract && activeNumbers > 0) {
+      let fee = {
+        amount: [{ amount: '750000', denom: 'uscrt' }],
+        gas: 750000 + (30000 * activeNumbers),
+      };
+      setFee(fee);
+    }
+
   }
+
+  useEffect(() => {
+
+    setGasFee();
+
+  }, [activeNumbers]);
 
   return (
     <Button

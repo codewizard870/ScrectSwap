@@ -11,6 +11,8 @@ import { sleep, unlockToken } from 'utils';
 import { notify } from '../Earn';
 import { Redeem } from '../../blockchain-bridge/scrt';
 import { DepositRewards } from '../../blockchain-bridge/scrt';
+import ScrtTokenBalanceSingleLine from 'components/Earn/EarnRow/ScrtTokenBalanceSingleLine';
+import SpinnerDashes from 'ui/Spinner/SpinnerDashes';
 
 const MIGRATED_AMOUNT_KEY = '___sw_migrated_amount';
 
@@ -22,6 +24,10 @@ export const Migration = observer(() => {
 
   const [isWithdrawDisabled, setWithdrawDisabled] = useState(false);
   const [isEarnDisabled, setEarnDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [balances, setBalances] = useState({} as any);
+
+  const { oldBalance, newBalance } = balances;
 
   const fee = {
     amount: [{ amount: '750000', denom: 'uscrt' }],
@@ -110,7 +116,6 @@ export const Migration = observer(() => {
 
     const pool = rewards.allData.find(it => it.pool_address === newRewardsContract);
 
-
     if (pool) {
       await user.keplrWallet.suggestToken(process.env.CHAIN_ID, newRewardsContract);
 
@@ -133,8 +138,20 @@ export const Migration = observer(() => {
     }
   }
 
+  const getAllBalances = async () => {
+    setLoading(true);
+    const Oldbalance = await getBalance(oldRewardsContract);
+    const newBalance = await getBalance(newRewardsContract);
+    setBalances({
+      oldBalance: (parseInt(Oldbalance) / 1e6).toFixed(2),
+      newBalance: (parseInt(newBalance) / 1e6).toFixed(2)
+    });
+    setLoading(false);
+  }
+
   useEffect(() => {
     initRewards();
+    getAllBalances();
   }, []);
 
   return (
@@ -170,10 +187,14 @@ export const Migration = observer(() => {
 
             <div className={`box ${theme.currentTheme}`}>
               <h2>Step 1</h2>
+              <div className="data">
+                <p>Staked in old pool: &nbsp;</p>
+                <span> {loading ? <SpinnerDashes /> : `${oldBalance} SEFI`}</span>
+              </div>
               <h4>Withdraw tokens from expired pools</h4>
               <WithdrawButton
                 withdraw={withdraw}
-                isDisabled={isWithdrawDisabled}
+                isDisabled={isWithdrawDisabled || loading}
               />
             </div>
 
@@ -181,10 +202,14 @@ export const Migration = observer(() => {
 
             <div className={`box ${theme.currentTheme}`}>
               <h2>Step 2</h2>
+              <div className="data">
+                <p>Staked nn new pool: &nbsp;</p>
+                <span> {loading ? <SpinnerDashes /> : `${newBalance} SEFI`}</span>
+              </div>
               <h4>Earn rewards in new pools</h4>
               <EarnButton
                 deposit={deposit}
-                isDisabled={isEarnDisabled}
+                isDisabled={isEarnDisabled || loading}
               />
             </div>
 

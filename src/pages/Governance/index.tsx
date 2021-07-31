@@ -44,6 +44,9 @@ export const Governance = observer(() => {
 
   const [amounts, setAmounts] = React.useState({} as any);
 
+  const numberOfVotes = proposals.length;
+  // console.log(numberOfVotes);
+
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
   const getProporsalsByStatus = (proposals: Array<any>, status: string) => {
@@ -57,7 +60,6 @@ export const Governance = observer(() => {
       setFiltered(sortAllDataNewewstToOldest);
       // console.log('filtered');
     }
-
   }
 
   const countStatus = (status: string) => {
@@ -334,7 +336,7 @@ export const Governance = observer(() => {
                   return (
                     <ProposalRow
                       key={p.id}
-                      index={index}
+                      index={numberOfVotes - index}
                       address={p.address}
                       theme={theme}
                       title={p.title}

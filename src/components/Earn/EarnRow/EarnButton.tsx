@@ -1,26 +1,46 @@
 import { DepositRewards } from '../../../blockchain-bridge/scrt';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { valueToDecimals } from '../../../utils';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { unlockToken } from '../../../utils';
 import { useStores } from 'stores';
+import moment from 'moment';
 
 // todo: add failed toast or something
 const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }) => {
+
   const [loading, setLoading] = useState<boolean>(false);
   const amount = Number(value).toFixed(6);
-  const { theme } = useStores();
+  const { theme, user } = useStores();
 
-  let fee;
+  const [fee, setFee] = useState({
+    amount: [{ amount: '750000', denom: 'uscrt' }],
+    gas: '750000'
+  } as any)
 
-  if (props.token.display_props.symbol === 'SEFI') {
-    fee = {
-      amount: [{ amount: '750000', denom: 'uscrt' }],
-      gas: '750000',
-    };
+  const activeProposals = user.numOfActiveProposals;
+  const rewardsContact = props.token.rewardsContract;
+  const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
+
+  const setGasFee = () => {
+
+    if (rewardsContact === newPoolContract && activeProposals > 0) {
+      let fee = {
+        amount: [{ amount: 750000 + (30000 * activeProposals), denom: 'uscrt' }],
+        gas: 750000 + (30000 * activeProposals),
+      };
+      setFee(fee);
+    }
+
   }
+
+  useEffect(() => {
+
+    setGasFee();
+
+  }, [activeProposals]);
 
   return (
     <Button

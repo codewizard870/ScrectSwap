@@ -1,5 +1,5 @@
 import { Redeem } from '../../../blockchain-bridge/scrt';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SigningCosmWasmClient } from 'secretjs';
 import cn from 'classnames';
 import * as styles from './styles.styl';
@@ -13,6 +13,7 @@ const ClaimButton = (props: {
   secretjs: AsyncSender;
   balance: string;
   unlockPopupText: string;
+  rewardsContract: string;
   contract: string;
   available: string;
   symbol: string;
@@ -22,7 +23,12 @@ const ClaimButton = (props: {
   
   const { user,theme } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
-  const displayAvailable = ()=>{
+  const [fee, setFee] = useState({
+    amount: [{ amount: '750000', denom: 'uscrt' }],
+    gas: '750000'
+  } as any)
+
+  const displayAvailable = () => {
     if (props.available === unlockToken) {
       return (<div className={`${styles.create_viewingkey} ${styles[theme.currentTheme]}`}>
         {
@@ -56,7 +62,29 @@ const ClaimButton = (props: {
       return <strong>{props?.available}</strong>
     }
   }
-  
+
+  const activeProposals = user.numOfActiveProposals;
+  const { rewardsContract } = props;
+  const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
+
+  const setGasFee = () => {
+
+    if (rewardsContract === newPoolContract && activeProposals > 0) {
+      let fee = {
+        amount: [{ amount: 750000 + (30000 * activeProposals), denom: 'uscrt' }],
+        gas: 750000 + (30000 * activeProposals),
+      };
+      setFee(fee);
+    }
+
+  }
+
+  useEffect(() => {
+
+    setGasFee();
+
+  }, [activeProposals]);
+
   return (
     <>
     <div 
@@ -75,6 +103,7 @@ const ClaimButton = (props: {
             secretjs: props.secretjs,
             address: props.contract,
             amount: '0',
+            fee,
           });
 
           props.notify('success', `Claimed ${props.available} ${props.rewardsToken}`);

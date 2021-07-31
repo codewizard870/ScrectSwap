@@ -74,6 +74,7 @@ export const DetailProposal = observer((props) => {
         positive: null,
     });
 
+    const userProfileURL = 'https://secretnodes.com/secret/chains/secret-2/accounts';
 
     const showHideAnswer = () => {
         if (hasVote === true) {
@@ -366,7 +367,13 @@ export const DetailProposal = observer((props) => {
                                 <div className="label"><p>Proposed by</p></div>
                                 <div className="user-info">
                                     <div className="title"><p>{proposal.author_alias}</p></div>
-                                    <div className="address"><p>{getAtuhorAddress()}</p></div>
+                                    <div className="address">
+                                        <a
+                                            href={`${userProfileURL}/${proposal.author_address}`} target="_blank"
+                                        >
+                                            {getAtuhorAddress()}
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             <div className="user-response">

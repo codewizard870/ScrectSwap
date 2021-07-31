@@ -21,6 +21,7 @@ import { storeTxResultLocally } from 'pages/Swap/utils';
 import { RewardData } from 'pages/SefiStaking';
 import { RewardsToken } from 'components/Earn/EarnRow';
 import axios from "axios";
+import moment from 'moment';
 
 
 export const rewardsDepositKey = key => `${key}RewardsDeposit`;
@@ -64,6 +65,7 @@ export class UserStoreEx extends StoreConstructor {
     valid: boolean,
     status: string,
   }>;
+  @observable public numOfActiveProposals: number;
 
 
   @observable public scrtRate = 0;
@@ -360,6 +362,7 @@ export class UserStoreEx extends StoreConstructor {
       await this.updateScrtBalance();
       await this.updateCSHBKBalance();
       await this.getProposals();
+      await this.getActiveProposals();
       this.isUnconnected = '';
     } catch (error) {
       this.isUnconnected = 'true';
@@ -781,6 +784,25 @@ export class UserStoreEx extends StoreConstructor {
     } catch (error) {
       console.log('Error Message:', error);
     }
+  }
+
+  @action public getActiveProposals = async () => {
+
+    try {
+
+      const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
+      const proposals = await response.data.result;
+
+      const activeProposals = proposals.filter(prop =>
+        moment.unix(prop.end_timestamp) > moment()
+      );
+
+      this.numOfActiveProposals = activeProposals.length;
+
+    } catch (error) {
+      console.error('Error Message:', error);
+    }
+
   }
 
   // Query Committe Finalize Vote

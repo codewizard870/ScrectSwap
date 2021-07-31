@@ -26,6 +26,7 @@ const ClaimBox = (props: {
         symbol={props.symbol}
         notify={props.notify}
         rewardsToken={props.rewardsToken}
+        rewardsContract={props.rewardsContract}
       />
     </div>
   );

@@ -203,7 +203,7 @@ export const Migration = observer(() => {
             <div className={`box ${theme.currentTheme}`}>
               <h2>Step 2</h2>
               <div className="data">
-                <p>Staked nn new pool: &nbsp;</p>
+                <p>Staked in new pool: &nbsp;</p>
                 <span> {loading ? <SpinnerDashes /> : `${newBalance} SEFI`}</span>
               </div>
               <h4>Earn rewards in new pools</h4>

@@ -220,7 +220,7 @@ export const Governance = observer(() => {
                   <p>Staking APY</p>
                 </div>
               </div>
-              <div className="stats-power">
+              <div className={votingPower && (votingPower?.includes(unlockToken) || !votingPower) ? 'stats-power' : 'stats-power-loaded'}>
                 <div>
                   {
                     votingPower ?
@@ -230,7 +230,8 @@ export const Governance = observer(() => {
                           <span className='pink'> SEFI </span>
                           <span>({totalVotingPower} %)</span>
                         </h1>
-                      : <SpinnerLineHor />
+                      :
+                      <SpinnerLineHor />
                   }
                 </div>
                 <div>

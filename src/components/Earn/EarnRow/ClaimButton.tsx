@@ -63,16 +63,16 @@ const ClaimButton = (props: {
     }
   }
 
-  const activeNumbers = user.numOfActiveProposals;
+  const activeProposals = user.numOfActiveProposals;
   const { rewardsContract } = props;
   const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
 
   const setGasFee = () => {
 
-    if (rewardsContract === newPoolContract && activeNumbers > 0) {
+    if (rewardsContract === newPoolContract && activeProposals > 0) {
       let fee = {
-        amount: [{ amount: '750000', denom: 'uscrt' }],
-        gas: 750000 + (30000 * activeNumbers),
+        amount: [{ amount: 750000 + (30000 * activeProposals), denom: 'uscrt' }],
+        gas: 750000 + (30000 * activeProposals),
       };
       setFee(fee);
     }
@@ -83,7 +83,7 @@ const ClaimButton = (props: {
 
     setGasFee();
 
-  }, [activeNumbers]);
+  }, [activeProposals]);
 
   return (
     <>

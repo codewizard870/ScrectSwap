@@ -796,10 +796,8 @@ export class UserStoreEx extends StoreConstructor {
       const activeProposals = proposals.filter(prop =>
         moment.unix(prop.end_timestamp) > moment()
       );
-      console.log(activeProposals);
 
       this.numOfActiveProposals = activeProposals.length;
-      console.log(activeProposals.length);
 
     } catch (error) {
       console.error('Error Message:', error);

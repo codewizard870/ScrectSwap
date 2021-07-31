@@ -20,16 +20,16 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
     gas: '750000'
   } as any)
 
-  const activeNumbers = user.numOfActiveProposals;
+  const activeProposals = user.numOfActiveProposals;
   const rewardsContact = props.token.rewardsContract;
   const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
 
   const setGasFee = () => {
 
-    if (rewardsContact === newPoolContract && activeNumbers > 0) {
+    if (rewardsContact === newPoolContract && activeProposals > 0) {
       let fee = {
-        amount: [{ amount: '750000', denom: 'uscrt' }],
-        gas: 750000 + (30000 * activeNumbers),
+        amount: [{ amount: 750000 + (30000 * activeProposals), denom: 'uscrt' }],
+        gas: 750000 + (30000 * activeProposals),
       };
       setFee(fee);
     }
@@ -40,7 +40,7 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
 
     setGasFee();
 
-  }, [activeNumbers]);
+  }, [activeProposals]);
 
   return (
     <Button

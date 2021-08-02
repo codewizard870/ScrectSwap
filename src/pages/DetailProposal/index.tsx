@@ -123,12 +123,14 @@ export const DetailProposal = observer((props) => {
                     sendVoteResults();
                     notify('success', 'Finalized Vote Sended', 10, '', true);
                     await sleep(3000);
+                    setHasVote(true);
                     setLoading(false);
                     setShowAllAnswers(true);
                     console.log('Post Sended');
                 } else {
                     notify('success', 'Finalized Vote Sended', 10, '', true);
                     await sleep(3000);
+                    setHasVote(true);
                     setLoading(false);
                     console.log('Vote Counted');
                 }
@@ -376,24 +378,26 @@ export const DetailProposal = observer((props) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="user-response">
-                                <div className="voting-power">
-                                    <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
-                                    {hasVote ?
-                                        <div className="label"><p>My Voting Power</p></div>
-                                        : null
-                                    }
-                                </div>
-                                <div className="vote-response">
 
-                                    <div>
-                                        <h3>{formatUserChoice()}</h3>
+                            <div className="user-response">
+                                {hasVote
+                                    ?
+                                    <div className="voting-power">
+                                        <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
+                                        <div className="label"><p>My Voting Power</p></div>
                                     </div>
-                                    {hasVote ?
+                                    :
+                                    null
+                                }
+                                {hasVote
+                                    ?
+                                    <div className="vote-response">
+                                        <div><h3>{formatUserChoice()}</h3></div>
                                         <div className="label"><p>My Vote</p></div>
-                                        : null
-                                    }
-                                </div>
+                                    </div>
+                                    :
+                                    null
+                                }
                             </div>
                             <VoteModal
                                 id={proposal.id}
@@ -445,31 +449,23 @@ export const DetailProposal = observer((props) => {
                                     <div className="closed-proposal">
                                         {tally?.negative ?
                                             <div className="voted">
-                                                <div>
-                                                    <h3> {negativeVotes}%</h3>
-                                                </div>
+                                                <div> <h3> {negativeVotes}%</h3></div>
                                                 <div className="label"><p>No</p></div>
                                             </div>
                                             :
                                             <div className="voted">
-                                                <div>
-                                                    <h3>0%</h3>
-                                                </div>
+                                                <div> <h3>0%</h3> </div>
                                                 <div className="label"><p>No</p></div>
                                             </div>
                                         }
                                         {tally?.positive ?
                                             <div className="result">
-                                                <div>
-                                                    <h3>{positiveVotes}%</h3>
-                                                </div>
+                                                <div> <h3>{positiveVotes}%</h3></div>
                                                 <div className="label"><p>Yes</p></div>
                                             </div>
                                             :
                                             <div className="result">
-                                                <div>
-                                                    <h3>0%</h3>
-                                                </div>
+                                                <div><h3>0%</h3></div>
                                                 <div className="label"><p>Yes</p></div>
                                             </div>
                                         }

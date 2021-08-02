@@ -70,8 +70,8 @@ export const DetailProposal = observer((props) => {
     });
 
     const [tally, setTally] = React.useState({
-        negative: null,
-        positive: null,
+        negative: 0,
+        positive: 0,
     });
 
     const userProfileURL = 'https://secretnodes.com/secret/chains/secret-2/accounts';
@@ -249,8 +249,13 @@ export const DetailProposal = observer((props) => {
     const belowQuorum = proposal.status === 'failed' && voteStatus.valid === false;
 
     const totalVote = tally.positive + tally.negative;
-    const positiveVotes = Math.round(((tally.positive * 100) / (totalVote)));
-    const negativeVotes = Math.round(((tally.negative * 100) / (totalVote)));
+    const positiveVotes = Math.round(((tally.positive / totalVote) * 100));
+    const negativeVotes = Math.round(((tally.negative / totalVote) * 100));
+
+    // console.log('Positive:', tally.positive);
+    // console.log('Negative:', tally.negative);
+
+    // console.log('Tally', tally)
 
     // console.log('Vote Status: ', voteStatus);
 

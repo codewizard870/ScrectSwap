@@ -6,6 +6,8 @@ import { Button, Message } from 'semantic-ui-react';
 import Theme from "themes";
 import './style.scss';
 import { useStores } from 'stores'
+import SpinnerLineHor from 'ui/Spinner/SpinnerLineHor';
+import LoaderCentered from '../../ui/Spinner/LoaderCentered';
 
 export const ProposalRow = (props: {
     theme: Theme,
@@ -26,8 +28,8 @@ export const ProposalRow = (props: {
     let { user } = useStores();
 
     const [tally, setTally] = React.useState({
-        negative: null,
-        positive: null,
+        negative: 0,
+        positive: 0,
     });
 
     const getTally = async () => {
@@ -43,12 +45,12 @@ export const ProposalRow = (props: {
         }
     }
 
-    const totalTally = parseFloat(tally.positive + tally.negative) / (Math.pow(10, 6));
-    const totalLocked = props.totalLocked;
-    const voted = Math.round(totalTally / totalLocked * 100);
+    const totalTally = tally.positive + tally.negative;
 
-    const positiveVotes = Math.round((((tally.positive / (Math.pow(10, 6))) * 100) / (totalTally)));
-    const negativeVotes = Math.round((((tally.negative / (Math.pow(10, 6))) * 100) / (totalTally)));
+    const voted = Math.round((totalTally / props.totalLocked) * 100);
+
+    const positiveVotes = Math.round((tally.positive / totalTally) * 100);
+    const negativeVotes = Math.round((tally.negative / totalTally) * 100);
 
     const result = props.status === 'passed' ? positiveVotes : negativeVotes;
 
@@ -90,29 +92,36 @@ export const ProposalRow = (props: {
                             <span>Voting End Time</span>
                         </div>
                         :
-                        <div className={belowQuorum ? 'vote-result-failed' : "vote-result"}>
+                        <div className='vote-results'>
                             {belowQuorum ?
                                 <div>
                                     <p>Below Quorum</p>
                                     <span>Voted</span>
                                 </div>
-                                : null
-                            }
-                            {
-                                isNaN(negativeVotes) ? null :
-                                    <div className="negative-results">
-                                        <p> {voted + '%'}</p>
+                                :
+                                <div className="vote-end">
+                                    <div className="voted">
+                                        <p>
+                                            {isNaN(negativeVotes) || !props.totalLocked
+                                                ? <LoaderCentered />
+                                                : voted + '%'
+                                            }
+                                        </p>
                                         <span>Voted</span>
                                     </div>
-                            }
-                            {
-                                isNaN(positiveVotes) ? null :
-                                    <div className="positive-results">
-                                        <p style={{ color: colorResult }}> {result + '%'}</p>
+
+                                    <div className="result">
+                                        <p style={{ color: colorResult }}>
+                                            {isNaN(result)
+                                                ? <LoaderCentered />
+                                                : result + '%'
+                                            }
+                                        </p>
                                         <span>
                                             {props.status === 'passed' ? 'Yes' : 'No'}
                                         </span>
                                     </div>
+                                </div>
                             }
                         </div>
                 }

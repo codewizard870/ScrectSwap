@@ -101,22 +101,24 @@ export const ProposalRow = (props: {
                                 :
                                 <div className="vote-end">
                                     <div className="voted">
-                                        <p>
-                                            {isNaN(negativeVotes) || !props.totalLocked
-                                                ? <LoaderCentered />
-                                                : voted + '%'
-                                            }
-                                        </p>
+                                        {isNaN(negativeVotes) || !props.totalLocked
+                                            ? <LoaderCentered />
+                                            :
+                                            <p>
+                                                {voted + '%'}
+                                            </p>
+                                        }
                                         <span>Voted</span>
                                     </div>
 
                                     <div className="result">
-                                        <p style={{ color: colorResult }}>
-                                            {isNaN(result)
-                                                ? <LoaderCentered />
-                                                : result + '%'
-                                            }
-                                        </p>
+                                        {isNaN(result)
+                                            ? <LoaderCentered />
+                                            :
+                                            <p style={{ color: colorResult }}>
+                                                {result + '%'}
+                                            </p>
+                                        }
                                         <span>
                                             {props.status === 'passed' ? 'Yes' : 'No'}
                                         </span>

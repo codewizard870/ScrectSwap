@@ -119,18 +119,16 @@ export const DetailProposal = observer((props) => {
                 notify('error', message, 10, result.txhash, true);
                 setLoading(false);
             } else {
-                if (proposal.reveal_com.number === 1) {
+                if (revealed.required === revealed.num_revealed + 1) {
                     sendVoteResults();
-                    notify('success', 'Finalized Vote Sended', 10, '', true);
+                    notify('success', 'Finalized Vote Sended Successfully', 10, '', true);
                     await sleep(3000);
-                    setHasVote(true);
                     setLoading(false);
                     setShowAllAnswers(true);
                     console.log('Post Sended');
                 } else {
-                    notify('success', 'Finalized Vote Sended', 10, '', true);
+                    notify('success', 'Finalized Vote Sended Successfully', 10, '', true);
                     await sleep(3000);
-                    setHasVote(true);
                     setLoading(false);
                     console.log('Vote Counted');
                 }
@@ -150,7 +148,7 @@ export const DetailProposal = observer((props) => {
             const res = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${contractAddress}`);
             console.log('Post Response Success: ', res);
         } catch (err) {
-            console.log('Post Response Error:', err);
+            console.error('Post Response Error:', err);
         }
     }
 

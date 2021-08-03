@@ -19,13 +19,14 @@ const WithdrawButton = ({ props, value, changeValue }) => {
   const activeProposals = user.numOfActiveProposals;
   const rewardsContact = props.token.rewardsContract;
   const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
+  const staticGasFee = 40000;
 
   const setGasFee = () => {
 
     if (rewardsContact === newPoolContract && activeProposals > 0) {
       let fee = {
-        amount: [{ amount: 750000 + (30000 * activeProposals), denom: 'uscrt' }],
-        gas: 750000 + (30000 * activeProposals),
+        amount: [{ amount: 750000 + (staticGasFee * activeProposals), denom: 'uscrt' }],
+        gas: 750000 + (staticGasFee * activeProposals),
       };
       setFee(fee);
     }

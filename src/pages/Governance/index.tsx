@@ -347,6 +347,7 @@ export const Governance = observer(() => {
                       finalized={p.finalized}
                       valid={p.valid}
                       currentStatus={p.currentStatus}
+                      votingPercentaje={p.voting_percentaje}
                       totalLocked={totalLocked}
                     />
                   )

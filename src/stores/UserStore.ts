@@ -777,6 +777,7 @@ export class UserStoreEx extends StoreConstructor {
           finalized: proposal.finalized,
           valid: proposal.valid,
           status: proposal.status.toLowerCase(),
+          voting_percentaje: proposal.voting_percentage
         }
       });
       return result;

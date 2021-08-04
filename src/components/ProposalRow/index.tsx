@@ -21,6 +21,7 @@ export const ProposalRow = (props: {
     valid: boolean,
     currentStatus: string,
     totalLocked: number
+    votingPercentaje?: number
 }) => {
 
     const [showResults, setShowResult] = React.useState(false);
@@ -105,7 +106,7 @@ export const ProposalRow = (props: {
                                             ? <LoaderCentered />
                                             :
                                             <p>
-                                                {voted + '%'}
+                                                {Math.round(props.votingPercentaje) + '%'}
                                             </p>
                                         }
                                         <span>Voted</span>

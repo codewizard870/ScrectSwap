@@ -184,6 +184,7 @@ export const DetailProposal = observer((props) => {
     }
 
     const getHasVote = async () => {
+        if (!contractAddress) return;
         try {
             const result = await user.hasVote(contractAddress);
             setHasVote(result);
@@ -193,6 +194,7 @@ export const DetailProposal = observer((props) => {
     }
 
     const getRevealed = async () => {
+        if (!contractAddress) return;
         try {
             const result = await user.revealed(contractAddress);
             setRevealed(result);
@@ -202,11 +204,12 @@ export const DetailProposal = observer((props) => {
     }
 
     const getTally = async () => {
+        if (!contractAddress) return;
         try {
             const result = await user.tally(contractAddress);
             setTally(result);
         } catch (err) {
-            console.log('Tally Error:', err.message);
+            console.error('Tally Error:', err.message);
         }
     }
 
@@ -232,6 +235,7 @@ export const DetailProposal = observer((props) => {
 
 
     const getVoteStatus = async () => {
+        if (!contractAddress) return;
         try {
             const result = await user.voteInfo(contractAddress);
             setVoteStatus(result);
@@ -247,8 +251,8 @@ export const DetailProposal = observer((props) => {
     const belowQuorum = proposal.status === 'failed' && voteStatus.valid === false;
 
     const totalVote = tally.positive + tally.negative;
-    const positiveVotes = Math.round(((tally.positive / totalVote) * 100));
-    const negativeVotes = Math.round(((tally.negative / totalVote) * 100));
+    const positiveVotes = Math.round(((tally.positive / totalVote) * 100)) || 0;
+    const negativeVotes = Math.round(((tally.negative / totalVote) * 100)) || 0;
 
     // console.log('Positive:', tally.positive);
     // console.log('Negative:', tally.negative);
@@ -395,7 +399,7 @@ export const DetailProposal = observer((props) => {
                                 {hasVote
                                     ?
                                     <div className="vote-response">
-                                        <div><h3>{formatUserChoice()}</h3></div>
+                                        <div><h3>{userResult.choice === 0 ? 'Yes' : 'No'}</h3></div>
                                         <div className="label"><p>My Vote</p></div>
                                     </div>
                                     :
@@ -422,7 +426,7 @@ export const DetailProposal = observer((props) => {
                         <div className="card card-results">
 
                             <h5 className="card-title">Results</h5>
-                            {proposal.status === 'failed' && voteStatus.valid === false ? <p>Votes Didn't Reach Quorum</p> : null}
+                            {belowQuorum ? <p>Votes Didn't Reach Quorum</p> : null}
                             {
                                 showAllAnswers === false
                                     ?
@@ -450,27 +454,20 @@ export const DetailProposal = observer((props) => {
                                     </>
                                     :
                                     <div className="closed-proposal">
-                                        {tally?.negative ?
-                                            <div className="voted">
-                                                <div> <h3> {negativeVotes}%</h3></div>
-                                                <div className="label"><p>No</p></div>
-                                            </div>
-                                            :
-                                            <div className="voted">
-                                                <div> <h3>0%</h3> </div>
-                                                <div className="label"><p>No</p></div>
-                                            </div>
-                                        }
-                                        {tally?.positive ?
-                                            <div className="result">
-                                                <div> <h3>{positiveVotes}%</h3></div>
-                                                <div className="label"><p>Yes</p></div>
-                                            </div>
-                                            :
-                                            <div className="result">
-                                                <div><h3>0%</h3></div>
-                                                <div className="label"><p>Yes</p></div>
-                                            </div>
+                                        {belowQuorum ? null :
+                                            <>
+                                                <div className="voted">
+                                                    <div> <h3> {negativeVotes}%</h3></div>
+                                                    <div><p>{numberFormatter(tally.negative, 2)} SEFI</p></div>
+                                                    <div className="label"><p>No</p></div>
+                                                </div>
+
+                                                <div className="result">
+                                                    <div><h3>{positiveVotes}%</h3></div>
+                                                    <div><p>{numberFormatter(tally.positive, 2)} SEFI</p></div>
+                                                    <div className="label"><p>Yes</p></div>
+                                                </div>
+                                            </>
                                         }
                                     </div>
                             }

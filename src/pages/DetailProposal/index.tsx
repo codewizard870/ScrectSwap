@@ -64,6 +64,9 @@ export const DetailProposal = observer((props) => {
         revelead: []
     });
 
+    // console.log(revealed);
+    // console.log(revealed.revelead.includes(user.address));
+
     const [voteStatus, setVoteStatus] = React.useState({
         finalized: null,
         valid: null
@@ -417,7 +420,7 @@ export const DetailProposal = observer((props) => {
                                         :
                                         <Button
                                             className='button-vote g-button'
-                                        >Vote
+                                        >{hasVote ? 'Change Vote' : 'Vote'}
                                         </Button>
                                 }
                             </VoteModal>
@@ -444,7 +447,8 @@ export const DetailProposal = observer((props) => {
                                                     loading={loading}
                                                     onClick={() => FinalizeVote()}
                                                     disabled={
-                                                        moment.unix(proposal.end_date) > moment()
+                                                        moment.unix(proposal.end_date) > moment() ||
+                                                        revealed.revelead.includes(user.address)
                                                     }
                                                     className='button-finalize-vote g-button'
                                                 >Finalize Vote

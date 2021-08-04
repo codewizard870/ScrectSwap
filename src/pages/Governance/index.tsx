@@ -45,7 +45,6 @@ export const Governance = observer(() => {
   const [amounts, setAmounts] = React.useState({} as any);
 
   const numberOfVotes = proposals.length;
-  // console.log(numberOfVotes);
 
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
@@ -177,8 +176,8 @@ export const Governance = observer(() => {
     (async (a) => {
       if (a) {
         await user.refreshTokenBalanceByAddress(a.lockedAssetAddress);
-        await user.refreshRewardsBalances('', a.rewardsContract);
-        setVotingPower(user.balanceRewards[rewardsDepositKey(a.rewardsContract)]); //SEFI Staking
+        await user.refreshRewardsBalances('', newRewardsContract);
+        setVotingPower(user.balanceRewards[rewardsDepositKey(newRewardsContract)]); //SEFI Staking
       }
 
     })(rewardToken);
@@ -190,8 +189,8 @@ export const Governance = observer(() => {
       const balance = await getBalance(newRewardsContract);
       const minimumStake = await user.getMinimumStake();
       setAmounts({
-        balance: parseInt(balance),
-        minimumStake: parseInt(minimumStake)
+        balance: parseInt(balance) / 1e6,
+        minimumStake: parseInt(minimumStake) / 1e6
       });
     })();
   }, [])
@@ -199,8 +198,7 @@ export const Governance = observer(() => {
   // console.log(filtered);
   // console.log(totalLocked);
   // console.log(rewardToken);
-
-  // console.log(totalLocked / (Math.pow(10, 6)))
+  // console.log(votingPower);
 
   return (
     <BaseContainer>

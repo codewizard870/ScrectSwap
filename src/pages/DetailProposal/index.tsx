@@ -3,8 +3,8 @@ import VoteModal from 'components/VoteModal'
 import moment from 'moment';
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
-import { useParams, useHistory } from 'react-router'
-import { Button, Message } from 'semantic-ui-react';
+import { useParams } from 'react-router'
+import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores'
 import { sleep } from 'utils';
 import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
@@ -14,8 +14,7 @@ import './style.scss';
 
 export const DetailProposal = observer((props) => {
 
-    const { theme, user, tokens } = useStores();
-    const history = useHistory();
+    const { theme, user } = useStores();
 
     const { id }: any = useParams();
 
@@ -63,9 +62,6 @@ export const DetailProposal = observer((props) => {
         required: 0,
         revelead: []
     });
-
-    // console.log(revealed);
-    // console.log(revealed.revelead.includes(user.address));
 
     const [voteStatus, setVoteStatus] = React.useState({
         finalized: null,
@@ -143,10 +139,6 @@ export const DetailProposal = observer((props) => {
         }
     }
 
-    // console.log('Reveal Requeried', revealed.required);
-    // console.log('Total Revealears', proposal.reveal_com.revealers.length);
-    // console.log('Validate', proposal.reveal_com.revealers.length >= revealed.required);
-
     const sendVoteResults = async () => {
         try {
             const res = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${contractAddress}`);
@@ -174,8 +166,6 @@ export const DetailProposal = observer((props) => {
         const result = await user.rollingHash(contractAddress);
         setRollingHash(result);
     }
-
-
 
     const getUserVote = async () => {
         if (!contractAddress) return;
@@ -256,21 +246,6 @@ export const DetailProposal = observer((props) => {
     const positiveVotes = Math.round(((tally.positive / totalVote) * 100)) || 0;
     const negativeVotes = Math.round(((tally.negative / totalVote) * 100)) || 0;
 
-    // console.log('Positive:', tally.positive);
-    // console.log('Negative:', tally.negative);
-
-    // console.log('Tally', tally)
-
-    // console.log('Vote Status: ', voteStatus);
-
-    // console.log(user.address);
-    // console.log(proposal.reveal_com.revealers.includes(user.address));
-
-    // console.log(validateRevealer());
-
-    // console.log(proposals);
-    // console.log(proposal);
-
     useEffect(() => {
         (async () => {
             const result = await user.getProposals();
@@ -302,36 +277,14 @@ export const DetailProposal = observer((props) => {
         showHideAnswer();
     }, [hasVote]);
 
-    // console.log(userResult);
-
     //QUERIES
     // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address))
-
-    // All Vote Info: 
-    // console.log('Vote Info:', user.voteInfo(proposal?.address));
-    // Normal Vote
-    // console.log('Has Vote:', user.hasVote(proposal?.address));
-    // console.log('Choices:', user.getChoices(proposal?.address));
-    // console.log('Number Of Voters:', user.getNumberOfVoters(proposal?.address));
-    // console.log('Revealed:', user.revealed(proposal?.address));
-    // console.log('Rollling Hash:', user.getRollingHash(proposal?.address));
-    // console.log('Vote:', user.userVote(proposal?.address));
-
-
-    // Tally: After Vote Finalized
-    // console.log('Tally:', user.tally(proposal?.address));
-    // console.log('vote', userResult)
-
-    // console.log(showAnswer)
-    // console.log(tally);
 
     function formatUserChoice() {
         const { choice } = userResult;
         if (choice == null) return (<>---</>);
         return choice == 0 ? 'Yes' : 'No';
     }
-
-    console.log(userResult);
 
     return (
         <ProposalLayout>

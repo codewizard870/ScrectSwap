@@ -128,6 +128,7 @@ export const DetailProposal = observer((props) => {
                     await sleep(3000);
                     setLoading(false);
                     setShowAllAnswers(true);
+                    await getTally();
                     console.log('Post Sended');
                 } else {
                     notify('success', 'Finalized Vote Sended Successfully', 10, '', true);
@@ -174,11 +175,14 @@ export const DetailProposal = observer((props) => {
         setRollingHash(result);
     }
 
+
+
     const getUserVote = async () => {
         if (!contractAddress) return;
         try {
             const result = await user.userVote(contractAddress);
             if (result) {
+                console.log(result);
                 setUserResult(result);
             }
         } catch (err) {
@@ -299,6 +303,8 @@ export const DetailProposal = observer((props) => {
         showHideAnswer();
     }, [hasVote]);
 
+    // console.log(userResult);
+
     //QUERIES
     // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address))
 
@@ -386,30 +392,37 @@ export const DetailProposal = observer((props) => {
                             </div>
 
                             <div className="user-response">
-                                {hasVote
-                                    ?
-                                    <div className="voting-power">
-                                        <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
-                                        <div className="label"><p>My Voting Power</p></div>
+
+
+                                <div className="voting-power">
+                                    <div>
+                                        {hasVote ?
+                                            <h3>{numberFormatter(userResult.voting_power, 2)}</h3>
+                                            :
+                                            <h3>--</h3>
+                                        }
                                     </div>
-                                    :
-                                    null
-                                }
-                                {hasVote
-                                    ?
-                                    <div className="vote-response">
-                                        <div><h3>{userResult.choice === 0 ? 'Yes' : 'No'}</h3></div>
-                                        <div className="label"><p>My Vote</p></div>
+                                    <div className="label"><p>My Voting Power</p></div>
+                                </div>
+
+                                <div className="vote-response">
+                                    <div>
+                                        {hasVote ?
+                                            <h3>{userResult.choice === 0 ? 'Yes' : 'No'}</h3>
+                                            :
+                                            <h3>--</h3>
+                                        }
                                     </div>
-                                    :
-                                    null
-                                }
+                                    <div className="label"><p>My Vote</p></div>
+                                </div>
+
                             </div>
                             <VoteModal
                                 id={proposal.id}
                                 title={proposal.title}
                                 address={proposal.address}
                                 onVoteEmmited={getUserVote}
+                                getHasVote={getHasVote}
                             >
                                 {
                                     moment.unix(proposal.end_date) < moment() ? null

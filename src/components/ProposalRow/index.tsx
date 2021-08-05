@@ -50,8 +50,8 @@ export const ProposalRow = (props: {
 
     const voted = Math.round((totalTally / props.totalLocked) * 100);
 
-    const positiveVotes = Math.round((tally.positive / totalTally) * 100);
-    const negativeVotes = Math.round((tally.negative / totalTally) * 100);
+    const positiveVotes = Math.round((tally.positive / totalTally) * 100) || 0;
+    const negativeVotes = Math.round((tally.negative / totalTally) * 100) || 0;
 
     const result = props.status === 'passed' ? positiveVotes : negativeVotes;
 
@@ -102,7 +102,7 @@ export const ProposalRow = (props: {
                                 :
                                 <div className="vote-end">
                                     <div className="voted">
-                                        {isNaN(negativeVotes) || !props.totalLocked
+                                        {!negativeVotes
                                             ? <LoaderCentered />
                                             :
                                             <p>
@@ -113,7 +113,7 @@ export const ProposalRow = (props: {
                                     </div>
 
                                     <div className="result">
-                                        {isNaN(result)
+                                        {!result
                                             ? <LoaderCentered />
                                             :
                                             <p style={{ color: colorResult }}>

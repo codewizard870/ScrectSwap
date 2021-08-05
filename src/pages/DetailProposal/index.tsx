@@ -131,14 +131,14 @@ export const DetailProposal = observer((props) => {
                     await getTally();
                     console.log('Post Sended');
                 } else {
-                    notify('success', 'Finalized Vote Sended Successfully', 10, '', true);
+                    notify('success', 'Finalize Vote Counted Successfully', 10, '', true);
                     await sleep(3000);
                     setLoading(false);
                     console.log('Vote Counted');
                 }
             }
         } catch (error) {
-            console.error(error.message);
+            notify('error', error.toString(), 10, '', true);
             setLoading(false);
         }
     }
@@ -330,6 +330,8 @@ export const DetailProposal = observer((props) => {
         if (choice == null) return (<>---</>);
         return choice == 0 ? 'Yes' : 'No';
     }
+
+    console.log(userResult);
 
     return (
         <ProposalLayout>

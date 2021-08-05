@@ -735,24 +735,20 @@ export class UserStoreEx extends StoreConstructor {
 
   public async sendFinalizeVote(contractAddress: string, rollingHash: string): Promise<any> {
 
-    try {
-      const result = await this.secretjsSend.asyncExecute(contractAddress,
-        {
-          finalize: {
-            rolling_hash: rollingHash,
-          }
-        },
-        '',
-        [],
-        getFeeForExecute(550_000))
-      console.log(result);
-      const decoder = new TextDecoder();
-      console.log(decoder.decode(result.data));
-      return result;
-    }
-    catch (err) {
-      console.log('Error:', err)
-    }
+    const result = await this.secretjsSend.asyncExecute(contractAddress,
+      {
+        finalize: {
+          rolling_hash: rollingHash,
+        }
+      },
+      '',
+      [],
+      getFeeForExecute(550_000))
+    // console.log(result);
+    // const decoder = new TextDecoder();
+    // console.log(decoder.decode(result.data));
+    return result;
+
   }
 
   public getProposals = async () => {

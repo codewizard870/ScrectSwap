@@ -55,7 +55,7 @@ export const Governance = observer(() => {
       // console.log('all');
     } else {
       const filter = proposals.filter((proposal => proposal.currentStatus.includes(status)));
-      const sortAllDataNewewstToOldest = filter.sort((a, b) => b.end_date - a.end_date)
+      const sortAllDataNewewstToOldest = filter.sort((a, b) => b.end_date - a.end_date);
       setFiltered(sortAllDataNewewstToOldest);
       // console.log('filtered');
     }

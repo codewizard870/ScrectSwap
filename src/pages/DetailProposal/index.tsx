@@ -187,7 +187,6 @@ export const DetailProposal = observer((props) => {
     }
 
     const getHasVote = async () => {
-        if (!contractAddress) return;
         try {
             const result = await user.hasVote(contractAddress);
             setHasVote(result);
@@ -197,7 +196,6 @@ export const DetailProposal = observer((props) => {
     }
 
     const getRevealed = async () => {
-        if (!contractAddress) return;
         try {
             const result = await user.revealed(contractAddress);
             setRevealed(result);
@@ -207,7 +205,6 @@ export const DetailProposal = observer((props) => {
     }
 
     const getTally = async () => {
-        if (!contractAddress) return;
         try {
             const result = await user.tally(contractAddress);
             setTally(result);
@@ -238,7 +235,6 @@ export const DetailProposal = observer((props) => {
 
 
     const getVoteStatus = async () => {
-        if (!contractAddress) return;
         try {
             const result = await user.voteInfo(contractAddress);
             setVoteStatus(result);

@@ -141,7 +141,7 @@ export const Governance = observer(() => {
     return result;
   }
 
-  const theMinimum = amounts.minimumStake / 1e6;
+  const theMinimum = amounts.minimumStake;
 
   useEffect(() => {
     (async () => {
@@ -249,14 +249,15 @@ export const Governance = observer(() => {
             <div className='buttons'>
               <div className='buttons-container'>
                 {
-                  votingPower === undefined || votingPower === 0 ?
+                  votingPower === undefined || votingPower === '0' ?
                     <>
                       <Popup
                         // className="icon-info__popup"
                         content='You need SEFI to participate in SecretSwap governance'
                         trigger={<a>
                           <Button
-                            disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
+                            disabled
+                            className='g-button'
                           >
                             Participate in Governance
                           </Button>
@@ -266,7 +267,7 @@ export const Governance = observer(() => {
                     :
                     (<Link to='/sefistaking'>
                       <Button
-                        disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
+                        className='g-button'
                       >
                         Participate in Governance
                       </Button>
@@ -274,15 +275,20 @@ export const Governance = observer(() => {
                     )
                 }
                 {
-                  amounts.minimumStake > amounts.balance
+                  amounts.minimumStake > amounts.balance || votingPower === undefined
                     ?
                     <Popup
                       style={{ color: 'red' }}
-                      content={`You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`}
+                      content={
+                        votingPower === undefined ?
+                          `You need staked SEFI to create a proposal.`
+                          :
+                          `You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`
+                      }
 
                       trigger={<a>
                         <Button
-                          disabled={true}
+                          disabled
                           className='g-button--outline'
                         >
                           Create Proposal

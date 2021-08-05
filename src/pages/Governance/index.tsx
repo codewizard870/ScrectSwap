@@ -44,20 +44,17 @@ export const Governance = observer(() => {
 
   const [amounts, setAmounts] = React.useState({} as any);
 
-  const numberOfVotes = proposals.length;
+  
 
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
   const getProporsalsByStatus = (proposals: Array<any>, status: string) => {
     if (selectedFilter === 'all') {
-      const sortAllDataNewewstToOldest = proposals.sort((a, b) => b.end_date - a.end_date)
-      setFiltered(sortAllDataNewewstToOldest);
-      // console.log('all');
+      setFiltered(proposals);
     } else {
       const filter = proposals.filter((proposal => proposal.currentStatus.includes(status)));
-      const sortAllDataNewewstToOldest = filter.sort((a, b) => b.end_date - a.end_date);
-      setFiltered(sortAllDataNewewstToOldest);
-      // console.log('filtered');
+      const sortedData = filter.sort((a, b) => b.end_date - a.end_date);
+      setFiltered(sortedData);
     }
   }
 
@@ -146,9 +143,15 @@ export const Governance = observer(() => {
   useEffect(() => {
     (async () => {
       const proposals = await user.getProposals();
-      proposals.forEach(prop => prop.currentStatus = calculateState(prop));
-      setProposals(proposals);
-      getProporsalsByStatus(proposals, selectedFilter);
+      const orderProposal = proposals.sort((a, b) => b.end_date - a.end_date).map((proposal,i)=>{
+        return {
+          ...proposal,
+          index:proposals.length-i,
+          currentStatus:calculateState(proposal)
+        }
+      })
+      setProposals(orderProposal);
+      getProporsalsByStatus(orderProposal, selectedFilter);
     })();
   }, [])
 
@@ -337,11 +340,11 @@ export const Governance = observer(() => {
             <div className='list-proposal'>
               {
 
-                filtered.map((p, index) => {
+                filtered.map((p) => {
                   return (
                     <ProposalRow
                       key={p.id}
-                      index={numberOfVotes - index}
+                      index={p.index}
                       address={p.address}
                       theme={theme}
                       title={p.title}

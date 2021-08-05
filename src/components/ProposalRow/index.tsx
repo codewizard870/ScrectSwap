@@ -76,6 +76,8 @@ export const ProposalRow = (props: {
         colorResult = 'green';
     }
 
+    // console.log(props.votingPercentaje);
+
     useEffect(() => {
         showProposalResult();
         getTally();
@@ -102,7 +104,7 @@ export const ProposalRow = (props: {
                                 :
                                 <div className="vote-end">
                                     <div className="voted">
-                                        {!negativeVotes
+                                        {!props.votingPercentaje
                                             ? <LoaderCentered />
                                             :
                                             <p>

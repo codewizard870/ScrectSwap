@@ -182,7 +182,6 @@ export const DetailProposal = observer((props) => {
         try {
             const result = await user.userVote(contractAddress);
             if (result) {
-                console.log(result);
                 setUserResult(result);
             }
         } catch (err) {

@@ -9,16 +9,12 @@ import { observer } from 'mobx-react';
 import { Button, Popup } from 'semantic-ui-react';
 import { ProposalRow } from 'components/ProposalRow';
 import SpinnerLineHor from '../../ui/Spinner/SpinnerLineHor';
-import numeral from 'numeral';
 import './style.scss';
 import { calculateAPY, RewardsToken } from 'components/Earn/EarnRow';
 import { unlockJsx } from 'pages/Swap/utils';
 import { unlockToken, zeroDecimalsFormatter } from 'utils';
 import { rewardsDepositKey } from 'stores/UserStore';
-import axios from "axios";
 import { numberFormatter } from '../../utils/formatNumber'
-import { validate } from 'webpack';
-import { STATUS } from '../../stores/interfaces';
 import { HowItWorksModal } from './HowItWorksModal';
 
 
@@ -65,8 +61,6 @@ export const Governance = observer(() => {
       return proposals.filter(e => e.currentStatus === status.trim()).length;
     }
   }
-  // console.log(filtered);
-  // console.log(getProporsalsByStatus('passed'));
 
   const apyString = (token: RewardsToken) => {
     const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
@@ -99,11 +93,6 @@ export const Governance = observer(() => {
       console.error("Error at creating new viewing key ", e)
     }
   }
-  // console.log('Voting Power:', votingPower);
-  // console.log('Total Voting Power: ', totalLocked);
-  // console.log('Reward Token:', rewardToken);
-
-  // console.log(typeof totalLocked);
 
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -197,11 +186,6 @@ export const Governance = observer(() => {
       });
     })();
   }, [])
-
-  // console.log(filtered);
-  // console.log(totalLocked);
-  // console.log(rewardToken);
-  // console.log(votingPower);
 
   return (
     <BaseContainer>

@@ -125,12 +125,10 @@ export const DetailProposal = observer((props) => {
                     setLoading(false);
                     setShowAllAnswers(true);
                     await getTally();
-                    console.log('Post Sended');
                 } else {
                     notify('success', 'Finalize Vote Counted Successfully', 10, '', true);
                     await sleep(3000);
                     setLoading(false);
-                    console.log('Vote Counted');
                 }
             }
         } catch (error) {

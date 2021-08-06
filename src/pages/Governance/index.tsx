@@ -9,16 +9,12 @@ import { observer } from 'mobx-react';
 import { Button, Popup } from 'semantic-ui-react';
 import { ProposalRow } from 'components/ProposalRow';
 import SpinnerLineHor from '../../ui/Spinner/SpinnerLineHor';
-import numeral from 'numeral';
 import './style.scss';
 import { calculateAPY, RewardsToken } from 'components/Earn/EarnRow';
 import { unlockJsx } from 'pages/Swap/utils';
 import { unlockToken, zeroDecimalsFormatter } from 'utils';
 import { rewardsDepositKey } from 'stores/UserStore';
-import axios from "axios";
 import { numberFormatter } from '../../utils/formatNumber'
-import { validate } from 'webpack';
-import { STATUS } from '../../stores/interfaces';
 import { HowItWorksModal } from './HowItWorksModal';
 
 
@@ -44,21 +40,17 @@ export const Governance = observer(() => {
 
   const [amounts, setAmounts] = React.useState({} as any);
 
-  const numberOfVotes = proposals.length;
-  // console.log(numberOfVotes);
+  
 
   function setFilter(filter: string): void { setSelectedFilter(filter) }
 
   const getProporsalsByStatus = (proposals: Array<any>, status: string) => {
     if (selectedFilter === 'all') {
-      const sortAllDataNewewstToOldest = proposals.sort((a, b) => b.end_date - a.end_date)
-      setFiltered(sortAllDataNewewstToOldest);
-      // console.log('all');
+      setFiltered(proposals);
     } else {
       const filter = proposals.filter((proposal => proposal.currentStatus.includes(status)));
-      const sortAllDataNewewstToOldest = filter.sort((a, b) => b.end_date - a.end_date)
-      setFiltered(sortAllDataNewewstToOldest);
-      // console.log('filtered');
+      const sortedData = filter.sort((a, b) => b.end_date - a.end_date);
+      setFiltered(sortedData);
     }
   }
 
@@ -69,8 +61,6 @@ export const Governance = observer(() => {
       return proposals.filter(e => e.currentStatus === status.trim()).length;
     }
   }
-  // console.log(filtered);
-  // console.log(getProporsalsByStatus('passed'));
 
   const apyString = (token: RewardsToken) => {
     const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
@@ -103,11 +93,6 @@ export const Governance = observer(() => {
       console.error("Error at creating new viewing key ", e)
     }
   }
-  // console.log('Voting Power:', votingPower);
-  // console.log('Total Voting Power: ', totalLocked);
-  // console.log('Reward Token:', rewardToken);
-
-  // console.log(typeof totalLocked);
 
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -142,14 +127,20 @@ export const Governance = observer(() => {
     return result;
   }
 
-  const theMinimum = amounts.minimumStake / 1e6;
+  const theMinimum = amounts.minimumStake;
 
   useEffect(() => {
     (async () => {
       const proposals = await user.getProposals();
-      proposals.forEach(prop => prop.currentStatus = calculateState(prop));
-      setProposals(proposals);
-      getProporsalsByStatus(proposals, selectedFilter);
+      const orderProposal = proposals.sort((a, b) => b.end_date - a.end_date).map((proposal,i)=>{
+        return {
+          ...proposal,
+          index:proposals.length-i,
+          currentStatus:calculateState(proposal)
+        }
+      })
+      setProposals(orderProposal);
+      getProporsalsByStatus(orderProposal, selectedFilter);
     })();
   }, [])
 
@@ -177,8 +168,8 @@ export const Governance = observer(() => {
     (async (a) => {
       if (a) {
         await user.refreshTokenBalanceByAddress(a.lockedAssetAddress);
-        await user.refreshRewardsBalances('', a.rewardsContract);
-        setVotingPower(user.balanceRewards[rewardsDepositKey(a.rewardsContract)]); //SEFI Staking
+        await user.refreshRewardsBalances('', newRewardsContract);
+        setVotingPower(user.balanceRewards[rewardsDepositKey(newRewardsContract)]); //SEFI Staking
       }
 
     })(rewardToken);
@@ -190,17 +181,11 @@ export const Governance = observer(() => {
       const balance = await getBalance(newRewardsContract);
       const minimumStake = await user.getMinimumStake();
       setAmounts({
-        balance: parseInt(balance),
-        minimumStake: parseInt(minimumStake)
+        balance: parseInt(balance) / 1e6,
+        minimumStake: parseInt(minimumStake) / 1e6
       });
     })();
   }, [])
-
-  // console.log(filtered);
-  // console.log(totalLocked);
-  // console.log(rewardToken);
-
-  // console.log(totalLocked / (Math.pow(10, 6)))
 
   return (
     <BaseContainer>
@@ -251,14 +236,15 @@ export const Governance = observer(() => {
             <div className='buttons'>
               <div className='buttons-container'>
                 {
-                  votingPower === undefined || votingPower === 0 ?
+                  votingPower === undefined || votingPower === '0' ?
                     <>
                       <Popup
                         // className="icon-info__popup"
                         content='You need SEFI to participate in SecretSwap governance'
                         trigger={<a>
                           <Button
-                            disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
+                            disabled
+                            className='g-button'
                           >
                             Participate in Governance
                           </Button>
@@ -268,7 +254,7 @@ export const Governance = observer(() => {
                     :
                     (<Link to='/sefistaking'>
                       <Button
-                        disabled={votingPower === 0 || isNaN(parseFloat(votingPower))} className='g-button'
+                        className='g-button'
                       >
                         Participate in Governance
                       </Button>
@@ -276,15 +262,20 @@ export const Governance = observer(() => {
                     )
                 }
                 {
-                  amounts.minimumStake > amounts.balance
+                  amounts.minimumStake > amounts.balance || votingPower === undefined
                     ?
                     <Popup
                       style={{ color: 'red' }}
-                      content={`You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`}
+                      content={
+                        votingPower === undefined ?
+                          `You need staked SEFI to create a proposal.`
+                          :
+                          `You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`
+                      }
 
                       trigger={<a>
                         <Button
-                          disabled={true}
+                          disabled
                           className='g-button--outline'
                         >
                           Create Proposal
@@ -333,11 +324,11 @@ export const Governance = observer(() => {
             <div className='list-proposal'>
               {
 
-                filtered.map((p, index) => {
+                filtered.map((p) => {
                   return (
                     <ProposalRow
                       key={p.id}
-                      index={numberOfVotes - index}
+                      index={p.index}
                       address={p.address}
                       theme={theme}
                       title={p.title}
@@ -347,6 +338,7 @@ export const Governance = observer(() => {
                       finalized={p.finalized}
                       valid={p.valid}
                       currentStatus={p.currentStatus}
+                      votingPercentaje={p.voting_percentaje}
                       totalLocked={totalLocked}
                     />
                   )

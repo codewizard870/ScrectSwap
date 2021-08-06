@@ -3,8 +3,8 @@ import VoteModal from 'components/VoteModal'
 import moment from 'moment';
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
-import { useParams, useHistory } from 'react-router'
-import { Button, Message } from 'semantic-ui-react';
+import { useParams } from 'react-router'
+import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores'
 import { sleep } from 'utils';
 import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
@@ -14,8 +14,7 @@ import './style.scss';
 
 export const DetailProposal = observer((props) => {
 
-    const { theme, user, tokens } = useStores();
-    const history = useHistory();
+    const { theme, user } = useStores();
 
     const { id }: any = useParams();
 
@@ -70,8 +69,8 @@ export const DetailProposal = observer((props) => {
     });
 
     const [tally, setTally] = React.useState({
-        negative: null,
-        positive: null,
+        negative: 0,
+        positive: 0,
     });
 
     const userProfileURL = 'https://secretnodes.com/secret/chains/secret-2/accounts';
@@ -119,36 +118,31 @@ export const DetailProposal = observer((props) => {
                 notify('error', message, 10, result.txhash, true);
                 setLoading(false);
             } else {
-                if (proposal.reveal_com.number === 1) {
+                if (revealed.required === revealed.num_revealed + 1) {
                     sendVoteResults();
-                    notify('success', 'Finalized Vote Sended', 10, '', true);
+                    notify('success', 'Finalized Vote Sended Successfully', 10, '', true);
                     await sleep(3000);
                     setLoading(false);
                     setShowAllAnswers(true);
-                    console.log('Post Sended');
+                    await getTally();
                 } else {
-                    notify('success', 'Finalized Vote Sended', 10, '', true);
+                    notify('success', 'Finalize Vote Counted Successfully', 10, '', true);
                     await sleep(3000);
                     setLoading(false);
-                    console.log('Vote Counted');
                 }
             }
         } catch (error) {
-            console.error(error.message);
+            notify('error', error.toString(), 10, '', true);
             setLoading(false);
         }
     }
-
-    // console.log('Reveal Requeried', revealed.required);
-    // console.log('Total Revealears', proposal.reveal_com.revealers.length);
-    // console.log('Validate', proposal.reveal_com.revealers.length >= revealed.required);
 
     const sendVoteResults = async () => {
         try {
             const res = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${contractAddress}`);
             console.log('Post Response Success: ', res);
         } catch (err) {
-            console.log('Post Response Error:', err);
+            console.error('Post Response Error:', err);
         }
     }
 
@@ -206,7 +200,7 @@ export const DetailProposal = observer((props) => {
             const result = await user.tally(contractAddress);
             setTally(result);
         } catch (err) {
-            console.log('Tally Error:', err.message);
+            console.error('Tally Error:', err.message);
         }
     }
 
@@ -247,18 +241,8 @@ export const DetailProposal = observer((props) => {
     const belowQuorum = proposal.status === 'failed' && voteStatus.valid === false;
 
     const totalVote = tally.positive + tally.negative;
-    const positiveVotes = Math.round(((tally.positive * 100) / (totalVote)));
-    const negativeVotes = Math.round(((tally.negative * 100) / (totalVote)));
-
-    // console.log('Vote Status: ', voteStatus);
-
-    // console.log(user.address);
-    // console.log(proposal.reveal_com.revealers.includes(user.address));
-
-    // console.log(validateRevealer());
-
-    // console.log(proposals);
-    // console.log(proposal);
+    const positiveVotes = Math.round(((tally.positive / totalVote) * 100)) || 0;
+    const negativeVotes = Math.round(((tally.negative / totalVote) * 100)) || 0;
 
     useEffect(() => {
         (async () => {
@@ -293,24 +277,6 @@ export const DetailProposal = observer((props) => {
 
     //QUERIES
     // console.log('Reveal Commite:', user.getRevealCommitte(proposal?.address))
-
-    // All Vote Info: 
-    // console.log('Vote Info:', user.voteInfo(proposal?.address));
-    // Normal Vote
-    // console.log('Has Vote:', user.hasVote(proposal?.address));
-    // console.log('Choices:', user.getChoices(proposal?.address));
-    // console.log('Number Of Voters:', user.getNumberOfVoters(proposal?.address));
-    // console.log('Revealed:', user.revealed(proposal?.address));
-    // console.log('Rollling Hash:', user.getRollingHash(proposal?.address));
-    // console.log('Vote:', user.userVote(proposal?.address));
-
-
-    // Tally: After Vote Finalized
-    // console.log('Tally:', user.tally(proposal?.address));
-    // console.log('vote', userResult)
-
-    // console.log(showAnswer)
-    // console.log(tally);
 
     function formatUserChoice() {
         const { choice } = userResult;
@@ -376,37 +342,46 @@ export const DetailProposal = observer((props) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="user-response">
-                                <div className="voting-power">
-                                    <div><h3>{numberFormatter(userResult.voting_power, 2)}</h3></div>
-                                    {hasVote ?
-                                        <div className="label"><p>My Voting Power</p></div>
-                                        : null
-                                    }
-                                </div>
-                                <div className="vote-response">
 
+                            <div className="user-response">
+
+
+                                <div className="voting-power">
                                     <div>
-                                        <h3>{formatUserChoice()}</h3>
+                                        {hasVote ?
+                                            <h3>{numberFormatter(userResult.voting_power, 2)}</h3>
+                                            :
+                                            <h3>--</h3>
+                                        }
                                     </div>
-                                    {hasVote ?
-                                        <div className="label"><p>My Vote</p></div>
-                                        : null
-                                    }
+                                    <div className="label"><p>My Voting Power</p></div>
                                 </div>
+
+                                <div className="vote-response">
+                                    <div>
+                                        {hasVote ?
+                                            <h3>{userResult.choice === 0 ? 'Yes' : 'No'}</h3>
+                                            :
+                                            <h3>--</h3>
+                                        }
+                                    </div>
+                                    <div className="label"><p>My Vote</p></div>
+                                </div>
+
                             </div>
                             <VoteModal
                                 id={proposal.id}
                                 title={proposal.title}
                                 address={proposal.address}
                                 onVoteEmmited={getUserVote}
+                                getHasVote={getHasVote}
                             >
                                 {
                                     moment.unix(proposal.end_date) < moment() ? null
                                         :
                                         <Button
                                             className='button-vote g-button'
-                                        >Vote
+                                        >{hasVote ? 'Change Vote' : 'Vote'}
                                         </Button>
                                 }
                             </VoteModal>
@@ -415,7 +390,7 @@ export const DetailProposal = observer((props) => {
                         <div className="card card-results">
 
                             <h5 className="card-title">Results</h5>
-                            {proposal.status === 'failed' && voteStatus.valid === false ? <p>Votes Didn't Reach Quorum</p> : null}
+                            {belowQuorum ? <p>Votes Didn't Reach Quorum</p> : null}
                             {
                                 showAllAnswers === false
                                     ?
@@ -433,7 +408,8 @@ export const DetailProposal = observer((props) => {
                                                     loading={loading}
                                                     onClick={() => FinalizeVote()}
                                                     disabled={
-                                                        moment.unix(proposal.end_date) > moment()
+                                                        moment.unix(proposal.end_date) > moment() ||
+                                                        revealed.revelead.includes(user.address)
                                                     }
                                                     className='button-finalize-vote g-button'
                                                 >Finalize Vote
@@ -443,35 +419,20 @@ export const DetailProposal = observer((props) => {
                                     </>
                                     :
                                     <div className="closed-proposal">
-                                        {tally?.negative ?
-                                            <div className="voted">
-                                                <div>
-                                                    <h3> {negativeVotes}%</h3>
+                                        {belowQuorum ? null :
+                                            <>
+                                                <div className="voted">
+                                                    <div> <h3> {negativeVotes}%</h3></div>
+                                                    <div><p>{numberFormatter(tally.negative, 2)} SEFI</p></div>
+                                                    <div className="label"><p>No</p></div>
                                                 </div>
-                                                <div className="label"><p>No</p></div>
-                                            </div>
-                                            :
-                                            <div className="voted">
-                                                <div>
-                                                    <h3>0%</h3>
+
+                                                <div className="result">
+                                                    <div><h3>{positiveVotes}%</h3></div>
+                                                    <div><p>{numberFormatter(tally.positive, 2)} SEFI</p></div>
+                                                    <div className="label"><p>Yes</p></div>
                                                 </div>
-                                                <div className="label"><p>No</p></div>
-                                            </div>
-                                        }
-                                        {tally?.positive ?
-                                            <div className="result">
-                                                <div>
-                                                    <h3>{positiveVotes}%</h3>
-                                                </div>
-                                                <div className="label"><p>Yes</p></div>
-                                            </div>
-                                            :
-                                            <div className="result">
-                                                <div>
-                                                    <h3>0%</h3>
-                                                </div>
-                                                <div className="label"><p>Yes</p></div>
-                                            </div>
+                                            </>
                                         }
                                     </div>
                             }

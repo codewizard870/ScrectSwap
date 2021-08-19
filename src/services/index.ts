@@ -72,7 +72,8 @@ const tokenImages = {
   'XVS': '/static/token-images/xvs_binance.svg',
   'LINA': '/static/token-images/lina_binance.svg',
   'FINE': '/static/token-images/fine_binance.svg',
-  'BUNNY': '/static/token-images/bunny_binance.svg'
+  'BUNNY': '/static/token-images/bunny_binance.svg',
+  'XMR': '/static/sXMR.png'
 }
 
 //

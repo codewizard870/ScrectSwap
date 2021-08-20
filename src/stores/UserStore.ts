@@ -735,24 +735,20 @@ export class UserStoreEx extends StoreConstructor {
 
   public async sendFinalizeVote(contractAddress: string, rollingHash: string): Promise<any> {
 
-    try {
-      const result = await this.secretjsSend.asyncExecute(contractAddress,
-        {
-          finalize: {
-            rolling_hash: rollingHash,
-          }
-        },
-        '',
-        [],
-        getFeeForExecute(550_000))
-      console.log(result);
-      const decoder = new TextDecoder();
-      console.log(decoder.decode(result.data));
-      return result;
-    }
-    catch (err) {
-      console.log('Error:', err)
-    }
+    const result = await this.secretjsSend.asyncExecute(contractAddress,
+      {
+        finalize: {
+          rolling_hash: rollingHash,
+        }
+      },
+      '',
+      [],
+      getFeeForExecute(550_000))
+    // console.log(result);
+    // const decoder = new TextDecoder();
+    // console.log(decoder.decode(result.data));
+    return result;
+
   }
 
   public getProposals = async () => {
@@ -777,6 +773,7 @@ export class UserStoreEx extends StoreConstructor {
           finalized: proposal.finalized,
           valid: proposal.valid,
           status: proposal.status.toLowerCase(),
+          voting_percentaje: proposal.voting_percentage
         }
       });
       return result;
@@ -868,8 +865,8 @@ export class UserStoreEx extends StoreConstructor {
       },
     )
     return {
-      positive: parseFloat(result.tally.tally[0]),
-      negative: parseFloat(result.tally.tally[1])
+      positive: parseFloat(result.tally.tally[0]) / 1e6,
+      negative: parseFloat(result.tally.tally[1]) / 1e6
     };
   }
 
@@ -1172,7 +1169,7 @@ export class UserStoreEx extends StoreConstructor {
   //
   // this.ethRate = ethusdt.body.lastPrice;
   //}
-  @action public async getRewardToken(tokenSymbol: string): Promise<RewardsToken> {
+  @action public async getRewardToken(tokenAddress: string): Promise<RewardsToken> {
     try {
       stores.rewards.init({
         isLocal: true,
@@ -1202,18 +1199,10 @@ export class UserStoreEx extends StoreConstructor {
       while (!stores.user.secretjs || stores.tokens.isPending) {
         await sleep(100);
       }
-      await stores.user.updateBalanceForSymbol(tokenSymbol);
+      await stores.user.refreshTokenBalanceByAddress(tokenAddress);
       const reward_tokens = mappedRewards
         .slice()
-        .sort((a, b) => {
-          /* SEFI first */
-          if (a.reward.inc_token.symbol === tokenSymbol) {
-            return -1;
-          }
-
-          return 0;
-        })
-        ?.filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+        .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
         //@ts-ignore
         .map(rewardToken => {
           if (Number(rewardToken.reward.deadline) < 2_000_000) {
@@ -1242,11 +1231,11 @@ export class UserStoreEx extends StoreConstructor {
             rewardsSymbol: 'SEFI',
           };
 
-          if (rewardsToken.lockedAsset === tokenSymbol) {
+          if (rewardsToken.rewardsContract === tokenAddress) {
             return rewardsToken;
           }
         });
-      return reward_tokens[0];
+      return reward_tokens.filter(e => e !== undefined)[0];
     } catch (error) {
       console.error(error)
       return undefined;

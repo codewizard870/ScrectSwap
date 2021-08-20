@@ -14,7 +14,7 @@ export const SwapInput = (props: {
   const {theme} =useStores();
   return (
     <Input
-      disabled={(props.error)?true:props.disabled === true}
+      disabled={props.disabled === true}
       style={{
         padding: 0,
         width: props.width || '180px',

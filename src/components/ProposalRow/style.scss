@@ -137,15 +137,9 @@
         row-gap: 4px;
     }
 }
-.vote-result{
+.vote-end{
     display: grid;
     grid-template-columns: 1fr 1fr;
-
-    .positive-results{
-        p{
-            color: #3EA248;
-        }
-    }
 }
 .proposal-status{
     max-width: 200px;

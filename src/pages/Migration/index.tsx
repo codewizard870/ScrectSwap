@@ -141,7 +141,9 @@ export const Migration = observer(() => {
   const getAllBalances = async () => {
     setLoading(true);
     const Oldbalance = await getBalance(oldRewardsContract);
+    if (!Oldbalance) return;
     const newBalance = await getBalance(newRewardsContract);
+    if (!newBalance) return;
     setBalances({
       oldBalance: (parseInt(Oldbalance) / 1e6).toFixed(2),
       newBalance: (parseInt(newBalance) / 1e6).toFixed(2)

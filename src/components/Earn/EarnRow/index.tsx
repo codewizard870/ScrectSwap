@@ -23,7 +23,7 @@ const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
 export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))
   // deadline - current time, 6 seconds per block
-  const timeRemaining = (token.deadline - 3377310) * 6.22 + 1620719241 - Math.round(Date.now() / 1000);
+  const timeRemaining = (Math.min(token.deadline, 7916452) - 3377310) * 6.22 + 1620719241 - Math.round(Date.now() / 1000);
 
   // (token.deadline - Math.round(Date.now() / 1000000) );
   const pending = Number(divDecimals(token.remainingLockedRewards, token.rewardsDecimals)) * price;
@@ -90,7 +90,8 @@ const tokenImages = {
   'XVS': '/static/token-images/xvs_binance.svg',
   'LINA': '/static/token-images/lina_binance.svg',
   'FINE': '/static/token-images/fine_binance.svg',
-  'BUNNY': '/static/token-images/bunny_binance.svg'
+  'BUNNY': '/static/token-images/bunny_binance.svg',
+  'XMR': '/static/sXMR.png'
 }
 
 export const apyString = (token: RewardsToken) => {

@@ -18,7 +18,7 @@ const ProposalLayout = (props: {
                     pad={{ horizontal: '136px', top: 'small' }}
                     style={{ alignItems: 'center' }}
                 >
-                    <div style={{ width: props.width || '100%' }}>
+                    <div style={{ width: props.width || '80%' }}>
                         <div className='go-back'>
                             <Link className='go-back' to='/governance' >
                                 <img src="/static/arrow-left.svg" alt="go-back" />

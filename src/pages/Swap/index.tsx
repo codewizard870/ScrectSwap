@@ -572,7 +572,6 @@ export class SwapRouter extends React.Component<
     }
 
     const routes: string[][] = [];
-    // if (!selectedPair) {
     let graph = JSON.parse(JSON.stringify(this.state.routingGraph)); // deep copy
     try {
       while (true) {
@@ -590,7 +589,6 @@ export class SwapRouter extends React.Component<
     } catch (e) {
       console.error('Error computing selectedPairRoutes:', e.message);
     }
-    // }
     this.setState({
       selectedPair: selectedPair,
       selectedPairRoutes: routes,

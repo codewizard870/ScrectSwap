@@ -725,7 +725,7 @@ export class UserStoreEx extends StoreConstructor {
       [],
       getFeeForExecute(450_000))
 
-    const newPoll = result.logs[0]?.events[1]?.attributes[5]?.value;
+    const newPoll = result.logs[0]?.events[1]?.attributes.find((e)=>e.key==='new_poll').value;
     if (newPoll) {
       await axios.post(`${process.env.BACKEND_URL}/secret_votes/${newPoll}`);
     }

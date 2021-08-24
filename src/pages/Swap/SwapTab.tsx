@@ -279,20 +279,20 @@ export class SwapTab extends React.Component<
   }
 
   async updateInputsFromBestRoute() {
-    if (Number(this.state.fromInput) === 0 && this.state.isToEstimated) {
+    const { fromToken, toToken, fromInput, toInput } = this.state;
+
+    if (Number(fromInput) === 0 && this.state.isToEstimated) {
       return;
     }
-    if (Number(this.state.toInput) === 0 && this.state.isFromEstimated) {
+    if (Number(toInput) === 0 && this.state.isFromEstimated) {
       return;
     }
-    if (Number(this.state.fromInput) === 0 && Number(this.state.toInput) === 0) {
+    if (Number(fromInput) === 0 && Number(toInput) === 0) {
       return;
     }
 
     this.setState({ loadingBestRoute: true, loadingBestRouteCount: 0, bestRoute: null, allRoutesOutputs: [] });
     try {
-      let { fromToken, toToken, fromInput, toInput } = this.state;
-
       const routes = this.props.selectedPairRoutes;
       for (let i = 0; i < routes.length; i++) {
         if (routes[i][0] === toToken && routes[i][routes[i].length - 1] === fromToken) {

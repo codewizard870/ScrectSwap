@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { CosmWasmClient } from 'secretjs';
+import { CosmWasmClient, ExecuteResult } from 'secretjs';
 import { Button, Container } from 'semantic-ui-react';
 import { canonicalizeBalance, displayHumanizedBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
 import * as styles from './styles.styl';
@@ -10,7 +10,7 @@ import { UserStoreEx } from 'stores/UserStore';
 import { Coin } from 'secretjs/types/types';
 import BigNumber from 'bignumber.js';
 import { compareNormalize, shareOfPoolNumberFormat, storeTxResultLocally } from './utils';
-import { GetContractCodeHash, getFeeForExecute } from '../../blockchain-bridge';
+import { extractError, GetContractCodeHash, getFeeForExecute } from '../../blockchain-bridge';
 import { CreateNewPair } from '../../blockchain-bridge/scrt/swap';
 import { Asset } from '../TokenModal/types/trade';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
@@ -622,9 +622,13 @@ export class ProvideTab extends React.Component<
               this.setState({ loadingProvide: true });
 
               try {
-                await this.createNewPairAction(assetA, assetB);
+                const result:any=  await this.createNewPairAction(assetA,assetB);
                 window.dispatchEvent(new Event('updatePairsAndTokens'));
                 await this.props.user.updateScrtBalance();
+                if(result.code){
+                  const error = extractError(result);
+                  throw new Error(error);
+                }
                 this.props.notify('success', `${assetA.symbol}/${assetB.symbol} pair created successfully`);
               } catch (error) {
                 this.props.notify('error', `Error creating pair ${assetA.symbol}/${assetB.symbol}: ${error.message}`);
@@ -707,16 +711,6 @@ export class ProvideTab extends React.Component<
     return this.state.provideState === ProvideState.CREATE_NEW_PAIR;
   }
 
-  private async createNewPairAction(tokenA: Asset, tokenB: Asset): Promise<string> {
-    const { contractAddress } = await CreateNewPair({
-      secretjs: this.props.secretjs,
-      secretjsSender: this.props.secretjsSender,
-      tokenA,
-      tokenB,
-    });
-
-    return contractAddress;
-  }
 
   private async provideLiquidityAction(pair: SwapPair) {
     this.setState({ loadingProvide: true });
@@ -822,6 +816,14 @@ export class ProvideTab extends React.Component<
       this.state.provideState === ProvideState.CREATE_NEW_PAIR ||
       this.state.provideState === ProvideState.PAIR_LIQUIDITY_ZERO
     );
+  }
+  private async createNewPairAction(tokenA: Asset, tokenB: Asset): Promise<any> {
+    return await CreateNewPair({
+      secretjs: this.props.secretjs,
+      secretjsSender: this.props.secretjsSender,
+      tokenA,
+      tokenB,
+    });
   }
 
   private getPrice() {

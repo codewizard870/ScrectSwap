@@ -131,16 +131,19 @@ export const Governance = observer(() => {
 
   useEffect(() => {
     (async () => {
-      const proposals = await user.getProposals();
-      const orderProposal = proposals.sort((a, b) => b.end_date - a.end_date).map((proposal,i)=>{
+      const allProposals = await user.getProposals();
+      
+      const filterProposals = allProposals.sort((a, b) => b.end_date - a.end_date).filter((p)=>!p.hidden)
+      const response = filterProposals.map((proposal,i)=>{
         return {
           ...proposal,
-          index:proposals.length-i,
+          index:filterProposals.length-i,
           currentStatus:calculateState(proposal)
         }
-      })
-      setProposals(orderProposal);
-      getProporsalsByStatus(orderProposal, selectedFilter);
+      });
+
+      setProposals(response);
+      getProporsalsByStatus(response, selectedFilter);
     })();
   }, [])
 

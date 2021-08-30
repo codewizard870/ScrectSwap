@@ -11,7 +11,7 @@ export const PairAnalyticsLink: React.FC<{ pairAddress: string }> = ({ pairAddre
       className={`${styles.analyticsLink_container} ${styles[theme.currentTheme]}`}
       style={{marginTop:'1rem'}}
     >
-      <a className={styles.link} href={`https://secretanalytics.xyz/${pairAddress}`} target="_blank" rel={'noreferrer'}>
+      <a className={styles.link} href={`https://secretanalytics.xyz/secretswap/${pairAddress}`} target="_blank" rel={'noreferrer'}>
         <strong>View pair analytics ↗</strong>
       </a>
     </div>

@@ -198,109 +198,109 @@ export const Governance = observer(() => {
           pad={{ horizontal: '136px', top: 'small' }}
           style={{ alignItems: 'center' }}
         >
-          {/* <div className='governance '> */}
-          <div className='hero-governance'>
+          <div className='governance '>
+            <div className='hero-governance'>
 
-            <div className='column-stats'>
-              <div className="stats-apy">
-                {(rewardToken) ? <h1>{apyString(rewardToken)}</h1> : <SpinnerLineHor />}
-                <div>
-                  <p>Staking APY</p>
+              <div className='column-stats'>
+                <div className="stats-apy">
+                  {(rewardToken) ? <h1>{apyString(rewardToken)}</h1> : <SpinnerLineHor />}
+                  <div>
+                    <p>Staking APY</p>
+                  </div>
                 </div>
-              </div>
-              <div className={votingPower && (votingPower?.includes(unlockToken) || !votingPower) ? 'stats-power' : 'stats-power-loaded'}>
-                <div>
+                <div className={votingPower && (votingPower?.includes(unlockToken) || !votingPower) ? 'stats-power' : 'stats-power-loaded'}>
+                  <div>
+                    {
+                      votingPower ?
+                        (votingPower) && (votingPower?.includes(unlockToken) || !votingPower)
+                          ? unlockJsx({ onClick: createSefiViewingKey })
+                          : <h1>{numberFormatter(votingPower, 2)}
+                            <span className='pink'> SEFI </span>
+                            <span>({totalVotingPower} %)</span>
+                          </h1>
+                        :
+                        <SpinnerLineHor />
+                    }
+                  </div>
+                  <div>
+                    <p>My Voting Power</p>
+                  </div>
+                </div>
+                <div className="stats-voting">
                   {
-                    votingPower ?
-                      (votingPower) && (votingPower?.includes(unlockToken) || !votingPower)
-                        ? unlockJsx({ onClick: createSefiViewingKey })
-                        : <h1>{numberFormatter(votingPower, 2)}
-                          <span className='pink'> SEFI </span>
-                          <span>({totalVotingPower} %)</span>
-                        </h1>
-                      :
-                      <SpinnerLineHor />
+                    totalLocked ?
+                      <h1>{numberFormatter(totalLocked, 2)} <span className='pink'> SEFI</span></h1>
+                      : <SpinnerLineHor />
                   }
-                </div>
-                <div>
-                  <p>My Voting Power</p>
+                  <p>Total Voting Power</p>
                 </div>
               </div>
-              <div className="stats-voting">
-                {
-                  totalLocked ?
-                    <h1>{numberFormatter(totalLocked, 2)} <span className='pink'> SEFI</span></h1>
-                    : <SpinnerLineHor />
-                }
-                <p>Total Voting Power</p>
-              </div>
-            </div>
 
-            <div className='buttons'>
-              <div className='buttons-container'>
-                {
-                  votingPower === undefined || votingPower === '0' ?
-                    <>
+              <div className='buttons'>
+                <div className='buttons-container'>
+                  {
+                    votingPower === undefined || votingPower === '0' ?
+                      <>
+                        <Popup
+                          // className="icon-info__popup"
+                          content='You need SEFI to participate in SecretSwap governance'
+                          trigger={<a>
+                            <Button
+                              disabled
+                              className='g-button'
+                            >
+                              Participate in Governance
+                            </Button>
+                          </a>}
+                        />
+                      </>
+                      :
+                      (<Link to='/sefistaking'>
+                        <Button
+                          className='g-button'
+                        >
+                          Participate in Governance
+                        </Button>
+                      </Link>
+                      )
+                  }
+                  {
+                    amounts.minimumStake > amounts.balance || votingPower === undefined
+                      ?
                       <Popup
-                        // className="icon-info__popup"
-                        content='You need SEFI to participate in SecretSwap governance'
+                        style={{ color: 'red' }}
+                        content={
+                          votingPower === undefined ?
+                            `You need staked SEFI to create a proposal.`
+                            :
+                            `You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`
+                        }
+
                         trigger={<a>
                           <Button
                             disabled
-                            className='g-button'
+                            className='g-button--outline'
                           >
-                            Participate in Governance
+                            Create Proposal
                           </Button>
                         </a>}
                       />
-                    </>
-                    :
-                    (<Link to='/sefistaking'>
-                      <Button
-                        className='g-button'
-                      >
-                        Participate in Governance
-                      </Button>
-                    </Link>
-                    )
-                }
-                {
-                  amounts.minimumStake > amounts.balance || votingPower === undefined
-                    ?
-                    <Popup
-                      style={{ color: 'red' }}
-                      content={
-                        votingPower === undefined ?
-                          `You need staked SEFI to create a proposal.`
-                          :
-                          `You don't have the minimum staked SEFI to create a proposal. Minimum is ${theMinimum} SEFI.`
-                      }
-
-                      trigger={<a>
+                      :
+                      <Link to="/proposal">
                         <Button
-                          disabled
                           className='g-button--outline'
                         >
                           Create Proposal
                         </Button>
-                      </a>}
-                    />
-                    :
-                    <Link to="/proposal">
-                      <Button
-                        className='g-button--outline'
-                      >
-                        Create Proposal
-                      </Button>
-                    </Link>
+                      </Link>
 
-                }
-                <HowItWorksModal />
+                  }
+                  <HowItWorksModal />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className='content-governance'>
+            <div className='content-governance'>
             <div className='column content-governance__title'>
               <h3>{capitalizeFirstLetter(selectedFilter)} Proposals</h3>
               <div className='filters'>
@@ -350,7 +350,7 @@ export const Governance = observer(() => {
               }
             </div>
           </div>
-          {/* </div> */}
+          </div>
         </Box>
       </PageContainer>
     </BaseContainer >

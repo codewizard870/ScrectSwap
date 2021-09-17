@@ -96,7 +96,7 @@ const DepositContainer = props => {
           </div>
           <div className={cn(styles.subtitle)}>{props.balanceText}</div>
         </div>
-        <div>
+        {/* <div>
           <Input
             placeholder="0.0"
             className={`${styles.form} ${styles[props.theme.currentTheme]}`}
@@ -111,7 +111,7 @@ const DepositContainer = props => {
           <AmountButton balance={props.balance} onChange={props.onChange} multiplier={'0.5'} />
           <AmountButton balance={props.balance} onChange={props.onChange} multiplier={'0.75'} />
           <AmountButton balance={props.balance} onChange={props.onChange} multiplier={'1'} />
-        </div>
+        </div> */}
         <div>{props.action}</div>
       </div>
     </div>

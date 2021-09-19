@@ -18,6 +18,8 @@ export const Cashback =observer((props)=>{
     const [loading,setLoading]=React.useState(false);
     const hasCashback = user?.balanceCSHBK != '0';
 
+    user.setMaintenanceModal(true);
+
     function extractError(result: any) {
       if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {
         return 'Swap fell short of expected return (slippage error)';

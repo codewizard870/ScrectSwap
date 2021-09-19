@@ -29,6 +29,8 @@ export const Governance = observer(() => {
   const [totalLocked, setTotalLocked] = React.useState(0.0);
   const [votingPower, setVotingPower] = React.useState(undefined);
 
+  user.setMaintenanceModal(true);
+
   const filters = ['all', 'active', "passed", "failed"];
 
   const [proposals, setProposals] = useState([]);

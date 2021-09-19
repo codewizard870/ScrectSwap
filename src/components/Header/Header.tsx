@@ -61,9 +61,9 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                             <li><span>|</span></li>
                             <li  className={(isEarn) ? 'active':''}><Link  to="/earn">Earn</Link></li>
                             <li className='hide_mobile'><span>|</span></li>
-                            <li className={(isCashback)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/cashback">Cashback</Link></li> 
+                            {/*<li className={(isCashback)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/cashback">Cashback</Link></li> 
                             <li><span>|</span></li>
-                            <li className={(isGovernance)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/governance">Governance</Link></li> 
+                             <li className={(isGovernance)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/governance">Governance</Link></li> */}
                         </ul>
                     </div>
                     

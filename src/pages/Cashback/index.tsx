@@ -7,7 +7,7 @@ import { Box } from 'grommet'
 import { observer } from 'mobx-react';
 import { unlockJsx } from 'pages/Pool/utils';
 import { storeTxResultLocally } from 'pages/Swap/utils';
-import React from 'react'
+import React,{ useEffect } from 'react'
 import { Button, Icon, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import "./style.scss";
@@ -18,7 +18,9 @@ export const Cashback =observer((props)=>{
     const [loading,setLoading]=React.useState(false);
     const hasCashback = user?.balanceCSHBK != '0';
 
-    user.setMaintenanceModal(true);
+    useEffect(() => {
+      user.setMaintenanceModal(true);
+    }, []);
 
     function extractError(result: any) {
       if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {

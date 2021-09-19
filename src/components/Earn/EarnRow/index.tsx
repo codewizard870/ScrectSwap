@@ -287,7 +287,7 @@ class EarnRow extends Component<
               />
             </div>
             <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
+              <SoftTitleValue title={"0%"/* apyString(this.props.token) */} subTitle={'APY'} />
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
@@ -395,22 +395,23 @@ class EarnRow extends Component<
                       title='Earn'
                       value={this.state.depositValue}
                       action={
-                        <Grid columns={1} stackable relaxed={'very'}>
-                          <Grid.Column
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'flex-start',
-                            }}
-                          >
-                            <EarnButton
-                              props={this.props}
-                              value={this.state.depositValue}
-                              changeValue={this.handleChangeDeposit}
-                              togglePulse={this.togglePulse}
-                              setPulseInterval={this.setPulseInterval}
-                            />
-                          </Grid.Column>
-                        </Grid>
+                        <></>
+                        // <Grid columns={1} stackable relaxed={'very'}>
+                        //   <Grid.Column
+                        //     style={{
+                        //       display: 'flex',
+                        //       justifyContent: 'flex-start',
+                        //     }}
+                        //   >
+                        //     <EarnButton
+                        //       props={this.props}
+                        //       value={this.state.depositValue}
+                        //       changeValue={this.handleChangeDeposit}
+                        //       togglePulse={this.togglePulse}
+                        //       setPulseInterval={this.setPulseInterval}
+                        //     />
+                        //   </Grid.Column>
+                        // </Grid>
                       }
                       onChange={this.handleChangeDeposit}
                       balance={this.props.token.balance}

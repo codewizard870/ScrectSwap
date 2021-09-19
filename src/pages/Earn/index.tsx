@@ -129,7 +129,7 @@ export const EarnRewards = observer((props: any) => {
             locked in the rewards contract and your rewards. If you can't see these figures please refresh your browser.
           </p>
         </div>
-        {/* <div
+        <div
           style={{
             display: 'flex',
             minWidth: '550px',
@@ -155,23 +155,28 @@ export const EarnRewards = observer((props: any) => {
               flexDirection: 'row',
             }}
           >
-            SushiSwap incentives for LPs on the WSCRT/WETH pair are now live with a
-            <Box direction="row" margin={{ left: 'xxsmall', right: 'xxsmall' }} align="center">
-              <Text bold margin={{ right: 'xxsmall' }}>
-                APY of
-              </Text>
-              {sushiAPY === -1 ? (
-                <Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" />
-              ) : (
-                <Text bold>{`${sushiAPY}%!`}</Text>
-              )}
-            </Box>{' '}
-            <a href="https://twitter.com/SecretNetwork/status/1369349930247192582" target="_blank">
-              Earn more on SushiSwap Onsen
-            </a>
-            . 🍣
+              <ul>
+                <li>Earn rewards are currently disabled. New reward pools will be added in the near future</li>
+                <li>
+                  To withdraw rewards from the pool, use the "withdraw" button for each pool. This will automatically
+                  withdraw all your rewards. You do not need a viewing key to use this feature
+                </li>
+                <li>
+                  We recommend backing up your viewing keys for the earn pools. These may be used in the future to
+                  validate earned SEFI rewards
+                </li>
+                <li>
+                  Known issues:
+                  <ul>
+                    <li>
+                      Withdraw message will return a 0.0000 for the amount of lp tokens withdrawn regardless of amount
+                    </li>
+                    <li>Creating a viewing key for disabled earn contracts may fail</li>
+                  </ul>
+                </li>
+              </ul>
           </p>
-        </div> */}
+        </div>
         <Box direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewards.allData

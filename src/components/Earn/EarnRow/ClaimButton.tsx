@@ -93,7 +93,7 @@ const ClaimButton = (props: {
     >
       {displayAvailable()}<span style={{marginLeft:'10px'}}>{props.rewardsToken}</span>
     </div>
-    <Button
+    {/* <Button
       loading={loading}
       className={`${styles.button} ${styles[theme.currentTheme]}`}
       disabled={typeof props.available === 'undefined' || props.available === '0'}
@@ -122,7 +122,7 @@ const ClaimButton = (props: {
       }}
     >
       Claim
-    </Button>
+    </Button> */}
     </>
   );
 };

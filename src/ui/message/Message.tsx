@@ -5,7 +5,7 @@ import { useStores } from 'stores';
 
 const MessageDismiss = () => {
   const { theme } = useStores();
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   const handleDismiss = (e) => {
     e.preventDefault();

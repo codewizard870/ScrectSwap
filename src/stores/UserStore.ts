@@ -103,7 +103,7 @@ export class UserStoreEx extends StoreConstructor {
     if (sessionObj) {
       this.address = sessionObj.address;
       this.isInfoReading = sessionObj.isInfoReading;
-      this.isInfoEarnReading = sessionObj.isInfoEarnReading;
+      this.isInfoEarnReading = sessionObj.isInfoEarnReadingSecret3;
       this.keplrCheckPromise.then(async () => {
         await this.signIn();
 
@@ -1108,7 +1108,7 @@ export class UserStoreEx extends StoreConstructor {
       JSON.stringify({
         address: this.address,
         isInfoReading: this.isInfoReading,
-        isInfoEarnReading: this.isInfoEarnReading,
+        isInfoEarnReadingSecret3: this.isInfoEarnReading,
       }),
     );
   }

@@ -287,7 +287,7 @@ class EarnRow extends Component<
               />
             </div>
             <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
+              <SoftTitleValue title={"0%"/* apyString(this.props.token) */} subTitle={'APY'} />
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue

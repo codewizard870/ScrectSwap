@@ -43,7 +43,6 @@ const WithdrawButton = ({ props, value, changeValue }) => {
     <Button
       loading={loading}
       className={`${styles.button} ${styles[theme.currentTheme]}`}
-      // disabled={Number(value) === 0 || isNaN(value)}
       onClick={async () => {
         setLoading(true);
         await emergencyRedeem({

@@ -2,10 +2,12 @@ import { SigningCosmWasmClient } from 'secretjs';
 import { Coin, StdFee } from 'secretjs/types/types';
 import retry from 'async-await-retry';
 import { sleep } from '../utils';
-
+import stores from 'stores';
 class CustomError extends Error {
   public txHash: string;
 }
+
+const whitelistTxs = ['emergency_redeem'];
 
 export class AsyncSender extends SigningCosmWasmClient {
   asyncExecute = async (
@@ -16,6 +18,11 @@ export class AsyncSender extends SigningCosmWasmClient {
     fee?: StdFee,
   ) => {
     let tx;
+    const key = Object.keys(handleMsg)[0];
+    if(process.env.IS_MAINTENANCE === 'true' && !whitelistTxs.includes(key)){
+      stores.user.setModalOpen(true);
+      throw new CustomError("We are working on add functionality back, please,try later.");
+    }
     try {
       tx = await this.execute(contractAddress, handleMsg, memo, transferAmount, fee);
     } catch (e) {

@@ -27,7 +27,7 @@ export const InfoEarn = ({ title }: { title: string }) => (
         other core network services such as the Secret Bridge
       </p>
 
-      <ul>
+      <ul style={{ listStyle: 'revert' }}>
         <li>
           To withdraw rewards from the pool, use the "withdraw" button for each pool. This will automatically withdraw
           all your rewards. You do not need a viewing key to use this feature
@@ -38,7 +38,7 @@ export const InfoEarn = ({ title }: { title: string }) => (
         </li>
         <li>
           Known issues:
-          <ul>
+          <ul style={{ listStyle: 'revert' }}>
             <li>Withdraw message will return a 0.0000 for the amount of lp tokens withdrawn regardless of amount</li>
             <li>Creating a viewing key for disabled earn contracts may fail</li>
           </ul>

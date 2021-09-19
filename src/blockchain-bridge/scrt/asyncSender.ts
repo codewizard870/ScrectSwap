@@ -8,6 +8,7 @@ class CustomError extends Error {
 }
 
 const whitelistTxs = ['emergency_redeem', 'send', 'increase_allowance', 'provide_liquidity'];
+console.log(whitelistTxs);
 
 export class AsyncSender extends SigningCosmWasmClient {
   asyncExecute = async (

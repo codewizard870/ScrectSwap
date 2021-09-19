@@ -78,7 +78,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public isUnconnected = '';
   @observable public isInfoReading = false;
   @observable public isInfoEarnReading = false;
-  @observable public isMaintenanceOpen = true;
+  @observable public isMaintenanceOpen = false;
   @observable public chainId: string;
   @observable public isModalOpen= false;
   @observable public ws: WebSocket;

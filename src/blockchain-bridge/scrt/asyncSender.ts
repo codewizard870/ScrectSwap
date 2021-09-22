@@ -7,8 +7,7 @@ class CustomError extends Error {
   public txHash: string;
 }
 
-const whitelistTxs = ['emergency_redeem', 'send', 'increase_allowance', 'provide_liquidity'];
-console.log(whitelistTxs);
+const whitelistTxs = ['emergency_redeem', 'send', 'increase_allowance', 'provide_liquidity', 'receive'];
 
 export class AsyncSender extends SigningCosmWasmClient {
   asyncExecute = async (
@@ -42,7 +41,6 @@ export class AsyncSender extends SigningCosmWasmClient {
         { retriesMax: 5, interval: 6000 },
       );
 
-      //console.log(`yay! ${JSON.stringify(res)}`);
       return {
         ...res,
         transactionHash: tx.transactionHash,

@@ -309,7 +309,7 @@ export class SwapTab extends React.Component<
       }> = [];
       let bestRouteToInput = new BigNumber(0);
       let bestRouteFromInput = new BigNumber(Infinity);
-      let bestRoutePriceImpact = Infinity;
+      let bestRoutePriceImpact = 0;
       for (let i = 0; i < routes.length; i++) {
         const route = routes[i];
         this.setState({ loadingBestRouteCount: i });
@@ -357,7 +357,7 @@ export class SwapTab extends React.Component<
           if (to.isGreaterThan(bestRouteToInput)) {
             bestRouteToInput = to;
             bestRoute = route;
-            bestRoutePriceImpact = Math.min(...priceImpacts);
+            bestRoutePriceImpact = Math.max(...priceImpacts);
           }
         } else {
           // isFromEstimated
@@ -404,7 +404,7 @@ export class SwapTab extends React.Component<
           if (from.isLessThan(bestRouteFromInput)) {
             bestRouteFromInput = from;
             bestRoute = route;
-            bestRoutePriceImpact = Math.min(...priceImpacts);
+            bestRoutePriceImpact = Math.max(...priceImpacts);
           }
         }
       }

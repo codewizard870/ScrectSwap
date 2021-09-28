@@ -344,7 +344,6 @@ export const SeFiPage = observer(() => {
               .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
               .filter((a) => !blacklistedPools?.includes(a.reward.pool_address))
               .map((rewardToken,i) => {
-                console.log(rewardToken.reward.pool_address)
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;
                 }

@@ -82,6 +82,7 @@ interface RewardData {
   reward: IRewardPool;
   token: ITokenInfo;
 }
+const blacklistedPools = JSON.parse(process.env.BLACKLISTED_POOLS);
 
 export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask,theme } = useStores();
@@ -341,7 +342,9 @@ export const SeFiPage = observer(() => {
               .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SUSDC-SUSDC(BSC)' ? -1 : 0)
               .sort((a,b)=>(a.reward.inc_token.symbol === 'SEFI') ? -1: 0)
               .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+              .filter((a) => !blacklistedPools?.includes(a.reward.pool_address))
               .map((rewardToken,i) => {
+                console.log(rewardToken.reward.pool_address)
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;
                 }

@@ -16,6 +16,7 @@ import ScrtTokenBalance from '../ScrtTokenBalance';
 import { useStores } from 'stores';
 import Theme from 'themes';
 import {Link} from 'react-router-dom'
+import MigrateAssets from '../MigrateTokens';
 
 const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
 const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
@@ -386,7 +387,9 @@ class EarnRow extends Component<
                     (
                       <>
                         <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>
-                        <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Migrate your tokens <Link to={"/migration"}>here</Link>.</p>
+                        <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
+                          Migrate your tokens <MigrateAssets><strong className={cn(styles.here)}>here</strong></MigrateAssets>.
+                        </p>
                       </>
                     )
                   :

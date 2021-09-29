@@ -36,7 +36,10 @@ const MigrateAssets = observer(props => {
       notify('error', 'You need a viewing key to perform this transaction', 10);
       return;
     }
-
+    if(balance === '0'){
+      notify('error', "You don't balance in old pool", 10);
+      return;
+    }
     try {
       setLoading(true);
       const msg = 'eyJkZXBvc2l0Ijp7fX0K'; // '{"deposit":{}}' -> base64
@@ -98,7 +101,7 @@ const MigrateAssets = observer(props => {
           <h4>Old pool balance : {divDecimals(balance, 6)} SEFI Staking</h4>
         )}
       </div>
-      <button disabled={isNaN(parseInt(balance))} className="migrate-button" onClick={migrate}>
+      <button disabled={isNaN(parseInt(balance)) || balance === '0'} className="migrate-button" onClick={migrate}>
         {loading ? <Loader size='tiny' inline active >Loading...</Loader> : 'Migrate your tokens'}
       </button>
     </Modal>

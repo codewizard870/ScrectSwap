@@ -386,10 +386,13 @@ class EarnRow extends Component<
                   { isOldContract ?
                     (
                       <>
-                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>
-                        <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
-                          Migrate your tokens <MigrateAssets><strong className={cn(styles.here)}>here</strong></MigrateAssets>.
-                        </p>
+                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Migrate your tokens to the new pool!</h1>                        
+                        <MigrateAssets>
+                          <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
+                              Click<strong className={cn(styles.here)}> here </strong>to migrate.
+                          </p>
+                        </MigrateAssets>
+                        
                       </>
                     )
                   :

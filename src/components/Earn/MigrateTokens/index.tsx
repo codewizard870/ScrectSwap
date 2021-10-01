@@ -8,6 +8,7 @@ import { notify } from '../../../blockchain-bridge/scrt/utils';
 import { unlockJsx } from 'pages/Pool/utils';
 import { divDecimals } from 'utils';
 import './style.scss';
+import { parse } from 'query-string';
 
 const MigrateAssets = observer(props => {
   const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
@@ -32,26 +33,19 @@ const MigrateAssets = observer(props => {
   };
 
   const migrate = async () => {
-    // if (balance.toLowerCase() === 'unlock' || !balance) {
-    //   notify('error', 'You need a viewing key to perform this transaction', 10);
-    //   return;
-    // }
-    // if(balance === '0'){
-    //   notify('error', "You don't balance in old pool", 10);
-    //   return;
-    // }
+    if (balance.toLowerCase() === 'unlock' || !balance) {
+      notify('error', 'You need a viewing key to perform this transaction', 10);
+      return;
+    }
+    if(balance === '0'){
+      notify('error', "You don't balance in old pool", 10);
+      return;
+    }
+        
     try {
       setLoading(true);
       const msg = 'eyJkZXBvc2l0Ijp7fX0K'; // '{"deposit":{}}' -> base64
       const amount = balance;
-      // const res = await user.secretjsSend.execute(process.env.SCRT_GOV_TOKEN_ADDRESS,{
-      //   send: {
-      //     amount:'44000000',
-      //     recipient: oldRewardsContract,
-      //     msg,
-      //   },
-      // })
-      // console.log(res)
 
       const res: ExecuteResult = await user.secretjsSend.multiExecute(
         [
@@ -77,11 +71,12 @@ const MigrateAssets = observer(props => {
         'Migrating assets from old SEFI pool to new',
         fee,
       );
-      notify('success',`You migrated ${divDecimals(balance,6)} SEFI to our new pool`)
+      notify('success',`You migrated ${divDecimals(balance,6)} SEFI to our new pool`,10)
+      setBalance('0')
       storeTxResultLocally(res);
 
     } catch (error) {
-      notify('error', error.message, 1000);
+      notify('error', error.message, 10);
     } finally {
       await getBalance();
       setLoading(false);
@@ -102,13 +97,15 @@ const MigrateAssets = observer(props => {
     >
       <h1>Migrate your tokens</h1>
       <div className="balance-wrapper">
-        {balance.toLowerCase() === 'unlock' || isNaN(parseInt(balance)) ? (
-          <h4>Old pool balance : {unlockJsx({ onClick: createVK })}</h4>
-        ) : (
-          <h4>Old pool balance : {divDecimals(balance, 6)} SEFI Staking</h4>
-        )}
+        {
+          balance.toLowerCase() === 'unlock'  
+            ? <h4>Old pool balance : {unlockJsx({ onClick: createVK })}</h4>
+            : isNaN(parseInt(balance)) || !balance || balance === undefined
+              ? <Loader size='tiny' inline active >Loading...</Loader> 
+              : <h4>Old pool balance : {divDecimals(balance, 6)} SEFI Staking </h4>
+        }
       </div>
-      <button  className="migrate-button" onClick={migrate}>
+      <button disabled={isNaN(parseInt(balance)) || balance=== '0'}  className="migrate-button" onClick={migrate}>
         {loading ? <Loader size='tiny' inline active >Loading...</Loader> : 'Migrate your tokens'}
       </button>
     </Modal>

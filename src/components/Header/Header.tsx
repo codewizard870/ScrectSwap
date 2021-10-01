@@ -10,7 +10,7 @@ import { BigNumber } from 'bignumber.js';
 import { displayHumanizedBalance, fixUnlockToken, humanizeBalance, unlockToken } from 'utils';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { ITokenInfo } from 'stores/interfaces';
-import { notify } from 'pages/Earn';
+import { notify } from '../../blockchain-bridge/scrt/utils';
 // Import Icons
 const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const history = useHistory(); 
@@ -63,7 +63,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                             <li className='hide_mobile'><span>|</span></li>
                             <li className={(isCashback)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/cashback">Cashback</Link></li> 
                             <li><span>|</span></li>
-                            <li className={(isGovernance)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/governance">Governance</Link></li> 
+                             <li className={(isGovernance)  ? 'active hide_mobile':'hide_mobile'}><Link  to="/governance">Governance</Link></li>
                         </ul>
                     </div>
                     

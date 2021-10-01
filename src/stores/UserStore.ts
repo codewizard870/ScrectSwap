@@ -78,8 +78,9 @@ export class UserStoreEx extends StoreConstructor {
   @observable public isUnconnected = '';
   @observable public isInfoReading = false;
   @observable public isInfoEarnReading = false;
+  @observable public isMaintenanceOpen = false;
   @observable public chainId: string;
-
+  @observable public isModalOpen= false;
   @observable public ws: WebSocket;
 
   constructor(stores) {
@@ -103,7 +104,7 @@ export class UserStoreEx extends StoreConstructor {
     if (sessionObj) {
       this.address = sessionObj.address;
       this.isInfoReading = sessionObj.isInfoReading;
-      this.isInfoEarnReading = sessionObj.isInfoEarnReading;
+      this.isInfoEarnReading = sessionObj.isInfoEarnReadingSecret3;
       this.keplrCheckPromise.then(async () => {
         await this.signIn();
 
@@ -148,7 +149,12 @@ export class UserStoreEx extends StoreConstructor {
   @action public setSnip20BalanceMin(balance: string) {
     this.snip20BalanceMin = balance;
   }
-
+  @action public setModalOpen(open:boolean){
+    this.isModalOpen = open;
+  }
+  @action public setMaintenanceModal(open:boolean){
+    this.isMaintenanceOpen = open;
+  }
   @action public async websocketTerminate(waitToBeOpen?: boolean) {
     if (waitToBeOpen) {
       while (!this.ws && this.ws.readyState !== WebSocket.OPEN) {
@@ -1108,7 +1114,7 @@ export class UserStoreEx extends StoreConstructor {
       JSON.stringify({
         address: this.address,
         isInfoReading: this.isInfoReading,
-        isInfoEarnReading: this.isInfoEarnReading,
+        isInfoEarnReadingSecret3: this.isInfoEarnReading,
       }),
     );
   }

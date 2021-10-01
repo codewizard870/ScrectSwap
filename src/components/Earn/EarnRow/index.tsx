@@ -288,7 +288,7 @@ class EarnRow extends Component<
               />
             </div>
             <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
+              <SoftTitleValue title={"0%"/* apyString(this.props.token) */} subTitle={'APY'} />
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
@@ -379,6 +379,14 @@ class EarnRow extends Component<
               }}
             />
           </div> */}
+          {
+            (process.env.IS_MAINTENANCE === 'true')
+              ? <div className='maintenance-warning'>
+                  <h3><Icon name='warning circle'/>A new version of this earn pool is coming soon and will allow you to migrate. For now you can only withdraw LP tokens.</h3>
+                </div>
+              : <></>
+          }
+          
           <div>
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
@@ -386,10 +394,10 @@ class EarnRow extends Component<
                   { isOldContract ?
                     (
                       <>
-                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Migrate your tokens to the new pool!</h1>                        
+                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>                        
                         <MigrateAssets>
                           <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
-                              Click<strong className={cn(styles.here)}> here </strong>to migrate.
+                              Migrate your tokens<strong className={cn(styles.here)}> here.</strong>
                           </p>
                         </MigrateAssets>
                         
@@ -401,22 +409,23 @@ class EarnRow extends Component<
                       title='Earn'
                       value={this.state.depositValue}
                       action={
-                        <Grid columns={1} stackable relaxed={'very'}>
-                          <Grid.Column
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'flex-start',
-                            }}
-                          >
-                            <EarnButton
-                              props={this.props}
-                              value={this.state.depositValue}
-                              changeValue={this.handleChangeDeposit}
-                              togglePulse={this.togglePulse}
-                              setPulseInterval={this.setPulseInterval}
-                            />
-                          </Grid.Column>
-                        </Grid>
+                        <></>
+                        // <Grid columns={1} stackable relaxed={'very'}>
+                        //   <Grid.Column
+                        //     style={{
+                        //       display: 'flex',
+                        //       justifyContent: 'flex-start',
+                        //     }}
+                        //   >
+                        //     <EarnButton
+                        //       props={this.props}
+                        //       value={this.state.depositValue}
+                        //       changeValue={this.handleChangeDeposit}
+                        //       togglePulse={this.togglePulse}
+                        //       setPulseInterval={this.setPulseInterval}
+                        //     />
+                        //   </Grid.Column>
+                        // </Grid>
                       }
                       onChange={this.handleChangeDeposit}
                       balance={this.props.token.balance}

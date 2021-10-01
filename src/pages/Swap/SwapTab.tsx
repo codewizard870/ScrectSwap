@@ -446,7 +446,6 @@ export class SwapTab extends React.Component<
   }
 
   async updateInputs() {
-    
     this.setState({ bestRoute: null, allRoutesOutputs: [] });
 
     const routes = this.props.selectedPairRoutes;
@@ -473,52 +472,50 @@ export class SwapTab extends React.Component<
       return symbol?.substring(1, symbol.length);
     }
   };
-  async updateExpectedCSHBK():Promise<void>{
+  async updateExpectedCSHBK(): Promise<void> {
     const pair = this.props.selectedPair;
-    let expectedCSHBK='0.0'
-    let doubleCashback=false;
-    if(!this.props.isSupported && this.state.bestRoute?.length > 2){
-      doubleCashback = this.state.bestRoute?.some((address)=>address===process.env.SSCRT_CONTRACT)
+    let expectedCSHBK = '0.0';
+    let doubleCashback = false;
+    if (!this.props.isSupported && this.state.bestRoute?.length > 2) {
+      doubleCashback = this.state.bestRoute?.some(address => address === process.env.SSCRT_CONTRACT);
     }
 
     //Either From or To input is sSCRT or SCRT
-    if(pair && this.props.isSupported){
-      if(this.state.fromToken == 'uscrt' || this.state.fromToken == process.env.SSCRT_CONTRACT){
-        expectedCSHBK = this.state.fromInput
-      }else if (this.state.toToken == 'uscrt' || this.state.toToken == process.env.SSCRT_CONTRACT){
+    if (pair && this.props.isSupported) {
+      if (this.state.fromToken == 'uscrt' || this.state.fromToken == process.env.SSCRT_CONTRACT) {
+        expectedCSHBK = this.state.fromInput;
+      } else if (this.state.toToken == 'uscrt' || this.state.toToken == process.env.SSCRT_CONTRACT) {
         expectedCSHBK = this.state.toInput;
       }
-    }else if(!this.props.isSupported && doubleCashback){
+    } else if (!this.props.isSupported && doubleCashback) {
       expectedCSHBK = await this.queryExpectedDoubleCashBack();
-    }else{
-      expectedCSHBK='0.0'
+    } else {
+      expectedCSHBK = '0.0';
     }
-    const cb_reward = parseFloat(parseFloat(expectedCSHBK).toFixed(8))
-    this.setState({expectedCSHBK:cb_reward})
+    const cb_reward = parseFloat(parseFloat(expectedCSHBK).toFixed(8));
+    this.setState({ expectedCSHBK: cb_reward });
   }
-  async queryExpectedDoubleCashBack():Promise<any>{
+  async queryExpectedDoubleCashBack(): Promise<any> {
     try {
-      let {  toToken,toInput ,fromInput,fromToken} = this.state;
-      let token =this.props.tokens.get(toToken) ;
+      let { toToken, toInput, fromInput, fromToken } = this.state;
+      let token = this.props.tokens.get(toToken);
       const pair: SwapPair = this.props.pairs.get(`${process.env.SSCRT_CONTRACT}${SwapPair.id_delimiter}${toToken}`);
 
-      if(pair){
-          const { offer_pool, ask_pool } = await this.getOfferAndAskPools(toToken,process.env.SSCRT_CONTRACT, pair);
-          let offer_amount = new BigNumber(toInput);
-          const { return_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
-          const amount = return_amount.toFixed(token.decimals, BigNumber.ROUND_DOWN)
-          return parseFloat(amount)*2;
-      }else{
-        console.error(`SCRT -> ${token.identifier} is not registered, estimated Cashback cannot be calculated`)
-        return 0.0
+      if (pair) {
+        const { offer_pool, ask_pool } = await this.getOfferAndAskPools(toToken, process.env.SSCRT_CONTRACT, pair);
+        let offer_amount = new BigNumber(toInput);
+        const { return_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
+        const amount = return_amount.toFixed(token.decimals, BigNumber.ROUND_DOWN);
+        return parseFloat(amount) * 2;
+      } else {
+        console.error(`SCRT -> ${token.identifier} is not registered, estimated Cashback cannot be calculated`);
+        return 0.0;
       }
-
     } catch (error) {
-      console.error(error)
-      return 0.0
+      console.error(error);
+      return 0.0;
     }
   }
-
 
   render() {
     const pair = this.props.selectedPair;
@@ -709,7 +706,9 @@ export class SwapTab extends React.Component<
               onClick={async () => {
                 const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
                 const pair = this.props.selectedPair;
-                const optMessage = (this.state.expectedCSHBK)?`And you earned ${this.state.expectedCSHBK} cashback`:''
+                const optMessage = this.state.expectedCSHBK
+                  ? `And you earned ${this.state.expectedCSHBK} cashback`
+                  : '';
                 this.setState({ loadingSwap: true });
 
                 if (priceImpact >= 0.15) {
@@ -718,6 +717,7 @@ export class SwapTab extends React.Component<
                     `Price impact for this swap is very high. Please type the word "${confirmString}" to continue.`,
                   );
                   if (confirm !== confirmString) {
+                    this.setState({ loadingSwap: false });
                     return;
                   }
                 }
@@ -948,7 +948,6 @@ export class SwapTab extends React.Component<
   }
 
   private setFromAmount = (value: string) => {
-    
     if (value === '' || Number(value) === 0) {
       this.setState({
         fromInput: value,

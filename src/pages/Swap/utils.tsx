@@ -104,7 +104,10 @@ export function storeTxResultLocally(txResult: ExecuteResult) {
   if (!localStorage || !localStorage.setItem || !txResult.transactionHash) {
     return;
   }
-  const result = { data: Array.from(txResult.data), logs: txResult.logs };
+  const result = {
+    data: new TextDecoder().decode(Uint8Array.from(txResult.data)),
+    logs: txResult.logs,
+  };
   localStorage.setItem(txResult.transactionHash, JSON.stringify(result));
 }
 

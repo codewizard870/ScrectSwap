@@ -29,6 +29,7 @@ export const Governance = observer(() => {
   const [totalLocked, setTotalLocked] = React.useState(0.0);
   const [votingPower, setVotingPower] = React.useState(undefined);
 
+
   const filters = ['all', 'active', "passed", "failed"];
 
   const [proposals, setProposals] = useState([]);
@@ -130,6 +131,7 @@ export const Governance = observer(() => {
   const theMinimum = amounts.minimumStake;
 
   useEffect(() => {
+    user.setMaintenanceModal(true);
     (async () => {
       const allProposals = await user.getProposals();
       

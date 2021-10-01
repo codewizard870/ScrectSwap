@@ -42,4 +42,9 @@
   font-family: 'Poppins', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   cursor: pointer;
   font-weight: 600;
+  flex-direction: column;
+  &:disabled{
+    opacity: .5;
+    cursor: default;
+  }
 }

@@ -127,7 +127,6 @@ function getClientEnvironment(publicUrl) {
         LEADER_ACCOUNT_ETH: process.env.LEADER_ACCOUNT_ETH,
         LEADER_ACCOUNT_BSC: process.env.LEADER_ACCOUNT_BSC,
         
-        BLACKLISTED_POOLS: process.env.BLACKLISTED_POOLS,
         IS_MAINTENANCE: process.env.IS_MAINTENANCE,
       },
     );

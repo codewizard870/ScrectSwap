@@ -84,7 +84,6 @@ interface RewardData {
   reward: IRewardPool;
   token: ITokenInfo;
 }
-const blacklistedPools = JSON.parse(process.env.BLACKLISTED_POOLS);
 
 export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask,theme } = useStores();

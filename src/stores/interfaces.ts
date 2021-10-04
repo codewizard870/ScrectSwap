@@ -172,6 +172,8 @@ export interface IRewardPool {
   pending_rewards: string;
   deadline: string;
   hidden?: boolean;
+  deprecated?: boolean;
+  deprecated_by?:string;
 }
 
 export interface ISecretSwapPair {

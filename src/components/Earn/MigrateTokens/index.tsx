@@ -9,10 +9,15 @@ import { unlockJsx } from 'pages/Pool/utils';
 import { divDecimals } from 'utils';
 import './style.scss';
 import { parse } from 'query-string';
+import { ReactChild } from 'hoist-non-react-statics/node_modules/@types/react';
 
-const MigrateAssets = observer(props => {
-  const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
-  const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
+interface MigrateAssetsProps {
+  newRewardsContract:string;
+  oldRewardsContract:string;
+  children:ReactChild
+}
+
+const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,children}:MigrateAssetsProps) => {
 
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -93,7 +98,7 @@ const MigrateAssets = observer(props => {
       open={open}
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
-      trigger={props.children}
+      trigger={children}
     >
       <h1>Migrate your tokens</h1>
       <div className="balance-wrapper">

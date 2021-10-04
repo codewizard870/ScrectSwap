@@ -233,7 +233,7 @@ export const SeFiPage = observer(() => {
     <BaseContainer>
       <PageContainer>
         <Box style={{width:'100%',paddingInline:'22%'}} direction="row" wrap={true} fill={true} justify="end" align="center">
-          <h4 className={`${theme.currentTheme} old_pools`} >Show old pools: </h4>
+          <h4 className={`${theme.currentTheme} old_pools`} >Show inactive pools: </h4>
           <ToggleButton value={showOldPools} onClick={()=>setShowOldPools(!showOldPools)}/>
         </Box>
         <Box style={{width:'100%'}} direction="row" wrap={true} fill={true} justify="center" align="start">

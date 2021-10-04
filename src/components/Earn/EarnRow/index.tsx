@@ -258,7 +258,7 @@ class EarnRow extends Component<
     if (isDeprecated) {
       title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING (OLD)' : `${tokenName} (OLD)`;
     }else if(this.props.token.display_props.label === 'SEFI'){
-      title = 'SEFI STAKING';
+      title = 'SEFI STAKING (V2)';
     }else{
       title = tokenName;
     }

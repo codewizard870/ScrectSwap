@@ -20,7 +20,7 @@ import CreateProposal from 'pages/CreateProposal';
 import { DetailProposal } from 'pages/DetailProposal';
 import SefiStaking from 'pages/SefiStaking';
 import { Migration } from 'pages/Migration';
-
+import './notifications.css'
 export const App: React.FC = () => (
   <Providers>
     <Suspense fallback={<div />}>

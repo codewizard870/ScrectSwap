@@ -16,6 +16,7 @@ import ScrtTokenBalance from '../ScrtTokenBalance';
 import { useStores } from 'stores';
 import Theme from 'themes';
 import {Link} from 'react-router-dom'
+import MigrateAssets from '../MigrateTokens';
 
 const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
 const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
@@ -23,7 +24,7 @@ const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
 export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))
   // deadline - current time, 6 seconds per block
-  const timeRemaining = (token.deadline - 3377310) * 6.22 + 1620719241 - Math.round(Date.now() / 1000);
+  const timeRemaining = (Math.min(token.deadline, 7916452) - 3377310) * 6.22 + 1620719241 - Math.round(Date.now() / 1000);
 
   // (token.deadline - Math.round(Date.now() / 1000000) );
   const pending = Number(divDecimals(token.remainingLockedRewards, token.rewardsDecimals)) * price;
@@ -90,7 +91,8 @@ const tokenImages = {
   'XVS': '/static/token-images/xvs_binance.svg',
   'LINA': '/static/token-images/lina_binance.svg',
   'FINE': '/static/token-images/fine_binance.svg',
-  'BUNNY': '/static/token-images/bunny_binance.svg'
+  'BUNNY': '/static/token-images/bunny_binance.svg',
+  'XMR': '/static/sXMR.png'
 }
 
 export const apyString = (token: RewardsToken) => {
@@ -134,6 +136,8 @@ export interface RewardsToken {
   remainingLockedRewards: string;
   deadline: number;
   rewardsSymbol?: string;
+  deprecated?:boolean;
+  deprecated_by?:string;
 }
 @observer
 class EarnRow extends Component<
@@ -250,11 +254,11 @@ class EarnRow extends Component<
 
     }
 
+    const isDeprecated = this.props.token.deprecated
     let title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName;
-    if (this.props.token.rewardsContract === oldRewardsContract) {
+    if (isDeprecated) {
       title = 'SEFI STAKING (OLD)';
     }
-    const isOldContract = this.props.token.rewardsContract === oldRewardsContract;
 
     return (
       <Accordion
@@ -286,7 +290,7 @@ class EarnRow extends Component<
               />
             </div>
             <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
+              <SoftTitleValue title={"0%"/* apyString(this.props.token) */} subTitle={'APY'} />
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
@@ -310,82 +314,28 @@ class EarnRow extends Component<
           }} name="dropdown" />
         </Accordion.Title>
         <Accordion.Content className={`${styles.content} ${styles[this.props.theme.currentTheme]}`} active={activeIndex === 0}>
-          {/* <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-
-              marginLeft: '3.5rem',
-              marginRight: '3.5rem',
-            }}
-          >
-            <ScrtTokenBalance
-              value={this.props.token.balance}
-              decimals={0}
-              currency={this.props.token.lockedAsset}
-              userStore={this.props.userStore}
-              tokenAddress={this.props.token.lockedAssetAddress}
-              selected={this.state.activeIndex === 0}
-              minimumFactions={0}
-              subtitle={`Available to Deposit`}
-              pulse={this.state.claimButtonPulse}
-              pulseInterval={this.state.pulseInterval}
-              unlockTitle={'View Balance'}
-              unlockSubtitle={'Available to Deposit'}
-              onUnlock={value => {
-                if (value) {
-                  this.props.notify(
-                    'success',
-                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
-                      this.props.token.display_props.symbol
-                    }`,
-                  );
-                } else {
-                  this.props.notify(
-                    'error',
-                    `Failed to create viewing key for s${this.props.token.display_props.symbol}!`,
-                  );
-                }
-              }}
-            />
-            <ScrtTokenBalance
-              subtitle={'Available Rewards'}
-              tokenAddress={this.props.token.rewardsContract}
-              decimals={0}
-              userStore={this.props.userStore}
-              currency={this.props.token.rewardsSymbol || 'sSCRT'}
-              selected={false}
-              value={this.props.token.rewards}
-              pulse={this.state.claimButtonPulse}
-              pulseInterval={this.state.pulseInterval}
-              unlockTitle="View Balance"
-              unlockSubtitle="Available Rewards"
-              onUnlock={value => {
-                if (value) {
-                  this.props.notify(
-                    'success',
-                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
-                      this.props.token.display_props.symbol
-                    } rewards`,
-                  );
-                } else {
-                  this.props.notify(
-                    'error',
-                    `Failed to create viewing key for s${this.props.token.display_props.symbol} rewards!`,
-                  );
-                }
-              }}
-            />
-          </div> */}
+          {
+            (this.props.token.deprecated)
+              ? <div className='maintenance-warning'>
+                  <h3><Icon name='warning circle'/>A new version of this earn pool is coming soon and will allow you to migrate. For now you can only withdraw LP tokens.</h3>
+                </div>
+              : <></>
+          }
+          
           <div>
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
                 <Grid.Column>
-                  { isOldContract ?
+                  { isDeprecated ?
                     (
                       <>
-                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>
-                        <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Migrate your tokens <Link to={"/migration"}>here</Link>.</p>
+                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>                        
+                        <MigrateAssets oldRewardsContract={this.props.token.rewardsContract} newRewardsContract={this.props.token.deprecated_by}>
+                          <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
+                              Migrate your tokens<strong className={cn(styles.here)}> here.</strong>
+                          </p>
+                        </MigrateAssets>
+                        
                       </>
                     )
                   :
@@ -394,22 +344,27 @@ class EarnRow extends Component<
                       title='Earn'
                       value={this.state.depositValue}
                       action={
-                        <Grid columns={1} stackable relaxed={'very'}>
-                          <Grid.Column
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'flex-start',
-                            }}
-                          >
-                            <EarnButton
-                              props={this.props}
-                              value={this.state.depositValue}
-                              changeValue={this.handleChangeDeposit}
-                              togglePulse={this.togglePulse}
-                              setPulseInterval={this.setPulseInterval}
-                            />
-                          </Grid.Column>
-                        </Grid>
+                        (isDeprecated) 
+                        ? <></>
+                        : 
+                          <>
+                            <Grid columns={1} stackable relaxed={'very'}>
+                              <Grid.Column
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'flex-start',
+                                }}
+                              >
+                                <EarnButton
+                                  props={this.props}
+                                  value={this.state.depositValue}
+                                  changeValue={this.handleChangeDeposit}
+                                  togglePulse={this.togglePulse}
+                                  setPulseInterval={this.setPulseInterval}
+                                />
+                              </Grid.Column>
+                            </Grid>
+                          </>
                       }
                       onChange={this.handleChangeDeposit}
                       balance={this.props.token.balance}

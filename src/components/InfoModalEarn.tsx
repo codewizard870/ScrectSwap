@@ -15,7 +15,7 @@ export const InfoModalEarn = observer(() => {
     }
 
     if (!user.isInfoEarnReading) {
-      actionModals.open(() => <InfoEarn title="Improve privacy guarantees and earn SCRT rewards" />, {
+      actionModals.open(() => <InfoEarn title="Earn rewards are currently disabled" />, {
         title: '',
         applyText: 'Got it',
         closeText: '',

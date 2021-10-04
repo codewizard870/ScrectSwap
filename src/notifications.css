@@ -3,7 +3,7 @@
   border: none !important;
 }
 .ct-group .ct-toast-warn {
-  background: #ec3933;
+  background: #ec3933 !important;
   border: none !important;
 }
 .ct-group .ct-toast-error {

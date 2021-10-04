@@ -78,8 +78,9 @@ export class UserStoreEx extends StoreConstructor {
   @observable public isUnconnected = '';
   @observable public isInfoReading = false;
   @observable public isInfoEarnReading = false;
+  @observable public isMaintenanceOpen = false;
   @observable public chainId: string;
-
+  @observable public isModalOpen= false;
   @observable public ws: WebSocket;
 
   constructor(stores) {
@@ -103,7 +104,7 @@ export class UserStoreEx extends StoreConstructor {
     if (sessionObj) {
       this.address = sessionObj.address;
       this.isInfoReading = sessionObj.isInfoReading;
-      this.isInfoEarnReading = sessionObj.isInfoEarnReading;
+      this.isInfoEarnReading = sessionObj.isInfoEarnReadingSecret3;
       this.keplrCheckPromise.then(async () => {
         await this.signIn();
 
@@ -148,7 +149,12 @@ export class UserStoreEx extends StoreConstructor {
   @action public setSnip20BalanceMin(balance: string) {
     this.snip20BalanceMin = balance;
   }
-
+  @action public setModalOpen(open:boolean){
+    this.isModalOpen = open;
+  }
+  @action public setMaintenanceModal(open:boolean){
+    this.isMaintenanceOpen = open;
+  }
   @action public async websocketTerminate(waitToBeOpen?: boolean) {
     if (waitToBeOpen) {
       while (!this.ws && this.ws.readyState !== WebSocket.OPEN) {
@@ -725,7 +731,7 @@ export class UserStoreEx extends StoreConstructor {
       [],
       getFeeForExecute(450_000))
 
-    const newPoll = result.logs[0]?.events[1]?.attributes[5]?.value;
+    const newPoll = result.logs[0]?.events[1]?.attributes.find((e)=>e.key==='new_poll').value;
     if (newPoll) {
       await axios.post(`${process.env.BACKEND_URL}/secret_votes/${newPoll}`);
     }
@@ -773,7 +779,8 @@ export class UserStoreEx extends StoreConstructor {
           finalized: proposal.finalized,
           valid: proposal.valid,
           status: proposal.status.toLowerCase(),
-          voting_percentaje: proposal.voting_percentage
+          voting_percentaje: proposal.voting_percentage,
+          hidden: proposal.hidden
         }
       });
       return result;
@@ -1107,7 +1114,7 @@ export class UserStoreEx extends StoreConstructor {
       JSON.stringify({
         address: this.address,
         isInfoReading: this.isInfoReading,
-        isInfoEarnReading: this.isInfoEarnReading,
+        isInfoEarnReadingSecret3: this.isInfoEarnReading,
       }),
     );
   }
@@ -1169,7 +1176,7 @@ export class UserStoreEx extends StoreConstructor {
   //
   // this.ethRate = ethusdt.body.lastPrice;
   //}
-  @action public async getRewardToken(tokenSymbol: string): Promise<RewardsToken> {
+  @action public async getRewardToken(tokenAddress: string): Promise<RewardsToken> {
     try {
       stores.rewards.init({
         isLocal: true,
@@ -1199,18 +1206,10 @@ export class UserStoreEx extends StoreConstructor {
       while (!stores.user.secretjs || stores.tokens.isPending) {
         await sleep(100);
       }
-      await stores.user.updateBalanceForSymbol(tokenSymbol);
+      await stores.user.refreshTokenBalanceByAddress(tokenAddress);
       const reward_tokens = mappedRewards
         .slice()
-        .sort((a, b) => {
-          /* SEFI first */
-          if (a.reward.inc_token.symbol === tokenSymbol) {
-            return -1;
-          }
-
-          return 0;
-        })
-        ?.filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+        .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
         //@ts-ignore
         .map(rewardToken => {
           if (Number(rewardToken.reward.deadline) < 2_000_000) {
@@ -1239,11 +1238,11 @@ export class UserStoreEx extends StoreConstructor {
             rewardsSymbol: 'SEFI',
           };
 
-          if (rewardsToken.lockedAsset === tokenSymbol) {
+          if (rewardsToken.rewardsContract === tokenAddress) {
             return rewardsToken;
           }
         });
-      return reward_tokens[0];
+      return reward_tokens.filter(e => e !== undefined)[0];
     } catch (error) {
       console.error(error)
       return undefined;

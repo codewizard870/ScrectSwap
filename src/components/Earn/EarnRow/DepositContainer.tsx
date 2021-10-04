@@ -112,7 +112,7 @@ const DepositContainer = props => {
           <AmountButton balance={props.balance} onChange={props.onChange} multiplier={'0.75'} />
           <AmountButton balance={props.balance} onChange={props.onChange} multiplier={'1'} />
         </div>
-        <div>{props.action}</div>
+        <div>{props.action}</div>         
       </div>
     </div>
   );

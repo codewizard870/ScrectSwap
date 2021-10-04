@@ -231,7 +231,7 @@ export const CreateNewPair = async ({
   secretjsSender: AsyncSender;
   tokenA: Asset;
   tokenB: Asset;
-}): Promise<CreatePairResponse> => {
+}): Promise<ExecuteResult> => {
   let asset_infos = [];
   for (const t of [tokenA, tokenB]) {
     // is a token
@@ -253,7 +253,6 @@ export const CreateNewPair = async ({
   }
 
   const factoryAddress = process.env.AMM_FACTORY_CONTRACT;
-  const pairCodeId = Number(process.env.AMM_PAIR_CODE_ID);
   const response: ExecuteResult = await secretjsSender.asyncExecute(
     factoryAddress,
     {
@@ -264,15 +263,7 @@ export const CreateNewPair = async ({
     getFeeForExecute(1_500_000),
   );
   storeTxResultLocally(response);
-
-  let contractAddress: string;
-  try {
-    contractAddress = extractValueFromLogs(response, 'pair_contract_addr');
-  } catch (_) {
-    contractAddress = (await secretjs.getContracts(pairCodeId))[-1].address;
-  }
-
-  return { contractAddress };
+  return response
 };
 
 interface GetAllPairsResponse {

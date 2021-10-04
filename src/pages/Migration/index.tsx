@@ -8,8 +8,7 @@ import './style.scss';
 import WithdrawButton from './WithdrawButton';
 import EarnButton from './EarnButton';
 import { sleep, unlockToken } from 'utils';
-import { notify } from '../Earn';
-import { Redeem } from '../../blockchain-bridge/scrt';
+import { notify, Redeem } from '../../blockchain-bridge/scrt';
 import { DepositRewards } from '../../blockchain-bridge/scrt';
 import ScrtTokenBalanceSingleLine from 'components/Earn/EarnRow/ScrtTokenBalanceSingleLine';
 import SpinnerDashes from 'ui/Spinner/SpinnerDashes';
@@ -97,15 +96,17 @@ export const Migration = observer(() => {
         secretjs: user.secretjsSend,
         address: oldRewardsContract,
         amount: balance,
-        fee
-      }).then(() => {
-        const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);
-        notify('success', `Removed ${formattedBalance} s${pool.rewards_token.symbol} from the expired pool`);
-        localStorage.setItem(MIGRATED_AMOUNT_KEY, balance);
-        return updateButtonsStates();
-      }).catch(reason => {
-        notify('error', `Failed to withdraw: ${reason}`);
-      });
+        fee,
+      })
+        .then(() => {
+          const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);
+          notify('success', `Removed ${formattedBalance} s${pool.rewards_token.symbol} from the expired pool`);
+          localStorage.setItem(MIGRATED_AMOUNT_KEY, balance);
+          return updateButtonsStates();
+        })
+        .catch(reason => {
+          notify('error', `Failed to withdraw: ${reason}`);
+        });
     }
   }
 
@@ -124,17 +125,17 @@ export const Migration = observer(() => {
         recipient: newRewardsContract,
         address: pool.rewards_token.address,
         amount: balance,
-        fee
+        fee,
       })
-      .then(() => {
-        const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);
-        notify('success', `Staked ${formattedBalance} s${pool.rewards_token.symbol} in the new pool`);
-        localStorage.removeItem(MIGRATED_AMOUNT_KEY);
-        return updateButtonsStates();
-      })
-      .catch(reason => {
-        notify('error', `Failed to deposit: ${reason}`);
-      });
+        .then(() => {
+          const formattedBalance = Number(balance) / Math.pow(10, pool.rewards_token.decimals);
+          notify('success', `Staked ${formattedBalance} s${pool.rewards_token.symbol} in the new pool`);
+          localStorage.removeItem(MIGRATED_AMOUNT_KEY);
+          return updateButtonsStates();
+        })
+        .catch(reason => {
+          notify('error', `Failed to deposit: ${reason}`);
+        });
     }
   }
 
@@ -146,10 +147,10 @@ export const Migration = observer(() => {
     if (!newBalance) return;
     setBalances({
       oldBalance: (parseInt(Oldbalance) / 1e6).toFixed(2),
-      newBalance: (parseInt(newBalance) / 1e6).toFixed(2)
+      newBalance: (parseInt(newBalance) / 1e6).toFixed(2),
     });
     setLoading(false);
-  }
+  };
 
   useEffect(() => {
     initRewards();
@@ -159,19 +160,29 @@ export const Migration = observer(() => {
   return (
     <BaseContainer>
       <PageContainer>
-        <Box
-          className={`migration ${theme.currentTheme}`}
-          pad={{ horizontal: '136px', top: 'small' }}
-        >
+        <Box className={`migration ${theme.currentTheme}`} pad={{ horizontal: '136px', top: 'small' }}>
           <div className="steps steps--top">
-
             <div className="steps__instructions">
-
-              <h1>Migrate Your Tokens</h1>
-
-              <p>SecretSwap SEFI Staking pool has been upgraded.<br/>Please follow
-              the steps below to migrate your tokens and continue to earn rewards.</p>
-
+              <ul>
+                <li>Earn rewards are currently disabled. New reward pools will be added in the near future</li>
+                <li>
+                  To withdraw rewards from the pool, use the "withdraw" button for each pool. This will automatically
+                  withdraw all your rewards. You do not need a viewing key to use this feature
+                </li>
+                <li>
+                  We recommend backing up your viewing keys for the earn pools. These may be used in the future to
+                  validate earned SEFI rewards
+                </li>
+                <li>
+                  Known issues:
+                  <ul>
+                    <li>
+                      Withdraw message will return a 0.0000 for the amount of lp tokens withdrawn regardless of amount
+                    </li>
+                    <li>Creating a viewing key for disabled earn contracts may fail</li>
+                  </ul>
+                </li>
+              </ul>
             </div>
 
             <div>&nbsp;</div>
@@ -182,11 +193,9 @@ export const Migration = observer(() => {
                 <span>SEFI Staking</span>
               </div>
             </div>
-
           </div>
 
           <div className="steps">
-
             <div className={`box ${theme.currentTheme}`}>
               <h2>Step 1</h2>
               <div className="data">
@@ -194,10 +203,7 @@ export const Migration = observer(() => {
                 <span> {loading ? <SpinnerDashes /> : `${oldBalance} SEFI`}</span>
               </div>
               <h4>Withdraw tokens from expired pools</h4>
-              <WithdrawButton
-                withdraw={withdraw}
-                isDisabled={isWithdrawDisabled || loading}
-              />
+              <WithdrawButton withdraw={withdraw} isDisabled={isWithdrawDisabled || loading} />
             </div>
 
             <img src="/static/arrow-right.svg" alt="arrow right icon" />
@@ -209,16 +215,11 @@ export const Migration = observer(() => {
                 <span> {loading ? <SpinnerDashes /> : `${newBalance} SEFI`}</span>
               </div>
               <h4>Earn rewards in new pools</h4>
-              <EarnButton
-                deposit={deposit}
-                isDisabled={isEarnDisabled || loading}
-              />
+              <EarnButton deposit={deposit} isDisabled={isEarnDisabled || loading} />
             </div>
-
           </div>
-
         </Box>
       </PageContainer>
-    </BaseContainer >
+    </BaseContainer>
   );
 });

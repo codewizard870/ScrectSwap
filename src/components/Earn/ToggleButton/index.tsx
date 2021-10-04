@@ -1,10 +1,10 @@
 import React from 'react';
 import './style.scss';
 
-const ToggleButton = (props: { onClick: any }) => {
+const ToggleButton = (props: { onClick: any; value: boolean }) => {
   return (
     <label className="switch">
-      <input onClick={props.onClick} type="checkbox" />
+      <input checked={props.value} onClick={props.onClick} onChange={()=>{}} type="checkbox" />
       <span className="slider round"></span>
     </label>
   );

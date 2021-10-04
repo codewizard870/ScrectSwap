@@ -89,7 +89,7 @@ export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask,theme } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
-  const [showOldPools, setShowOldPools] = useState<boolean>(false);
+  const [showOldPools, setShowOldPools] = useState<boolean>(true);
   const [earnings,setEarnings] = useState('0');
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
 
@@ -234,7 +234,7 @@ export const SeFiPage = observer(() => {
       <PageContainer>
         <Box style={{width:'100%',paddingInline:'22%'}} direction="row" wrap={true} fill={true} justify="end" align="center">
           <h4 className={`${theme.currentTheme} old_pools`} >Show old pools: </h4>
-          <ToggleButton onClick={()=>setShowOldPools(!showOldPools)}/>
+          <ToggleButton value={showOldPools} onClick={()=>setShowOldPools(!showOldPools)}/>
         </Box>
         <Box style={{width:'100%'}} direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center" className={styles.base}>

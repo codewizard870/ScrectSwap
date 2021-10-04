@@ -253,11 +253,14 @@ class EarnRow extends Component<
       tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
 
     }
-
-    const isDeprecated = this.props.token.deprecated
-    let title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName;
+    const isDeprecated = this.props.token.deprecated && this.props.token.deprecated_by;
+    let title=''
     if (isDeprecated) {
-      title = 'SEFI STAKING (OLD)';
+      title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING (OLD)' : `${tokenName} (OLD)`;
+    }else if(this.props.token.display_props.label === 'SEFI'){
+      title = 'SEFI STAKING';
+    }else{
+      title = tokenName;
     }
 
     return (

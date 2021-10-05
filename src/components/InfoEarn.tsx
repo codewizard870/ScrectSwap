@@ -20,7 +20,7 @@ export const InfoEarn = ({ title }: { title: string }) => (
 
       <p>
         To celebrate the relaunch of LP rewards SEFI will be distributed at an accelerated rate for the first week! Stay
-        tuned to find out more about the{' '}
+        tuned to find out more about this.
       </p>
 
       <p>

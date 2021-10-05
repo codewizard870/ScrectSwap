@@ -13,7 +13,7 @@ import WithdrawButton from './WithdrawButton';
 import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
 import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
-import { useStores } from 'stores';
+import stores, { useStores } from 'stores';
 import Theme from 'themes';
 import {Link} from 'react-router-dom'
 import MigrateAssets from '../MigrateTokens';
@@ -320,7 +320,7 @@ class EarnRow extends Component<
           {
             (this.props.token.deprecated)
               ? <div className='maintenance-warning'>
-                  <h3><Icon name='warning circle'/>A new version of this earn pool is coming soon and will allow you to migrate. For now you can only withdraw LP tokens.</h3>
+                  <h3><Icon name='warning circle'/>A new version of this earn pool is live. You can migrate by clicking the button below</h3>
                 </div>
               : <></>
           }
@@ -334,9 +334,11 @@ class EarnRow extends Component<
                       <>
                         <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>                        
                         <MigrateAssets oldRewardsContract={this.props.token.rewardsContract} newRewardsContract={this.props.token.deprecated_by} lockedAsset={this.props.token.lockedAsset} lockedAssetAddress={this.props.token.lockedAssetAddress}>
-                          <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
-                              Migrate your tokens<strong className={cn(styles.here)}> here.</strong>
-                          </p>
+
+                            <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
+                                Migrate your tokens here.
+                              <button className={`migrate-solid-button ${stores.theme.currentTheme}`}>Migrate</button>
+                            </p>
                         </MigrateAssets>
                         
                       </>

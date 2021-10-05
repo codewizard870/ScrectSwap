@@ -43,8 +43,35 @@
   cursor: pointer;
   font-weight: 600;
   flex-direction: column;
-  &:disabled{
-    opacity: .5;
+  &:disabled {
+    opacity: 0.5;
     cursor: default;
+  }
+}
+.migrate-solid-button {
+  outline: none;
+  border-radius: 5px !important;
+  padding: 0.7rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+  font-family: 'Poppins', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  font-weight: 600;
+  flex-direction: column;
+  &.light {
+    color: rgb(222, 222, 222);
+    background: rgb(22, 20, 20);
+    &:hover {
+      background: black;
+    }
+  }
+  &.dark {
+    color: #0d1017;
+    background: white;
+    &:hover {
+      background: #ccc;
+    }
   }
 }

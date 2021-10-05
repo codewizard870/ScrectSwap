@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import * as styles from './styles.styl';
 import cn from 'classnames';
-import { Accordion, Divider, Grid, Icon, Image, Segment } from 'semantic-ui-react';
+import { Accordion, Divider, Grid, Icon, Image, Segment, } from 'semantic-ui-react';
 import SoftTitleValue from '../SoftTitleValue';
 import EarnButton from './EarnButton';
 import DepositContainer from './DepositContainer';

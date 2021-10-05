@@ -15,7 +15,7 @@ export const InfoModalEarn = observer(() => {
     }
 
     if (!user.isInfoEarnReading) {
-      actionModals.open(() => <InfoEarn title="Earn rewards are currently disabled" />, {
+      actionModals.open(() => <InfoEarn title="Earn Contracts are Back!" />, {
         title: '',
         applyText: 'Got it',
         closeText: '',

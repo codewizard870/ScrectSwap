@@ -108,7 +108,7 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,lockedAss
             ? <h4>Old pool balance : {unlockJsx({ onClick: createVK })}</h4>
             : isNaN(parseInt(balance)) || !balance || balance === undefined
               ? <Loader size='tiny' inline active >Loading...</Loader> 
-              : <h4>Old pool balance : {divDecimals(balance, 6)} SEFI Staking </h4>
+              : <h4>Old pool balance : {divDecimals(balance, 6)} {lockedAsset} </h4>
         }
       </div>
       <button disabled={isNaN(parseInt(balance)) || balance=== '0'}  className="migrate-button" onClick={migrate}>

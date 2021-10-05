@@ -57,7 +57,7 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,children}
           {
             contractAddress: oldRewardsContract,
             handleMsg: {
-              redeem: {
+              emergency_redeem: {
                 amount,
               },
             },

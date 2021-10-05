@@ -259,7 +259,12 @@ export const SeFiPage = observer(() => {
               .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SETH-SETH(BSC)' ? -1 : 0)
               .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SUSDC-SUSDC(BSC)' ? -1 : 0)
               .sort((a,b)=>(a.reward.inc_token.symbol === 'SEFI') ? -1: 0)
-              .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+              .filter(rewardToken => (process.env.TEST_COINS ? true : rewardToken.reward.hidden))
+              .filter(rewardToken => {
+                if(rewardToken.reward.hidden == false && rewardToken.reward.hidden !== undefined){
+                  return rewardToken;
+                }
+              })
               .filter((a) => (a.reward.deprecated && showOldPools) || !a.reward.deprecated)
               .map((rewardToken,i) => {
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {

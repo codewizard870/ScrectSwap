@@ -14,10 +14,12 @@ import { ReactChild } from 'hoist-non-react-statics/node_modules/@types/react';
 interface MigrateAssetsProps {
   newRewardsContract:string;
   oldRewardsContract:string;
+  lockedAsset:string;
+  lockedAssetAddress:string;
   children:ReactChild
 }
 
-const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,children}:MigrateAssetsProps) => {
+const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,lockedAsset,lockedAssetAddress,children}:MigrateAssetsProps) => {
 
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -62,7 +64,7 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,children}
             },
           },
           {
-            contractAddress: process.env.SCRT_GOV_TOKEN_ADDRESS,
+            contractAddress: lockedAssetAddress,
             handleMsg: {
               send: {
                 amount,
@@ -72,10 +74,10 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,children}
             },
           },
         ],
-        'Migrating assets from old SEFI pool to new',
+        `Migrating assets from old ${lockedAsset} pool to new`,
         fee,
       );
-      notify('success',`You migrated ${divDecimals(balance,6)} SEFI to our new pool`,10)
+      notify('success',`You migrated ${divDecimals(balance,6)} ${lockedAsset} to the new pool`,10)
       setBalance('0')
       storeTxResultLocally(res);
 

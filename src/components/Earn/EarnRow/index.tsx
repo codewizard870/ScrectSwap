@@ -333,7 +333,7 @@ class EarnRow extends Component<
                     (
                       <>
                         <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>                        
-                        <MigrateAssets oldRewardsContract={this.props.token.rewardsContract} newRewardsContract={this.props.token.deprecated_by}>
+                        <MigrateAssets oldRewardsContract={this.props.token.rewardsContract} newRewardsContract={this.props.token.deprecated_by} lockedAsset={this.props.token.lockedAsset} lockedAssetAddress={this.props.token.lockedAssetAddress}>
                           <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
                               Migrate your tokens<strong className={cn(styles.here)}> here.</strong>
                           </p>

@@ -84,14 +84,36 @@ interface RewardData {
   reward: IRewardPool;
   token: ITokenInfo;
 }
+const KEY_SHOW_OLD_POOLS = 'SHOW_OLD_POOLS'
+
+const getShowOldPoolsValue = ():boolean=>{
+  const local_value = localStorage.getItem(KEY_SHOW_OLD_POOLS);
+  
+  if(local_value){
+    const res : boolean = local_value === 'true' ? true : false;
+    return res;
+  }else{
+    return true
+  }
+}
 
 export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask,theme } = useStores();
 
+
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
-  const [showOldPools, setShowOldPools] = useState<boolean>(true);
+  const [showOldPools, setShowOldPools] = useState<boolean>(getShowOldPoolsValue());
   const [earnings,setEarnings] = useState('0');
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
+
+  const setShowOldPoolsValue = ()=>{
+    console.log(`saving in local storage with key ${KEY_SHOW_OLD_POOLS} the value of ${showOldPools.toString()}` )
+    localStorage.setItem(KEY_SHOW_OLD_POOLS,showOldPools.toString())
+  }
+  
+  useEffect(() => {
+    setShowOldPoolsValue();
+  },[showOldPools])
 
   function setSefiBalance(balance: string) {
     if (balance === unlockToken) {

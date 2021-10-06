@@ -320,7 +320,11 @@ class EarnRow extends Component<
           {
             (this.props.token.deprecated)
               ? <div className='maintenance-warning'>
-                  <h3><Icon name='warning circle'/>A new version of this earn pool is live. You can migrate by clicking the button below</h3>
+                  <h3>
+                    <Icon name='warning circle'/>
+                    A new version of this earn pool is live. You can migrate by 
+                    clicking the <strong>Migrate</strong> button below.
+                  </h3>
                 </div>
               : <></>
           }
@@ -428,19 +432,24 @@ class EarnRow extends Component<
             symbol={this.props.token.display_props.symbol}
             notify={this.props.notify}
             rewardsToken={this.props.token.rewardsSymbol || 'sSCRT'}
+            deprecated={isDeprecated}
           />
-          <Text
-            size="medium"
-            style={{
-              padding: '20 20 0 20',
-              cursor: 'auto',
-              textAlign: 'center',
-              fontFamily:'Poppins,Arial',
-              color:(this.props.theme.currentTheme == 'dark')?'white':'#1B1B1B'
-            }}
-          >
-            * Every time you deposit, withdraw or claim the contract will automagically claim your rewards for you!
-          </Text>
+          {
+            (!isDeprecated)
+              ? <Text
+                  size="medium"
+                  style={{
+                    padding: '20 20 0 20',
+                    cursor: 'auto',
+                    textAlign: 'center',
+                    fontFamily:'Poppins,Arial',
+                    color:(this.props.theme.currentTheme == 'dark')?'white':'#1B1B1B'
+                  }}
+                >
+                  * Every time you deposit, withdraw or claim the contract will automagically claim your rewards for you!
+                </Text>
+              : <></>
+          }
         </Accordion.Content>
       </Accordion>
     );

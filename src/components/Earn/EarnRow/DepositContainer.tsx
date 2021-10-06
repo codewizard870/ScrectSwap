@@ -48,6 +48,9 @@ const changeInput = (balance, percentage, onChange) => {
 };
 const DepositContainer = props => {
   const createViewingKey = () => {
+    if(props.deprecated){
+      return <></>
+    }
     return unlockJsx({
       onClick: async () => {
         try {
@@ -86,7 +89,7 @@ const DepositContainer = props => {
               popupText={props.unlockPopupText}
               createKey={createViewingKey}
             />
-            {props.balance?.includes(unlockToken) && (
+            {props.balance?.includes(unlockToken) && !props.deprecated && (
               <Popup
                 content={props.unlockPopupText}
                 className={styles.iconinfo__popup}

@@ -253,7 +253,7 @@ class EarnRow extends Component<
       tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
 
     }
-    const isDeprecated = this.props.token.deprecated && this.props.token.deprecated_by;
+    const isDeprecated = this.props.token.deprecated && this.props.token.deprecated_by !== '';
     let title=''
     if (isDeprecated) {
       title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING (OLD)' : `${tokenName} (OLD)`;
@@ -413,6 +413,7 @@ class EarnRow extends Component<
                     tokenAddress={this.props.token.rewardsContract} 
                     userStore={this.props.userStore}
                     theme={this.props.theme}
+                    deprecated={isDeprecated}
                     />
                 </Grid.Column>
               </Grid>

@@ -45,7 +45,7 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,lockedAss
       return;
     }
     if(balance === '0'){
-      notify('error', "You don't balance in old pool", 10);
+      notify('error', "Not enough balance in old pool", 10);
       return;
     }
         
@@ -105,7 +105,7 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,lockedAss
         
         {
           balance.toLowerCase() === 'unlock' || isNaN(parseInt(balance)) || !balance || balance === undefined
-            ? <p><Icon name='info circle'/> Unfortunately we can't automatically migrate your tokens. Please do it manually: Press the Withdraw button (without an amount) to pull out your tokens and stake in the new pool!</p> 
+            ? <p><Icon name='info circle'/> Unfortunately we can't automatically migrate your tokens. Please do it manually: Press the Withdraw button to pull out your tokens and stake in the new pool!</p> 
             : <>
                 <h1>Migrate your tokens</h1>
                 <div className="balance-wrapper">
@@ -116,7 +116,7 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,lockedAss
                     </Popup> 
                   </h4>
                 </div>
-                <button disabled={isNaN(parseInt(balance)) || balance=== '0'}  className="migrate-button" onClick={migrate}>
+                <button className="migrate-button" onClick={migrate}>
                   {loading ? <Loader size='tiny' inline active >Loading...</Loader> : 'Migrate your tokens'}
                 </button>
               </>

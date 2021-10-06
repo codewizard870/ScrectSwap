@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react';
-import { Dimmer, Loader, Modal } from 'semantic-ui-react';
+import { Dimmer, Icon, Loader, Modal, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import { ExecuteResult } from 'secretjs';
 import { storeTxResultLocally } from 'pages/Swap/utils';
@@ -101,19 +101,27 @@ const MigrateAssets = observer(({newRewardsContract,oldRewardsContract,lockedAss
       onOpen={() => setOpen(true)}
       trigger={children}
     >
-      <h1>Migrate your tokens</h1>
-      <div className="balance-wrapper">
+
+        
         {
-          balance.toLowerCase() === 'unlock'  
-            ? <h4>Old pool balance : {unlockJsx({ onClick: createVK })}</h4>
-            : isNaN(parseInt(balance)) || !balance || balance === undefined
-              ? <Loader size='tiny' inline active >Loading...</Loader> 
-              : <h4>Old pool balance : {divDecimals(balance, 6)} {lockedAsset} </h4>
+          balance.toLowerCase() === 'unlock' || isNaN(parseInt(balance)) || !balance || balance === undefined
+            ? <p><Icon name='info circle'/> Unfortunately we can't automatically migrate your tokens. Please do it manually: Press the Withdraw button (without an amount) to pull out your tokens and stake in the new pool!</p> 
+            : <>
+                <h1>Migrate your tokens</h1>
+                <div className="balance-wrapper">
+                  <h4>
+                    Old pool balance : {divDecimals(balance, 6)} {lockedAsset}&nbsp;  
+                    <Popup trigger={<Icon name='info circle'/>}>
+                      Don't worry, any staked tokens will be pulled out and staked into the new contract
+                    </Popup> 
+                  </h4>
+                </div>
+                <button disabled={isNaN(parseInt(balance)) || balance=== '0'}  className="migrate-button" onClick={migrate}>
+                  {loading ? <Loader size='tiny' inline active >Loading...</Loader> : 'Migrate your tokens'}
+                </button>
+              </>
         }
-      </div>
-      <button disabled={isNaN(parseInt(balance)) || balance=== '0'}  className="migrate-button" onClick={migrate}>
-        {loading ? <Loader size='tiny' inline active >Loading...</Loader> : 'Migrate your tokens'}
-      </button>
+      
     </Modal>
   );
 });

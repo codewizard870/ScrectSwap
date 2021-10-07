@@ -263,10 +263,6 @@ export const SeFiPage = observer(() => {
               .filter(rewardToken => rewardToken.reward.hidden == false && rewardToken.reward.hidden !== undefined)
               .filter((a) => (a.reward.deprecated && showOldPools) || !a.reward.deprecated)
               .map((rewardToken,i) => {
-                if (Number(rewardToken.reward.deadline) < 2_000_000) {
-                  return null;
-                }
-
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,
                   lockedAsset: rewardToken.reward.inc_token.symbol,

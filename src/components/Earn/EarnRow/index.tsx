@@ -24,7 +24,7 @@ const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
 export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))
   // deadline - current time, 6 seconds per block
-  const timeRemaining = (Math.min(token.deadline, 7916452) - 3377310) * 6.22 + 1620719241 - Math.round(Date.now() / 1000);
+  const timeRemaining = (Math.min(token.deadline, 7916452) - 335039) * 6.2 + 1633621506 - Math.round(Date.now() / 1000);
 
   // (token.deadline - Math.round(Date.now() / 1000000) );
   const pending = Number(divDecimals(token.remainingLockedRewards, token.rewardsDecimals)) * price;
@@ -293,7 +293,7 @@ class EarnRow extends Component<
               />
             </div>
             <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue title={"0%"/* apyString(this.props.token) */} subTitle={'APY'} />
+              <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
             </div>
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import * as styles from './styles.styl';
 import cn from 'classnames';
-import { Accordion, Divider, Grid, Icon, Image, Segment } from 'semantic-ui-react';
+import { Accordion, Divider, Grid, Icon, Image, Segment, } from 'semantic-ui-react';
 import SoftTitleValue from '../SoftTitleValue';
 import EarnButton from './EarnButton';
 import DepositContainer from './DepositContainer';
@@ -13,9 +13,10 @@ import WithdrawButton from './WithdrawButton';
 import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
 import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
-import { useStores } from 'stores';
+import stores, { useStores } from 'stores';
 import Theme from 'themes';
 import {Link} from 'react-router-dom'
+import MigrateAssets from '../MigrateTokens';
 
 const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
 const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
@@ -135,6 +136,8 @@ export interface RewardsToken {
   remainingLockedRewards: string;
   deadline: number;
   rewardsSymbol?: string;
+  deprecated?:boolean;
+  deprecated_by?:string;
 }
 @observer
 class EarnRow extends Component<
@@ -250,12 +253,15 @@ class EarnRow extends Component<
       tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
 
     }
-
-    let title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING' : tokenName;
-    if (this.props.token.rewardsContract === oldRewardsContract) {
-      title = 'SEFI STAKING (OLD)';
+    const isDeprecated = this.props.token.deprecated && this.props.token.deprecated_by;
+    let title=''
+    if (isDeprecated) {
+      title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING (OLD)' : `${tokenName} (OLD)`;
+    }else if(this.props.token.display_props.label === 'SEFI'){
+      title = 'SEFI STAKING (V2)';
+    }else{
+      title = tokenName;
     }
-    const isOldContract = this.props.token.rewardsContract === oldRewardsContract;
 
     return (
       <Accordion
@@ -311,77 +317,10 @@ class EarnRow extends Component<
           }} name="dropdown" />
         </Accordion.Title>
         <Accordion.Content className={`${styles.content} ${styles[this.props.theme.currentTheme]}`} active={activeIndex === 0}>
-          {/* <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-
-              marginLeft: '3.5rem',
-              marginRight: '3.5rem',
-            }}
-          >
-            <ScrtTokenBalance
-              value={this.props.token.balance}
-              decimals={0}
-              currency={this.props.token.lockedAsset}
-              userStore={this.props.userStore}
-              tokenAddress={this.props.token.lockedAssetAddress}
-              selected={this.state.activeIndex === 0}
-              minimumFactions={0}
-              subtitle={`Available to Deposit`}
-              pulse={this.state.claimButtonPulse}
-              pulseInterval={this.state.pulseInterval}
-              unlockTitle={'View Balance'}
-              unlockSubtitle={'Available to Deposit'}
-              onUnlock={value => {
-                if (value) {
-                  this.props.notify(
-                    'success',
-                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
-                      this.props.token.display_props.symbol
-                    }`,
-                  );
-                } else {
-                  this.props.notify(
-                    'error',
-                    `Failed to create viewing key for s${this.props.token.display_props.symbol}!`,
-                  );
-                }
-              }}
-            />
-            <ScrtTokenBalance
-              subtitle={'Available Rewards'}
-              tokenAddress={this.props.token.rewardsContract}
-              decimals={0}
-              userStore={this.props.userStore}
-              currency={this.props.token.rewardsSymbol || 'sSCRT'}
-              selected={false}
-              value={this.props.token.rewards}
-              pulse={this.state.claimButtonPulse}
-              pulseInterval={this.state.pulseInterval}
-              unlockTitle="View Balance"
-              unlockSubtitle="Available Rewards"
-              onUnlock={value => {
-                if (value) {
-                  this.props.notify(
-                    'success',
-                    `Created a viewing key for ${this.props.token.display_props.symbol !== 'SEFI' ? 's' : ''}${
-                      this.props.token.display_props.symbol
-                    } rewards`,
-                  );
-                } else {
-                  this.props.notify(
-                    'error',
-                    `Failed to create viewing key for s${this.props.token.display_props.symbol} rewards!`,
-                  );
-                }
-              }}
-            />
-          </div> */}
           {
-            (process.env.IS_MAINTENANCE === 'true')
+            (this.props.token.deprecated)
               ? <div className='maintenance-warning'>
-                  <h3><Icon name='warning circle'/>A new version of this earn pool is coming soon and will allow you to migrate. For now you can only withdraw LP tokens.</h3>
+                  <h3><Icon name='warning circle'/>A new version of this earn pool is live. You can migrate by clicking the button below</h3>
                 </div>
               : <></>
           }
@@ -390,11 +329,18 @@ class EarnRow extends Component<
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
                 <Grid.Column>
-                  { isOldContract ?
+                  { isDeprecated ?
                     (
                       <>
-                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>
-                        <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Migrate your tokens <Link to={"/migration"}>here</Link>.</p>
+                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>                        
+                        <MigrateAssets oldRewardsContract={this.props.token.rewardsContract} newRewardsContract={this.props.token.deprecated_by} lockedAsset={this.props.token.lockedAsset} lockedAssetAddress={this.props.token.lockedAssetAddress}>
+
+                            <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
+                                Migrate your tokens here.
+                              <button className={`migrate-solid-button ${stores.theme.currentTheme}`}>Migrate</button>
+                            </p>
+                        </MigrateAssets>
+                        
                       </>
                     )
                   :
@@ -403,23 +349,27 @@ class EarnRow extends Component<
                       title='Earn'
                       value={this.state.depositValue}
                       action={
-                        <></>
-                        // <Grid columns={1} stackable relaxed={'very'}>
-                        //   <Grid.Column
-                        //     style={{
-                        //       display: 'flex',
-                        //       justifyContent: 'flex-start',
-                        //     }}
-                        //   >
-                        //     <EarnButton
-                        //       props={this.props}
-                        //       value={this.state.depositValue}
-                        //       changeValue={this.handleChangeDeposit}
-                        //       togglePulse={this.togglePulse}
-                        //       setPulseInterval={this.setPulseInterval}
-                        //     />
-                        //   </Grid.Column>
-                        // </Grid>
+                        (isDeprecated) 
+                        ? <></>
+                        : 
+                          <>
+                            <Grid columns={1} stackable relaxed={'very'}>
+                              <Grid.Column
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'flex-start',
+                                }}
+                              >
+                                <EarnButton
+                                  props={this.props}
+                                  value={this.state.depositValue}
+                                  changeValue={this.handleChangeDeposit}
+                                  togglePulse={this.togglePulse}
+                                  setPulseInterval={this.setPulseInterval}
+                                />
+                              </Grid.Column>
+                            </Grid>
+                          </>
                       }
                       onChange={this.handleChangeDeposit}
                       balance={this.props.token.balance}

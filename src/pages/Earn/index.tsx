@@ -17,7 +17,6 @@ import { ITokenInfo } from '../../stores/interfaces';
 import * as services from 'services';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-import './notifications.css'
 import { notify } from '../../blockchain-bridge/scrt/utils';
 
 export const EarnRewards = observer((props: any) => {

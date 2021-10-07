@@ -33,6 +33,8 @@ import { unlockJsx, wrongViewingKey } from 'pages/Swap/utils';
 import BigNumber from 'bignumber.js';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { notify } from '../../blockchain-bridge/scrt/utils';
+import ToggleButton from 'components/Earn/ToggleButton';
+
 const Web3 = require("web3");
 
 const sefiAddr = "0x773258b03c730f84af10dfcb1bfaa7487558b8ac";
@@ -87,6 +89,7 @@ export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask,theme } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
+  const [showOldPools, setShowOldPools] = useState<boolean>(true);
   const [earnings,setEarnings] = useState('0');
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
 
@@ -225,99 +228,15 @@ export const SeFiPage = observer(() => {
     tokens.init();
   }, []);
 
-  // useEffect(()=>{
-  //   getTotalEarnings();
-  // });
 
   return (
     <BaseContainer>
       <PageContainer>
+        <Box style={{width:'100%',paddingInline:'22%'}} direction="row" wrap={true} fill={true} justify="end" align="center">
+          <h4 className={`${theme.currentTheme} old_pools`} >Show inactive pools: </h4>
+          <ToggleButton value={showOldPools} onClick={()=>setShowOldPools(!showOldPools)}/>
+        </Box>
         <Box style={{width:'100%'}} direction="row" wrap={true} fill={true} justify="center" align="start">
-          {/* <Box direction="column" align="center" justify="center" style={{ marginTop: '10px' }}>
-            
-            <EarnInfoBox type={'LPSTAKING'} />
-
-            <div
-              style={{
-                width: '1000px',
-                padding: '20px',
-                backgroundColor: 'transparent',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <div
-                style={{
-                  borderRadius: '10px',
-                  width: '45%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  padding: '5px',
-                }}
-              >
-                <SefiBalance address={user.address} sefiBalance={sefiBalance} />
-                <CheckClaimModal
-                  secretjs={user.secretjs}
-                  address={user.address}
-                  isEth={false}
-                  loadingBalance={!user.address}
-                  onClick={async () => {
-                    try {
-                      await claimScrt(user.secretjsSend, user.address);
-                      notify('success', 'Claimed SeFi successfully!');
-                    } catch (e) {
-                      console.error(`failed to claim ${e}`);
-                      notify('error', 'Failed to claim SeFi!');
-                    } finally {
-                      await user.updateBalanceForSymbol('SEFI');
-                      setSefiBalance(user.balanceToken['SEFI']);
-                    }
-                  }}
-                />
-                <ClaimTokenErc />
-                <ClaimTokenScrt />
-              </div>
-
-              <div
-                style={{
-                  borderRadius: '10px',
-                  marginLeft: '200px',
-                  width: '45%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  padding: '5px',
-                }}
-              >
-                <SefiBalance address={userMetamask.ethAddress} sefiBalance={sefiBalanceErc} isEth={true} />
-                <CheckClaimModal
-                  address={userMetamask.ethAddress}
-                  isEth={true}
-                  loadingBalance={!userMetamask.ethAddress}
-                  onClick={async () => {
-                    try {
-                      await addSefiToWatchlist();
-                      await claimErc();
-                      notify('success', 'Claimed SeFi successfully!');
-                    } catch (e) {
-                      console.error(`failed to claim ${e}`);
-                      notify('error', 'Failed to claim SeFi!');
-                    }
-                  }}
-                />
-                <ClaimTokenErc />
-                <ClaimTokenScrt />
-              </div>
-            </div>
-          </Box> */}
-          {/* <Box style={{width:'80%'}} direction='column' align='end' justify='end'>
-            <p className={cn(thisStyles.total_earnings)}> Total Earning 
-              {
-                (earnings == undefined)
-                  ? <Loader type="ThreeDots" color="#ff726e" height="1em" width="1em" style={{ margin: '0 1rem' }} />
-                  : <strong className={cn(thisStyles.earnings)}> {formatWithTwoDecimals(earnings)} SEFI</strong>
-              }
-            </p>
-          </Box> */}
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData
               .slice()
@@ -340,14 +259,14 @@ export const SeFiPage = observer(() => {
               .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SETH-SETH(BSC)' ? -1 : 0)
               .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SUSDC-SUSDC(BSC)' ? -1 : 0)
               .sort((a,b)=>(a.reward.inc_token.symbol === 'SEFI') ? -1: 0)
-              .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+              .filter(rewardToken => (process.env.TEST_COINS ? true : rewardToken.reward.hidden))
+              .filter(rewardToken => rewardToken.reward.hidden == false && rewardToken.reward.hidden !== undefined)
+              .filter((a) => (a.reward.deprecated && showOldPools) || !a.reward.deprecated)
               .map((rewardToken,i) => {
                 if (Number(rewardToken.reward.deadline) < 2_000_000) {
                   return null;
                 }
-                // user.updateBalanceForSymbol(rewardToken.token.display_props.symbol);
-                // user.refreshRewardsBalances(rewardToken.token.display_props.symbol);
-                
+
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,
                   lockedAsset: rewardToken.reward.inc_token.symbol,
@@ -368,6 +287,8 @@ export const SeFiPage = observer(() => {
                   remainingLockedRewards: rewardToken.reward.pending_rewards,
                   deadline: Number(rewardToken.reward.deadline),
                   rewardsSymbol: 'SEFI',
+                  deprecated:rewardToken.reward.deprecated,
+                  deprecated_by:rewardToken.reward.deprecated_by
                 };
 
                 return (

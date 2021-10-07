@@ -11,39 +11,26 @@ export const InfoEarn = ({ title }: { title: string }) => (
       </Box>
     ) : null}
     <div>
+      <p>We are pleased to announce Earn contracts are live!</p>
+
       <p>
-        Due to a smart contract vulnerability that has since been fixed, earn pools are not currently generating
-        rewards. New pools will be released soon which will allow you to migrate and continue to earn rewards as normal.
+        In order to allow everyone time to migrate without being pressured, we are allow a period of 48 hours before
+        rewards are enabled.
       </p>
 
       <p>
-        Unfortunately, due to the nature of the vulnerability, unclaimed rewards are no longer available. This an
-        unavoidable consequence of the vulnerability and the need to fix it before restoring service to SecretSwap.
+        To celebrate the relaunch of LP rewards SEFI will be distributed at an accelerated rate for the first week! Stay
+        tuned to find out more about this.
       </p>
 
       <p>
-        We are still examining ways to restore unclaimed rewards, but doing so is a non-trivial issue that should not
-        delay the relaunch of SecretSwap. Stay tuned for more updates on the new LP staking rewards, and restoration of
-        other core network services such as the Secret Bridge
+        If you want to enjoy these new rewards and you haven't done so already, you may use the "migration" button
+        attached to each pool. This tool will automatically unstake from the old pool, and restake your LP tokens in the
+        new pool!
       </p>
 
-      <ul style={{ listStyle: 'revert' }}>
-        <li>
-          To withdraw rewards from the pool, use the "withdraw" button for each pool. This will automatically withdraw
-          all your rewards. You do not need a viewing key to use this feature
-        </li>
-        <li>
-          We recommend backing up your viewing keys for the earn pools. These may be used in the future to validate
-          earned SEFI rewards
-        </li>
-        <li>
-          Known issues:
-          <ul style={{ listStyle: 'revert' }}>
-            <li>Withdraw message will return a 0.0000 for the amount of lp tokens withdrawn regardless of amount</li>
-            <li>Creating a viewing key for disabled earn contracts may fail</li>
-          </ul>
-        </li>
-      </ul>
+      <p>Happy Earning!</p>
+      <p>The SecretSwap Team</p>
     </div>
   </Box>
 );

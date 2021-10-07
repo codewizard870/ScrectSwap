@@ -1,4 +1,4 @@
-import { emergencyRedeem } from '../../../blockchain-bridge/scrt';
+import { emergencyRedeem, Redeem } from '../../../blockchain-bridge/scrt';
 import React, { useEffect, useState } from 'react';
 import { valueToDecimals } from '../../../utils';
 import cn from 'classnames';
@@ -45,12 +45,18 @@ const WithdrawButton = ({ props, value, changeValue }) => {
       className={`${styles.button} ${styles[theme.currentTheme]}`}
       onClick={async () => {
         setLoading(true);
-        await emergencyRedeem({
+        let redeemTask = props.token.deprecated ? emergencyRedeem({
           secretjs: props.userStore.secretjsSend,
           address: props.token.rewardsContract,
           fee,
-        })
-          .then(_ => {
+        }) : Redeem({
+          secretjs: props.userStore.secretjsSend,
+          address: props.token.rewardsContract,
+          amount: valueToDecimals(amount, props.token.decimals),
+          fee,
+        });
+
+        await redeemTask.then(_ => {
             props.userStore.updateScrtBalance();
             props.notify('success', `Removed ${amount} s${props.token.display_props.symbol} from the rewards contract`);
             changeValue({

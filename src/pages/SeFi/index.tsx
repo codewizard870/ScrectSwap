@@ -249,8 +249,6 @@ export const SeFiPage = observer(() => {
     tokens.init();
   }, []);
 
-  console.log(`${JSON.stringify(rewardsData)}`);
-
   return (
     <BaseContainer>
       <PageContainer>

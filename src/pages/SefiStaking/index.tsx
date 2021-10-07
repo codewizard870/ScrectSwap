@@ -202,10 +202,6 @@ export const SeFiStakingPage = observer(() => {
               .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
               //@ts-ignore
               .map((rewardToken,i) => {
-                if (Number(rewardToken.reward.deadline) < 2_000_000) {
-                  return null;
-                }
-                
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,
                   lockedAsset: rewardToken.reward.inc_token.symbol,

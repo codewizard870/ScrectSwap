@@ -167,9 +167,6 @@ export const EarnRewards = observer((props: any) => {
             {rewards.allData
               .slice()
               .map(rewardToken => {
-                if (Number(rewardToken.deadline) < 2_000_000) {
-                  return null;
-                }
                 let token = filteredTokens.find(element => element.dst_address === rewardToken.inc_token.address);
                 if (!token) {
                   return null;

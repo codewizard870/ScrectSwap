@@ -1212,10 +1212,6 @@ export class UserStoreEx extends StoreConstructor {
         .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
         //@ts-ignore
         .map(rewardToken => {
-          if (Number(rewardToken.reward.deadline) < 2_000_000) {
-            return null;
-          }
-
           const rewardsToken: RewardsToken = {
             rewardsContract: rewardToken.reward.pool_address,
             lockedAsset: rewardToken.reward.inc_token.symbol,

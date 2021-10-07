@@ -35,20 +35,20 @@ import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModa
 import { notify } from '../../blockchain-bridge/scrt/utils';
 import ToggleButton from 'components/Earn/ToggleButton';
 
-const Web3 = require("web3");
+const Web3 = require('web3');
 
-const sefiAddr = "0x773258b03c730f84af10dfcb1bfaa7487558b8ac";
+const sefiAddr = '0x773258b03c730f84af10dfcb1bfaa7487558b8ac';
 const abi = {
   constant: true,
   inputs: [],
-  name: "totalSupply",
+  name: 'totalSupply',
   outputs: [
     {
-      name: "",
-      type: "uint256",
+      name: '',
+      type: 'uint256',
     },
   ],
-  type: "function",
+  type: 'function',
 };
 
 // // Get ERC20 Token contract instance
@@ -97,13 +97,35 @@ const getShowOldPoolsValue = ():boolean=>{
   }
 }
 
+const order = [
+  'SEFI',
+  'LP-SUSDC-SUSDC(BSC)',
+  'LP-SETH-SETH(BSC)',
+  'LP-SSCRT-SUSDT',
+  'LP-SSCRT-SETH',
+  'LP-SSCRT-SWBTC',
+  'LP-SSCRT-SEFI',
+  'LP-SEFI-SXMR',
+  'LP-SEFI-SUSDC',
+  'LP-SETH-SWBTC',
+  'LP-SSCRT-SDAI',
+  'LP-SSCRT-SBNB(BSC)',
+  'LP-SSCRT-SLINK',
+  'LP-SSCRT-SRS',
+  'LP-SSCRT-SOCEAN',
+  'LP-SSCRT-SRUNE',
+  'LP-SSCRT-SYFI',
+  'LP-SSCRT-SDOT(BSC)',
+  'LP-SSCRT-SMANA',
+];
+
 export const SeFiPage = observer(() => {
-  const { user, tokens, rewards, userMetamask,theme } = useStores();
+  const { user, tokens, rewards, userMetamask, theme } = useStores();
 
 
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
-  const [showOldPools, setShowOldPools] = useState<boolean>(getShowOldPoolsValue());
-  const [earnings,setEarnings] = useState('0');
+  const [showOldPools, setShowOldPools] = useState<boolean>(true);
+  const [earnings, setEarnings] = useState('0');
   const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
 
   const setShowOldPoolsValue = ()=>{
@@ -157,27 +179,27 @@ export const SeFiPage = observer(() => {
     }
   }
 
-
   const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);
   const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
-  const getTotalEarnings = ()=>{
-    const mappedEarnings = rewards.allData.filter(rewards => filteredTokens.find(element => element.dst_address === rewards.inc_token.address))
-        .map(reward => {
-          return {
-            earnings:user.balanceRewards[rewardsKey(reward.inc_token.address)],
-            symbol: reward.inc_token.symbol,
-          };
-        });
-        const totalEarnigs : number = mappedEarnings.reduce((sum,earns)=>{
-          if(earns.earnings){
-            return sum + parseFloat(earns?.earnings)
-          }else{
-            return sum + 0;
-          }
-        },0);
+  const getTotalEarnings = () => {
+    const mappedEarnings = rewards.allData
+      .filter(rewards => filteredTokens.find(element => element.dst_address === rewards.inc_token.address))
+      .map(reward => {
+        return {
+          earnings: user.balanceRewards[rewardsKey(reward.inc_token.address)],
+          symbol: reward.inc_token.symbol,
+        };
+      });
+    const totalEarnigs: number = mappedEarnings.reduce((sum, earns) => {
+      if (earns.earnings) {
+        return sum + parseFloat(earns?.earnings);
+      } else {
+        return sum + 0;
+      }
+    }, 0);
 
-      setEarnings(totalEarnigs.toString())
-  }
+    setEarnings(totalEarnigs.toString());
+  };
   useEffect(() => {
     const asyncWrapper = async () => {
       while (rewards.isPending) {
@@ -188,8 +210,7 @@ export const SeFiPage = observer(() => {
         .map(reward => {
           return { reward, token: filteredTokens.find(element => element.dst_address === reward.inc_token.address) };
         });
-      
-      
+
       setRewardsData(mappedRewards);
     };
     asyncWrapper().then(() => {});
@@ -250,44 +271,34 @@ export const SeFiPage = observer(() => {
     tokens.init();
   }, []);
 
-
   return (
     <BaseContainer>
       <PageContainer>
-        <Box style={{width:'100%',paddingInline:'22%'}} direction="row" wrap={true} fill={true} justify="end" align="center">
-          <h4 className={`${theme.currentTheme} old_pools`} >Show inactive pools: </h4>
-          <ToggleButton value={showOldPools} onClick={()=>setShowOldPools(!showOldPools)}/>
+        <Box
+          style={{ width: '100%', paddingInline: '22%' }}
+          direction="row"
+          wrap={true}
+          fill={true}
+          justify="end"
+          align="center"
+        >
+          <h4 className={`${theme.currentTheme} old_pools`}>Show inactive pools: </h4>
+          <ToggleButton value={showOldPools} onClick={() => setShowOldPools(!showOldPools)} />
         </Box>
-        <Box style={{width:'100%'}} direction="row" wrap={true} fill={true} justify="center" align="start">
+        <Box style={{ width: '100%' }} direction="row" wrap={true} fill={true} justify="center" align="start">
           <Box direction="column" align="center" justify="center" className={styles.base}>
             {rewardsData
               .slice()
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SMANA' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SDOT(BSC)' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SYFI' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SRUNE' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SOCEAN' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SRSR' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SLINK' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SBNB(BSC)' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SDAI' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SETH-SWBTC' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SEFI-SUSDC' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SEFI-SXMR' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SEFI' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SWBTC' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SETH' ? -1 : 0) //
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SSCRT-SUSDT' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SETH-SETH(BSC)' ? -1 : 0)
-              .sort((a, b) => a.reward.inc_token.symbol.toUpperCase() === 'LP-SUSDC-SUSDC(BSC)' ? -1 : 0)
-              .sort((a,b)=>(a.reward.inc_token.symbol === 'SEFI') ? -1: 0)
+              .sort((a, b) => {
+                const testA = a.reward.inc_token.symbol.toUpperCase();
+                const testB = b.reward.inc_token.symbol.toUpperCase();
+                if (order.indexOf(testA) === -1) return 1;
+                if (order.indexOf(testB) === -1) return -1;
+                return order.indexOf(testA) - order.indexOf(testB);
+              })
               .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
-              .filter((a) => (a.reward.deprecated && showOldPools) || !a.reward.deprecated)
-              .map((rewardToken,i) => {
-                if (Number(rewardToken.reward.deadline) < 2_000_000) {
-                  return null;
-                }
-
+              .filter(a => (a.reward.deprecated && showOldPools) || !a.reward.deprecated)
+              .map((rewardToken, i) => {
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,
                   lockedAsset: rewardToken.reward.inc_token.symbol,
@@ -308,8 +319,8 @@ export const SeFiPage = observer(() => {
                   remainingLockedRewards: rewardToken.reward.pending_rewards,
                   deadline: Number(rewardToken.reward.deadline),
                   rewardsSymbol: 'SEFI',
-                  deprecated:rewardToken.reward.deprecated,
-                  deprecated_by:rewardToken.reward.deprecated_by
+                  deprecated: rewardToken.reward.deprecated,
+                  deprecated_by: rewardToken.reward.deprecated_by,
                 };
 
                 return (

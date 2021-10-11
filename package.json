@@ -6,6 +6,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.config.js",
     "dev": "cross-env NODE_ENV=testnet webpack-dev-server --config config/webpack.config.js --progress --colors --open",
+    "stg": "cross-env webpack-dev-server --config config/webpack.config.js --progress --colors --open",
     "build": "node --trace-warnings --trace-deprecation scripts/build.js --stats && cp build/index.html build/404.html",
     "webpack": "webpack --config config/webpack.config.js --display-modules",
     "test": "jest --verbose",

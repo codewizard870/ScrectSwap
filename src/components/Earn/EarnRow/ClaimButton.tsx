@@ -20,48 +20,39 @@ const ClaimButton = (props: {
   notify: Function;
   rewardsToken?: string;
 }) => {
-  
-  const { user,theme } = useStores();
+  const { user, theme } = useStores();
   const [loading, setLoading] = useState<boolean>(false);
   const [fee, setFee] = useState({
     amount: [{ amount: '750000', denom: 'uscrt' }],
-    gas: '750000'
-  } as any)
+    gas: '750000',
+  } as any);
 
   const displayAvailable = () => {
     if (props.available === unlockToken) {
-      return (<div className={`${styles.create_viewingkey} ${styles[theme.currentTheme]}`}>
-        {
-          unlockJsx({
-          onClick: async () => {
-            await user.keplrWallet.suggestToken(user.chainId, props.contract);
-            // TODO trigger balance refresh if this was an "advanced set" that didn't
-            // result in an on-chain transaction
-            await user.updateBalanceForSymbol(props.symbol);
-            await user.updateScrtBalance();
-          },
-        })
-        }
-        {
-          (props.balance?.includes(unlockToken))&&
-          <Popup
-            content={props.unlockPopupText}
-            className={styles.iconinfo__popup}
-            trigger={ 
-              <Icon
-                  className={styles.icon_info}
-                  name="info"
-                  circular
-                  size="tiny"
-                />
-            }
-          />
-        }
-      </div>)
-    }else{
-      return <strong>{props?.available}</strong>
+      return (
+        <div className={`${styles.create_viewingkey} ${styles[theme.currentTheme]}`}>
+          {unlockJsx({
+            onClick: async () => {
+              await user.keplrWallet.suggestToken(user.chainId, props.contract);
+              // TODO trigger balance refresh if this was an "advanced set" that didn't
+              // result in an on-chain transaction
+              await user.updateBalanceForSymbol(props.symbol);
+              await user.updateScrtBalance();
+            },
+          })}
+          {props.balance?.includes(unlockToken) && (
+            <Popup
+              content={props.unlockPopupText}
+              className={styles.iconinfo__popup}
+              trigger={<Icon className={styles.icon_info} name="info" circular size="tiny" />}
+            />
+          )}
+        </div>
+      );
+    } else {
+      return <strong>{props?.available}</strong>;
     }
-  }
+  };
 
   const activeProposals = user.numOfActiveProposals;
   const { rewardsContract } = props;
@@ -69,34 +60,26 @@ const ClaimButton = (props: {
   const staticGasFee = 40000;
 
   const setGasFee = () => {
-
     if (rewardsContract === newPoolContract && activeProposals > 0) {
       let fee = {
-        amount: [{ amount: 750000 + (staticGasFee * activeProposals), denom: 'uscrt' }],
-        gas: 750000 + (staticGasFee * activeProposals),
+        amount: [{ amount: 750000 + staticGasFee * activeProposals, denom: 'uscrt' }],
+        gas: 750000 + staticGasFee * activeProposals,
       };
       setFee(fee);
     }
-
-  }
+  };
 
   useEffect(() => {
-
     setGasFee();
-
-  }, [activeProposals]);
+  }, [activeProposals, setGasFee]);
 
   return (
     <>
-    <div 
-      className={`${styles.claim_label} ${styles[theme.currentTheme]}`}
-    >
-      {displayAvailable()}<span style={{marginLeft:'10px'}}>{props.rewardsToken}</span>
-    </div>
-    {
-      process.env.IS_MAINTENANCE === 'true'
-        ? <> </>
-        :<Button
+      <div className={`${styles.claim_label} ${styles[theme.currentTheme]}`}>
+        {displayAvailable()}
+        <span style={{ marginLeft: '10px' }}>{props.rewardsToken}</span>
+      </div>
+      <Button
         loading={loading}
         className={`${styles.button} ${styles[theme.currentTheme]}`}
         disabled={typeof props.available === 'undefined' || props.available === '0'}
@@ -109,7 +92,7 @@ const ClaimButton = (props: {
               amount: '0',
               fee,
             });
-  
+
             props.notify('success', `Claimed ${props.available} ${props.rewardsToken}`);
           } catch (reason) {
             props.notify('error', `Failed to claim: ${reason}`);
@@ -119,15 +102,13 @@ const ClaimButton = (props: {
             await user.updateBalanceForSymbol(props.symbol),
             await user.updateBalanceForSymbol(props.rewardsToken || 'sSCRT'),
             await user.refreshRewardsBalances(props.symbol),
-            await user.updateScrtBalance()
+            await user.updateScrtBalance(),
           ]);
           setLoading(false);
         }}
       >
         Claim
       </Button>
-    }
-    
     </>
   );
 };

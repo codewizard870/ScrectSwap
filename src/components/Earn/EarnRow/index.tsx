@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import * as styles from './styles.styl';
 import cn from 'classnames';
-import { Accordion, Divider, Grid, Icon, Image, Segment, } from 'semantic-ui-react';
+import { Accordion, Divider, Grid, Icon, Image, Segment } from 'semantic-ui-react';
 import SoftTitleValue from '../SoftTitleValue';
 import EarnButton from './EarnButton';
 import DepositContainer from './DepositContainer';
@@ -15,7 +15,7 @@ import { Text } from '../../Base';
 import ScrtTokenBalance from '../ScrtTokenBalance';
 import stores, { useStores } from 'stores';
 import Theme from 'themes';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import MigrateAssets from '../MigrateTokens';
 
 const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
@@ -39,41 +39,41 @@ export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying
   return apy;
 };
 const tokenImages = {
-  'SSCRT': '/static/token-images/sscrt.svg',
-  'SEFI': '/static/token-images/sefi.svg',
-  'SIENNA': '/static/token-images/sienna.svg',
-  'BAC': '/static/token-images/bac_ethereum.svg',
-  'RENBTC': '/static/token-images/renbtc_ethereum.svg',
-  'DPI': '/static/token-images/dpi_ethereum.svg',
+  SSCRT: '/static/token-images/sscrt.svg',
+  SEFI: '/static/token-images/sefi.svg',
+  SIENNA: '/static/token-images/sienna.svg',
+  BAC: '/static/token-images/bac_ethereum.svg',
+  RENBTC: '/static/token-images/renbtc_ethereum.svg',
+  DPI: '/static/token-images/dpi_ethereum.svg',
   'UNILP-WSCRT-ETH': '/static/token-images/unilp_ethereum.svg',
-  'RUNE': '/static/token-images/rune_ethereum.svg',
-  'MANA': '/static/token-images/mana_ethereum.svg',
-  'YFL': '/static/token-images/yfl_ethereum.svg',
+  RUNE: '/static/token-images/rune_ethereum.svg',
+  MANA: '/static/token-images/mana_ethereum.svg',
+  YFL: '/static/token-images/yfl_ethereum.svg',
   'BNB(BSC)': '/static/token-images/bnb_binance.svg',
-  'ETH': '/static/token-images/eth_ethereum.svg',
-  'USDT': '/static/token-images/usdt_ethereum.svg',
-  'DAI': '/static/token-images/dai_ethereum.svg',
-  'COMP': '/static/token-images/comp_ethereum.svg',
-  'UNI': '/static/token-images/uni_ethereum.svg',
-  'YFI': '/static/token-images/yfi_ethereum.svg',
-  'TUSD': '/static/token-images/tusd_ethereum.svg',
-  'OCEAN': '/static/token-images/ocean_ethereum.svg',
-  'LINK': '/static/token-images/link_ethereum.svg',
-  'MKR': '/static/token-images/mkr_ethereum.svg',
-  'SNX': '/static/token-images/snx_ethereum.svg',
-  'BAND': '/static/token-images/band_ethereum.svg',
-  'KNC': '/static/token-images/knc_ethereum.svg',
-  'AAVE': '/static/token-images/aave_ethereum.svg',
-  'WBTC': '/static/token-images/wbtc_ethereum.svg',
-  'REN': '/static/token-images/ren_ethereum.svg',
-  'SUSHI': '/static/token-images/sushi_ethereum.svg',
-  'RSR': '/static/token-images/rsr_ethereum.svg',
-  'USDC': '/static/token-images/usdc_ethereum.svg',
-  'TORN': '/static/token-images/torn_ethereum.svg',
-  'BAT': '/static/token-images/bat_ethereum.svg',
-  'ZRX': '/static/token-images/zrx_ethereum.svg',
-  'ENJ': '/static/token-images/enj_ethereum.svg',
-  'ALPHA': '/static/token-images/alpha_ethereum.svg',
+  ETH: '/static/token-images/eth_ethereum.svg',
+  USDT: '/static/token-images/usdt_ethereum.svg',
+  DAI: '/static/token-images/dai_ethereum.svg',
+  COMP: '/static/token-images/comp_ethereum.svg',
+  UNI: '/static/token-images/uni_ethereum.svg',
+  YFI: '/static/token-images/yfi_ethereum.svg',
+  TUSD: '/static/token-images/tusd_ethereum.svg',
+  OCEAN: '/static/token-images/ocean_ethereum.svg',
+  LINK: '/static/token-images/link_ethereum.svg',
+  MKR: '/static/token-images/mkr_ethereum.svg',
+  SNX: '/static/token-images/snx_ethereum.svg',
+  BAND: '/static/token-images/band_ethereum.svg',
+  KNC: '/static/token-images/knc_ethereum.svg',
+  AAVE: '/static/token-images/aave_ethereum.svg',
+  WBTC: '/static/token-images/wbtc_ethereum.svg',
+  REN: '/static/token-images/ren_ethereum.svg',
+  SUSHI: '/static/token-images/sushi_ethereum.svg',
+  RSR: '/static/token-images/rsr_ethereum.svg',
+  USDC: '/static/token-images/usdc_ethereum.svg',
+  TORN: '/static/token-images/torn_ethereum.svg',
+  BAT: '/static/token-images/bat_ethereum.svg',
+  ZRX: '/static/token-images/zrx_ethereum.svg',
+  ENJ: '/static/token-images/enj_ethereum.svg',
+  ALPHA: '/static/token-images/alpha_ethereum.svg',
   'BUSD(BSC)': '/static/token-images/busd_binance.svg',
   'ETH(BSC)': '/static/token-images/eth_binance.svg',
   'XRP(BSC)': '/static/token-images/xrp_binance.svg',
@@ -86,14 +86,14 @@ const tokenImages = {
   'LTC(BSC)': '/static/token-images/ltc_binance.svg',
   'LINK(BSC)': '/static/token-images/link_binance.svg',
   'TRX(BSC)': '/static/token-images/trx_binance.svg',
-  'CAKE': '/static/token-images/cake_binance.svg',
-  'BAKE': '/static/token-images/bake_binance.svg',
-  'XVS': '/static/token-images/xvs_binance.svg',
-  'LINA': '/static/token-images/lina_binance.svg',
-  'FINE': '/static/token-images/fine_binance.svg',
-  'BUNNY': '/static/token-images/bunny_binance.svg',
-  'XMR': '/static/sXMR.png'
-}
+  CAKE: '/static/token-images/cake_binance.svg',
+  BAKE: '/static/token-images/bake_binance.svg',
+  XVS: '/static/token-images/xvs_binance.svg',
+  LINA: '/static/token-images/lina_binance.svg',
+  FINE: '/static/token-images/fine_binance.svg',
+  BUNNY: '/static/token-images/bunny_binance.svg',
+  XMR: '/static/sXMR.png',
+};
 
 export const apyString = (token: RewardsToken) => {
   const apy = Number(calculateAPY(token, Number(token.rewardsPrice), Number(token.price)));
@@ -103,15 +103,14 @@ export const apyString = (token: RewardsToken) => {
   const apyStr = zeroDecimalsFormatter.format(Number(apy));
 
   //Hotfix of big % number
-  const apyWOCommas = apyStr.replace(/,/g,'')
+  const apyWOCommas = apyStr.replace(/,/g, '');
   const MAX_LENGHT = 9;
-  if(apyWOCommas.length > MAX_LENGHT){
-    const abrev = apyWOCommas?.substring(0,MAX_LENGHT)
+  if (apyWOCommas.length > MAX_LENGHT) {
+    const abrev = apyWOCommas?.substring(0, MAX_LENGHT);
     const abrevFormatted = zeroDecimalsFormatter.format(Number(abrev));
     const elevation = apyWOCommas.length - MAX_LENGHT;
 
     return `${abrevFormatted}e${elevation} %`;
-
   }
   return `${apyStr}%`;
 };
@@ -136,8 +135,8 @@ export interface RewardsToken {
   remainingLockedRewards: string;
   deadline: number;
   rewardsSymbol?: string;
-  deprecated?:boolean;
-  deprecated_by?:string;
+  deprecated?: boolean;
+  deprecated_by?: string;
 }
 @observer
 class EarnRow extends Component<
@@ -155,7 +154,7 @@ class EarnRow extends Component<
     withdrawValue: string;
     claimButtonPulse: boolean;
     pulseInterval: number;
-    secondary_token:any;
+    secondary_token: any;
   }
 > {
   state = {
@@ -164,16 +163,16 @@ class EarnRow extends Component<
     withdrawValue: '0.0',
     claimButtonPulse: true,
     pulseInterval: -1,
-    secondary_token:{
-      image:'',
-      symbol:'',
+    secondary_token: {
+      image: '',
+      symbol: '',
     },
   };
-  componentDidMount(){
+  componentDidMount() {
     //auto open for SEFI STAKING page
-    if(this.props.isSefiStaking){
+    if (this.props.isSefiStaking) {
       setTimeout(() => {
-        this.handleClick('',{index:0})
+        this.handleClick('', { index: 0 });
       }, 100);
     }
   }
@@ -192,7 +191,7 @@ class EarnRow extends Component<
     const newIndex = activeIndex === index ? -1 : index;
     if (activeIndex === -1) {
       this.props.userStore.refreshTokenBalanceByAddress(this.props.token.lockedAssetAddress);
-      this.props.userStore.refreshRewardsBalances('',this.props.token.rewardsContract);
+      this.props.userStore.refreshRewardsBalances('', this.props.token.rewardsContract);
     }
     this.setState({ activeIndex: newIndex });
   };
@@ -205,103 +204,98 @@ class EarnRow extends Component<
   clearPulseInterval = () => clearInterval(this.state.pulseInterval);
 
   setPulseInterval = interval => this.setState({ pulseInterval: interval });
-  unCapitalize=(s)=>{
-    if(typeof s !== 'string') return '';
-    return s.charAt(0).toLowerCase()+s.slice(1)
-  }
-  getBaseTokenName = (tokenName:string):string=>{
-    if(!tokenName)
+  unCapitalize = s => {
+    if (typeof s !== 'string') {
       return '';
-    
+    }
+    return s.charAt(0).toLowerCase() + s.slice(1);
+  };
+  getBaseTokenName = (tokenName: string): string => {
+    if (!tokenName) {
+      return '';
+    }
+
     tokenName = tokenName.toUpperCase();
-    
-    if(tokenName == 'SSCRT' || tokenName == 'SEFI' ||tokenName == 'SCRT'){
+
+    if (tokenName == 'SSCRT' || tokenName == 'SEFI' || tokenName == 'SCRT') {
       return tokenName;
-    }else{
-      if(tokenName.charAt(0) == 'S'){
-        return tokenName.slice(1)
-      }else{
+    } else {
+      if (tokenName.charAt(0) == 'S') {
+        return tokenName.slice(1);
+      } else {
         return tokenName;
       }
     }
-  }
+  };
   render() {
     // const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
-    const style =`${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
+    const style = `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     //this.props.userStore.keplrWallet.suggestToken(this.props.userStore.chainId, );
     const { activeIndex } = this.state;
 
     const _symbols = this.props.token.lockedAsset?.toUpperCase().split('-');
-    let image_primaryToken,image_secondaryToken;
-    let tokenName1 = this.getBaseTokenName(_symbols[1])
-    let tokenName2 = this.getBaseTokenName(_symbols[2])
+    let image_primaryToken, image_secondaryToken;
+    let tokenName1 = this.getBaseTokenName(_symbols[1]);
+    let tokenName2 = this.getBaseTokenName(_symbols[2]);
 
     // Overide the image for each token
     if (tokenImages[tokenName1]) {
-      image_primaryToken = tokenImages[tokenName1]
+      image_primaryToken = tokenImages[tokenName1];
     }
     if (tokenImages[tokenName2]) {
-      image_secondaryToken = tokenImages[tokenName2]
+      image_secondaryToken = tokenImages[tokenName2];
     }
-    
-    let tokenName;
-    if(_symbols[1] == 'SEFI'){
-      tokenName = _symbols[1]+' - '+this.unCapitalize(_symbols[2]);
-    }else if(_symbols[2] == 'SEFI'){
-      tokenName = this.unCapitalize(_symbols[1])+' - '+_symbols[2];
-    }else{
-      tokenName = this.unCapitalize(_symbols[1])+' - '+this.unCapitalize(_symbols[2]);
 
+    let tokenName;
+    if (_symbols[1] == 'SEFI') {
+      tokenName = _symbols[1] + ' - ' + this.unCapitalize(_symbols[2]);
+    } else if (_symbols[2] == 'SEFI') {
+      tokenName = this.unCapitalize(_symbols[1]) + ' - ' + _symbols[2];
+    } else {
+      tokenName = this.unCapitalize(_symbols[1]) + ' - ' + this.unCapitalize(_symbols[2]);
     }
     const isDeprecated = this.props.token.deprecated && this.props.token.deprecated_by;
-    let title=''
+    let title = '';
     if (isDeprecated) {
       title = this.props.token.display_props.label === 'SEFI' ? 'SEFI STAKING (OLD)' : `${tokenName} (OLD)`;
-    }else if(this.props.token.display_props.label === 'SEFI'){
+    } else if (this.props.token.display_props.label === 'SEFI') {
       title = 'SEFI STAKING (V2)';
-    }else{
+    } else {
       title = tokenName;
     }
 
     return (
-      <Accordion
-        className={cn(style)}
-      >
+      <Accordion className={cn(style)}>
         <Accordion.Title
           active={activeIndex === 0}
           index={0}
           onClick={this.handleClick}
           className={`${styles.assetRow} ${styles.responsive_row}`}
         >
-          {(this.props.token.lockedAsset === "SEFI")?
-              <div className={cn(styles.assetIcon)}>
-                <Image src="/static/tokens/sefi.png" rounded size="mini" />
-              </div>
-            :
-            (
-              <div className={cn(styles.assetIcon)}>
+          {this.props.token.lockedAsset === 'SEFI' ? (
+            <div className={cn(styles.assetIcon)}>
+              <Image src="/static/tokens/sefi.png" rounded size="mini" />
+            </div>
+          ) : (
+            <div className={cn(styles.assetIcon)}>
               <Image src={image_primaryToken} rounded size="mini" />
               <Image src={image_secondaryToken} rounded size="mini" />
-              </div>
-            )
-          }
+            </div>
+          )}
 
-            <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue
-                title={title}
-                subTitle='    '
-              />
-            </div>
-            <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
-            </div>
-            <div className={cn(styles.title_item__container)}>
-              <SoftTitleValue
-                title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards) || 0)}`}
-                subTitle={'TVL'}
-              />
-            </div>
-            {/* <div className={cn(styles.title_item__container)}>
+          <div className={cn(styles.title_item__container)}>
+            <SoftTitleValue title={title} subTitle="    " />
+          </div>
+          <div className={cn(styles.title_item__container)}>
+            <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
+          </div>
+          <div className={cn(styles.title_item__container)}>
+            <SoftTitleValue
+              title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards) || 0)}`}
+              subTitle={'TVL'}
+            />
+          </div>
+          {/* <div className={cn(styles.title_item__container)}>
               <SoftTitleValue
                 title={`$${formatWithTwoDecimals(Number(this.props.token.balance))}`}
                 subTitle={this.props.token.display_props.label}
@@ -310,48 +304,60 @@ class EarnRow extends Component<
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue title={formatWithTwoDecimals(this.props.token.rewards)} subTitle={this.props.callToAction} />
             </div> */}
-            
 
-          <Icon className={`${styles.arrow}`} style={{
-            color:(this.props.theme.currentTheme == 'dark')?'white':''
-          }} name="dropdown" />
+          <Icon
+            className={`${styles.arrow}`}
+            style={{
+              color: this.props.theme.currentTheme == 'dark' ? 'white' : '',
+            }}
+            name="dropdown"
+          />
         </Accordion.Title>
-        <Accordion.Content className={`${styles.content} ${styles[this.props.theme.currentTheme]}`} active={activeIndex === 0}>
-          {
-            (this.props.token.deprecated)
-              ? <div className='maintenance-warning'>
-                  <h3><Icon name='warning circle'/>A new version of this earn pool is live. You can migrate by clicking the button below</h3>
-                </div>
-              : <></>
-          }
-          
+        <Accordion.Content
+          className={`${styles.content} ${styles[this.props.theme.currentTheme]}`}
+          active={activeIndex === 0}
+        >
+          {this.props.token.deprecated ? (
+            <div className="maintenance-warning">
+              <h3>
+                <Icon name="warning circle" />A new version of this earn pool is live. You can migrate by clicking the
+                button below
+              </h3>
+            </div>
+          ) : (
+            <></>
+          )}
+
           <div>
             <Segment basic>
               <Grid className={cn(styles.content2)} columns={2} relaxed="very" stackable>
                 <Grid.Column>
-                  { isDeprecated ?
-                    (
-                      <>
-                        <h1 style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>Earn on the new pool!</h1>                        
-                        <MigrateAssets oldRewardsContract={this.props.token.rewardsContract} newRewardsContract={this.props.token.deprecated_by} lockedAsset={this.props.token.lockedAsset} lockedAssetAddress={this.props.token.lockedAssetAddress}>
-
-                            <p style={{ color: (this.props.theme.currentTheme == 'dark') ? 'white' : '#1B1B1B' }}>
-                                Migrate your tokens here.
-                              <button className={`migrate-solid-button ${stores.theme.currentTheme}`}>Migrate</button>
-                            </p>
-                        </MigrateAssets>
-                        
-                      </>
-                    )
-                  :
-
+                  {isDeprecated ? (
+                    <>
+                      <h1 style={{ color: this.props.theme.currentTheme == 'dark' ? 'white' : '#1B1B1B' }}>
+                        Earn on the new pool!
+                      </h1>
+                      <MigrateAssets
+                        balance={this.props.token.deposit}
+                        oldRewardsContract={this.props.token.rewardsContract}
+                        newRewardsContract={this.props.token.deprecated_by}
+                        lockedAsset={this.props.token.lockedAsset}
+                        lockedAssetAddress={this.props.token.lockedAssetAddress}
+                      >
+                        <p style={{ color: this.props.theme.currentTheme == 'dark' ? 'white' : '#1B1B1B' }}>
+                          Migrate your tokens here.
+                          <button className={`migrate-solid-button ${stores.theme.currentTheme}`}>Migrate</button>
+                        </p>
+                      </MigrateAssets>
+                    </>
+                  ) : (
                     <DepositContainer
-                      title='Earn'
+                      title="Earn"
                       value={this.state.depositValue}
                       action={
-                        (isDeprecated) 
-                        ? <></>
-                        : 
+                        isDeprecated ? (
+                          <></>
+                        ) : (
                           <>
                             <Grid columns={1} stackable relaxed={'very'}>
                               <Grid.Column
@@ -370,23 +376,23 @@ class EarnRow extends Component<
                               </Grid.Column>
                             </Grid>
                           </>
+                        )
                       }
                       onChange={this.handleChangeDeposit}
                       balance={this.props.token.balance}
                       currency={this.props.token.lockedAsset}
                       price={this.props.token.price}
                       balanceText="Available"
-                      unlockPopupText='Staking balance and rewards require an additional viewing key.'
-                      tokenAddress={this.props.token.lockedAssetAddress} 
+                      unlockPopupText="Staking balance and rewards require an additional viewing key."
+                      tokenAddress={this.props.token.lockedAssetAddress}
                       userStore={this.props.userStore}
                       theme={this.props.theme}
                     />
-
-                  }
+                  )}
                 </Grid.Column>
                 <Grid.Column>
                   <DepositContainer
-                    title='Withdraw'
+                    title="Withdraw"
                     value={this.state.withdrawValue}
                     onChange={this.handleChangeWithdraw}
                     action={
@@ -394,7 +400,7 @@ class EarnRow extends Component<
                         <Grid.Column
                           style={{
                             display: 'flex',
-                            justifyContent:'flex-start',
+                            justifyContent: 'flex-start',
                           }}
                         >
                           <WithdrawButton
@@ -409,18 +415,18 @@ class EarnRow extends Component<
                     currency={this.props.token.lockedAsset}
                     price={this.props.token.price}
                     balanceText="Staked"
-                    unlockPopupText='Staking balance and rewards require an additional viewing key.'
-                    tokenAddress={this.props.token.rewardsContract} 
+                    unlockPopupText="Staking balance and rewards require an additional viewing key."
+                    tokenAddress={this.props.token.rewardsContract}
                     userStore={this.props.userStore}
                     theme={this.props.theme}
-                    />
+                  />
                 </Grid.Column>
               </Grid>
             </Segment>
           </div>
           <ClaimBox
             balance={this.props.token.deposit}
-            unlockPopupText='Staking balance and rewards require an additional viewing key.'
+            unlockPopupText="Staking balance and rewards require an additional viewing key."
             available={this.props.token.rewards}
             userStore={this.props.userStore}
             rewardsContract={this.props.token.rewardsContract}
@@ -434,8 +440,8 @@ class EarnRow extends Component<
               padding: '20 20 0 20',
               cursor: 'auto',
               textAlign: 'center',
-              fontFamily:'Poppins,Arial',
-              color:(this.props.theme.currentTheme == 'dark')?'white':'#1B1B1B'
+              fontFamily: 'Poppins,Arial',
+              color: this.props.theme.currentTheme == 'dark' ? 'white' : '#1B1B1B',
             }}
           >
             * Every time you deposit, withdraw or claim the contract will automagically claim your rewards for you!

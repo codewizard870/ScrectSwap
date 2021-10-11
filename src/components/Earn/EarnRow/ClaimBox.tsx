@@ -16,10 +16,6 @@ const ClaimBox = (props: {
   rewardsToken?: string;
   deprecated?: boolean;
 }) => {
-  if(props.deprecated){
-    return <></>
-  }
-  
   return (
     <div className={cn(styles.claimBox)}>
       <ClaimButton

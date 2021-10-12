@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-
 import * as styles from './styles.styl';
 import cn from 'classnames';
-import { Accordion, Divider, Grid, Icon, Image, Segment } from 'semantic-ui-react';
+import { Accordion, Grid, Icon, Image, Segment } from 'semantic-ui-react';
 import SoftTitleValue from '../SoftTitleValue';
 import EarnButton from './EarnButton';
 import DepositContainer from './DepositContainer';
@@ -12,10 +11,8 @@ import { observer } from 'mobx-react';
 import WithdrawButton from './WithdrawButton';
 import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
 import { Text } from '../../Base';
-import ScrtTokenBalance from '../ScrtTokenBalance';
-import stores, { useStores } from 'stores';
+import stores from 'stores';
 import Theme from 'themes';
-import { Link } from 'react-router-dom';
 import MigrateAssets from '../MigrateTokens';
 
 const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
@@ -322,10 +319,6 @@ class EarnRow extends Component<
               <h3>
                 <Icon name="warning circle" />A new version of this earn pool is live. You can migrate by clicking the
                 button below
-              </h3>
-              <h3>
-                <Icon name="warning circle" />
-                SEFI claims have been disabled for a short time while we investigate performance issues
               </h3>
             </div>
           ) : (

@@ -323,6 +323,10 @@ class EarnRow extends Component<
                 <Icon name="warning circle" />A new version of this earn pool is live. You can migrate by clicking the
                 button below
               </h3>
+              <h3>
+                <Icon name="warning circle" />
+                SEFI claims have been disabled for a short time while we investigate performance issues
+              </h3>
             </div>
           ) : (
             <></>

@@ -351,12 +351,23 @@ class EarnRow extends Component<
           </div>
 
           <div className={cn(styles.title_item__container)}>
-            <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
-            <p style={{ marginLeft: '10px', fontFamily: 'poppins', fontSize: '15px' }}>
-              <ModalExplanation token={this.props.token} theme={this.props.theme}>
-                <Icon className={styles.icon_info} name="info" circular size="tiny" />
-              </ModalExplanation>
-            </p>
+            <SoftTitleValue
+              title={
+                <div className="earn_center_ele">
+                  {apyString(this.props.token)}
+                  {!isDeprecated ? (
+                    <p style={{ marginLeft: '5px', fontFamily: 'poppins', fontSize: '17px' }}>
+                      <ModalExplanation token={this.props.token} theme={this.props.theme}>
+                        <Icon className={styles.icon_info} name="info" circular size="tiny" />
+                      </ModalExplanation>
+                    </p>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              }
+              subTitle={'APY'}
+            />
           </div>
           <div className={cn(styles.title_item__container)}>
             <SoftTitleValue

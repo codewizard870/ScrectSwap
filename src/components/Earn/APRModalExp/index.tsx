@@ -37,7 +37,7 @@ const ModalExplanation = observer(({ token, theme, children }: ModalExplanationP
         <ExitIcon onClick={() => setOpen(false)} />
       </div>
       <div className="apr-base">
-        <p>Base APR (yield only)</p>
+        <p>Base APR</p>
         <p>
           <strong>{formatRoi(stats?.apr)}</strong>
         </p>

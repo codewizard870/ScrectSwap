@@ -358,7 +358,7 @@ class EarnRow extends Component<
                   {!isDeprecated ? (
                     <p style={{ marginLeft: '5px', fontFamily: 'poppins', fontSize: '17px' }}>
                       <ModalExplanation token={this.props.token} theme={this.props.theme}>
-                        <Icon className={styles.icon_info} name="info" circular size="tiny" />
+                        <img width="14px" src="/static/info.svg" alt="" />
                       </ModalExplanation>
                     </p>
                   ) : (

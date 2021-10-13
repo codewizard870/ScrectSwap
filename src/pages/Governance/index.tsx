@@ -145,11 +145,13 @@ export const Governance = observer(() => {
       setProposals(response);
       getProporsalsByStatus(response, selectedFilter);
     })();
-  }, [getProporsalsByStatus, selectedFilter, user]);
+    //eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     getProporsalsByStatus(proposals, selectedFilter);
-  }, [getProporsalsByStatus, proposals, selectedFilter]);
+    //eslint-disable-next-line
+  }, [selectedFilter]);
 
   //fetch total locked and Staking APY
   useEffect(() => {
@@ -164,7 +166,8 @@ export const Governance = observer(() => {
       setRewardToken(sefi_reward_token);
       setTotalLocked(convertTotalLocked);
     })();
-  }, [tokens.allData, user]);
+    //eslint-disable-next-line
+  }, [tokens.allData]);
 
   //update voting power
   useEffect(() => {
@@ -175,7 +178,8 @@ export const Governance = observer(() => {
         setVotingPower(user.balanceRewards[rewardsDepositKey(newRewardsContract)]); //SEFI Staking
       }
     })(rewardToken);
-  }, [newRewardsContract, rewardToken, user]);
+    //eslint-disable-next-line
+  }, [rewardToken]);
 
   useEffect(() => {
     (async () => {
@@ -186,7 +190,8 @@ export const Governance = observer(() => {
         minimumStake: parseInt(minimumStake) / 1e6,
       });
     })();
-  }, [getBalance, newRewardsContract, user]);
+    //eslint-disable-next-line
+  }, []);
 
   return (
     <BaseContainer>

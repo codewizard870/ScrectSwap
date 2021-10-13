@@ -11,12 +11,15 @@ import { BigNumber } from 'bignumber.js';
 import { extractValueFromLogs, getFeeForExecute, Snip20Send } from '../../blockchain-bridge';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 import { PairMap, SwapPair } from '../TokenModal/types/SwapPair';
-import { DownArrow } from '../../ui/Icons/DownArrow';
 import cn from 'classnames';
 import * as styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
 import { RouteRow } from 'components/Swap/RouteRow';
 import { Token } from '../TokenModal/types/trade';
+import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
+import { UserStoreEx } from '../../stores/UserStore';
+import stores from '../../stores';
+import { observer } from 'mobx-react';
 const baseButtonStyle = {
   margin: '1em 0 0 0',
   borderRadius: '4px',
@@ -34,11 +37,6 @@ const errorButtonStyle = {
   opacity: '1',
   cursor: 'default',
 };
-import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
-import { UserStoreEx } from '../../stores/UserStore';
-import stores from '../../stores';
-import { observer } from 'mobx-react';
-import { Symbols } from 'recharts';
 const BUTTON_MSG_ENTER_AMOUNT = 'Enter an amount';
 const BUTTON_MSG_NO_ROUTE = 'No route available';
 const BUTTON_MSG_LOADING_PRICE = 'Loading price data';
@@ -707,7 +705,8 @@ export class SwapTab extends React.Component<
                 const { fromInput, fromToken, toToken, bestRoute, priceImpact, slippageTolerance } = this.state;
                 const pair = this.props.selectedPair;
                 const optMessage = this.state.expectedCSHBK
-                  ? `And you earned ${this.state.expectedCSHBK} cashback`
+                  ? // ? `And you earned ${this.state.expectedCSHBK} cashback`
+                    ''
                   : '';
                 this.setState({ loadingSwap: true });
 

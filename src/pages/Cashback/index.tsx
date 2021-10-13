@@ -18,9 +18,9 @@ export const Cashback = observer(props => {
   const [loading, setLoading] = React.useState(false);
   const hasCashback = user?.balanceCSHBK != '0';
 
-  // useEffect(() => {
-  //   user.setMaintenanceModal(true);
-  // }, []);
+  useEffect(() => {
+    user.setMaintenanceModal(true);
+  }, []);
 
   function extractError(result: any) {
     if (result?.raw_log && result.raw_log.includes('Operation fell short of expected_return')) {

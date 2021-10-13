@@ -27,8 +27,8 @@ export const AdditionalInfo = ({
   const [minReceivedIconBackground, setMinReceivedIconBackground] = useState<string>('whitesmoke');
   const [liqProvFeeIconBackground, setLiqProvFeeIconBackground] = useState<string>('whitesmoke');
   const [priceImpactIconBackground, setPriceImpactIconBackground] = useState<string>('whitesmoke');
-  //isSupported = is pair of tokens supported to get CASHBACK token 
-  const {theme,user} = useStores();
+  //isSupported = is pair of tokens supported to get CASHBACK token
+  const { theme, user } = useStores();
 
   let priceImpactColor = 'green'; // Less than 1% - Awesome
   if (priceImpact > 0.05) {
@@ -41,9 +41,7 @@ export const AdditionalInfo = ({
 
   return (
     <div style={{ maxWidth: '450px', minWidth: '450px' }}>
-      <Container
-        className={`${style.additionalInfo_container} ${style[theme.currentTheme]}`}
-      >
+      <Container className={`${style.additionalInfo_container} ${style[theme.currentTheme]}`}>
         <div
           style={{
             display: 'flex',
@@ -149,7 +147,7 @@ export const AdditionalInfo = ({
             {fromToken}
           </strong>
         </div>
-        <div
+        {/* <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -178,14 +176,14 @@ export const AdditionalInfo = ({
               <Popup.Content>
                 When users trade, they acquire cashback tokens.<br/> 
                 These cashback tokens can be burned to claim SEFI. <br/>
-                {/* <a href="#">Learn more about cashback tokens</a> */}
+                {/* <a href="#">Learn more about cashback tokens</a> 
               </Popup.Content>
             </Popup>
           </span>
           <strong>
             {expectedCSHBK}
           </strong>
-        </div>
+        </div> */}
         <PairAnalyticsLink pairAddress={pairAddress} />
       </Container>
     </div>

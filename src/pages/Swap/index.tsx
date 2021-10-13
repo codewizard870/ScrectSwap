@@ -1,9 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  BrowserRouter as Router,
-  Link,
-  useLocation
-} from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 import { Box } from 'grommet';
 import * as styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
@@ -22,15 +18,12 @@ import { Tokens } from '../../stores/Tokens';
 import { getSymbolsFromPair } from '../../blockchain-bridge/scrt/swap';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from '../TokenModal/types/SwapToken';
 import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
-import cogoToast from 'cogo-toast';
 import { pairIdFromTokenIds, PairMap, SwapPair } from '../TokenModal/types/SwapPair';
-import { NativeToken, Token,Asset } from '../TokenModal/types/trade';
-import { KeplrButton } from '../../components/Secret/KeplrButton';
+import { NativeToken, Token } from '../TokenModal/types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
-import * as style from './styles.styl'
-import { Cashback } from './Cashback';
+import * as style from './styles.styl';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
@@ -42,7 +35,6 @@ export const SwapPageWrapper = observer(() => {
   let query = useQuery();
 
   useEffect(() => {
-    
     secretSwapPairs.init({
       isLocal: true,
       sorter: 'none',
@@ -60,6 +52,7 @@ export const SwapPageWrapper = observer(() => {
       });
       secretSwapPools.fetch();
     }
+    //eslint-disable-next-line
   }, []);
 
   if (process.env.ENV === 'DEV') {
@@ -68,7 +61,7 @@ export const SwapPageWrapper = observer(() => {
     secretSwapPools = null;
   }
 
-  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} query={query}/>;
+  return <SwapRouter user={user} tokens={tokens} pairs={secretSwapPairs} pools={secretSwapPools} query={query} />;
 });
 
 export class SwapRouter extends React.Component<
@@ -99,14 +92,20 @@ export class SwapRouter extends React.Component<
   private ws: WebSocket;
   private pairRefreshInterval;
 
-  constructor(props: { user: UserStoreEx; tokens: Tokens; pairs: SecretSwapPairs; pools: SecretSwapPools ;query:URLSearchParams}) {
+  constructor(props: {
+    user: UserStoreEx;
+    tokens: Tokens;
+    pairs: SecretSwapPairs;
+    pools: SecretSwapPools;
+    query: URLSearchParams;
+  }) {
     super(props);
     this.state = {
       allTokens: new Map<string, SwapToken>(),
       balances: {},
       pairs: new Map<string, SwapPair>(),
       selectedPair: undefined,
-      //Getting parameters as default 
+      //Getting parameters as default
       //in ComponentDidMount we check if they exist or not
       selectedToken0: this.props.query.get('inputCurrency') || process.env.SSCRT_CONTRACT,
       selectedToken1: this.props.query.get('outputCurrency') || '',
@@ -116,16 +115,16 @@ export class SwapRouter extends React.Component<
       routingGraph: {},
       selectedPairRoutes: [],
       keplrConnected: undefined,
-      isSupported:false,
+      isSupported: false,
     };
   }
-  existToken(address :string):boolean{
-    const token = Array.from(this.props.tokens.allData).find((token)=>token.dst_address == address)
-    if(token || address == 'uscrt' || address == process.env.SSCRT_CONTRACT){
+  existToken(address: string): boolean {
+    const token = Array.from(this.props.tokens.allData).find(token => token.dst_address == address);
+    if (token || address == 'uscrt' || address == process.env.SSCRT_CONTRACT) {
       return true;
-    }else{
-      return false
-    } 
+    } else {
+      return false;
+    }
   }
   onHashChange = () => {
     this.forceUpdate();
@@ -168,15 +167,13 @@ export class SwapRouter extends React.Component<
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
     }
 
-
-
     if (updateState) {
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
     }
   }
-  async updateBalances (){
+  async updateBalances() {
     try {
-      console.log("Updating balances")
+      console.log('Updating balances');
       const newBalances = {};
       const { selectedToken0, selectedToken1 } = this.state;
       newBalances[selectedToken1] = await this.refreshTokenBalance(selectedToken1);
@@ -184,7 +181,7 @@ export class SwapRouter extends React.Component<
       this.setState(currentState => ({ balances: { ...currentState.balances, ...newBalances } }));
       await this.props.user.updateScrtBalance();
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
 
@@ -206,7 +203,7 @@ export class SwapRouter extends React.Component<
       [this.state.selectedToken1]: new BigNumber('0'),
     };
 
-    let selectedToken0,selectedToken1;
+    let selectedToken0, selectedToken1;
     const existsToken0 = this.existToken(this.state.selectedToken0);
     const existsToken1 = this.existToken(this.state.selectedToken1);
 
@@ -217,18 +214,18 @@ export class SwapRouter extends React.Component<
         //Checked if the input and output params exist
         //if not selectedToken0 equal SCRT
         //selectedToken1 is empty
-        if(existsToken0){
-          balanceToken0  = { [this.state.selectedToken0]: await this.refreshTokenBalance(this.state.selectedToken0) };
-          selectedToken0 = this.state.selectedToken0
-        }else{
-          selectedToken0=process.env.SSCRT_CONTRACT
+        if (existsToken0) {
+          balanceToken0 = { [this.state.selectedToken0]: await this.refreshTokenBalance(this.state.selectedToken0) };
+          selectedToken0 = this.state.selectedToken0;
+        } else {
+          selectedToken0 = process.env.SSCRT_CONTRACT;
         }
 
-        if(existsToken1){
+        if (existsToken1) {
           balanceToken1 = { [this.state.selectedToken1]: await this.refreshTokenBalance(this.state.selectedToken1) };
-          selectedToken1 = this.state.selectedToken1
-        }else{
-          selectedToken1 =''
+          selectedToken1 = this.state.selectedToken1;
+        } else {
+          selectedToken1 = '';
         }
 
         keplrConnected = true;
@@ -236,7 +233,12 @@ export class SwapRouter extends React.Component<
       }
       await sleep(100);
     }
-    this.setState({ balances: { ...this.state.balances, ...balanceToken0 ,...balanceToken1}, keplrConnected,selectedToken1,selectedToken0});
+    this.setState({
+      balances: { ...this.state.balances, ...balanceToken0, ...balanceToken1 },
+      keplrConnected,
+      selectedToken1,
+      selectedToken0,
+    });
     await this.updatePairs();
 
     if (process.env.ENV !== 'DEV') {
@@ -256,8 +258,8 @@ export class SwapRouter extends React.Component<
         this.setState({ routerSupportedTokens, routerOnline: true }, this.updateRoutingGraph);
         //Updating pair when page has parameters
         //This setCurrenPair updates pair's route
-        if(existsToken0 && existsToken1){
-          await this.setCurrentPair(this.state.selectedToken0,this.state.selectedToken1)
+        if (existsToken0 && existsToken1) {
+          await this.setCurrentPair(this.state.selectedToken0, this.state.selectedToken1);
         }
         return;
       } catch (error) {
@@ -420,12 +422,14 @@ export class SwapRouter extends React.Component<
 
     let userBalance; //balance.includes(unlockToken)
 
-    if ((tokenIdentifier === 'uscrt') && this.state.routerOnline) {
+    if (tokenIdentifier === 'uscrt' && this.state.routerOnline) {
       userBalance = await getNativeBalance(this.props.user.address, this.props.user.secretjs);
       //this.props.user.balanceSCRT = userBalance.toString();
       return userBalance;
-    }else if(tokenIdentifier === 'uscrt'){
-      return new Promise((resolve,reject)=>{resolve(new BigNumber(0))});
+    } else if (tokenIdentifier === 'uscrt') {
+      return new Promise((resolve, reject) => {
+        resolve(new BigNumber(0));
+      });
     }
 
     let balance = await this.props.user.getSnip20Balance(tokenIdentifier);
@@ -445,12 +449,12 @@ export class SwapRouter extends React.Component<
             // result in an on-chain transaction
             const a = await this.refreshTokenBalance(tokenIdentifier);
             const b = {
-              [tokenIdentifier]:a
-            }
-            this.setState(currentState => ({ balances: { ...currentState.balances, ...b } })); 
+              [tokenIdentifier]: a,
+            };
+            this.setState(currentState => ({ balances: { ...currentState.balances, ...b } }));
             await this.props.user.updateScrtBalance();
           } catch (error) {
-            console.error("Failed")
+            console.error('Failed');
           }
         },
       });
@@ -563,9 +567,9 @@ export class SwapRouter extends React.Component<
 
   setCurrentPair = async (token0: string, token1: string) => {
     const selectedPair: SwapPair = this.state.pairs.get(pairIdFromTokenIds(token0, token1));
-    const isSupported = await this.props.user.getIsSupported(selectedPair?.contract_addr)
+    const isSupported = await this.props.user.getIsSupported(selectedPair?.contract_addr);
     ///test --
-    window.history.replaceState({},"",`swap?inputCurrency=${token0}&outputCurrency=${token1}`)
+    window.history.replaceState({}, '', `swap?inputCurrency=${token0}&outputCurrency=${token1}`);
     //
     while (Object.keys(this.state.routingGraph).length === 0) {
       await sleep(100);
@@ -592,7 +596,7 @@ export class SwapRouter extends React.Component<
     this.setState({
       selectedPair: selectedPair,
       selectedPairRoutes: routes,
-      isSupported:isSupported
+      isSupported: isSupported,
     });
 
     //this.refreshBalances({ tokens: [token0, token1], pair: selectedPair });
@@ -665,7 +669,6 @@ export class SwapRouter extends React.Component<
     this.setState({ routingGraph: graph });
   };
 
-
   render() {
     // const isSwap = window.location.hash === '#Swap';
     // const isProvide = window.location.hash === '#Provide';
@@ -695,25 +698,25 @@ export class SwapRouter extends React.Component<
               className={style.box_container}
             >
               {/* <KeplrButton /> */}
-                <SwapTab
-                  user={this.props.user}
-                  secretjs={this.props.user.secretjs}
-                  secretjsSender={this.props.user.secretjsSend}
-                  tokens={this.state.allTokens}
-                  balances={this.state.balances}
-                  selectedPair={this.state.selectedPair}
-                  selectedToken0={this.state.selectedToken0}
-                  selectedToken1={this.state.selectedToken1}
-                  selectedPairRoutes={this.state.selectedPairRoutes}
-                  notify={notify}
-                  onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
-                  refreshPools={this.refreshBalances}
-                  secretAddress={this.props.user.address}
-                  pairs={this.state.pairs}
-                  isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
-                  updateBalances={this.updateBalances.bind(this)}
-                  isSupported={this.state.isSupported}
-                />
+              <SwapTab
+                user={this.props.user}
+                secretjs={this.props.user.secretjs}
+                secretjsSender={this.props.user.secretjsSend}
+                tokens={this.state.allTokens}
+                balances={this.state.balances}
+                selectedPair={this.state.selectedPair}
+                selectedToken0={this.state.selectedToken0}
+                selectedToken1={this.state.selectedToken1}
+                selectedPairRoutes={this.state.selectedPairRoutes}
+                notify={notify}
+                onSetTokens={async (token0, token1) => await this.onSetTokens(token0, token1)}
+                refreshPools={this.refreshBalances}
+                secretAddress={this.props.user.address}
+                pairs={this.state.pairs}
+                isLoadingSupportedTokens={this.state.routerSupportedTokens.size === 0}
+                updateBalances={this.updateBalances.bind(this)}
+                isSupported={this.state.isSupported}
+              />
               {/* {isProvide && (
                 <ProvideTab
                   user={this.props.user}

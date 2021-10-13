@@ -84,18 +84,7 @@ interface RewardData {
   reward: IRewardPool;
   token: ITokenInfo;
 }
-const KEY_SHOW_OLD_POOLS = 'SHOW_OLD_POOLS'
-
-const getShowOldPoolsValue = ():boolean=>{
-  const local_value = localStorage.getItem(KEY_SHOW_OLD_POOLS);
-  
-  if(local_value){
-    const res : boolean = local_value === 'true' ? true : false;
-    return res;
-  }else{
-    return true
-  }
-}
+const KEY_SHOW_OLD_POOLS = 'SHOW_OLD_POOLS';
 
 const order = [
   'SEFI',
@@ -119,40 +108,28 @@ const order = [
   'LP-SSCRT-SMANA',
 ];
 
+const getLocalShowPools = (): boolean => {
+  const local_value = localStorage.getItem(KEY_SHOW_OLD_POOLS);
+
+  if (local_value) {
+    const res: boolean = local_value === 'true' ? true : false;
+    return res;
+  } else {
+    return true;
+  }
+};
+const setLocalShowPools = (value: boolean) => localStorage.setItem(KEY_SHOW_OLD_POOLS, value.toString());
+
 export const SeFiPage = observer(() => {
   const { user, tokens, rewards, userMetamask, theme } = useStores();
 
-
   const [filteredTokens, setFilteredTokens] = useState<ITokenInfo[]>([]);
-  const [showOldPools, setShowOldPools] = useState<boolean>(true);
-  const [earnings, setEarnings] = useState('0');
-  const [sefiBalance, _setSefiBalance] = useState<string | JSX.Element>('');
+  const [showOldPools, setShowOldPools] = useState<boolean>(getLocalShowPools());
 
-  const setShowOldPoolsValue = ()=>{
-    console.log(`saving in local storage with key ${KEY_SHOW_OLD_POOLS} the value of ${showOldPools.toString()}` )
-    localStorage.setItem(KEY_SHOW_OLD_POOLS,showOldPools.toString())
-  }
-  
   useEffect(() => {
-    setShowOldPoolsValue();
-  },[showOldPools])
-
-  function setSefiBalance(balance: string) {
-    if (balance === unlockToken) {
-      balance = unlockJsx({
-        onClick: async () => {
-          await user.keplrWallet.suggestToken(user.chainId, process.env.SCRT_GOV_TOKEN_ADDRESS);
-          await user.updateBalanceForSymbol('SEFI');
-          setSefiBalance(user.balanceToken['SEFI']);
-        },
-      });
-      _setSefiBalance(balance);
-    } else if (balance === fixUnlockToken) {
-      _setSefiBalance(wrongViewingKey);
-    } else {
-      _setSefiBalance(balance);
-    }
-  }
+    setLocalShowPools(showOldPools);
+    //eslint-disable-next-line
+  }, [showOldPools]);
 
   async function addSefiToWatchlist() {
     try {
@@ -181,25 +158,7 @@ export const SeFiPage = observer(() => {
 
   const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);
   const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
-  const getTotalEarnings = () => {
-    const mappedEarnings = rewards.allData
-      .filter(rewards => filteredTokens.find(element => element.dst_address === rewards.inc_token.address))
-      .map(reward => {
-        return {
-          earnings: user.balanceRewards[rewardsKey(reward.inc_token.address)],
-          symbol: reward.inc_token.symbol,
-        };
-      });
-    const totalEarnigs: number = mappedEarnings.reduce((sum, earns) => {
-      if (earns.earnings) {
-        return sum + parseFloat(earns?.earnings);
-      } else {
-        return sum + 0;
-      }
-    }, 0);
 
-    setEarnings(totalEarnigs.toString());
-  };
   useEffect(() => {
     const asyncWrapper = async () => {
       while (rewards.isPending) {
@@ -224,6 +183,7 @@ export const SeFiPage = observer(() => {
       }
     };
     asyncWrapper();
+    //eslint-disable-next-line
   }, [tokens, tokens.allData]);
 
   useEffect(() => {
@@ -246,22 +206,6 @@ export const SeFiPage = observer(() => {
   }, [userMetamask, userMetamask.ethAddress]);
 
   useEffect(() => {
-    const refreshSefi = async () => {
-      // if (filteredTokens.length <= 0) {
-      //   return;
-      // }
-      while (!user.secretjs || tokens.isPending) {
-        await sleep(100);
-      }
-      await user.updateBalanceForSymbol('SEFI');
-      //await Promise.all(filteredTokens.map(token => user.updateBalanceForSymbol(token.display_props.symbol)));
-      setSefiBalance(user.balanceToken['SEFI']);
-    };
-
-    refreshSefi().then(() => {});
-  }, []);
-
-  useEffect(() => {
     rewards.init({
       isLocal: true,
       sorter: 'none',
@@ -269,6 +213,7 @@ export const SeFiPage = observer(() => {
     });
     rewards.fetch();
     tokens.init();
+    //eslint-disable-next-line
   }, []);
 
   return (
@@ -292,8 +237,12 @@ export const SeFiPage = observer(() => {
               .sort((a, b) => {
                 const testA = a.reward.inc_token.symbol.toUpperCase();
                 const testB = b.reward.inc_token.symbol.toUpperCase();
-                if (order.indexOf(testA) === -1) return 1;
-                if (order.indexOf(testB) === -1) return -1;
+                if (order.indexOf(testA) === -1) {
+                  return 1;
+                }
+                if (order.indexOf(testB) === -1) {
+                  return -1;
+                }
                 return order.indexOf(testA) - order.indexOf(testB);
               })
               .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))

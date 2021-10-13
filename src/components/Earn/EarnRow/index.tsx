@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-
 import * as styles from './styles.styl';
 import cn from 'classnames';
-import { Accordion, Grid, Icon, Image, Popup, Segment } from 'semantic-ui-react';
+import { Accordion, Grid, Icon, Image, Segment } from 'semantic-ui-react';
 import SoftTitleValue from '../SoftTitleValue';
 import EarnButton from './EarnButton';
 import DepositContainer from './DepositContainer';
@@ -12,10 +11,8 @@ import { observer } from 'mobx-react';
 import WithdrawButton from './WithdrawButton';
 import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
 import { Text } from '../../Base';
-import ScrtTokenBalance from '../ScrtTokenBalance';
-import stores, { useStores } from 'stores';
+import stores from 'stores';
 import Theme from 'themes';
-import { Link } from 'react-router-dom';
 import MigrateAssets from '../MigrateTokens';
 import ModalExplanation from '../APRModalExp';
 import { InfoIcon } from 'components/Base/components/Icons/tsx_svg_icons';
@@ -294,7 +291,6 @@ class EarnRow extends Component<
       }
     }
   };
-
   render() {
     // const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     const style = `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;

@@ -1,7 +1,5 @@
 import { Redeem } from '../../../blockchain-bridge/scrt';
 import React, { useEffect, useState } from 'react';
-import { SigningCosmWasmClient } from 'secretjs';
-import cn from 'classnames';
 import * as styles from './styles.styl';
 import { Button, Icon, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
@@ -54,12 +52,11 @@ const ClaimButton = (props: {
     }
   };
 
-  const activeProposals = user.numOfActiveProposals;
-  const { rewardsContract } = props;
-  const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
-  const staticGasFee = 40000;
-
   const setGasFee = () => {
+    const activeProposals = user.numOfActiveProposals;
+    const { rewardsContract } = props;
+    const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
+    const staticGasFee = 40000;
     if (rewardsContract === newPoolContract && activeProposals > 0) {
       let fee = {
         amount: [{ amount: 750000 + staticGasFee * activeProposals, denom: 'uscrt' }],
@@ -71,7 +68,8 @@ const ClaimButton = (props: {
 
   useEffect(() => {
     setGasFee();
-  }, [activeProposals, setGasFee]);
+    //eslint-disable-next-line
+  }, [user.numOfActiveProposals]);
 
   return (
     <>

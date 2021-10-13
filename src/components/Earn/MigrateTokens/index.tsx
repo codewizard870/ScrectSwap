@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react';
-import { Dimmer, Icon, Loader, Modal, Popup } from 'semantic-ui-react';
+import { Icon, Loader, Modal, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import { ExecuteResult } from 'secretjs';
 import { storeTxResultLocally } from 'pages/Swap/utils';
 import { notify } from '../../../blockchain-bridge/scrt/utils';
-import { unlockJsx } from 'pages/Pool/utils';
 import { divDecimals } from 'utils';
 import './style.scss';
-import { parse } from 'query-string';
-import { ReactChild } from 'hoist-non-react-statics/node_modules/@types/react';
+import { ReactChild } from 'react';
 
 interface MigrateAssetsProps {
   newRewardsContract: string;

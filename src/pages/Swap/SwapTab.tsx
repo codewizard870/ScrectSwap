@@ -785,20 +785,24 @@ export class SwapTab extends React.Component<
                         bestRoute,
                       );
                     } else {
-                      result = await Snip20Send({
-                        secretjs: this.props.secretjsSender,
-                        address: fromToken,
-                        amount: fromAmount,
-                        msg: btoa(
-                          JSON.stringify({
-                            swap: {
-                              expected_return,
-                            },
-                          }),
-                        ),
-                        recipient: pair.contract_addr,
-                        fee: getFeeForExecute(550_000),
-                      });
+                      if (pair.assetIds().includes(fromToken) && pair.assetIds().includes(toToken)) {
+                        result = await Snip20Send({
+                          secretjs: this.props.secretjsSender,
+                          address: fromToken,
+                          amount: fromAmount,
+                          msg: btoa(
+                            JSON.stringify({
+                              swap: {
+                                expected_return,
+                              },
+                            }),
+                          ),
+                          recipient: pair.contract_addr,
+                          fee: getFeeForExecute(550_000),
+                        });
+                      } else {
+                        throw 'UI got out of sync with the chain, please refresh the page and try again';
+                      }
                     }
 
                     const { sent, received } = storeResult(result, fromAmount, fromDecimals, bestRoute, toDecimals);

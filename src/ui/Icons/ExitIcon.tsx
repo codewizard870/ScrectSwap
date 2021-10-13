@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { HTMLProps } from 'react';
 
-export const ExitIcon = (props: any) => {
+export const ExitIcon = (props?: { onClick?: any }) => {
   return (
     <svg
+      {...props}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import * as styles from './styles.styl';
 import cn from 'classnames';
-import { Accordion, Divider, Grid, Icon, Image, Segment } from 'semantic-ui-react';
+import { Accordion, Grid, Icon, Image, Popup, Segment } from 'semantic-ui-react';
 import SoftTitleValue from '../SoftTitleValue';
 import EarnButton from './EarnButton';
 import DepositContainer from './DepositContainer';
@@ -17,6 +17,8 @@ import stores, { useStores } from 'stores';
 import Theme from 'themes';
 import { Link } from 'react-router-dom';
 import MigrateAssets from '../MigrateTokens';
+import ModalExplanation from '../APRModalExp';
+import { InfoIcon } from 'components/Base/components/Icons/tsx_svg_icons';
 
 const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
 const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
@@ -38,6 +40,71 @@ export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying
 
   return apy;
 };
+export interface StastsAPR {
+  roi: {
+    d1: number;
+    d7: number;
+    d30: number;
+    d365: number;
+  };
+  sefiP1000: {
+    d1: number;
+    d7: number;
+    d30: number;
+    d365: number;
+  };
+  usdP1000: {
+    d1: number;
+    d7: number;
+    d30: number;
+    d365: number;
+  };
+  apr: number;
+  apy: number;
+}
+export const getAPRStats = (token: RewardsToken, price: number): StastsAPR => {
+  // console.log(Math.round(Date.now() / 1000000))
+  // deadline - current time, 6 seconds per block
+  const timeRemaining = (Math.min(token.deadline, 7916452) - 335039) * 6.2 + 1633621506 - Math.round(Date.now() / 1000);
+
+  // (token.deadline - Math.round(Date.now() / 1000000) );
+  const pending = Number(divDecimals(token.remainingLockedRewards, token.rewardsDecimals)) * price;
+
+  // this is already normalized
+  const locked = Number(token.totalLockedRewards);
+  //console.log(`pending - ${pending}; locked: ${locked}, time remaining: ${timeRemaining}`)
+  const apr_raw = Number((((pending * 100) / locked) * (3.154e7 / timeRemaining)).toFixed(0));
+  const apr = apr_raw / 100;
+  const apy = Number((Math.pow(1 + apr / 100 / 365, 365) - 1) * 100);
+  const daysOfYear = 365;
+  const roi = {
+    d1: apr / daysOfYear,
+    d7: Math.pow(1 + apr / daysOfYear, 7) - 1,
+    d30: Math.pow(1 + apr / daysOfYear, 30) - 1,
+    d365: Math.pow(1 + apr / daysOfYear, daysOfYear) - 1,
+  };
+  const sefiP1000 = {
+    d1: (1000 * roi.d1) / price,
+    d7: (1000 * roi.d7) / price,
+    d30: (1000 * roi.d30) / price,
+    d365: (1000 * roi.d365) / price,
+  };
+  const usdP1000 = {
+    d1: sefiP1000.d1 * price,
+    d7: sefiP1000.d7 * price,
+    d30: sefiP1000.d30 * price,
+    d365: sefiP1000.d365 * price,
+  };
+  const result: StastsAPR = {
+    roi,
+    sefiP1000,
+    usdP1000,
+    apy,
+    apr,
+  };
+  return result;
+};
+
 const tokenImages = {
   SSCRT: '/static/token-images/sscrt.svg',
   SEFI: '/static/token-images/sefi.svg',
@@ -227,12 +294,12 @@ class EarnRow extends Component<
       }
     }
   };
+
   render() {
     // const style = Number(this.props.token.balance) > 0 ? styles.accordionHaveDeposit : `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     const style = `${styles.accordion} ${styles[this.props.theme.currentTheme]}`;
     //this.props.userStore.keplrWallet.suggestToken(this.props.userStore.chainId, );
     const { activeIndex } = this.state;
-
     const _symbols = this.props.token.lockedAsset?.toUpperCase().split('-');
     let image_primaryToken, image_secondaryToken;
     let tokenName1 = this.getBaseTokenName(_symbols[1]);
@@ -286,8 +353,14 @@ class EarnRow extends Component<
           <div className={cn(styles.title_item__container)}>
             <SoftTitleValue title={title} subTitle="    " />
           </div>
+
           <div className={cn(styles.title_item__container)}>
             <SoftTitleValue title={apyString(this.props.token)} subTitle={'APY'} />
+            <p style={{ marginLeft: '10px', fontFamily: 'poppins', fontSize: '15px' }}>
+              <ModalExplanation token={this.props.token} theme={this.props.theme}>
+                <Icon className={styles.icon_info} name="info" circular size="tiny" />
+              </ModalExplanation>
+            </p>
           </div>
           <div className={cn(styles.title_item__container)}>
             <SoftTitleValue

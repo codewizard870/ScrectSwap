@@ -15,7 +15,7 @@ export const InfoModalEarn = observer(() => {
     }
 
     if (!user.isInfoEarnReading) {
-      actionModals.open(() => <InfoEarn title="Earn Contracts are Back!" />, {
+      actionModals.open(() => <InfoEarn title="Bonus rewards have ended!" />, {
         title: '',
         applyText: 'Got it',
         closeText: '',
@@ -27,6 +27,7 @@ export const InfoModalEarn = observer(() => {
         },
       });
     }
+    //eslint-disable-next-line
   }, [user.isInfoEarnReading]);
 
   return <></>;

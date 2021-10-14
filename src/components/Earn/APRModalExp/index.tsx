@@ -12,6 +12,20 @@ interface ModalExplanationProps {
   theme: Theme;
   children?: ReactChild;
 }
+const getLabel = (n: string): string => {
+  switch (n) {
+    case 'd1':
+      return '1 D';
+    case 'd7':
+      return '7 D';
+    case 'd30':
+      return '30 D';
+    case 'd365':
+      return '365 D(APY)';
+    default:
+      return '';
+  }
+};
 
 const ModalExplanation = observer(({ token, theme, children }: ModalExplanationProps) => {
   const stats = getAPRStats(token, Number(token.rewardsPrice));
@@ -39,7 +53,7 @@ const ModalExplanation = observer(({ token, theme, children }: ModalExplanationP
           {stats ? (
             Object.keys(stats?.roi).map((key, i) => (
               <tr key={key + i}>
-                <td>{key === 'd365' ? 'd365(APY)' : key}</td>
+                <td>{getLabel(key)}</td>
                 <td>{formatRoi(stats?.roi[key])}</td>
                 <td>{`${format(stats?.sefiP1000[key])} ($${format(stats?.usdP1000[key])})`}</td>
               </tr>

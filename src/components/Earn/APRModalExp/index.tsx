@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { ReactChild, useState, useEffect } from 'react';
-import { Modal } from 'semantic-ui-react';
+import { Modal, Popup } from 'semantic-ui-react';
 import Theme from 'themes';
 import { getAPRStats, RewardsToken, StastsAPR } from '../EarnRow';
 import './style.scss';
@@ -14,27 +14,12 @@ interface ModalExplanationProps {
 }
 
 const ModalExplanation = observer(({ token, theme, children }: ModalExplanationProps) => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [stats, setStats] = useState<StastsAPR>(undefined);
-
-  useEffect(() => {
-    if (open) {
-      const stats = getAPRStats(token, Number(token.rewardsPrice));
-      setStats(stats);
-    }
-  }, [open, token]);
+  const stats = getAPRStats(token, Number(token.rewardsPrice));
 
   return (
-    <Modal
-      className={`apr-modal ${theme.currentTheme}`}
-      open={open}
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      trigger={children}
-    >
+    <Popup position="bottom center" className={`apr-modal ${theme.currentTheme}`} trigger={children}>
       <div className="apr-modal-header">
         <h3>APY</h3>
-        <ExitIcon onClick={() => setOpen(false)} />
       </div>
       <div className="apr-base">
         <p>Base APR</p>
@@ -73,7 +58,7 @@ const ModalExplanation = observer(({ token, theme, children }: ModalExplanationP
           </li>
         </ul>
       </div>
-    </Modal>
+    </Popup>
   );
 });
 

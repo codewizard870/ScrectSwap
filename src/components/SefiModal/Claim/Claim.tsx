@@ -30,7 +30,7 @@ const Claim = (props:{
         />
       <div className="displayed-center">
         <div className="displayed-center__item">
-          <img src="/static/tokens/sefi.png" alt="scrt"/>
+          <img src="/static/token-images/sefi.svg" alt="scrt"/>
         </div>
         <p className="displayed-center__item">You earned</p>
         <div className="displayed-center__item claiming_section">

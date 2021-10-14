@@ -359,7 +359,7 @@ class EarnRow extends Component<
         >
           {this.props.token.lockedAsset === 'SEFI' ? (
             <div className={cn(styles.assetIcon)}>
-              <Image src="/static/tokens/sefi.png" rounded size="mini" />
+              <Image src={tokenImages.SEFI} rounded size="mini" />
             </div>
           ) : (
             <div className={cn(styles.assetIcon)}>

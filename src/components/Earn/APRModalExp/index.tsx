@@ -19,7 +19,7 @@ const ModalExplanation = observer(({ token, theme, children }: ModalExplanationP
   return (
     <Popup position="bottom center" className={`apr-modal ${theme.currentTheme}`} trigger={children}>
       <div className="apr-modal-header">
-        <h3>APY</h3>
+        <h3>ROI Calculation</h3>
       </div>
       <div className="apr-base">
         <p>Base APR</p>
@@ -39,7 +39,7 @@ const ModalExplanation = observer(({ token, theme, children }: ModalExplanationP
           {stats ? (
             Object.keys(stats?.roi).map((key, i) => (
               <tr key={key + i}>
-                <td>{key}</td>
+                <td>{key === 'd365' ? 'd365(APY)' : key}</td>
                 <td>{formatRoi(stats?.roi[key])}</td>
                 <td>{`${format(stats?.sefiP1000[key])} ($${format(stats?.usdP1000[key])})`}</td>
               </tr>

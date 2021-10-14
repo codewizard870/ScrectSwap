@@ -16,6 +16,7 @@ import Theme from 'themes';
 import MigrateAssets from '../MigrateTokens';
 import ModalExplanation from '../APRModalExp';
 import { InfoIcon } from 'components/Base/components/Icons/tsx_svg_icons';
+import numeral from 'numeral';
 
 const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
 const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
@@ -177,6 +178,26 @@ export const apyString = (token: RewardsToken) => {
     return `${abrevFormatted}e${elevation} %`;
   }
   return `${apyStr}%`;
+};
+
+export const aprString = (token: RewardsToken) => {
+  const { apr } = getAPRStats(token, Number(token.rewardsPrice));
+  // if (isNaN(apy) || 0 > apy) {
+  //   return `∞%`;
+  // }
+  // const apyStr = zeroDecimalsFormatter.format(Number(apy));
+
+  // //Hotfix of big % number
+  // const apyWOCommas = apyStr.replace(/,/g, '');
+  // const MAX_LENGHT = 9;
+  // if (apyWOCommas.length > MAX_LENGHT) {
+  //   const abrev = apyWOCommas?.substring(0, MAX_LENGHT);
+  //   const abrevFormatted = zeroDecimalsFormatter.format(Number(abrev));
+  //   const elevation = apyWOCommas.length - MAX_LENGHT;
+
+  //   return `${abrevFormatted}e${elevation} %`;
+  // }
+  return numeral(apr).format('0,0%');
 };
 export interface RewardsToken {
   name: string;
@@ -355,7 +376,7 @@ class EarnRow extends Component<
             <SoftTitleValue
               title={
                 <div className="earn_center_ele">
-                  {apyString(this.props.token)}
+                  {aprString(this.props.token)}
                   {!isDeprecated ? (
                     <p style={{ marginLeft: '5px', fontFamily: 'poppins', fontSize: '17px' }}>
                       <ModalExplanation token={this.props.token} theme={this.props.theme}>
@@ -367,7 +388,7 @@ class EarnRow extends Component<
                   )}
                 </div>
               }
-              subTitle={'APY'}
+              subTitle={'APR'}
             />
           </div>
           <div className={cn(styles.title_item__container)}>

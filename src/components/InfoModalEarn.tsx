@@ -14,20 +14,19 @@ export const InfoModalEarn = observer(() => {
       return;
     }
 
-    // if (!user.isInfoEarnReading) {
-    //   actionModals.open(() => <InfoEarn title="Earn Contracts are Back!" />, {
-    //     title: '',
-    //     applyText: 'Got it',
-    //     closeText: '',
-    //     noValidation: true,
-    //     showOther: true,
-    //     onApply: () => {
-    //       user.setInfoEarnReading();
-    //       return Promise.resolve();
-    //     },
-    //   });
-    // }
-
+    if (!user.isInfoEarnReading) {
+      actionModals.open(() => <InfoEarn title="Bonus rewards have ended!" />, {
+        title: '',
+        applyText: 'Got it',
+        closeText: '',
+        noValidation: true,
+        showOther: true,
+        onApply: () => {
+          user.setInfoEarnReading();
+          return Promise.resolve();
+        },
+      });
+    }
     //eslint-disable-next-line
   }, [user.isInfoEarnReading]);
 

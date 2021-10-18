@@ -130,7 +130,7 @@ export const Governance = observer(() => {
   const theMinimum = amounts.minimumStake;
 
   useEffect(() => {
-    user.setMaintenanceModal(true);
+    // user.setMaintenanceModal(true);
     (async () => {
       const allProposals = await user.getProposals();
 

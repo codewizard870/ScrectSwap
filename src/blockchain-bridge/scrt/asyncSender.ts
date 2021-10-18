@@ -7,7 +7,7 @@ class CustomError extends Error {
   public txHash: string;
 }
 
-const whitelistTxs = ['emergency_redeem', 'redeem', 'send', 'increase_allowance', 'provide_liquidity','create_pair','receive'];
+const whitelistTxs = ['emergency_redeem', 'redeem', 'send', 'increase_allowance', 'provide_liquidity','create_pair','receive','vote','new_poll'];
 
 export class AsyncSender extends SigningCosmWasmClient {
   asyncExecute = async (

@@ -11,6 +11,7 @@ import { extractError, notify } from '../../blockchain-bridge/scrt/utils';
 import axios from "axios";
 import { numberFormatter } from '../../utils/formatNumber'
 import './style.scss';
+import { parseTallyResult } from 'components/ProposalRow';
 
 export const DetailProposal = observer((props) => {
 
@@ -27,6 +28,7 @@ export const DetailProposal = observer((props) => {
         address: '',
         title: '',
         description: '',
+        tally:[],
         vote_type: '',
         author_address: '',
         author_alias: '',
@@ -197,7 +199,7 @@ export const DetailProposal = observer((props) => {
 
     const getTally = async () => {
         try {
-            const result = await user.tally(contractAddress);
+            const result = parseTallyResult(proposal.tally);
             setTally(result);
         } catch (err) {
             console.error('Tally Error:', err.message);

@@ -327,6 +327,7 @@ export const Governance = observer(() => {
                       title={p.title}
                       endTime={p.end_date}
                       status={p.status}
+                      tally={p.tally}
                       id={p.id}
                       finalized={p.finalized}
                       valid={p.valid}

@@ -772,6 +772,7 @@ export class UserStoreEx extends StoreConstructor {
           address: proposal.address,
           title: proposal.title,
           description: proposal.description,
+          tally: proposal.tally,
           vote_type: proposal.vote_type,
           author_address: proposal.author_addr,
           author_alias: proposal.author_alias,
@@ -863,19 +864,6 @@ export class UserStoreEx extends StoreConstructor {
     return result.has_voted.has_voted;
   }
 
-  public async tally(contractAddress: string): Promise<any> {
-    await this.prepareDeps();
-
-    const result = await this.secretjs.queryContractSmart(contractAddress,
-      {
-        tally: {}
-      },
-    )
-    return {
-      positive: parseFloat(result.tally.tally[0]) / 1e6,
-      negative: parseFloat(result.tally.tally[1]) / 1e6
-    };
-  }
 
   public async getNumberOfVoters(contractAddress: string): Promise<any> {
     await this.prepareDeps();

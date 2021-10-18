@@ -17,6 +17,7 @@ export const ProposalRow = (props: {
     endTime: number,
     status?: string,
     id: string,
+    tally?: string [],
     finalized: boolean,
     valid: boolean,
     currentStatus: string,
@@ -24,31 +25,8 @@ export const ProposalRow = (props: {
     votingPercentaje?: number
 }) => {
 
-    const [showResults, setShowResult] = React.useState(false);
-
-    let { user } = useStores();
-
-    const [tally, setTally] = React.useState({
-        negative: 0,
-        positive: 0,
-    });
-
-    const getTally = async () => {
-        const ended = ['failed', 'passed'].includes(props.status);
-        if (!(ended && props.valid)) return;
-
-        try {
-            const result = await user.tally(props.address);
-            setTally(result);
-        } catch (err) {
-            console.error(err?.message);
-            setShowResult(false);
-        }
-    }
-
+    const tally = parseTallyResult(props.tally);
     const totalTally = tally.positive + tally.negative;
-
-    const voted = Math.round((totalTally / props.totalLocked) * 100);
 
     const positiveVotes = Math.round((tally.positive / totalTally) * 100) || 0;
     const negativeVotes = Math.round((tally.negative / totalTally) * 100) || 0;
@@ -56,18 +34,9 @@ export const ProposalRow = (props: {
     const result = props.status === 'passed' ? positiveVotes : negativeVotes;
 
     const belowQuorum = props.status === 'failed' && props.valid === false;
+    const showResults = !(props.currentStatus === 'active' || props.currentStatus === 'tally in progress')
 
-    const showProposalResult = () => {
-        if (props.currentStatus === 'active' || props.currentStatus === 'tally in progress') {
-            setShowResult(false);
-        } else {
-            setShowResult(true);
-        }
-    }
 
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
 
     let colorResult = '#D94C48';
     if (props.currentStatus === 'failed') {
@@ -75,13 +44,6 @@ export const ProposalRow = (props: {
     } else if (props.currentStatus === 'passed') {
         colorResult = 'green';
     }
-
-    // console.log(props.votingPercentaje);
-
-    useEffect(() => {
-        showProposalResult();
-        getTally();
-    }, [])
 
     return (
         <Link to={`/proposal/${props.id}`} style={{ textDecoration: 'none' }}>
@@ -144,4 +106,16 @@ export const ProposalRow = (props: {
             </div>
         </Link>
     )
+}
+
+
+function parseTallyResult(tally: string []) {
+  return {
+    positive: parseFloat(tally[0]) / 1e6,
+    negative: parseFloat(tally[1]) / 1e6
+  };
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }

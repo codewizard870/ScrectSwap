@@ -110,6 +110,13 @@ export const ProposalRow = (props: {
 
 
 export function parseTallyResult(tally: string []) {
+  if(tally?.length < 2 || !tally){
+    return {
+      positive: 0,
+      negative: 0
+    }
+  };
+  
   return {
     positive: parseFloat(tally[0]) / 1e6,
     negative: parseFloat(tally[1]) / 1e6

@@ -269,7 +269,7 @@ export const SefiModal = (props: {
   }
   const onClaimSefi = ()=>{
     console.log("Moving to Claim");
-    setStatus(SefiModalState.CONFIRMATION);
+    setStatus(SefiModalState.CLAIM);
   };
   const onClaimCashback = ()=>{
     console.log("Moving to Claim Cashback");

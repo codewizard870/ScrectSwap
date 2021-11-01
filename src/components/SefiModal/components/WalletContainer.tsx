@@ -33,7 +33,7 @@ const Wallet = ({
         <div className="item left">
           <img src={tokenIcon} style={{margin: '0 5px'}} alt="" />
           <span className={`${theme.currentTheme}`}>
-            {(address_formatted.includes("undefined"))
+            {(address_formatted?.includes("undefined"))
               ?`Connect your ${type}`
               :address_formatted
             }

@@ -6,7 +6,7 @@ import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import Loader from 'react-loader-spinner'; 
 import { ExitIcon } from '../../ui/Icons/ExitIcon';
 import {SefiModalState} from './types/SefiModalState';
-import {SefiData} from './types/SefiData';
+import {ClaimInfo, SefiData} from './types/SefiData';
 import General from './General State';
 import Claim from './Claim/Claim';
 import ClaimCashback from './Claim/ClaimCashback';
@@ -50,10 +50,7 @@ export const SefiModal = (props: {
     sefi_in_circulation : '—',
     total_supply: '1bn'
   });
-  const [claimInfo,setClaimInfo] = React.useState<{
-    eth:any;
-    scrt:any;
-  }>(undefined)
+  const [claimInfo,setClaimInfo] = React.useState<ClaimInfo>(undefined)
   const [unclaimedAmount,setUnclaimedAmout] = React.useState<number>(0.0);
   const {user,rewards,theme} = useStores();
 
@@ -167,11 +164,13 @@ export const SefiModal = (props: {
       return undefined;
     }
   };
-  async function getClaimInfo ():Promise<any>{
-    const ethClaimInfo = await loadETHClaimInfo();
-    const scrtClaimInfo = await loadSRCTClaimInfo();
-    return {scrtClaimInfo,ethClaimInfo}
+  async function getClaimInfo ():Promise<ClaimInfo>{
+    const eth = await loadETHClaimInfo();
+    const scrt = await loadSRCTClaimInfo();
+
+    return { scrt, eth }
   };
+
   async function createSefiViewingKey() {
     try {
       setOpen(false);
@@ -232,13 +231,11 @@ export const SefiModal = (props: {
       }
       //Load unclaimed 
       try {
-        const {scrtClaimInfo,ethClaimInfo} = await getClaimInfo();
-        const totalUnclaimed = parseFloat(divDecimals(scrtClaimInfo?.amount?.toString() || 0, 6)) + parseFloat(divDecimals(ethClaimInfo?.amount?.toString() || 0, 6));
+        const claimInfo  = await getClaimInfo();
+        const {scrt,eth} = claimInfo;
+        const totalUnclaimed = parseFloat(divDecimals(scrt?.amount?.toString() || 0, 6)) + parseFloat(divDecimals(eth?.amount?.toString() || 0, 6));
         unclaimed = numeral(totalUnclaimed).format(getFloatFormat(totalUnclaimed)).toString().toUpperCase()
-        setClaimInfo({
-          eth:ethClaimInfo,
-          scrt:scrtClaimInfo,
-        })
+        setClaimInfo(claimInfo)
       } catch (error) {
         console.error("Error at fetch unclaimed SEFI",error)
       }
@@ -267,19 +264,13 @@ export const SefiModal = (props: {
       })
     });
   }
-  const onClaimSefi = ()=>{
-    console.log("Moving to Claim");
-    setStatus(SefiModalState.CLAIM);
-  };
-  const onClaimCashback = ()=>{
-    console.log("Moving to Claim Cashback");
-    setStatus(SefiModalState.CLAIM_CASH_BACK);
-  };
+  const onClaimSefi     = () => setStatus(SefiModalState.CLAIM)
+  const onClaimCashback = () => setStatus(SefiModalState.CLAIM_CASH_BACK)
 
   const onClaimSCRT = async()=>{
     console.log('Claiming SEFI...')
     try {
-      setUnclaimedAmout(parseFloat(claimInfo.scrt?.amount))
+      setUnclaimedAmout(claimInfo.scrt?.amount.toNumber())
       const result = await claimScrt(props.user.secretjsSend, props.user.address);
       console.log('success', 'Claimed SeFi successfully!');
       setStatus(SefiModalState.CONFIRMATION);
@@ -290,10 +281,11 @@ export const SefiModal = (props: {
       console.log(props.user.balanceToken['SEFI'])
     }
   };
+
   const onClaimErc = async()=>{
     console.log('Claiming SEFI...')
     try {
-      setUnclaimedAmout(parseFloat(claimInfo.eth?.amount))
+      setUnclaimedAmout(claimInfo.eth?.amount.toNumber())
       const result = await claimErc();
       console.log('success', 'Claimed SeFi successfully!');
       setStatus(SefiModalState.CONFIRMATION);
@@ -304,6 +296,7 @@ export const SefiModal = (props: {
       console.log(props.user.balanceToken['SEFI'])
     }
   };
+
   const loginMetaMask = ()=>{
     try {
       props.metaMask.signIn();
@@ -311,6 +304,7 @@ export const SefiModal = (props: {
       console.error(error)
     }
   }
+
   const loginKeplr = ()=>{
     try {
       props.user.signIn()
@@ -471,3 +465,4 @@ export const SefiModal = (props: {
     </Modal>
   )
 }
+

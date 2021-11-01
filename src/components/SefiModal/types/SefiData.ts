@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { RewardsToken } from "components/Earn/EarnRow";
 
 export interface SefiData{
@@ -9,4 +10,17 @@ export interface SefiData{
   sefi_price:number,
   sefi_in_circulation:string,
   total_supply:string
+}
+
+export interface ClaimInfo {
+  eth:{
+    address:string,
+    amount:BigNumber,
+    isClaimed:boolean
+  } | undefined,
+  scrt:{
+    address:string,
+    amount:BigNumber,
+    isClaimed:boolean
+  } | undefined
 }

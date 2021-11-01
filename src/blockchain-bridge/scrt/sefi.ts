@@ -22,7 +22,8 @@ export const isClaimedSefiRewardsScrt = async (params: {
 
 export const ClaimAirdrop = async (params: { secretjs: AsyncSender; address: string }): Promise<ExecuteResult> => {
   const { secretjs, address } = params;
-  const proof = (await getScrtProof(address)).proof;
+  const res = await getScrtProof(address)
+  const proof = res.proof;
 
   let execMsg = {
     index: proof.index.toString(),

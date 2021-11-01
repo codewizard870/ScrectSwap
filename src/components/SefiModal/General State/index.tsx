@@ -1,5 +1,5 @@
 import React from 'react';
-import { Popup ,Icon} from 'semantic-ui-react';
+import { Popup ,Icon, Loader} from 'semantic-ui-react';
 import {SefiData} from '../types/SefiData' 
 import '../styles.scss';
 import { useStores } from 'stores';
@@ -18,7 +18,7 @@ const GeneralState = (props:{
   const {theme} = useStores();
   const scrtBalance = parseFloat(divDecimals(props.claimInfo?.scrt?.amount?.toString(), 6));
   const ethBalance = parseFloat(divDecimals(props.claimInfo?.eth?.amount?.toString(), 6));
-
+  
   return(
     <>
       <div className={`table_container ${theme.currentTheme}`}>
@@ -34,30 +34,33 @@ const GeneralState = (props:{
               <tr> 
                 <td className='bold_titles'>SEFI</td>
                 {
-                  (props.data.balance != 'Unlock' && props.data.balance != '—')
-                  ? <>
-                      <td>
-                        <strong>
-                          {
-                            isNaN(parseFloat(props.data.balance))
-                              ? "0.0"
-                              : props.data.balance
-                          }
-                        </strong>
-                      </td>
-                      <td>
-                        {
-                          (props.data.sefi_in_circulation !== '—')&&
-                          <button  
-                            disabled={(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)&&(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)}
-                            onClick={()=>{props.onClaimSefi()}}
-                          >
-                            Claim 
-                          </button>
-                        }
-                      </td>
-                    </>
-                  : <td colSpan={2}>{unlockJsx({onClick:props.createSefiViewingKey})}</td>
+                  (props.data.balance != '—')
+                    ? (props.data.balance.toLowerCase() != 'unlock' 
+                      && props.data.balance.replace(/ /g, "").toLowerCase() != 'fixunlock')
+                      ? <>
+                          <td>
+                            <strong>
+                              {
+                                isNaN(parseFloat(props.data.balance))
+                                  ? "0.0"
+                                  : props.data.balance
+                              }
+                            </strong>
+                          </td>
+                          <td>
+                            {
+                              (props.data.sefi_in_circulation !== '—')&&
+                              <button  
+                                disabled={(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)&&(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)}
+                                onClick={()=>{props.onClaimSefi()}}
+                              >
+                                Claim 
+                              </button>
+                            }
+                          </td>
+                        </>
+                      : <td colSpan={2}>{unlockJsx({onClick:props.createSefiViewingKey})}</td>
+                    : <div className="loader_container"><Loader size='mini' inline /></div>
                 }
               </tr>
               <tr> 
@@ -83,31 +86,34 @@ const GeneralState = (props:{
                     </Popup>   
                 </td>
                 {
-                  (props.data.cashback_balance != 'Unlock' && props.data.cashback_balance != '—')
-                  ? <>
-                      <td>
-                        <strong>
-                          {
-                            isNaN(parseFloat(props.data.cashback_balance))
-                              ? "0.0"
-                              : props.data.cashback_balance
-                          }
-                        </strong>
-                      </td>
-                      <td>
-                        {
-                          (props.data.cashback_balance !== '—')&&
-                          <button 
-                            disabled={parseFloat(props.data.cashback_balance) == 0}
-                            onClick={()=>{props.onClaimCashback()}}
-                          >
-                              Redeem
-                          </button>
+                  (props.data.cashback_balance != '—')
+                    ? (props.data.cashback_balance.toLowerCase() != 'unlock' && 
+                      props.data.cashback_balance.replace(/ /g, "").toLowerCase() != 'fixunlock')
+                      ? <>
+                          <td>
+                            <strong>
+                              {
+                                isNaN(parseFloat(props.data.cashback_balance))
+                                  ? "0.0"
+                                  : props.data.cashback_balance
+                              }
+                            </strong>
+                          </td>
+                          <td>
+                            {
+                              (props.data.cashback_balance !== '—')&&
+                              <button 
+                                disabled={parseFloat(props.data.cashback_balance) == 0}
+                                onClick={()=>{props.onClaimCashback()}}
+                              >
+                                  Redeem
+                              </button>
 
-                        }
-                      </td>
-                    </>
-                  : <td colSpan={2}>{unlockJsx({onClick:props.createCSHBKViewingKey})}</td>
+                            }
+                          </td>
+                        </>
+                      : <td colSpan={2}>{unlockJsx({onClick:props.createCSHBKViewingKey})}</td>
+                    : <div className="loader_container"><Loader size='mini' inline /></div>
                 }
               </tr>
             </tbody>

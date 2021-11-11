@@ -422,15 +422,19 @@ export class SwapRouter extends React.Component<
 
     let userBalance; //balance.includes(unlockToken)
 
-    if (tokenIdentifier === 'uscrt' && this.state.routerOnline) {
-      userBalance = await getNativeBalance(this.props.user.address, this.props.user.secretjs);
-      //this.props.user.balanceSCRT = userBalance.toString();
-      return userBalance;
-    } else if (tokenIdentifier === 'uscrt') {
-      return new Promise((resolve, reject) => {
-        resolve(new BigNumber(0));
-      });
-    }
+    if (tokenIdentifier === 'uscrt') {
+      try {
+        userBalance = await getNativeBalance(this.props.user.address, this.props.user.secretjs);
+        //this.props.user.balanceSCRT = userBalance.toString();
+        return userBalance;
+        
+      } catch (error) {
+        console.error('Error at fetch SCRT balance in Swap form',error)
+        return new Promise((resolve, reject) => {
+          resolve(new BigNumber(0));
+        });
+      }
+    } 
 
     let balance = await this.props.user.getSnip20Balance(tokenIdentifier);
 

@@ -129,6 +129,6 @@ const MigrateAssets = observer(
 export default MigrateAssets;
 
 const fee = {
-  amount: [{ amount: '1500000', denom: 'uscrt' }],
-  gas: '1500000',
+  amount: [{ amount: '100000', denom: 'uscrt' }],
+  gas: '400000',
 };

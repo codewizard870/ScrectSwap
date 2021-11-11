@@ -15,6 +15,7 @@ import Loader from 'react-loader-spinner';
 import { shareOfPoolNumberFormat, storeTxResultLocally } from './utils';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import Theme from 'themes';
+import { GAS_FOR_WITHDRAW_LP_FROM_SWAP } from '../../utils/gasPrices';
 
 export class WithdrawLiquidityPanel extends React.Component<
   {
@@ -411,7 +412,7 @@ export class WithdrawLiquidityPanel extends React.Component<
                             },
                             '',
                             [],
-                            getFeeForExecute(550_000),
+                            getFeeForExecute(GAS_FOR_WITHDRAW_LP_FROM_SWAP),
                           );
                           storeTxResultLocally(result);
                           this.props.notify(

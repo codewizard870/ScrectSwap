@@ -86,7 +86,7 @@ export const DepositRewards = async (params: {
     msg: 'eyJkZXBvc2l0Ijp7fX0K', // '{"deposit":{}}' -> base64
     ...params,
   });
-  console.log(tx)
+  console.log(tx);
   return 'yooyoo';
 };
 
@@ -98,14 +98,20 @@ export const Redeem = async (params: {
 }): Promise<ExecuteResult> => {
   const { secretjs, address, amount, fee } = params;
 
-  let result = await secretjs.asyncExecute(address, {
-    redeem: {
-      amount,
+  let result = await secretjs.asyncExecute(
+    address,
+    {
+      redeem: {
+        amount,
+      },
     },
-  }, undefined, undefined, fee);
-  
-  if(result?.code){
-    throw new Error(result?.raw_log)
+    undefined,
+    undefined,
+    fee,
+  );
+
+  if (result?.code) {
+    throw new Error(result?.raw_log);
   }
   return result;
 };
@@ -117,12 +123,18 @@ export const emergencyRedeem = async (params: {
 }): Promise<ExecuteResult> => {
   const { secretjs, address, fee } = params;
 
-  let result = await secretjs.asyncExecute(address, {
-    emergency_redeem: {}
-  }, undefined, undefined, fee);
+  let result = await secretjs.asyncExecute(
+    address,
+    {
+      emergency_redeem: {},
+    },
+    undefined,
+    undefined,
+    fee,
+  );
 
-  if(result?.code){
-    throw new Error(result?.raw_log)
+  if (result?.code) {
+    throw new Error(result?.raw_log);
   }
   return result;
 };

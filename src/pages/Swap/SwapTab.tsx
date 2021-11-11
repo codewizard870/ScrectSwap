@@ -20,6 +20,7 @@ import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { UserStoreEx } from '../../stores/UserStore';
 import stores from '../../stores';
 import { observer } from 'mobx-react';
+import { GAS_FOR_BASE_SWAP_ROUTE, GAS_FOR_SWAP_DIRECT, GAS_FOR_SWAP_NATIVE_COIN } from '../../utils/gasPrices';
 const baseButtonStyle = {
   margin: '1em 0 0 0',
   borderRadius: '4px',
@@ -83,7 +84,7 @@ function executeRouterSwap(
           denom: 'uscrt',
         },
       ],
-      getFeeForExecute(bestRoute.length * 500_000),
+      getFeeForExecute(bestRoute.length * GAS_FOR_BASE_SWAP_ROUTE),
     );
   } else {
     return secretjsSender.asyncExecute(
@@ -103,7 +104,7 @@ function executeRouterSwap(
       },
       '',
       [],
-      getFeeForExecute(bestRoute.length * 500_000),
+      getFeeForExecute(bestRoute.length * GAS_FOR_BASE_SWAP_ROUTE),
     );
   }
 }
@@ -133,7 +134,7 @@ function executeSwapUscrt(secretjsSender: AsyncSender, pair: SwapPair, fromAmoun
         denom: 'uscrt',
       },
     ],
-    getFeeForExecute(550_000),
+    getFeeForExecute(GAS_FOR_SWAP_NATIVE_COIN),
   );
 }
 
@@ -798,7 +799,7 @@ export class SwapTab extends React.Component<
                             }),
                           ),
                           recipient: pair.contract_addr,
-                          fee: getFeeForExecute(550_000),
+                          fee: getFeeForExecute(GAS_FOR_SWAP_DIRECT),
                         });
                       } else {
                         throw 'UI got out of sync with the chain, please refresh the page and try again';

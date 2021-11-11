@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Image } from 'semantic-ui-react';
 import cn from 'classnames';
 import * as styles from '../styles.styl';
@@ -13,13 +13,13 @@ import { getNativeBalance, unlockJsx, wrongViewingKey } from './utils';
 import { CosmWasmClient } from 'secretjs';
 import { CopyWithFeedback } from '../../../components/Swap/CopyWithFeedback';
 
-export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: any }) => {
+export const TokenInfoRow = (props: { token: SwapToken; balance?: any; onClick?: any }) => {
   let { user } = useStores();
   // let [balance, setBalance] = useState<any>(<Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />);
 
   // const getBalance = () => {
   //   refreshTokenBalance(props.token).then((balance)=>{
-  //     //Loading 
+  //     //Loading
   //     if(balance === undefined){
   //       setBalance(<Loader type="ThreeDots" color="#00BFFF" height="1em" width="1em" style={{ margin: 'auto' }} />);
   //       console.log("Undefined")
@@ -36,7 +36,7 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
   //     }
   //   });
   // }
-  
+
   // async function refreshTokenBalance(token: SwapToken) {
   //   let userBalancePromise; //balance.includes(unlockToken)
   //   if (token.identifier.toLowerCase() !== 'uscrt') {
@@ -71,17 +71,20 @@ export const TokenInfoRow = (props: {token: SwapToken; balance?: any; onClick?: 
   //   return userBalancePromise ;
   // }
   // getBalance();
-  const {theme} = useStores();
+  const { theme } = useStores();
   return (
-    <div className={`${styles.tokenWrapper} ${styles[theme.currentTheme]}`} style={{paddingRight: '1.5rem', display: 'flex' }}>
+    <div
+      className={`${styles.tokenWrapper} ${styles[theme.currentTheme]}`}
+      style={{ paddingRight: '1.5rem', display: 'flex' }}
+    >
       <div className={`${styles.tokenInfoRow} ${styles[theme.currentTheme]}`} onClick={props.onClick}>
         <div className={cn(styles.tokenInfoItemsLeft)}>
-          <Image  src={props.token.logo} avatar style={{ boxShadow: 'rgba(0, 0, 0, 0.075) 0px 6px 10px' }} />
+          <Image src={props.token.logo} avatar style={{ boxShadow: 'rgba(0, 0, 0, 0.075) 0px 6px 10px' }} />
           <p className={`${styles.tokenTitle} ${styles[theme.currentTheme]}`}>{props.token.symbol}</p>
         </div>
         <FlexRowSpace />
         <div className={`${styles.tokenInfoItemsRight} ${styles[theme.currentTheme]}`}>
-          {(props.token.identifier !== 'uscrt')? props.token.address:'native'}
+          {props.token.identifier !== 'uscrt' ? props.token.address : 'native'}
         </div>
       </div>
       <h3 className={`${styles.CopyWithFeedback} ${styles[theme.currentTheme]}`} hidden={!props.token.address}>

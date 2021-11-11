@@ -37,17 +37,17 @@ export class Cashback extends React.Component<
       cbRatio: undefined,
     };
 
-    setTimeout(async() => {
-       await this.props.user.updateCSHBKBalance();
-       this.setState({
-         cbRatio:this.props.user.ratioCSHBK
-       })
+    setTimeout(async () => {
+      await this.props.user.updateCSHBKBalance();
+      this.setState({
+        cbRatio: this.props.user.ratioCSHBK,
+      });
     }, 5000);
-    setInterval(async() => {
-        await this.props.user.updateCSHBKBalance();
-       this.setState({
-         cbRatio:this.props.user.ratioCSHBK
-       })
+    setInterval(async () => {
+      await this.props.user.updateCSHBKBalance();
+      this.setState({
+        cbRatio: this.props.user.ratioCSHBK,
+      });
     }, 5000);
   }
 
@@ -70,7 +70,6 @@ export class Cashback extends React.Component<
 
       const secretjs = user.secretjs;
 
-      
       let result = await secretjs.queryContractSmart(cashback, { token_info: {} });
       const cbTotalSuppply = parseInt(result.token_info.total_supply);
 

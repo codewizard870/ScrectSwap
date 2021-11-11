@@ -25,8 +25,7 @@ import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';
 import { useStores } from 'stores';
 import Theme from 'themes';
 import { observer } from 'mobx-react';
-
-
+import { GAS_FOR_APPROVE, GAS_FOR_PROVIDE } from '../../utils/gasPrices';
 
 enum TokenSelector {
   TokenA,
@@ -325,7 +324,7 @@ export class ProvideTab extends React.Component<
         },
         '',
         [],
-        getFeeForExecute(150_000),
+        getFeeForExecute(GAS_FOR_APPROVE),
       );
       storeTxResultLocally(tx);
 
@@ -407,7 +406,7 @@ export class ProvideTab extends React.Component<
     const currentShareOfPool = lpTokenTotalSupply.isZero()
       ? lpTokenTotalSupply
       : new BigNumber(lpTokenBalance as BigNumber).dividedBy(lpTokenTotalSupply);
-    
+
     const gainedShareOfPool = BigNumber.minimum(
       amountA.dividedBy(poolA.plus(amountA)),
       amountB.dividedBy(poolB.plus(amountB)),
@@ -415,8 +414,8 @@ export class ProvideTab extends React.Component<
     const rowStyle: CSSProperties = {
       display: 'flex',
       padding: '0.5em 0 0 0',
-      color:(this.props.theme.currentTheme  == 'light')?'#5F5F6B':"#DEDEDE",
-      fontFamily:'Poppins'
+      color: this.props.theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
+      fontFamily: 'Poppins',
     };
     let lpShare = new BigNumber(0);
     let lpShareJsxElement = lpTokenBalance; // View Balance
@@ -426,15 +425,21 @@ export class ProvideTab extends React.Component<
     const lpTokenBalanceNum = new BigNumber(lpTokenBalance as BigNumber);
     if (!lpTokenBalanceNum.isNaN()) {
       if (lpTokenTotalSupply?.isGreaterThan(0)) {
-        console.log("lpTokenBalanceNum")
+        console.log('lpTokenBalanceNum');
         lpShare = lpTokenBalanceNum.dividedBy(lpTokenTotalSupply);
 
         pooledTokenA = displayHumanizedBalance(
-          humanizeBalance(lpShare.multipliedBy(this.props.balances[`${this.state.tokenA}-${pairSymbol}`] as BigNumber), decimalsA),
+          humanizeBalance(
+            lpShare.multipliedBy(this.props.balances[`${this.state.tokenA}-${pairSymbol}`] as BigNumber),
+            decimalsA,
+          ),
         );
 
         pooledTokenB = displayHumanizedBalance(
-          humanizeBalance(lpShare.multipliedBy(this.props.balances[`${this.state.tokenB}-${pairSymbol}`] as BigNumber), decimalsB),
+          humanizeBalance(
+            lpShare.multipliedBy(this.props.balances[`${this.state.tokenB}-${pairSymbol}`] as BigNumber),
+            decimalsB,
+          ),
         );
 
         lpShareJsxElement = (
@@ -451,7 +456,7 @@ export class ProvideTab extends React.Component<
         lpShareJsxElement = <span>0%</span>;
       }
     }
-  
+
     return (
       <Container className={`${styles.swapContainerStyle} ${styles[this.props.theme.currentTheme]}`}>
         <TabsHeader />
@@ -509,46 +514,46 @@ export class ProvideTab extends React.Component<
         )}
         {lpTokenBalance !== undefined && (
           <>
-          <div style={rowStyle}>
-            <span>Your Total Pool Tokens</span>
-            <FlexRowSpace />
-            {lpTokenBalanceNum.isNaN()
-              ? lpTokenBalance
-              : displayHumanizedBalance(humanizeBalance(lpTokenBalanceNum, 6))}
-          </div>
-          {!lpTokenBalanceNum.isNaN() && (
-                <>
-                  <div style={rowStyle}>
-                    <span style={{ margin: 'auto' }}>{`Pooled ${this.props.tokens.get(this.state.tokenA)?.symbol}`}</span>
-                    <FlexRowSpace />
-                    <span style={{ margin: 'auto' }}>{pooledTokenA}</span>
-                  </div>
-                  <div style={rowStyle}>
-                    <span style={{ margin: 'auto' }}>{`Pooled ${this.props.tokens.get(this.state.tokenB)?.symbol}`}</span>
-                    <FlexRowSpace />
-                    <span style={{ margin: 'auto'}}>{pooledTokenB}</span>
-                  </div>
-                </>
-              )}
-          <div
-            style={{
-              display: 'flex',
-              paddingTop: '0.5rem',
-              color: (this.props.theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'
-            }}
-          >
-            Your Current Share of Pool
-            <FlexRowSpace />
-            {(() => {
-              if (JSON.stringify(lpTokenBalance).includes('View')) {
-                return lpTokenBalance;
-              } else if(isNaN(currentShareOfPool.multipliedBy(100).toNumber())) {
-                return '-'
-              }else{
-                return `${shareOfPoolNumberFormat.format(currentShareOfPool.multipliedBy(100).toNumber())}%`;
-              }
-            })()}
-          </div>
+            <div style={rowStyle}>
+              <span>Your Total Pool Tokens</span>
+              <FlexRowSpace />
+              {lpTokenBalanceNum.isNaN()
+                ? lpTokenBalance
+                : displayHumanizedBalance(humanizeBalance(lpTokenBalanceNum, 6))}
+            </div>
+            {!lpTokenBalanceNum.isNaN() && (
+              <>
+                <div style={rowStyle}>
+                  <span style={{ margin: 'auto' }}>{`Pooled ${this.props.tokens.get(this.state.tokenA)?.symbol}`}</span>
+                  <FlexRowSpace />
+                  <span style={{ margin: 'auto' }}>{pooledTokenA}</span>
+                </div>
+                <div style={rowStyle}>
+                  <span style={{ margin: 'auto' }}>{`Pooled ${this.props.tokens.get(this.state.tokenB)?.symbol}`}</span>
+                  <FlexRowSpace />
+                  <span style={{ margin: 'auto' }}>{pooledTokenB}</span>
+                </div>
+              </>
+            )}
+            <div
+              style={{
+                display: 'flex',
+                paddingTop: '0.5rem',
+                color: this.props.theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
+              }}
+            >
+              Your Current Share of Pool
+              <FlexRowSpace />
+              {(() => {
+                if (JSON.stringify(lpTokenBalance).includes('View')) {
+                  return lpTokenBalance;
+                } else if (isNaN(currentShareOfPool.multipliedBy(100).toNumber())) {
+                  return '-';
+                } else {
+                  return `${shareOfPoolNumberFormat.format(currentShareOfPool.multipliedBy(100).toNumber())}%`;
+                }
+              })()}
+            </div>
           </>
         )}
         {!gainedShareOfPool.isNaN() && (
@@ -556,7 +561,7 @@ export class ProvideTab extends React.Component<
             style={{
               display: 'flex',
               paddingTop: '0.5rem',
-              color: (this.props.theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'
+              color: this.props.theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
             }}
           >
             Expected Gain in Your Share of Pool
@@ -579,7 +584,6 @@ export class ProvideTab extends React.Component<
             loading={this.state.loadingApproveA}
             onClick={() => {
               this.approveOnClick(this.props.selectedPair, this.state.tokenA).then(() => {});
-              
             }}
             token={this.props.tokens.get(this.state.tokenA)?.symbol}
           />
@@ -622,10 +626,10 @@ export class ProvideTab extends React.Component<
               this.setState({ loadingProvide: true });
 
               try {
-                const result:any=  await this.createNewPairAction(assetA,assetB);
+                const result: any = await this.createNewPairAction(assetA, assetB);
                 window.dispatchEvent(new Event('updatePairsAndTokens'));
                 await this.props.user.updateScrtBalance();
-                if(result.code){
+                if (result.code) {
                   const error = extractError(result);
                   throw new Error(error);
                 }
@@ -711,7 +715,6 @@ export class ProvideTab extends React.Component<
     return this.state.provideState === ProvideState.CREATE_NEW_PAIR;
   }
 
-
   private async provideLiquidityAction(pair: SwapPair) {
     this.setState({ loadingProvide: true });
 
@@ -783,7 +786,7 @@ export class ProvideTab extends React.Component<
         msg,
         '',
         transferAmount,
-        getFeeForExecute(500_000),
+        getFeeForExecute(GAS_FOR_PROVIDE),
       );
       storeTxResultLocally(tx);
 

@@ -1,4 +1,4 @@
-export const GAS_FOR_CLAIM = 250_000;
+export const GAS_FOR_CLAIM = 130_000;
 export const PROPOSAL_BASE_FEE = 10_000;
 export const GAS_FOR_WITHDRAW = 100_000;
 export const GAS_FOR_CREATE_PAIR = 350_000;

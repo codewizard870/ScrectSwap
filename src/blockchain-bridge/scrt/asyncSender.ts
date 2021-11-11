@@ -6,7 +6,6 @@ import stores from 'stores';
 class CustomError extends Error {
   public txHash: string;
 }
-
 const blacklistedTxs = ['burn'];
 
 export class AsyncSender extends SigningCosmWasmClient {
@@ -19,15 +18,15 @@ export class AsyncSender extends SigningCosmWasmClient {
   ) => {
     let tx;
     const key = Object.keys(handleMsg)[0];
-    if(process.env.IS_MAINTENANCE === 'true' && blacklistedTxs.includes(key)){
+    if (process.env.IS_MAINTENANCE === 'true' && blacklistedTxs.includes(key)) {
       stores.user.setModalOpen(true);
-      throw new CustomError("We are working on add functionality back, please,try later.");
+      throw new CustomError('We are working on add functionality back, please,try later.');
     }
     try {
       tx = await this.execute(contractAddress, handleMsg, memo, transferAmount, fee);
     } catch (e) {
       console.error(`failed to broadcast tx: ${e}`);
-      throw new CustomError('Failed to broadcast transaction: Network error');
+      throw new CustomError('Failed to broadcast transaction');
     }
 
     try {

@@ -1,0 +1,13 @@
+export const GAS_FOR_CLAIM = 250_000;
+export const PROPOSAL_BASE_FEE = 10_000;
+export const GAS_FOR_WITHDRAW = 250_000;
+export const GAS_FOR_CREATE_PAIR = 500_000;
+export const GAS_FOR_PROVIDE = 100_000;
+export const GAS_FOR_APPROVE = 150_000;
+export const GAS_FOR_WITHDRAW_LP_FROM_SWAP = 550_000;
+export const GAS_FOR_BASE_SWAP_ROUTE = 500_000;
+export const GAS_FOR_SWAP_NATIVE_COIN = 550_000;
+export const GAS_FOR_SWAP_DIRECT = 100_000;
+export const GAS_FOR_VOTE = 450_000;
+export const GAS_FOR_CREATE_VOTE = 550_000;
+export const GAS_FOR_FINALIZE_VOTE = 550_000;

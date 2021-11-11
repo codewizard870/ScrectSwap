@@ -1,10 +1,10 @@
 import { emergencyRedeem, Redeem } from '../../../blockchain-bridge/scrt';
 import React, { useEffect, useState } from 'react';
-import { valueToDecimals } from '../../../utils';
-import cn from 'classnames';
+import { toUscrtFee, valueToDecimals } from '../../../utils';
 import * as styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores';
+import { GAS_FOR_WITHDRAW, PROPOSAL_BASE_FEE } from '../../../utils/gasPrices';
 
 const WithdrawButton = ({ props, value, changeValue }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -12,31 +12,26 @@ const WithdrawButton = ({ props, value, changeValue }) => {
   const { theme, user } = useStores();
 
   const [fee, setFee] = useState({
-    amount: [{ amount: '750000', denom: 'uscrt' }],
-    gas: '750000'
-  } as any)
+    amount: [{ amount: toUscrtFee(GAS_FOR_WITHDRAW), denom: 'uscrt' }],
+    gas: String(GAS_FOR_WITHDRAW),
+  } as any);
 
   const activeProposals = user.numOfActiveProposals;
   const rewardsContact = props.token.rewardsContract;
   const newPoolContract = process.env.SEFI_STAKING_CONTRACT;
-  const staticGasFee = 40000;
 
   const setGasFee = () => {
-
     if (rewardsContact === newPoolContract && activeProposals > 0) {
       let fee = {
-        amount: [{ amount: 750000 + (staticGasFee * activeProposals), denom: 'uscrt' }],
-        gas: 750000 + (staticGasFee * activeProposals),
+        amount: [{ amount: toUscrtFee(GAS_FOR_WITHDRAW + PROPOSAL_BASE_FEE * activeProposals), denom: 'uscrt' }],
+        gas: String(GAS_FOR_WITHDRAW + PROPOSAL_BASE_FEE * activeProposals),
       };
       setFee(fee);
     }
-
-  }
+  };
 
   useEffect(() => {
-
     setGasFee();
-
   }, [activeProposals]);
 
   return (
@@ -45,18 +40,21 @@ const WithdrawButton = ({ props, value, changeValue }) => {
       className={`${styles.button} ${styles[theme.currentTheme]}`}
       onClick={async () => {
         setLoading(true);
-        let redeemTask = props.token.deprecated ? emergencyRedeem({
-          secretjs: props.userStore.secretjsSend,
-          address: props.token.rewardsContract,
-          fee,
-        }) : Redeem({
-          secretjs: props.userStore.secretjsSend,
-          address: props.token.rewardsContract,
-          amount: valueToDecimals(amount, props.token.decimals),
-          fee,
-        });
+        let redeemTask = props.token.deprecated
+          ? emergencyRedeem({
+              secretjs: props.userStore.secretjsSend,
+              address: props.token.rewardsContract,
+              fee,
+            })
+          : Redeem({
+              secretjs: props.userStore.secretjsSend,
+              address: props.token.rewardsContract,
+              amount: valueToDecimals(amount, props.token.decimals),
+              fee,
+            });
 
-        await redeemTask.then(_ => {
+        await redeemTask
+          .then(_ => {
             props.userStore.updateScrtBalance();
             props.notify('success', `Removed ${amount} s${props.token.display_props.symbol} from the rewards contract`);
             changeValue({

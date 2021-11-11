@@ -63,8 +63,13 @@ export const secretTokenName = (mode: EXCHANGE_MODE, token: TOKEN, label: string
   }
 };
 
-
-export function notify(type: 'success' | 'error' | 'errorWithHash', msg: string, hideAfterSec: number = 120, txHash?: string,useContainer:boolean = false) {
+export function notify(
+  type: 'success' | 'error' | 'errorWithHash',
+  msg: string,
+  hideAfterSec: number = 120,
+  txHash?: string,
+  useContainer: boolean = false,
+) {
   // if(process.env.IS_MAINTENANCE === 'true') return;
   let cogoType: string = type;
   if (type === 'error') {
@@ -86,7 +91,7 @@ export function notify(type: 'success' | 'error' | 'errorWithHash', msg: string,
   }
 
   const { hide } = cogoToast[cogoType](msg, {
-    toastContainerID:useContainer ? 'notifications_container' : '', 
+    toastContainerID: useContainer ? 'notifications_container' : '',
     hideAfter: hideAfterSec,
     onClick,
   });

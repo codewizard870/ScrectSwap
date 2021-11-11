@@ -1,10 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { storeTxResultLocally } from 'pages/Swap/utils';
-import { ExecuteResult, SigningCosmWasmClient,CosmWasmClient } from 'secretjs';
+import { ExecuteResult, SigningCosmWasmClient, CosmWasmClient } from 'secretjs';
 import { Asset, Currency, NativeToken, Token, Trade, TradeType } from '../../pages/TokenModal/types/trade';
 import { GetContractCodeHash } from './snip20';
 import { extractValueFromLogs, getFeeForExecute, validateBech32Address } from './utils';
 import { AsyncSender } from './asyncSender';
+import { GAS_FOR_CREATE_PAIR } from '../../utils/gasPrices';
 
 export const buildAssetInfo = (currency: Currency) => {
   if (currency.token.info.type === 'native_token') {
@@ -260,10 +261,10 @@ export const CreateNewPair = async ({
     },
     '',
     [],
-    getFeeForExecute(1_500_000),
+    getFeeForExecute(GAS_FOR_CREATE_PAIR),
   );
   storeTxResultLocally(response);
-  return response
+  return response;
 };
 
 interface GetAllPairsResponse {

@@ -10,7 +10,7 @@ import { SwapTokenMap } from '../TokenModal/types/SwapToken';
 import { CosmWasmClient } from 'secretjs';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 import { useStores } from 'stores';
-import * as styles from './styles.styl'
+import * as styles from './styles.styl';
 
 export const SwapAssetRow = ({
   tokens,
@@ -39,22 +39,22 @@ export const SwapAssetRow = ({
   disabled?: boolean;
   error?: boolean;
 }) => {
-  const {theme} = useStores()
+  const { theme } = useStores();
   const font = {
     fontWeight: 400,
     fontSize: '16px',
-    color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE',
-    fontFamily:'Poppins,Arial, Helvetica, sans-serif'
+    color: theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
+    fontFamily: 'Poppins,Arial, Helvetica, sans-serif',
   };
-  const balanceStyle ={
-    display:'flex',
+  const balanceStyle = {
+    display: 'flex',
     padding: '.5rem 1rem',
     ...font,
-  }
+  };
 
   return (
     <Container
-      style={{ 
+      style={{
         borderRadius: '20px',
         border: '1px solid rgb(247, 248, 250)',
       }}
@@ -69,7 +69,7 @@ export const SwapAssetRow = ({
           style={{
             fontWeight: 500,
             fontSize: '14px',
-            color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE',
+            color: theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
           }}
         >
           {label}
@@ -98,7 +98,7 @@ export const SwapAssetRow = ({
                   humanizeBalance(new BigNumber(balance as BigNumber), tokens.get(token)?.decimals),
                   BigNumber.ROUND_DOWN,
                 );
-                return (isNaN(parseFloat(hum)))?0:hum
+                return isNaN(parseFloat(hum)) ? 0 : hum;
               }
               return undefined;
             })()}
@@ -128,7 +128,7 @@ export const SwapAssetRow = ({
           <Button
             basic
             className={`${styles[theme.currentTheme]} ${styles.max_button}`}
-            disabled={new BigNumber(balance as any).isNaN()} 
+            disabled={new BigNumber(balance as any).isNaN()}
             onClick={() => {
               const { decimals } = tokens.get(token);
 

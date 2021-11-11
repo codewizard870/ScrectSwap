@@ -48,10 +48,10 @@ export const TokenSelector = (props: {
   const filteredTokens = props.tokens.filter(t => {
     return (t.symbol + String(t.address)).toLowerCase().includes(searchText);
   });
-  const renderThumbVertical=()=>{
-    return <div className={`${styles.thumb} ${styles[theme.currentTheme]}`}></div>
-  }
-  const {theme} =useStores();
+  const renderThumbVertical = () => {
+    return <div className={`${styles.thumb} ${styles[theme.currentTheme]}`}></div>;
+  };
+  const { theme } = useStores();
   return (
     <Modal
       onClose={() => setOpen(false)}
@@ -61,7 +61,13 @@ export const TokenSelector = (props: {
       dimmer={'blurring'}
       id={styles.modal_container}
     >
-      <Modal.Header style={{border:'none',background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
+      <Modal.Header
+        style={{
+          border: 'none',
+          background: theme.currentTheme == 'light' ? 'white' : '#0E0E10',
+          color: theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
+        }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>Select a token</span>
           <span style={{ cursor: 'pointer' }} onClick={() => setOpen(false)}>
@@ -69,9 +75,15 @@ export const TokenSelector = (props: {
           </span>
         </div>
       </Modal.Header>
-      <Modal.Content style={{padding:"0 0 0 0",background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE'}}>
+      <Modal.Content
+        style={{
+          padding: '0 0 0 0',
+          background: theme.currentTheme == 'light' ? 'white' : '#0E0E10',
+          color: theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
+        }}
+      >
         {props.tokens.length > 0 ? (
-          <div style={{ display: 'flex',margin:'0 1rem' }}>
+          <div style={{ display: 'flex', margin: '0 1rem' }}>
             <input
               onKeyDown={event => {
                 if (event.key === 'Enter' && filteredTokens.length === 1) {
@@ -89,58 +101,58 @@ export const TokenSelector = (props: {
         ) : null}
         {props.tokens.length > 0 ? (
           filteredTokens.length === 0 ? (
-            <div
-              className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}
-            >
+            <div className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}>
               <h4>No results found.</h4>
             </div>
           ) : (
             <div className={`${styles.listTokens__container} ${styles[theme.currentTheme]}`}>
-              <Scrollbars autoHide renderThumbVertical={renderThumbVertical} className={styles.listTokens__subcontainer}>
-                {
-                  filteredTokens
-                    .slice()
-                    .sort((a, b) => {
-                      /* sSCRT first */
-                      if (a.symbol === 'sSCRT') {
-                        return -1;
-                      }
-                      if (b.symbol === 'sSCRT') {
-                        return 1;
-                      }
-                      
-                      if (b.symbol === 'SCRT') {
-                        return 1;
-                      }
+              <Scrollbars
+                autoHide
+                renderThumbVertical={renderThumbVertical}
+                className={styles.listTokens__subcontainer}
+              >
+                {filteredTokens
+                  .slice()
+                  .sort((a, b) => {
+                    /* sSCRT first */
+                    if (a.symbol === 'sSCRT') {
+                      return -1;
+                    }
+                    if (b.symbol === 'sSCRT') {
+                      return 1;
+                    }
 
-                      /* then SEFI */
-                      if (a.symbol === 'SEFI') {
-                        return -1;
-                      }
-                      if (b.symbol === 'SEFI') {
-                        return 1;
-                      }
-      
-                      const aSymbol = a.symbol.replace(/^s/, '');
-                      const bSymbol = b.symbol.replace(/^s/, '');
-      
-                      return aSymbol.localeCompare(bSymbol);
-                    })
-                    .map(t => {
-                      return (
-                        <TokenInfoRow
-                          key={t.identifier}
-                          token={t}
-                          onClick={() => {
-                            props?.onClick ? props.onClick(t.identifier) : (() => {})();
-                            setOpen(false);
-                            setSearchText('');
-                          }}
-                        />
-                      );
-                    })
-                }
-              </Scrollbars >
+                    if (b.symbol === 'SCRT') {
+                      return 1;
+                    }
+
+                    /* then SEFI */
+                    if (a.symbol === 'SEFI') {
+                      return -1;
+                    }
+                    if (b.symbol === 'SEFI') {
+                      return 1;
+                    }
+
+                    const aSymbol = a.symbol.replace(/^s/, '');
+                    const bSymbol = b.symbol.replace(/^s/, '');
+
+                    return aSymbol.localeCompare(bSymbol);
+                  })
+                  .map(t => {
+                    return (
+                      <TokenInfoRow
+                        key={t.identifier}
+                        token={t}
+                        onClick={() => {
+                          props?.onClick ? props.onClick(t.identifier) : (() => {})();
+                          setOpen(false);
+                          setSearchText('');
+                        }}
+                      />
+                    );
+                  })}
+              </Scrollbars>
             </div>
           )
         ) : (
@@ -149,7 +161,15 @@ export const TokenSelector = (props: {
           </div>
         )}
       </Modal.Content>
-      <Modal.Actions id={styles.actions} style={{borderTop:'none',background: (theme.currentTheme == 'light')?'white':'#0E0E10' , color: (theme.currentTheme == 'light')?'#5F5F6B':'#DEDEDE', display: 'flex' }}>
+      <Modal.Actions
+        id={styles.actions}
+        style={{
+          borderTop: 'none',
+          background: theme.currentTheme == 'light' ? 'white' : '#0E0E10',
+          color: theme.currentTheme == 'light' ? '#5F5F6B' : '#DEDEDE',
+          display: 'flex',
+        }}
+      >
         <ClearCustomTokensButton />
         <div style={{ width: '700px', justifyContent: 'flex-start' }}>
           <AddTokenModal tokens={props.tokens} token={props.token} addToken={address => setLocalToken(address)} />

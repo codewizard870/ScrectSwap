@@ -105,7 +105,7 @@ export function storeTxResultLocally(txResult: ExecuteResult) {
     return;
   }
   const result = {
-    data: txResult.data,
+    data: new TextDecoder().decode(txResult.data),
     logs: txResult.logs,
   };
   localStorage.setItem(txResult.transactionHash, JSON.stringify(result));

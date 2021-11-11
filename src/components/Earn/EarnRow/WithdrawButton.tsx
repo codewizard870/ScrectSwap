@@ -4,7 +4,7 @@ import { toUscrtFee, valueToDecimals } from '../../../utils';
 import * as styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores';
-import { GAS_FOR_WITHDRAW, PROPOSAL_BASE_FEE } from '../../../utils/gasPrices';
+import { GAS_FOR_EARN_WITHDRAW, PROPOSAL_BASE_FEE } from '../../../utils/gasPrices';
 
 const WithdrawButton = ({ props, value, changeValue }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -12,8 +12,8 @@ const WithdrawButton = ({ props, value, changeValue }) => {
   const { theme, user } = useStores();
 
   const [fee, setFee] = useState({
-    amount: [{ amount: toUscrtFee(GAS_FOR_WITHDRAW), denom: 'uscrt' }],
-    gas: String(GAS_FOR_WITHDRAW),
+    amount: [{ amount: toUscrtFee(GAS_FOR_EARN_WITHDRAW), denom: 'uscrt' }],
+    gas: String(GAS_FOR_EARN_WITHDRAW),
   } as any);
 
   const activeProposals = user.numOfActiveProposals;
@@ -23,8 +23,8 @@ const WithdrawButton = ({ props, value, changeValue }) => {
   const setGasFee = () => {
     if (rewardsContact === newPoolContract && activeProposals > 0) {
       let fee = {
-        amount: [{ amount: toUscrtFee(GAS_FOR_WITHDRAW + PROPOSAL_BASE_FEE * activeProposals), denom: 'uscrt' }],
-        gas: String(GAS_FOR_WITHDRAW + PROPOSAL_BASE_FEE * activeProposals),
+        amount: [{ amount: toUscrtFee(GAS_FOR_EARN_WITHDRAW + PROPOSAL_BASE_FEE * activeProposals), denom: 'uscrt' }],
+        gas: String(GAS_FOR_EARN_WITHDRAW + PROPOSAL_BASE_FEE * activeProposals),
       };
       setFee(fee);
     }

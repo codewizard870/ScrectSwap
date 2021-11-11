@@ -7,7 +7,7 @@ import { Button } from 'semantic-ui-react';
 import { unlockToken } from '../../../utils';
 import { useStores } from 'stores';
 import moment from 'moment';
-import { GAS_FOR_CLAIM, PROPOSAL_BASE_FEE } from '../../../utils/gasPrices';
+import { GAS_FOR_CLAIM, PROPOSAL_BASE_FEE, GAS_FOR_EARN_DEPOSIT } from '../../../utils/gasPrices';
 
 // todo: add failed toast or something
 const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }) => {
@@ -16,8 +16,8 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
   const { theme, user } = useStores();
 
   const [fee, setFee] = useState({
-    amount: [{ amount: '750000', denom: 'uscrt' }],
-    gas: '750000',
+    amount: [{ amount: toUscrtFee(GAS_FOR_EARN_DEPOSIT), denom: 'uscrt' }],
+    gas: String(GAS_FOR_EARN_DEPOSIT),
   } as any);
 
   const activeProposals = user.numOfActiveProposals;

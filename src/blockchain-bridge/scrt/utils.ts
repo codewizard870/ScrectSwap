@@ -83,7 +83,7 @@ export function notify(
   if (type === 'errorWithHash') {
     cogoType = 'warn';
     onClick = () => {
-      const url = `https://secretnodes.com/secret/chains/secret-2/transactions/${txHash}`;
+      const url = `https://secretnodes.com/secret/chains/secret-4/transactions/${txHash}`;
       const win = window.open(url, '_blank');
       win.focus();
       hide();

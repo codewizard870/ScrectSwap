@@ -75,7 +75,7 @@ export const DetailProposal = observer((props) => {
         positive: 0,
     });
 
-    const userProfileURL = 'https://secretnodes.com/secret/chains/secret-2/accounts';
+    const userProfileURL = 'https://secretnodes.com/secret/chains/secret-4/accounts';
 
     const showHideAnswer = () => {
         if (hasVote === true) {

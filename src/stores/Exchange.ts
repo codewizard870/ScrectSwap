@@ -325,7 +325,7 @@ export class Exchange extends StoreConstructor {
     fetcher();
 
     clearInterval(this.fetchOperationInterval);
-    this.fetchOperationInterval = window.setInterval(async () => {
+    this.fetchOperationInterval = setInterval(async () => {
       await fetcher();
       if ([SwapStatus.SWAP_CONFIRMED, SwapStatus.SWAP_FAILED].includes(this.operation.status)) {
         clearInterval(this.fetchOperationInterval);

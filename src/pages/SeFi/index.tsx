@@ -285,7 +285,6 @@ export const SeFiPage = observer(() => {
               })}
           </Box>
         </Box>
-        <InfoModalEarn />
       </PageContainer>
     </BaseContainer>
   );

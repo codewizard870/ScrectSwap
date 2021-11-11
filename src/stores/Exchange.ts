@@ -46,7 +46,7 @@ export class Exchange extends StoreConstructor {
   @observable error = '';
   @observable txHash = '';
   @observable confirmations = 0;
-  @observable fetchOperationInterval:NodeJS.Timer;
+  @observable fetchOperationInterval = 0;
   @observable actionStatus: statusFetching = 'init';
   @observable stepNumber = EXCHANGE_STEPS.BASE;
   @observable isFeeLoading = false;
@@ -325,7 +325,7 @@ export class Exchange extends StoreConstructor {
     fetcher();
 
     clearInterval(this.fetchOperationInterval);
-    this.fetchOperationInterval = setInterval(async () => {
+    this.fetchOperationInterval = window.setInterval(async () => {
       await fetcher();
       if ([SwapStatus.SWAP_CONFIRMED, SwapStatus.SWAP_FAILED].includes(this.operation.status)) {
         clearInterval(this.fetchOperationInterval);

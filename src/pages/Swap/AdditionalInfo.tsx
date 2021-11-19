@@ -36,7 +36,7 @@ export const AdditionalInfo = ({
   } else if (priceImpact > 0.03) {
     priceImpactColor = 'orange'; // Medium
   } else if (priceImpact > 0.01) {
-    priceImpactColor = 'black'; // Low
+    priceImpactColor = 'green'; // Low
   }
 
   return (

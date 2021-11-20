@@ -9,7 +9,7 @@ import ClaimBox from './ClaimBox';
 import { UserStoreEx } from '../../../stores/UserStore';
 import { observer } from 'mobx-react';
 import WithdrawButton from './WithdrawButton';
-import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter } from '../../../utils';
+import { divDecimals, formatWithTwoDecimals, zeroDecimalsFormatter, formatZeroDecimals } from '../../../utils';
 import { Text } from '../../Base';
 import stores from 'stores';
 import Theme from 'themes';
@@ -71,8 +71,9 @@ export const getAPRStats = (token: RewardsToken, price: number): StastsAPR => {
   // this is already normalized
   const locked = Number(token.totalLockedRewards);
   //console.log(`pending - ${pending}; locked: ${locked}, time remaining: ${timeRemaining}`)
-  const apr_raw = Number((((pending * 100) / locked) * (3.154e7 / timeRemaining)).toFixed(0));
-  const apr = apr_raw / 100;
+
+  const apr_raw = (pending * 100.0 / locked) * (3.154e7 / timeRemaining);
+  const apr = apr_raw / 100.0;
   const apy = Number((Math.pow(1 + apr / 100 / 365, 365) - 1) * 100);
   const daysOfYear = 365;
   const roi = {
@@ -377,14 +378,12 @@ class EarnRow extends Component<
               title={
                 <div className="earn_center_ele">
                   {aprString(this.props.token)}
-                  {!isDeprecated ? (
+                  {!isDeprecated && (
                     <p style={{ marginLeft: '5px', fontFamily: 'poppins', fontSize: '17px' }}>
                       <ModalExplanation token={this.props.token} theme={this.props.theme}>
                         <img width="14px" src="/static/info.svg" alt="" />
                       </ModalExplanation>
                     </p>
-                  ) : (
-                    <></>
                   )}
                 </div>
               }
@@ -393,7 +392,7 @@ class EarnRow extends Component<
           </div>
           <div className={cn(styles.title_item__container)}>
             <SoftTitleValue
-              title={`$${formatWithTwoDecimals(Number(this.props.token.totalLockedRewards) || 0)}`}
+              title={`$${formatZeroDecimals(Number(this.props.token.totalLockedRewards) || 0)}`}
               subTitle={'TVL'}
             />
           </div>
@@ -457,9 +456,7 @@ class EarnRow extends Component<
                       title="Earn"
                       value={this.state.depositValue}
                       action={
-                        isDeprecated ? (
-                          <></>
-                        ) : (
+                        !isDeprecated && (
                           <>
                             <Grid columns={1} stackable relaxed={'very'}>
                               <Grid.Column

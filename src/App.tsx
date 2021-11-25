@@ -21,6 +21,7 @@ import CreateProposal from 'pages/CreateProposal';
 import { DetailProposal } from 'pages/DetailProposal';
 import SefiStaking from 'pages/SefiStaking';
 import { Migration } from 'pages/Migration';
+import BuyCrypto  from 'pages/BuyCrypto';
 import './notifications.css'
 
 export const App: React.FC = () => (
@@ -36,6 +37,7 @@ export const App: React.FC = () => (
         <Route path="/proposal" component={CreateProposal} />
         <Route path="/sefistaking" component={SefiStaking} />
         <Route path="/migration" component={Migration} />
+        <Route exact path="/buy" component={BuyCrypto} />
         {/* <Route exact path="/faq" component={FAQPage} /> */}
         {/* <Route exact path="/finance" component={FinancePage} /> */}
         {/* <Route exact path="/info" component={InfoPage} /> */}

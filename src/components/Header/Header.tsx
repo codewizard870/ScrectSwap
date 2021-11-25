@@ -14,6 +14,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const isSwap = history.location.pathname === '/swap';
     const isPool = history.location.pathname === '/pool';
     const isEarn = history.location.pathname === '/earn';
+    const isBuy = history.location.pathname === '/buy';
     const isCashback = history.location.pathname === '/cashback';
     const isGovernance = governancePaths.some(string => history.location.pathname.includes(string));
 
@@ -63,6 +64,9 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                     </div>
 
                     <div className="menu-right">
+                      <button className={`btn-secondary`}>
+                        <Link  to="/buy">Buy / Convert SCRT</Link>
+                      </button>
 
                         <SefiModal
                             tokens={tokens}

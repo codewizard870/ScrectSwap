@@ -97,15 +97,20 @@ const order = [
   'LP-SEFI-SXMR',
   'LP-SEFI-SUSDC',
   'LP-SETH-SWBTC',
-  'LP-SSCRT-SDAI',
   'LP-SSCRT-SBNB(BSC)',
-  'LP-SSCRT-SLINK',
-  'LP-SSCRT-SRS',
-  'LP-SSCRT-SOCEAN',
+  'LP-SEFI-SATOM',
+  'LP-SEFI-SLUNA',
+  'LP-SEFI-SOSMO',
+  'LP-SEFI-SDVPN',
   'LP-SSCRT-SRUNE',
-  'LP-SSCRT-SYFI',
+  'LP-SSCRT-SLINK',
   'LP-SSCRT-SDOT(BSC)',
+  'LP-SSCRT-SDAI',
   'LP-SSCRT-SMANA',
+  'LP-SSCRT-SOCEAN',
+  'LP-SSCRT-SRSR',
+  'LP-SSCRT-SUNI',
+  'LP-SSCRT-SYFI'
 ];
 
 const getLocalShowPools = (): boolean => {

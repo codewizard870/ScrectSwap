@@ -103,6 +103,7 @@ export function formatSignificantFigures(value: number | string, sigFigs: number
 
   let maxFractionDigits = sigFigs - 1 - Math.floor(Math.log10(value));
   maxFractionDigits = Math.max(0, maxFractionDigits);
+  maxFractionDigits = Math.min(20, maxFractionDigits);
 
   return new Intl.NumberFormat('en-US', {maximumFractionDigits: maxFractionDigits}).format(value);
 }

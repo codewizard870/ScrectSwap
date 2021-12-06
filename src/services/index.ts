@@ -206,9 +206,9 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
             const proxyToken = ProxyTokens[t.display_props.symbol.toUpperCase()][networkFromToken(t)];
             t.dst_address = proxyToken.token;
             t.display_props.proxy_symbol = proxyToken.proxySymbol;
-            
+
           } catch (error) {
-            console.log('Failed to parse proxy '+t.display_props.symbol.toUpperCase())  
+            console.log('Failed to parse proxy '+t.display_props.symbol.toUpperCase())
           }
         }
 
@@ -293,12 +293,30 @@ export const getSignerHealth = async (): Promise<{ content: INetworkBridgeHealth
   return { content: content };
 };
 
+// pools that are not deprecated, but the rewards are 0
+const zeroPools = {
+  'LP-sSCRT-SLINK': true,
+  'LP-sSCRT-SDOT(BSC)': true,
+  'LP-sSCRT-SDAI': true,
+  'LP-sSCRT-SMANA': true,
+  'LP-sSCRT-SOCEAN': true,
+  'LP-sSCRT-SRSR': true,
+  'LP-sSCRT-SUNI': true,
+  'LP-sSCRT-SYFI': true
+}
+
 export const getRewardsInfo = async (params: any): Promise<{ content: IRewardPool[] }> => {
   const url = backendUrl(NETWORKS.ETH, '/rewards/');
 
   const res = await agent.get<{ body: { tokens: IRewardPool[] } }>(url, params);
 
   const content = res.body.pools;
+
+  // if it's in the zeroPools list, set the zero flag
+  for(let pool of content) {
+    if(!pool.deprecated && zeroPools[pool.inc_token.symbol])
+      pool.zero = true;
+  }
 
   return { ...res.body, content };
 };

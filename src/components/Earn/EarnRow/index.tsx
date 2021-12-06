@@ -227,6 +227,7 @@ export interface RewardsToken {
   rewardsSymbol?: string;
   deprecated?: boolean;
   deprecated_by?: string;
+  zero?: boolean;
 }
 @observer
 class EarnRow extends Component<
@@ -382,7 +383,7 @@ class EarnRow extends Component<
               title={
                 <div className="earn_center_ele">
                   {aprString(this.props.token)}
-                  {!isDeprecated && (
+                  {!isDeprecated && !this.props.token.zero && (
                     <p style={{ marginLeft: '5px', fontFamily: 'poppins', fontSize: '17px' }}>
                       <ModalExplanation token={this.props.token} theme={this.props.theme}>
                         <img width="14px" src="/static/info.svg" alt="" />

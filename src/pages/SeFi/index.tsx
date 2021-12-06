@@ -33,7 +33,7 @@ import { unlockJsx, wrongViewingKey } from 'pages/Swap/utils';
 import BigNumber from 'bignumber.js';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { notify } from '../../blockchain-bridge/scrt/utils';
-import ToggleButton from 'components/Earn/ToggleButton';
+import ToggleButton from '../../components/Earn/ToggleButton';
 
 const Web3 = require('web3');
 
@@ -250,8 +250,8 @@ export const SeFiPage = observer(() => {
                 }
                 return order.indexOf(testA) - order.indexOf(testB);
               })
-              .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
-              .filter(a => (a.reward.deprecated && showOldPools) || !a.reward.deprecated)
+              .filter(rewardToken => process.env.TEST_COINS || !rewardToken.reward.hidden)
+              .filter(a => showOldPools || (!a.reward.deprecated && !a.reward.zero))
               .map((rewardToken, i) => {
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,
@@ -275,6 +275,7 @@ export const SeFiPage = observer(() => {
                   rewardsSymbol: 'SEFI',
                   deprecated: rewardToken.reward.deprecated,
                   deprecated_by: rewardToken.reward.deprecated_by,
+                  zero: rewardToken.reward.zero
                 };
 
                 return (

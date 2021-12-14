@@ -34,7 +34,7 @@ export const Cashback = observer(props => {
   }
   async function createCSHBKViewingKey() {
     try {
-      await user.keplrWallet.suggestToken(user.chainId, process.env.CSHBK_CONTRACT);
+      await user.keplrWallet.suggestToken(user.chainId, globalThis.config.CSHBK_CONTRACT);
       await user.updateCSHBKBalance();
     } catch (e) {
       console.error('Error at creating new viewing key ', e);

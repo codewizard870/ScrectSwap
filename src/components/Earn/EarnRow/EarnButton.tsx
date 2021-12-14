@@ -1,7 +1,7 @@
 import { DepositRewards } from '../../../blockchain-bridge/scrt';
 import React, { useState } from 'react';
 import { valueToDecimals } from '../../../utils';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { unlockToken } from '../../../utils';
 import { useStores } from 'stores';

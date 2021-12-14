@@ -1,11 +1,11 @@
 module.exports = {
-  extends: ['react-app', 'plugin:@typescript-eslint/eslint-recommended'],
-  env: {
-    browser: true,
-  },
+  extends: [
+    'react-app',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   plugins: ['@typescript-eslint', 'react-hooks'],
-  rules: {
-    curly: 'error',
-    'require-await': 'off',
-  },
+  parser: '@typescript-eslint/parser',
+  ignorePatterns: ['**/*'],
 };

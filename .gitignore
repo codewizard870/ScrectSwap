@@ -1,36 +1,40 @@
-# editor
-.idea
-.vscode
-
-# See https://help.github.com/ignore-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
-
-src/**/*.js.map
+node_modules
+.pnp/
+.pnp.js
 
 # testing
-/coverage
+coverage/
 
 # production
-/build
+build/
+dist/
 
 # misc
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.production
+thumbs.db
+.env*
+package-lock.json
+.nyc_output
+report.*.json
+/.vscode/tasks.json
+storybook-static
 
+# logs
+*debug.log*
+*error.log*
+.eslintcache
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-.firebase
-.firebase/**
-.firebaserc
-
-artifacts
-
+# original
+local/
+.build
+stats.json
+s-components
+build.sh
+docker.sh
+tests
+.c9
+.hg
+stats.json
+cypress.env.json
+.vscode/launch.json

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Text } from 'grommet';
 import { Title } from '../Base/components/Title';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import cn from 'classnames';
 import { Icon } from 'components/Base/components/Icons';
 

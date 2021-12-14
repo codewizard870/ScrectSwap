@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import * as styles from '../styles.styl';
+import styles from '../styles.styl';
 import { formatSymbol } from '../../../utils';
 
 import { observer } from 'mobx-react';

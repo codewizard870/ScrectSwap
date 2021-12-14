@@ -4,7 +4,7 @@ import SoftTitleValue from '../SoftTitleValue';
 import UnlockToken from '../EarnRow/UnlockToken';
 import NumberOdometer from '../NumberOdometer';
 import { UserStoreEx } from '../../../stores/UserStore';
-import * as styles from '../EarnRow/styles.styl';
+import styles from '../EarnRow/styles.styl';
 import cn from 'classnames';
 import { divDecimals, unlockToken } from '../../../utils';
 import { useStores } from 'stores';

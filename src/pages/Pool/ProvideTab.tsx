@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import { CosmWasmClient, ExecuteResult } from 'secretjs';
 import { Button, Container } from 'semantic-ui-react';
 import { canonicalizeBalance, displayHumanizedBalance, humanizeBalance, sortedStringify, UINT128_MAX } from 'utils';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { SwapAssetRow } from '../SwapAssetRow/SwapAssetRow';
 import { TabsHeader } from './TabsHeader';
 import { PriceRow } from '../../components/Swap/PriceRow';

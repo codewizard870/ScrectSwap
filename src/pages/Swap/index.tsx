@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Box } from 'grommet';
-import * as styles from '../FAQ/faq-styles.styl';
+import styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
@@ -23,7 +23,7 @@ import { NativeToken, Token } from '../TokenModal/types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
 import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
-import * as style from './styles.styl';
+import style from './styles.styl';
 
 export const SwapPageWrapper = observer(() => {
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
@@ -42,7 +42,7 @@ export const SwapPageWrapper = observer(() => {
     });
     secretSwapPairs.fetch();
 
-    if (process.env.ENV !== 'DEV') {
+    if (globalThis.config.ENV !== 'DEV') {
       tokens.init();
 
       secretSwapPools.init({
@@ -55,9 +55,9 @@ export const SwapPageWrapper = observer(() => {
     //eslint-disable-next-line
   }, []);
 
-  if (process.env.ENV === 'DEV') {
-    tokens = { allData: JSON.parse(process.env.AMM_TOKENS) } as Tokens;
-    secretSwapPairs = { allData: JSON.parse(process.env.AMM_PAIRS) } as SecretSwapPairs;
+  if (globalThis.config.ENV === 'DEV') {
+    tokens = { allData: JSON.parse(globalThis.config.AMM_TOKENS) } as Tokens;
+    secretSwapPairs = { allData: JSON.parse(globalThis.config.AMM_PAIRS) } as SecretSwapPairs;
     secretSwapPools = null;
   }
 
@@ -107,7 +107,7 @@ export class SwapRouter extends React.Component<
       selectedPair: undefined,
       //Getting parameters as default
       //in ComponentDidMount we check if they exist or not
-      selectedToken0: this.props.query.get('inputCurrency') || process.env.SSCRT_CONTRACT,
+      selectedToken0: this.props.query.get('inputCurrency') || globalThis.config.SSCRT_CONTRACT,
       selectedToken1: this.props.query.get('outputCurrency') || '',
       queries: [],
       routerSupportedTokens: new Set(),
@@ -120,7 +120,7 @@ export class SwapRouter extends React.Component<
   }
   existToken(address: string): boolean {
     const token = Array.from(this.props.tokens.allData).find(token => token.dst_address == address);
-    if (token || address == 'uscrt' || address == process.env.SSCRT_CONTRACT) {
+    if (token || address == 'uscrt' || address == globalThis.config.SSCRT_CONTRACT) {
       return true;
     } else {
       return false;
@@ -218,7 +218,7 @@ export class SwapRouter extends React.Component<
           balanceToken0 = { [this.state.selectedToken0]: await this.refreshTokenBalance(this.state.selectedToken0) };
           selectedToken0 = this.state.selectedToken0;
         } else {
-          selectedToken0 = process.env.SSCRT_CONTRACT;
+          selectedToken0 = globalThis.config.SSCRT_CONTRACT;
         }
 
         if (existsToken1) {
@@ -241,7 +241,7 @@ export class SwapRouter extends React.Component<
     });
     await this.updatePairs();
 
-    if (process.env.ENV !== 'DEV') {
+    if (globalThis.config.ENV !== 'DEV') {
       while (this.state.pairs.size === 0) {
         await sleep(200);
       }
@@ -250,7 +250,7 @@ export class SwapRouter extends React.Component<
     while (true) {
       try {
         const routerSupportedTokens: Set<string> = new Set(
-          await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
+          await this.props.user.secretjs.queryContractSmart(globalThis.config.AMM_ROUTER_CONTRACT, {
             supported_tokens: {},
           }),
         );
@@ -342,7 +342,7 @@ export class SwapRouter extends React.Component<
     const balanceTasks = [];
     if (pair) {
       balanceTasks.push(this.refreshLpTokenBalance(pair));
-      if (process.env.ENV === 'DEV') {
+      if (globalThis.config.ENV === 'DEV') {
         balanceTasks.push(this.refreshPoolBalance(pair));
       }
     }
@@ -373,7 +373,7 @@ export class SwapRouter extends React.Component<
   private async refreshPoolBalance(pair: SwapPair) {
     const balances = [];
 
-    if (process.env.ENV === 'DEV') {
+    if (globalThis.config.ENV === 'DEV') {
       try {
         let res: {
           assets: Array<{ amount: string; info: Token | NativeToken }>;
@@ -427,14 +427,14 @@ export class SwapRouter extends React.Component<
         userBalance = await getNativeBalance(this.props.user.address, this.props.user.secretjs);
         //this.props.user.balanceSCRT = userBalance.toString();
         return userBalance;
-        
+
       } catch (error) {
         console.error('Error at fetch SCRT balance in Swap form',error)
         return new Promise((resolve, reject) => {
           resolve(new BigNumber(0));
         });
       }
-    } 
+    }
 
     let balance = await this.props.user.getSnip20Balance(tokenIdentifier);
 
@@ -477,7 +477,7 @@ export class SwapRouter extends React.Component<
     // update my LP token balance
     const lpTokenSymbol = `LP-${pairSymbol}`;
     const lpTokenAddress = pair.liquidity_token;
-    if (process.env.ENV === 'DEV') {
+    if (globalThis.config.ENV === 'DEV') {
       let lpTotalSupply = new BigNumber(0);
       try {
         const result = await GetSnip20Params({
@@ -532,7 +532,7 @@ export class SwapRouter extends React.Component<
     //     this.ws.close(1000 /* Normal Closure */, 'See ya');
     //   }
     // }
-    if (process.env.ENV !== 'DEV') {
+    if (globalThis.config.ENV !== 'DEV') {
       clearInterval(this.pairRefreshInterval);
     }
     window.onhashchange = null;
@@ -554,7 +554,7 @@ export class SwapRouter extends React.Component<
     });
 
     //load hardcoded tokens (scrt, atom, etc.)
-    for (const t of loadTokensFromList(this.props.user.chainId || process.env.CHAIN_ID)) {
+    for (const t of loadTokensFromList(this.props.user.chainId || globalThis.config.CHAIN_ID)) {
       swapTokens.set(t.identifier, t);
     }
 
@@ -624,7 +624,7 @@ export class SwapRouter extends React.Component<
         }
       }
 
-      return !(pairSymbols.includes('uscrt') && !pairSymbols.includes(process.env.SSCRT_CONTRACT));
+      return !(pairSymbols.includes('uscrt') && !pairSymbols.includes(globalThis.config.SSCRT_CONTRACT));
     });
 
     const newPairs: PairMap = new Map<string, SwapPair>();

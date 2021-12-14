@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from 'grommet';
 import { observer } from 'mobx-react-lite';
 import { Button, Text } from 'components/Base';
-import * as styles from './wallet-balances.styl';
+import styles from './wallet-balances.styl';
 import { truncateAddressString } from 'utils';
 import { useStores } from '../../stores';
 import { AuthWarning } from '../../components/AuthWarning';

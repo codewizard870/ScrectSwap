@@ -5,7 +5,7 @@ import { toUscrtFee } from 'utils';
 export function getGasFee(GAS_CONSTANT, rewardsContract, activeProposals): StdFee {
   let coinType;
 
-  if (rewardsContract === process.env.SEFI_STAKING_CONTRACT) { //if this is the SEFI contract
+  if (rewardsContract === globalThis.config.SEFI_STAKING_CONTRACT) { //if this is the SEFI contract
     coinType = 'SEFI';
   } else {
     coinType = 'OTHER';

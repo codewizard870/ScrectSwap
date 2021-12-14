@@ -33,9 +33,9 @@ const chainIdMap: Record<string, NetworkProps> = {
 };
 
 const leaderMap: Record<NETWORKS, string> = {
-  [NETWORKS.ETH]: process.env.LEADER_ACCOUNT_ETH,
+  [NETWORKS.ETH]: globalThis.config.LEADER_ACCOUNT_ETH,
   [NETWORKS.PLSM]: '',
-  [NETWORKS.BSC]: process.env.LEADER_ACCOUNT_BSC,
+  [NETWORKS.BSC]: globalThis.config.LEADER_ACCOUNT_BSC,
 };
 
 export interface IERC20Token {
@@ -178,7 +178,7 @@ export class UserStoreMetamask extends StoreConstructor {
   }
 
   isCorrectNetworkSelected() {
-    if (process.env.ENV === 'MAINNET') {
+    if (globalThis.config.NETWORK_TYPE === 'MAINNET') {
       let result = chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network;
       if (!result) {
         if (this.network === NETWORKS.ETH) {
@@ -191,7 +191,7 @@ export class UserStoreMetamask extends StoreConstructor {
       return result;
     }
 
-    if (process.env.ENV === 'TESTNET') {
+    if (globalThis.config.NETWORK_TYPE === 'TESTNET') {
       return !chainIdMap[this.chainId].mainnet && chainIdMap[this.chainId].network === this.network;
     }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Image } from 'semantic-ui-react';
 import cn from 'classnames';
-import * as styles from '../styles.styl';
+import styles from '../styles.styl';
 import Loader from 'react-loader-spinner';
 import { FlexRowSpace } from '../../../components/Swap/FlexRowSpace';
 import { SwapToken } from '../types/SwapToken';

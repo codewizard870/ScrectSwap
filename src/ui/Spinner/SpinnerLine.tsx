@@ -1,6 +1,6 @@
 import * as React from 'react';
-import * as s from './SpinnerLine.styl';
+import styles from './SpinnerLine.styl';
 
 export const SpinnerLine: React.FC<React.SVGAttributes<SVGElement>> = props => {
-  return <div className={s.spinnerLine} style={props.style} />;
+  return <div className={styles.spinnerLine} style={props.style} />;
 };

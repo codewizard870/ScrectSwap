@@ -29,7 +29,7 @@ export class EthMethods {
       from: accounts[0],
     });
 
-    const gasLimit = Math.max(estimateGas + estimateGas * 0.3, Number(process.env.ETH_GAS_LIMIT));
+    const gasLimit = Math.max(estimateGas + estimateGas * 0.3, Number(globalThis.config.ETH_GAS_LIMIT));
 
     this.ethManagerContract.methods.swap(secretAddrHex).send({
       value: ethToWei(amount),

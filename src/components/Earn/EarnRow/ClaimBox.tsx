@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import ClaimButton from './ClaimButton';
 import React, { useEffect, useState } from 'react';
 import ScrtTokenBalance from '../ScrtTokenBalance';

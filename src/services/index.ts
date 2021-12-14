@@ -14,7 +14,7 @@ import {
 import * as agent from 'superagent';
 import { SwapStatus } from '../constants';
 import { ProxyTokens } from '../blockchain-bridge/eth/proxyTokens';
-import { networkFromToken, NETWORKS } from '../blockchain-bridge';
+import { networkFromToken, NETWORKS } from '../blockchain-bridge/eth/networks';
 
 //
 // Map for override images for each token
@@ -91,9 +91,9 @@ const tokenLabels = {
 const availableNetworks = [NETWORKS.ETH, NETWORKS.BSC]; //, NETWORKS.PLSM
 
 const BACKENDS = {
-  [NETWORKS.ETH]: process.env.BACKEND_URL,
-  [NETWORKS.BSC]: process.env.BSC_BACKEND_URL,
-  [NETWORKS.PLSM]: process.env.PLSM_BACKEND_URL,
+  [NETWORKS.ETH]: globalThis.config.BACKEND_URL,
+  [NETWORKS.BSC]: globalThis.config.BSC_BACKEND_URL,
+  [NETWORKS.PLSM]: globalThis.config.PLSM_BACKEND_URL,
 };
 
 const backendUrl = (network: NETWORKS, url) => {
@@ -101,7 +101,7 @@ const backendUrl = (network: NETWORKS, url) => {
 };
 
 export const getSushiPool = async (address: String) => {
-  const res = await agent.get<any>(process.env.SUSHI_API).query({ address });
+  const res = await agent.get<any>(globalThis.config.SUSHI_API).query({ address });
   return res.body;
 };
 
@@ -198,7 +198,7 @@ export const getTokensInfo = async (params: any): Promise<{ content: ITokenInfo[
   const tokenArray: ITokenInfo[] = tokens.flatMap(t => t.body.tokens);
   try {
     let content = tokenArray
-      .filter(t => (process.env.TEST_COINS ? true : !t.display_props?.hidden))
+      .filter(t => (globalThis.config.TEST_COINS ? true : !t.display_props?.hidden))
       .map(t => {
         if (t.display_props.proxy ) {
           try {

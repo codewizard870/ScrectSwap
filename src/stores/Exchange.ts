@@ -134,14 +134,14 @@ export class Exchange extends StoreConstructor {
             this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
 
             this.isFeeLoading = true;
-            this.ethNetworkFee = await getNetworkFee(Number(process.env.ETH_GAS_LIMIT));
+            this.ethNetworkFee = await getNetworkFee(Number(globalThis.config.ETH_GAS_LIMIT));
             this.isFeeLoading = false;
             this.swapFeeToken = 0;
             break;
           case EXCHANGE_MODE.FROM_SCRT:
             this.transaction.scrtAddress = this.stores.user.address;
             this.isFeeLoading = true;
-            this.ethSwapFee = await getNetworkFee(Number(process.env.SWAP_FEE));
+            this.ethSwapFee = await getNetworkFee(Number(globalThis.config.SWAP_FEE));
             let token: ITokenInfo;
             if (this.token === TOKEN.NATIVE) {
               token = this.tokens.find(t => t.src_address === 'native');
@@ -158,7 +158,7 @@ export class Exchange extends StoreConstructor {
         if (this.mode !== EXCHANGE_MODE.TO_SCRT || this.token === TOKEN.NATIVE) return;
         this.stepNumber = EXCHANGE_STEPS.APPROVE_CONFIRMATION;
         this.isFeeLoading = true;
-        this.ethNetworkFee = await getNetworkFee(Number(process.env.ETH_GAS_LIMIT));
+        this.ethNetworkFee = await getNetworkFee(Number(globalThis.config.ETH_GAS_LIMIT));
         this.isFeeLoading = false;
       },
     },
@@ -552,13 +552,13 @@ export class Exchange extends StoreConstructor {
           //   token.display_props.symbol.toUpperCase() === 'WSCRT' ||
           //   token.display_props.symbol.toUpperCase() === 'SSCRT'
           // ) {
-          //   proxyContract = process.env.WSCRT_PROXY_CONTRACT;
-          //   recipient = process.env.WSCRT_PROXY_CONTRACT;
-          //   this.transaction.snip20Address = process.env.SSCRT_CONTRACT;
+          //   proxyContract = globalThis.config.WSCRT_PROXY_CONTRACT;
+          //   recipient = globalThis.config.WSCRT_PROXY_CONTRACT;
+          //   this.transaction.snip20Address = globalThis.config.SSCRT_CONTRACT;
           // } else if (token.display_props.symbol === 'SIENNA') {
-          //   proxyContract = process.env.SIENNA_PROXY_CONTRACT;
-          //   recipient = process.env.SIENNA_PROXY_CONTRACT;
-          //   this.transaction.snip20Address = process.env.SIENNA_CONTRACT;
+          //   proxyContract = globalThis.config.SIENNA_PROXY_CONTRACT;
+          //   recipient = globalThis.config.SIENNA_PROXY_CONTRACT;
+          //   this.transaction.snip20Address = globalThis.config.SIENNA_CONTRACT;
           // }
         }
       }

@@ -10,7 +10,7 @@ import { SwapTokenMap } from '../TokenModal/types/SwapToken';
 import { CosmWasmClient } from 'secretjs';
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 import { useStores } from 'stores';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 
 export const SwapAssetRow = ({
   tokens,

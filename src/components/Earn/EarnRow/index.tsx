@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import cn from 'classnames';
 import { Accordion, Grid, Icon, Image, Segment } from 'semantic-ui-react';
 import SoftTitleValue from '../SoftTitleValue';
@@ -18,8 +18,8 @@ import ModalExplanation from '../APRModalExp';
 import { InfoIcon } from 'components/Base/components/Icons/tsx_svg_icons';
 import numeral from 'numeral';
 
-const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
-const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
+const newRewardsContract = globalThis.config.SEFI_STAKING_CONTRACT;
+const oldRewardsContract = globalThis.config.SEFI_STAKING_OLD_CONTRACT;
 
 export const calculateAPY = (token: RewardsToken, price: number, priceUnderlying: number) => {
   // console.log(Math.round(Date.now() / 1000000))

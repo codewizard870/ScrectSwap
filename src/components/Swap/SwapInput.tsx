@@ -1,6 +1,6 @@
 import { Input } from 'semantic-ui-react';
 import React from 'react';
-import * as styles from './style.styl';
+import styles from './style.styl';
 import { useStores } from 'stores';
 
 export const SwapInput = (props: {
@@ -18,8 +18,8 @@ export const SwapInput = (props: {
       style={{
         padding: 0,
         width: props.width || '180px',
-        
       }}
+
       className={`${styles.customInput} ${styles[theme.currentTheme]}`}
       transparent
       size="massive"

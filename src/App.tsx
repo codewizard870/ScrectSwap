@@ -32,7 +32,7 @@ export const App: React.FC = () => (
         <Route path="/earn" component={SeFiPage} />
         <Route path="/cashback" component={Cashback} />
         <Route path="/governance" component={Governance} />
-        <Route path="/proposal/:id" component={DetailProposal} />
+        <Route path="/proposal/:id" component={DetailProposal} /> {/* must test this match before route with no id */}
         <Route path="/proposal" component={CreateProposal} />
         <Route path="/sefistaking" component={SefiStaking} />
         <Route path="/migration" component={Migration} />

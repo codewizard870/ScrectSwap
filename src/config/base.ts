@@ -6,7 +6,7 @@ const baseConfig = {
   IS_MAINTENANCE: true,
 };
 
-// This is a conditional require statement.  So if REACT_APP_NETWORK is 'secret_4' it will load secret_4.js
+// This is a conditional require statement.  So if REACT_APP_NETWORK is 'mainnet' it will load mainnet.js
 const networkConfig = require('./' + process.env.REACT_APP_NETWORK).config;
 
 // Merge the baseConfig and the networkConfig into Typescript's global scope

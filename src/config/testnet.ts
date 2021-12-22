@@ -1,8 +1,8 @@
 export const config = {
   NETWORK_TYPE: 'TESTNET',
 
-  CHAIN_ID: 'pulsar-1',
-  CHAIN_NAME: 'Pulsar 1',
+  CHAIN_ID: 'pulsar-2',
+  CHAIN_NAME: 'Pulsar 2',
 
   SECRET_POST_ADDRESS: 'http://testnet.securesecrets.org:1317',
   SECRET_RPC: 'http://testnet.securesecrets.org:26657/',
@@ -23,7 +23,7 @@ export const config = {
 
   ETH_EXPLORER_URL: 'https://rinkeby.etherscan.io',
   BSC_EXPLORER_URL: 'https://testnet.bscscan.com',
-  SCRT_EXPLORER_URL: 'https://secretnodes.com/secret/chains/pulsar-1',
+  SCRT_EXPLORER_URL: 'https://secretnodes.com/secret/chains/pulsar-2',
 
   AMM_FACTORY_CONTRACT: 'secret1varp58zpneu4rly0xw0a5c4pc42hj8p4894fr6',
   SIG_THRESHOLD: 2,

@@ -1,13 +1,13 @@
 export const config = {
   NETWORK_TYPE: 'TESTNET',
 
-  CHAIN_ID: 'pulsar-1',
-  CHAIN_NAME: 'Pulsar 1',
+  CHAIN_ID: 'pulsar-2',
+  CHAIN_NAME: 'Pulsar 2',
 
-  SECRET_POST_ADDRESS: 'http://185.107.80.166:1317',
-  SECRET_RPC: 'http://185.107.80.166:26657',
+  SECRET_POST_ADDRESS: 'http://testnet.securesecrets.org:1317',
+  SECRET_RPC: 'http://testnet.securesecrets.org:26657/',
   // SECRET_WS='wss://chainofsecrets.secrettestnet.io:26667/websocket',
-  SECRET_LCD: 'http://185.107.80.166:1317',
+  SECRET_LCD: 'http://testnet.securesecrets.org:1317/',
 
   BACKEND_URL: 'http://localhost:3001',
   PLSM_BACKEND_URL: 'http://localhost:3001',
@@ -23,7 +23,7 @@ export const config = {
 
   ETH_EXPLORER_URL: 'https://rinkeby.etherscan.io',
   BSC_EXPLORER_URL: 'https://testnet.bscscan.com',
-  SCRT_EXPLORER_URL: 'https://secretnodes.com/secret/chains/pulsar-1',
+  SCRT_EXPLORER_URL: 'https://secretnodes.com/secret/chains/pulsar-2',
 
   AMM_FACTORY_CONTRACT: 'secret1varp58zpneu4rly0xw0a5c4pc42hj8p4894fr6',
   SIG_THRESHOLD: 2,

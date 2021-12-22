@@ -14,6 +14,7 @@ dist/
 .DS_Store
 thumbs.db
 .env*
+.idea
 package-lock.json
 .nyc_output
 report.*.json
@@ -35,6 +36,5 @@ docker.sh
 tests
 .c9
 .hg
-stats.json
 cypress.env.json
 .vscode/launch.json

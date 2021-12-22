@@ -1,15 +1,21 @@
 {
   "name": "secret-swap",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "private": false,
   "license": "MIT",
   "scripts": {
-    "start": "REACT_APP_NETWORK='secret_4' craco start",
-    "start:pulsar_1": "REACT_APP_NETWORK='pulsar_1' craco start",
-    "start:pulsar_1_localhost": "REACT_APP_NETWORK='pulsar_1_localhost' craco start",
-    "build": "REACT_APP_NETWORK='secret_4' craco build",
-    "build:pulsar_1": "REACT_APP_NETWORK='pulsar_1' craco build",
-    "test": "craco test"
+    "//_comment_Win": "Must setup cmdline env: npm config set script-shell \"C:\\Program Files\\git\\bin\\bash.exe\"",
+    "host": "REACT_APP_NETWORK='mainnet' craco start",
+    "host:testnet": "REACT_APP_NETWORK='testnet' craco start",
+    "host:testnet_local": "REACT_APP_NETWORK='testnet_local' craco start",
+    "make": "REACT_APP_NETWORK='mainnet' craco build",
+    "make:testnet": "REACT_APP_NETWORK='testnet' craco build",
+    "test": "craco test",
+    "//_comment_legacy": "The following maintains compatibility with legacy set ups e.g. yarn dev",
+    "start": "cross-env REACT_APP_NETWORK='mainnet' craco start",
+    "dev": "cross-env REACT_APP_NETWORK='testnet' craco start",
+    "stg": "cross-env REACT_APP_NETWORK='mainnet' craco start",
+    "build": "cross-env REACT_APP_NETWORK='mainnet' craco build && cp build/index.html build/404.html"
   },
   "repository": {
     "type": "git",
@@ -83,6 +89,7 @@
     "@types/webpack-dev-server": "^4.5.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.5",
+    "cross-env": "^7.0.3",
     "prettier": "^1.19.1",
     "raf": "^3.4.1",
     "sass": "^1.45.1",

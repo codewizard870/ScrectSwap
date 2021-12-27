@@ -43,7 +43,7 @@
     "lodash": "^4.17.21",
     "mobx": "5.15.0",
     "mobx-react": "6.1.4",
-    "mobx-react-router": "4.0.7",
+    "mobx-react-router": "4.1.0",
     "moment": "^2.29.1",
     "node-dijkstra": "^2.5.0",
     "numeral": "^2.0.6",

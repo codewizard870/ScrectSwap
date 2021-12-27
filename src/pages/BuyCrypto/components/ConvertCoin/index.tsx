@@ -54,9 +54,9 @@ const ConvertCoin = ({
     <div style={style} className={`${theme} convert-wrapper`}>
       <h2>{title}</h2>
       <p className="description">{description}</p>
-      <p className="convert-learn-more">
-        <a href={learn_link}>Click here to learn more</a>
-      </p>
+      {/*<p className="convert-learn-more">*/}
+      {/*  <a href={learn_link}>Click here to learn more</a>*/}
+      {/*</p>*/}
       <section className="contenas">
         <div className="row">
           <p>Available</p>

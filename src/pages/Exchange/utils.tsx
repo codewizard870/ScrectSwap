@@ -13,7 +13,7 @@ import PopupExample from './HealthPopup';
 import HealthPopup from './HealthPopup';
 
 export const createNotification = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
-  if (type === 'error') {
+  if (type === 'error' && typeof(msg) === 'string') {
     msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
     msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
   }

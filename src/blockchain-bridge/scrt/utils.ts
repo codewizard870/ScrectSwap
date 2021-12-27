@@ -72,7 +72,7 @@ export function notify(
 ) {
   // if(globalThis.config.IS_MAINTENANCE === 'true') return;
   let cogoType: string = type;
-  if (type === 'error') {
+  if (type === 'error' && typeof(msg) === 'string') {
     msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
     msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
   }

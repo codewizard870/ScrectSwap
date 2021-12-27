@@ -9,13 +9,13 @@ import { notify } from '../../blockchain-bridge/scrt/utils';
 import './style.scss';
 
 const SSCRT: Token = {
-  address: process.env.SSCRT_CONTRACT,
+  address: globalThis.config.SSCRT_CONTRACT,
   symbol: 'SSCRT',
   decimals: 6,
   balance: '0',
 };
 
-const BuyCrypto = observer(() => {
+export const BuyCrypto = observer(() => {
   const { theme, user } = useStores();
   const [amountWrap, setAmountWrap] = useState<string>('');
   const [amountUnwrap, setAmountUnwrap] = useState<string>('');
@@ -31,15 +31,22 @@ const BuyCrypto = observer(() => {
     decimals: 0,
   };
 
+  const transakConfig = '&cryptoCurrencyCode=SCRT' +
+      '&defaultCryptoAmount=15' +
+      '&redirectURL=app.secretswap.io/redir_transac' +
+      '&hideMenu=true' +
+      '&exchangeScreenTitle=%20' +
+      '&themeColor=008800';
+
   useEffect(() => {
     const SSCRT: Token = {
-      address: process.env.SSCRT_CONTRACT,
+      address: globalThis.config.SSCRT_CONTRACT,
       symbol: 'SSCRT',
       decimals: 6,
-      balance: user.balanceToken[process.env.SSCRT_CONTRACT],
+      balance: user.balanceToken[globalThis.config.SSCRT_CONTRACT],
     };
     setTokenSelected(SSCRT);
-  }, [user.balanceToken[process.env.SSCRT_CONTRACT]]);
+  }, [user.balanceToken[globalThis.config.SSCRT_CONTRACT]]);
 
   async function wrapToken(amount: string, token: Token, callback?: Function) {
     try {
@@ -52,7 +59,9 @@ const BuyCrypto = observer(() => {
       notify('success', 'converted ');
       await user.updateSScrtBalance();
       await user.updateScrtBalance();
-      callback();
+      if ('function' === typeof (callback)) {
+        callback();
+      }
     } catch (error) {
       notify('error', error);
     } finally {
@@ -71,7 +80,9 @@ const BuyCrypto = observer(() => {
 
       await user.updateSScrtBalance();
       await user.updateScrtBalance();
-      callback();
+      if ('function' === typeof (callback)) {
+        callback();
+      }
     } catch (error) {
       notify('error', error);
     } finally {
@@ -95,18 +106,18 @@ const BuyCrypto = observer(() => {
         <main className={`${theme.currentTheme} buy-base-container`}>
           <section className="balances-container">
             <div>
-              <p>SCRT Balance</p>
+              <p>SCRT</p>
               <p>
                 <strong>{user.balanceSCRT}</strong>
               </p>
             </div>
             <div>
-              <p>sSCRT Balance</p>
+              <p>sSCRT</p>
               <p>
-                {unlockToken === user.balanceToken[process.env.SSCRT_CONTRACT] ? (
+                {unlockToken === user.balanceToken[globalThis.config.SSCRT_CONTRACT] ? (
                   unlockJsx({ onClick: () => createVK(tokenSelected) })
                 ) : (
-                  <strong>{user.balanceToken[process.env.SSCRT_CONTRACT]}</strong>
+                  <strong>{user.balanceToken[globalThis.config.SSCRT_CONTRACT]}</strong>
                 )}
               </p>
             </div>
@@ -119,9 +130,8 @@ const BuyCrypto = observer(() => {
                   height="650"
                   width="450"
                   title="Transak On/Off Ramp Widget (Website)"
-                  src={process.env.TRANSAK_URL}
+                  src={globalThis.config.TRANSAK_URL + transakConfig}
                   frameBorder="no"
-                  allowTransparency={true}
                   allowFullScreen={false}
                 />
               </div>
@@ -130,7 +140,7 @@ const BuyCrypto = observer(() => {
               <h1>Convert</h1>
               <ConvertCoin
                 title="Wrap"
-                description="Convert SCRT to sSCRT, the privacy preserving version of SCRT."
+                description="Convert SCRT to the privacy preserving sSCRT token."
                 theme={theme.currentTheme}
                 learn_link=""
                 token={SCRT}
@@ -144,7 +154,7 @@ const BuyCrypto = observer(() => {
                 createVK={() => createVK(tokenSelected)}
                 style={{ marginTop: '30px' }}
                 title="Unwrap"
-                description="Convert sSCRT to SCRT, Secret Network's native public token."
+                description="Convert sSCRT to the native Secret Network SCRT public token."
                 theme={theme.currentTheme}
                 learn_link=""
                 token={tokenSelected}
@@ -161,5 +171,3 @@ const BuyCrypto = observer(() => {
     </BaseContainer>
   );
 });
-
-export default BuyCrypto;

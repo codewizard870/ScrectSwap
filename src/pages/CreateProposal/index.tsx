@@ -9,7 +9,7 @@ import { useStores } from 'stores';
 import './style.scss';
 import { sleep } from 'utils';
 
-const CreateProposal = observer((props) => {
+export const CreateProposal = observer((props) => {
 
   const history = useHistory();
 
@@ -63,7 +63,7 @@ const CreateProposal = observer((props) => {
   function isValid() {
     return !formData.title
       || !formData.vote_type
-      || !formData.author_alias 
+      || !formData.author_alias
       || !formData.description
       || formData.title.length < 2
       || formData.description.length < 10
@@ -180,5 +180,3 @@ const CreateProposal = observer((props) => {
     </ProposalLayout>
   )
 })
-
-export default CreateProposal;

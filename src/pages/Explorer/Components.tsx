@@ -1,6 +1,6 @@
 import { Box, BoxProps } from 'grommet';
 import cn from 'classnames';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { Text } from 'components/Base/components/Text';
 import * as React from 'react';
 import { EXCHANGE_MODE, TOKEN } from 'stores/interfaces';

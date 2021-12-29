@@ -18,7 +18,7 @@ export class AsyncSender extends SigningCosmWasmClient {
   ) => {
     let tx;
     const key = Object.keys(handleMsg)[0];
-    if (process.env.IS_MAINTENANCE === 'true' && blacklistedTxs.includes(key)) {
+    if (globalThis.config.IS_MAINTENANCE === 'true' && blacklistedTxs.includes(key)) {
       stores.user.setModalOpen(true);
       throw new CustomError('We are working on add functionality back, please,try later.');
     }

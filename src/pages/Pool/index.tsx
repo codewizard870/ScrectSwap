@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box } from 'grommet';
-import * as styles from '../FAQ/faq-styles.styl';
+import styles from '../FAQ/faq-styles.styl';
 import { PageContainer } from 'components/PageContainer';
 import { BaseContainer } from 'components/BaseContainer';
 import { useStores } from 'stores';
@@ -38,7 +38,7 @@ export const SwapPagePool = observer(() => {
     });
     secretSwapPairs.fetch();
 
-    if (process.env.ENV !== 'DEV') {
+    if (globalThis.config.ENV !== 'DEV') {
       tokens.init();
 
       secretSwapPools.init({
@@ -50,9 +50,9 @@ export const SwapPagePool = observer(() => {
     }
   }, []);
 
-  if (process.env.ENV === 'DEV') {
-    tokens = { allData: JSON.parse(process.env.AMM_TOKENS) } as Tokens;
-    secretSwapPairs = { allData: JSON.parse(process.env.AMM_PAIRS) } as SecretSwapPairs;
+  if (globalThis.config.ENV === 'DEV') {
+    tokens = { allData: JSON.parse(globalThis.config.AMM_TOKENS) } as Tokens;
+    secretSwapPairs = { allData: JSON.parse(globalThis.config.AMM_PAIRS) } as SecretSwapPairs;
     secretSwapPools = null;
   }
 
@@ -99,7 +99,7 @@ export class SwapRouter extends React.Component<
       balances: {},
       pairs: new Map<string, SwapPair>(),
       selectedPair: undefined,
-      selectedToken0: process.env.SSCRT_CONTRACT,
+      selectedToken0: globalThis.config.SSCRT_CONTRACT,
       selectedToken1: '',
       queries: [],
       routerSupportedTokens: new Set(),
@@ -182,13 +182,13 @@ export class SwapRouter extends React.Component<
     }
 
     let sScrtBalance: { [symbol: string]: BigNumber | JSX.Element } = {
-      [process.env.SSCRT_CONTRACT]: new BigNumber('0'),
+      [globalThis.config.SSCRT_CONTRACT]: new BigNumber('0'),
     };
     let keplrConnected = false;
     // wait for 1 second before deciding that Keplr won't connect
     for (let i = 0; i < 10; i++) {
       if (this.props.user.secretjs) {
-        sScrtBalance = { [process.env.SSCRT_CONTRACT]: await this.refreshTokenBalance(process.env.SSCRT_CONTRACT) };
+        sScrtBalance = { [globalThis.config.SSCRT_CONTRACT]: await this.refreshTokenBalance(globalThis.config.SSCRT_CONTRACT) };
         keplrConnected = true;
         break;
       }
@@ -198,7 +198,7 @@ export class SwapRouter extends React.Component<
     this.setState({ balances: { ...this.state.balances, ...sScrtBalance }, keplrConnected });
     await this.updatePairs();
 
-    if (process.env.ENV !== 'DEV') {
+    if (globalThis.config.ENV !== 'DEV') {
       while (this.state.pairs.size === 0) {
         await sleep(200);
       }
@@ -208,7 +208,7 @@ export class SwapRouter extends React.Component<
     while (true) {
       try {
         const routerSupportedTokens: Set<string> = new Set(
-          await this.props.user.secretjs.queryContractSmart(process.env.AMM_ROUTER_CONTRACT, {
+          await this.props.user.secretjs.queryContractSmart(globalThis.config.AMM_ROUTER_CONTRACT, {
             supported_tokens: {},
           }),
         );
@@ -294,7 +294,7 @@ export class SwapRouter extends React.Component<
     const balanceTasks = [];
     if (pair) {
       balanceTasks.push(this.refreshLpTokenBalance(pair));
-      if (process.env.ENV === 'DEV') {
+      if (globalThis.config.ENV === 'DEV') {
         balanceTasks.push(this.refreshPoolBalance(pair));
       }
     }
@@ -325,7 +325,7 @@ export class SwapRouter extends React.Component<
   private async refreshPoolBalance(pair: SwapPair) {
     const balances = [];
 
-    if (process.env.ENV === 'DEV') {
+    if (globalThis.config.ENV === 'DEV') {
       try {
         let res: {
           assets: Array<{ amount: string; info: Token | NativeToken }>;
@@ -424,7 +424,7 @@ export class SwapRouter extends React.Component<
     console.log('Refresh LP token for', pairSymbol);
     // update my LP token balance
     const lpTokenAddress = pair.liquidity_token;
-    if (process.env.ENV === 'DEV') {
+    if (globalThis.config.ENV === 'DEV') {
       let lpTotalSupply = new BigNumber(0);
       try {
         const result = await GetSnip20Params({
@@ -479,7 +479,7 @@ export class SwapRouter extends React.Component<
     //     this.ws.close(1000 /* Normal Closure */, 'See ya');
     //   }
     // }
-    if (process.env.ENV !== 'DEV') {
+    if (globalThis.config.ENV !== 'DEV') {
       clearInterval(this.pairRefreshInterval);
     }
     window.onhashchange = null;
@@ -501,7 +501,7 @@ export class SwapRouter extends React.Component<
     });
 
     //load hardcoded tokens (scrt, atom, etc.)
-    for (const t of loadTokensFromList(this.props.user.chainId || process.env.CHAIN_ID)) {
+    for (const t of loadTokensFromList(this.props.user.chainId || globalThis.config.CHAIN_ID)) {
       swapTokens.set(t.identifier, t);
     }
 
@@ -570,7 +570,7 @@ export class SwapRouter extends React.Component<
         }
       }
 
-      return !(pairSymbols.includes('uscrt') && !pairSymbols.includes(process.env.SSCRT_CONTRACT));
+      return !(pairSymbols.includes('uscrt') && !pairSymbols.includes(globalThis.config.SSCRT_CONTRACT));
     });
 
     const newPairs: PairMap = new Map<string, SwapPair>();

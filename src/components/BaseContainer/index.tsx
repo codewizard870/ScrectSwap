@@ -7,7 +7,7 @@ import { IStyledChildrenProps } from 'interfaces';
 import './notifications.css';
 import Header from '../Header/Header';
 import { useStores } from 'stores';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import MessageDismiss from 'ui/message/Message';
 import MaintenanceWrapper from './MaintenanceWrapper';
 import MaintenancePopup from './MaintenancePopup';

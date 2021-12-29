@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores';
 

@@ -61,9 +61,9 @@ const message_map: Record<chainProps, Record<NETWORKS, string>> = {
     [NETWORKS.PLSM]: 'Parachain',
   },
   [chainProps.explorerUrl]: {
-    [NETWORKS.ETH]: process.env.ETH_EXPLORER_URL,
-    [NETWORKS.BSC]: process.env.BSC_EXPLORER_URL,
-    [NETWORKS.PLSM]: process.env.ETH_EXPLORER_URL,
+    [NETWORKS.ETH]: globalThis.config.ETH_EXPLORER_URL,
+    [NETWORKS.BSC]: globalThis.config.BSC_EXPLORER_URL,
+    [NETWORKS.PLSM]: globalThis.config.ETH_EXPLORER_URL,
   },
   [chainProps.decimals]: {
     [NETWORKS.ETH]: '18',

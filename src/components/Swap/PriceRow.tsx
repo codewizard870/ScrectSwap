@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
-import * as style from './style.styl';
+import style from './style.styl';
 import { FlexRowSpace } from './FlexRowSpace';
 import { useStores } from 'stores';
 

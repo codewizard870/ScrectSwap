@@ -1,6 +1,6 @@
 import { Redeem } from '../../../blockchain-bridge/scrt';
 import React, { useState } from 'react';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { Button, Icon, Popup } from 'semantic-ui-react';
 import { useStores } from 'stores';
 import { AsyncSender } from '../../../blockchain-bridge/scrt/asyncSender';

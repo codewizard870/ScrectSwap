@@ -1,6 +1,6 @@
 import React from 'react';
 import { Popup ,Icon} from 'semantic-ui-react';
-import {SefiData} from '../types/SefiData' 
+import {SefiData} from '../types/SefiData'
 import '../styles.scss';
 import { RightArrow } from 'components/Base/components/Icons/tsx_svg_icons';
 import { apyString, RewardsToken } from 'components/Earn/EarnRow';
@@ -8,7 +8,7 @@ const GeneralState = (props:{
   data:SefiData
 })=>{
   let scrt_sefi_apy_string,sefi_apy_string = '0%'
-  const sefi_apy:RewardsToken = props.data.apys.find((t)=>t.rewardsContract===process.env.SEFI_STAKING_CONTRACT)
+  const sefi_apy:RewardsToken = props.data.apys.find((t)=>t.rewardsContract===globalThis.config.SEFI_STAKING_CONTRACT)
   const scrt_sefi_apy:RewardsToken = props.data.apys.find((t)=>t.lockedAsset==='LP-sSCRT-SEFI')
   try {
     sefi_apy_string = apyString(sefi_apy)
@@ -16,20 +16,20 @@ const GeneralState = (props:{
   } catch (error) {
     console.error(error)
   }
-  
+
   return(
     <>
        <div className="m-small">
-            <p className="span-2 congrats_title">Congratulations !</p> 
+            <p className="span-2 congrats_title">Congratulations !</p>
         </div>
         <div className="m-small">
-          <p className="span-2 congrats_msg">You have claimed <strong>{props.data.expected_sefi} SEFI</strong> from your cashback tokens! 
+          <p className="span-2 congrats_msg">You have claimed <strong>{props.data.expected_sefi} SEFI</strong> from your cashback tokens!
           The more you swap, the more SEFI you can claim.</p>
         </div>
         <div className="m-small">
           {/* <a className="span-2" href="#">Learn more about cashback token</a>   */}
         </div>
-        <button className='earn-sefi__btn m-small'> Earn with SEFI</button>  
+        <button className='earn-sefi__btn m-small'> Earn with SEFI</button>
         <div className="sefi-grid__container-confirm">
           <strong className='align-center'>Stake SEFI</strong>
           <strong className='percentage-confirm align-center'>{sefi_apy_string}</strong>

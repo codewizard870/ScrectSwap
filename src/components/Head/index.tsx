@@ -2,12 +2,12 @@ import * as React from 'react';
 import { useState } from 'react';
 import { withTheme } from 'styled-components';
 import { Box, BoxProps, Text } from 'grommet';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { IStyledChildrenProps } from 'interfaces';
 import { Title } from '../Base/components/Title';
 import { useStores } from '../../stores';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import cn from 'classnames';
 import { TOKEN } from '../../stores/interfaces';
 import { Icon } from 'components/Base';
@@ -111,8 +111,6 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             {/*<Box className={cn(styles.itemToken, isEarn ? styles.selected : '')} onClick={() => routing.push('/earn')}>
               <Text>Earn</Text>
             </Box> */}
-
-            
 
             <Box
               className={cn(styles.itemToken, isSwap ? styles.selected : '')}

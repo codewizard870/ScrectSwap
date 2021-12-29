@@ -253,7 +253,7 @@ export const CreateNewPair = async ({
     }
   }
 
-  const factoryAddress = process.env.AMM_FACTORY_CONTRACT;
+  const factoryAddress = globalThis.config.AMM_FACTORY_CONTRACT;
   const response: ExecuteResult = await secretjsSender.asyncExecute(
     factoryAddress,
     {
@@ -273,7 +273,7 @@ interface GetAllPairsResponse {
 
 export const GetAllPairs = async (params: { secretjs: SigningCosmWasmClient }): Promise<GetAllPairsResponse> => {
   const { secretjs } = params;
-  return await secretjs.queryContractSmart(process.env.AMM_FACTORY_CONTRACT, {
+  return await secretjs.queryContractSmart(globalThis.config.AMM_FACTORY_CONTRACT, {
     pairs: { limit: 30 },
   });
 };

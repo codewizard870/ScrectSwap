@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStores } from '../stores';
 import { useEffect } from 'react';
 import { InfoEarn } from './InfoEarn';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 
 export const InfoModalEarn = observer(() => {
   const { user, actionModals } = useStores();

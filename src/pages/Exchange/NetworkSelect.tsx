@@ -11,7 +11,7 @@ import { NetworkTemplateInterface, NetworkTemplate, HealthStatusDetailed } from 
 import { formatSymbol } from '../../utils';
 import { BalanceInterface } from './steps/base';
 import Select, { components } from 'react-select';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { NETWORKS } from '../../blockchain-bridge';
 
 export const NetworkSelect = observer(

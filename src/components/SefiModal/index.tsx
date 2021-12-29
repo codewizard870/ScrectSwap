@@ -187,7 +187,7 @@ export const SefiModal = (props: { user: UserStoreEx; tokens: Tokens; metaMask: 
   async function createCSHBKViewingKey() {
     try {
       setOpen(false);
-      await props.user.keplrWallet.suggestToken(props.user.chainId, process.env.CSHBK_CONTRACT);
+      await props.user.keplrWallet.suggestToken(props.user.chainId, globalThis.config.CSHBK_CONTRACT);
       await props.user.updateCSHBKBalance();
       setHasViewingKey(true);
     } catch (e) {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import stores, { StoresProvider } from 'stores';
-import { Router } from 'react-router';
+import { Router } from 'react-router-dom';
 import { Provider as MobxProvider } from 'mobx-react';
 import { Grommet } from 'grommet';
 import { Theme, baseTheme } from 'themes';

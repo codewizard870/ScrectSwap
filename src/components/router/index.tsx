@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RedirectProps, Redirect, useLocation } from 'react-router';
+import { RedirectProps, Redirect, useLocation } from 'react-router-dom';
 import { useStores } from 'stores';
 import { observer } from 'mobx-react-lite';
 

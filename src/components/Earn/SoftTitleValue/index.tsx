@@ -1,5 +1,5 @@
 import React from 'react';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import cn from 'classnames';
 import { useStores } from 'stores';
 

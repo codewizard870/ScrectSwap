@@ -1,11 +1,14 @@
 import React from 'react';
 import { useStores } from 'stores';
-import * as styles from './style.styl';
+import styles from './style.styl';
+
 export const PairAnalyticsLink: React.FC<{ pairAddress: string }> = ({ pairAddress }) => {
+  const {theme} = useStores();
+
   if (!pairAddress) {
     return null;
   }
-  const {theme} = useStores();
+
   return (
     <div
       className={`${styles.analyticsLink_container} ${styles[theme.currentTheme]}`}

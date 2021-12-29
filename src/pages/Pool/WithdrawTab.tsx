@@ -6,7 +6,7 @@ import { UserStoreEx } from 'stores/UserStore';
 import { WithdrawLiquidityPanel } from './WithdrawLiqudityPanel';
 import { TabsHeader } from './TabsHeader';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { PairMap } from '../TokenModal/types/SwapPair';
 import Loader from 'react-loader-spinner';
 import { AsyncSender } from '../../blockchain-bridge/scrt/asyncSender';

@@ -89,9 +89,9 @@ export class HistoryPanel extends React.Component<
       symbolB = symbolA;
       symbolA = 'sSCRT';
     }
-    if (selectedPair.pair_identifier.includes(process.env.SSCRT_CONTRACT)) {
-      const tokenB = selectedPair.pair_identifier.split('/').filter(a => a !== process.env.SSCRT_CONTRACT);
-      selectedPair.pair_identifier = `${process.env.SSCRT_CONTRACT}/${tokenB}`;
+    if (selectedPair.pair_identifier.includes(globalThis.config.SSCRT_CONTRACT)) {
+      const tokenB = selectedPair.pair_identifier.split('/').filter(a => a !== globalThis.config.SSCRT_CONTRACT);
+      selectedPair.pair_identifier = `${globalThis.config.SSCRT_CONTRACT}/${tokenB}`;
     }
 
     const [tokenA, tokenB] = selectedPair.assetIds();

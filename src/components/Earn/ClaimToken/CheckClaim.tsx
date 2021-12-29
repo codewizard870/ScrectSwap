@@ -9,7 +9,7 @@ import { IsValid } from '../../../pages/TokenModal/TokenSelector/IsValid';
 import { divDecimals, sleep } from '../../../utils';
 import { CosmWasmClient, SigningCosmWasmClient } from 'secretjs';
 import Loader from 'react-loader-spinner';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { FlexRowSpace } from '../../Swap/FlexRowSpace';
 import { Text } from 'components/Base';
 import { CopyWithFeedback } from 'components/Swap/CopyWithFeedback';

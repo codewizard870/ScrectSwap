@@ -17,7 +17,7 @@ import { unlockToken, zeroDecimalsFormatter } from 'utils';
 import { rewardsDepositKey } from 'stores/UserStore';
 import axios from "axios";
 import { numberFormatter } from '../../utils/formatNumber'
-import { validate } from 'webpack';
+// import { validate } from 'webpack';
 import { STATUS } from '../../stores/interfaces';
 
 export const HowItWorksModal = observer(() => {

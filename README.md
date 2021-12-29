@@ -1,69 +1,46 @@
-# harmony eth bridge frontend
-Ethereum<>Harmony two way bridge (trusted version)
+# SecretSwap App
 
+Website hosted at https://app.secretswap.io
 
+Official repository at https://github.com/SecretFinance/SecretSwap
 
-## Install instructions
+## Instructions
 
-### Requirements 
+### Migrate from previous installation
 
-* nodejs 
+A one time clean up is required if migrating from another repo source. The npm module `Husky` was removed from this repo
+and files are left behind that produce unwanted side effects with `git`.
 
-### Commands
+Therefore, delete all files in the existing `SecretSwapApp/.git` folder that contain text "`Hook created by Husky`".
 
-* Fetch repo 
+### Installation
 
+1. Install Git [Getting started](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+2. Install Node.js [tested with 16.xx.x LTS](https://nodejs.org/en/)
+3. Install Yarn `npm install --global yarn`
+4. Install app `git clone https://github.com/SecretFinance/SecretSwap.git ./SecretSwapApp`
+5. Change to folder `SecretSwapApp`, and run `yarn` to install node_modules
+6. Under Windows, run `npm config set script-shell "C:\\Program Files\\git\\bin\\bash.exe"` (your git path may differ)
+
+### Running
+
+Run for Mainnet
 ```
-git clone git@github.com:harmony-one/ethhmy-bridge.frontend.git
-```
-
-* Install dependencies
-
-```
-npm install
-```
-
-* Develop
-
-```
-npm run dev
-```
-
-* Build
-
-```
-npm run build
+yarn host
 ```
 
-* Start
-
+Run for Testnet
 ```
-cd build 
-serve
+yarn host:testnet
 ```
 
-# Docker
+After using any host command, visit the ui at `http://localhost:3000`
 
-## build
+Build a production site
 ```
-./build.sh
-```
-
-The build artificats will be in artifacts/build folder.
-
-## Start
-```
-./start.sh
-```
-The frontend will be started in http://localhost:8080
-
-## push to docker hub
-You need to have permission to push to the harmonyone repo.
-
-```bash
-sudo docker login
-sudo docker tag ethhmy-fe-web harmonyone/ethhmy-fe-web:latest
-sudo docker push harmonyone/ethhmy-fe-web
+yarn make
 ```
 
-You may also push to difference release version other than just `latest`.
+Config files for different networks are at `src/config/`
+
+To host this repo on render.com, follow this [guide](https://render.com/docs/deploy-create-react-app#using-client-side-routing) to add a Rewrite Rule

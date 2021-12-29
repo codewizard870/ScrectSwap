@@ -176,7 +176,7 @@ export class UserStoreEx extends StoreConstructor {
       }
     }
 
-    this.ws = new WebSocket(process.env.SECRET_WS);
+    this.ws = new WebSocket(globalThis.config.SECRET_WS);
 
     const symbolUpdateHeightCache: { [symbol: string]: number } = {};
 
@@ -248,8 +248,8 @@ export class UserStoreEx extends StoreConstructor {
       // Also hook sSCRT
       symbolUpdateHeightCache['sSCRT'] = 0;
       const secretScrtQueries = [
-        `message.contract_address='${process.env.SSCRT_CONTRACT}'`,
-        `wasm.contract_address='${process.env.SSCRT_CONTRACT}'`,
+        `message.contract_address='${globalThis.config.SSCRT_CONTRACT}'`,
+        `wasm.contract_address='${globalThis.config.SSCRT_CONTRACT}'`,
       ];
 
       for (const query of secretScrtQueries) {
@@ -298,20 +298,20 @@ export class UserStoreEx extends StoreConstructor {
       this.error = '';
 
       console.log('Waiting for Keplr...');
-      while (wait && !this.keplrWallet) {
+      while (wait || !this.keplrWallet) {
         await sleep(100);
       }
-      console.log('Found Keplr', process.env.CHAIN_ID);
+      console.log('Found Keplr', globalThis.config.CHAIN_ID);
 
-      this.chainId = process.env.CHAIN_ID;
+      this.chainId = globalThis.config.CHAIN_ID;
 
       // Setup Secret Testnet (not needed on mainnet)
-      if (process.env.ENV !== 'MAINNET') {
+      if (globalThis.config.NETWORK_TYPE !== 'MAINNET') {
         await this.keplrWallet.experimentalSuggestChain({
           chainId: this.chainId,
-          chainName: process.env.CHAIN_NAME,
-          rpc: process.env.SECRET_RPC,
-          rest: process.env.SECRET_LCD,
+          chainName: globalThis.config.CHAIN_NAME,
+          rpc: globalThis.config.SECRET_RPC,
+          rest: globalThis.config.SECRET_LCD,
           bip44: {
             coinType: 529,
           },
@@ -360,8 +360,8 @@ export class UserStoreEx extends StoreConstructor {
       this.address = accounts[0].address;
       this.isAuthorized = true;
       // @ts-ignore
-      this.secretjsSend = this.initSecretJS(process.env.SECRET_POST_ADDRESS, true);
-      this.secretjs = this.initSecretJS(process.env.SECRET_LCD, false);
+      this.secretjsSend = this.initSecretJS(globalThis.config.SECRET_POST_ADDRESS, true);
+      this.secretjs = this.initSecretJS(globalThis.config.SECRET_LCD, false);
       await this.updateScrtBalance();
       await this.updateCSHBKBalance();
       await this.getProposals();
@@ -534,10 +534,10 @@ export class UserStoreEx extends StoreConstructor {
 
   @action public updateSScrtBalance = async () => {
     try {
-      const balance = await this.getSnip20Balance(process.env.SSCRT_CONTRACT, 6);
-      this.balanceToken[process.env.SSCRT_CONTRACT] = balance;
+      const balance = await this.getSnip20Balance(globalThis.config.SSCRT_CONTRACT, 6);
+      this.balanceToken[globalThis.config.SSCRT_CONTRACT] = balance;
     } catch (err) {
-      this.balanceToken[process.env.SSCRT_CONTRACT] = unlockToken;
+      this.balanceToken[globalThis.config.SSCRT_CONTRACT] = unlockToken;
     }
 
     const token = this.stores.tokens.allData.find(t => t.display_props.symbol === 'SSCRT');
@@ -547,7 +547,7 @@ export class UserStoreEx extends StoreConstructor {
     }
 
     try {
-      this.balanceTokenMin[process.env.SSCRT_CONTRACT] = token.display_props.min_from_scrt;
+      this.balanceTokenMin[globalThis.config.SSCRT_CONTRACT] = token.display_props.min_from_scrt;
     } catch (e) {
       console.log(`unknown error: ${e}`);
     }
@@ -561,7 +561,7 @@ export class UserStoreEx extends StoreConstructor {
   };
 
   @action public updateBalanceForSymbol = async (symbol: string) => {
-    while (!this.address && !this.secretjs && this.stores.tokens.allData.length === 0) {
+    while (!this.address || !this.secretjs || this.stores.tokens.allData.length === 0) {
       await sleep(100);
     }
 
@@ -586,18 +586,18 @@ export class UserStoreEx extends StoreConstructor {
       //Calculating Expected SEFI from CSHBK
       const cb_balance = parseFloat(this.balanceCSHBK);
       //Total supply
-      const { token_info } = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { token_info: {} });
+      const { token_info } = await this.secretjs.queryContractSmart(globalThis.config.CSHBK_CONTRACT, { token_info: {} });
       const cb_total_supply = parseFloat(token_info?.total_supply);
       //Current block
       const block = (await this.secretjs.getBlock()).header.height;
       //Peding SEFI
-      const { pending } = await this.secretjs.queryContractSmart(process.env.MASTER_CONTRACT, {
-        pending: { spy_addr: process.env.CSHBK_CONTRACT, block },
+      const { pending } = await this.secretjs.queryContractSmart(globalThis.config.MASTER_CONTRACT, {
+        pending: { spy_addr: globalThis.config.CSHBK_CONTRACT, block },
       });
       const pending_sefi = parseFloat(pending?.amount);
       //Calculating CSHBK ratio
       //Reward balance
-      const result = await this.secretjs.queryContractSmart(process.env.CSHBK_CONTRACT, { reward_balance: {} });
+      const result = await this.secretjs.queryContractSmart(globalThis.config.CSHBK_CONTRACT, { reward_balance: {} });
       const cb_rewards_balance = parseInt(result.reward_balance.balance);
       //Prices
       const sefiUSD = parseFloat(
@@ -629,12 +629,12 @@ export class UserStoreEx extends StoreConstructor {
 
   @action public updateCSHBKBalance = async () => {
     try {
-      const balance = await this.getSnip20Balance(process.env.CSHBK_CONTRACT, 6);
-      this.balanceToken[process.env.CSHBK_CONTRACT] = balance;
+      const balance = await this.getSnip20Balance(globalThis.config.CSHBK_CONTRACT, 6);
+      this.balanceToken[globalThis.config.CSHBK_CONTRACT] = balance;
       this.balanceCSHBK = balance;
       await this.updateExpectedSEFIFromCSHBK();
     } catch (err) {
-      this.balanceToken[process.env.CSHBK_CONTRACT] = unlockToken;
+      this.balanceToken[globalThis.config.CSHBK_CONTRACT] = unlockToken;
       console.error(err);
       this.balanceCSHBK = unlockToken;
     }
@@ -646,7 +646,7 @@ export class UserStoreEx extends StoreConstructor {
     }
 
     try {
-      this.balanceTokenMin[process.env.CSHBK_CONTRACT] = token.display_props.min_from_scrt;
+      this.balanceTokenMin[globalThis.config.CSHBK_CONTRACT] = token.display_props.min_from_scrt;
     } catch (e) {
       console.log(`unknown error: ${e}`);
     }
@@ -655,7 +655,7 @@ export class UserStoreEx extends StoreConstructor {
   public async ConvertCHSBKToSEFI(): Promise<any> {
     const canonicalizeCHSBK = canonicalizeBalance(new BigNumber(this.balanceCSHBK), 6);
     const result = await this.secretjsSend.asyncExecute(
-      process.env.CSHBK_CONTRACT,
+      globalThis.config.CSHBK_CONTRACT,
       {
         burn: {
           amount: canonicalizeCHSBK,
@@ -678,7 +678,7 @@ export class UserStoreEx extends StoreConstructor {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
+      address: globalThis.config.SEFI_STAKING_CONTRACT,
     });
 
     if (viewingKey) {
@@ -711,20 +711,20 @@ export class UserStoreEx extends StoreConstructor {
     let viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
+      address: globalThis.config.SEFI_STAKING_CONTRACT,
     });
 
     if (!viewingKey) {
-      await this.keplrWallet.suggestToken(this.chainId, process.env.SEFI_STAKING_CONTRACT);
+      await this.keplrWallet.suggestToken(this.chainId, globalThis.config.SEFI_STAKING_CONTRACT);
       viewingKey = await getViewingKey({
         keplr: this.keplrWallet,
         chainId: this.chainId,
-        address: process.env.SEFI_STAKING_CONTRACT,
+        address: globalThis.config.SEFI_STAKING_CONTRACT,
       });
     }
 
     const result = await this.secretjsSend.asyncExecute(
-      process.env.FACTORY_CONTRACT,
+      globalThis.config.FACTORY_CONTRACT,
       {
         new_poll: {
           poll_metadata: {
@@ -745,7 +745,7 @@ export class UserStoreEx extends StoreConstructor {
 
     const newPoll = result.logs[0]?.events[1]?.attributes.find(e => e.key === 'new_poll').value;
     if (newPoll) {
-      await axios.post(`${process.env.BACKEND_URL}/secret_votes/${newPoll}`);
+      await axios.post(`${globalThis.config.BACKEND_URL}/secret_votes/${newPoll}`);
     }
 
     return result;
@@ -771,7 +771,7 @@ export class UserStoreEx extends StoreConstructor {
 
   public getProposals = async () => {
     try {
-      const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
+      const response = await axios.get(`${globalThis.config.BACKEND_URL}/secret_votes`);
       const data = response.data.result;
       // console.log(data);
       const result = data.map(proposal => {
@@ -805,7 +805,7 @@ export class UserStoreEx extends StoreConstructor {
 
   @action public getActiveProposals = async () => {
     try {
-      const response = await axios.get(`${process.env.BACKEND_URL}/secret_votes`);
+      const response = await axios.get(`${globalThis.config.BACKEND_URL}/secret_votes`);
       const proposals = await response.data.result;
 
       const activeProposals = proposals.filter(prop => moment.unix(prop.end_timestamp) > moment());
@@ -850,7 +850,7 @@ export class UserStoreEx extends StoreConstructor {
   }
 
   public async hasVote(contractAddress: string): Promise<any> {
-    const client = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
+    const client = this.secretjs || this.initSecretJS(globalThis.config.SECRET_LCD, false);
     const result = await client.queryContractSmart(contractAddress, {
       has_voted: {
         voter: this.address,
@@ -889,7 +889,7 @@ export class UserStoreEx extends StoreConstructor {
 
   public async getMinimumStake(): Promise<any> {
     await this.prepareDeps();
-    const result = await this.secretjs.queryContractSmart(process.env.FACTORY_CONTRACT, {
+    const result = await this.secretjs.queryContractSmart(globalThis.config.FACTORY_CONTRACT, {
       minimum_stake: {},
     });
     return parseInt(result.minimum_stake.amount);
@@ -897,7 +897,7 @@ export class UserStoreEx extends StoreConstructor {
 
   prepareDeps = async () => {
     await this.keplrCheckPromise;
-    this.secretjs = this.secretjs || this.initSecretJS(process.env.SECRET_LCD, false);
+    this.secretjs = this.secretjs || this.initSecretJS(globalThis.config.SECRET_LCD, false);
   };
 
   // Query Proposal Normal Vote
@@ -909,7 +909,7 @@ export class UserStoreEx extends StoreConstructor {
     const viewingKey = await getViewingKey({
       keplr: this.keplrWallet,
       chainId: this.chainId,
-      address: process.env.SEFI_STAKING_CONTRACT,
+      address: globalThis.config.SEFI_STAKING_CONTRACT,
     });
 
     if (!viewingKey) return;
@@ -950,7 +950,7 @@ export class UserStoreEx extends StoreConstructor {
   public async getIsSupported(pairAddress: string): Promise<boolean> {
     try {
       if (pairAddress) {
-        let { is_supported: result } = await this.secretjs.queryContractSmart(process.env.MINTER_CONTRACT, {
+        let { is_supported: result } = await this.secretjs.queryContractSmart(globalThis.config.MINTER_CONTRACT, {
           is_supported: { pair: pairAddress },
         });
         return result?.is_supported;
@@ -1121,7 +1121,7 @@ export class UserStoreEx extends StoreConstructor {
     // );
 
     this.scrtRate = Number(
-      this.stores.tokens.allData.find(token => token.display_props.symbol.toUpperCase() === 'SSCRT').price,
+      this.stores.tokens.allData.find(token => token.display_props.symbol.toUpperCase() === 'SSCRT')?.price,
     );
 
     // fallback to binance prices
@@ -1185,7 +1185,7 @@ export class UserStoreEx extends StoreConstructor {
       await stores.user.refreshTokenBalanceByAddress(tokenAddress);
       const reward_tokens = mappedRewards
         .slice()
-        .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+        .filter(rewardToken => (globalThis.config.TEST_COINS ? true : !rewardToken.reward.hidden))
         //@ts-ignore
         .map(rewardToken => {
           const rewardsToken: RewardsToken = {

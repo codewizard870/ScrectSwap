@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 
 import { Button, Icon, Text } from 'components/Base';
-import * as styles from '../styles.styl';
+import styles from '../styles.styl';
 import { Box } from 'grommet';
 import Web3 from 'web3';
 import * as bech32 from 'bech32';
@@ -96,7 +96,7 @@ const getBalance = async (
   const eth = { minAmount: '0', maxAmount: '0' };
   const scrt = { minAmount: '0', maxAmount: '0' };
 
-  const ethSwapFee = await getNetworkFee(Number(process.env.SWAP_FEE));
+  const ethSwapFee = await getNetworkFee(Number(globalThis.config.SWAP_FEE));
   const swapFeeUsd = ethSwapFee * userMetamask.getNetworkPrice();
   const swapFeeToken = ((swapFeeUsd / Number(token.price)) * 0.9).toFixed(`${toInteger(token.price)}`.length);
 
@@ -370,7 +370,7 @@ export const Base = observer(() => {
     setErrors({ token: '', address: '', amount: '' });
     setProgress(0);
     setTokenLocked(false);
-    if (!location.pathname.startsWith('/operations')) exchange.stepNumber = EXCHANGE_STEPS.BASE;
+    if (!window.location.pathname.startsWith('/operations')) exchange.stepNumber = EXCHANGE_STEPS.BASE;
     await onSelectedToken('native');
   };
 

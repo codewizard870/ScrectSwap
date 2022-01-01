@@ -44,6 +44,7 @@ export class UserStoreEx extends StoreConstructor {
   @observable public sessionType: 'mathwallet' | 'ledger' | 'wallet';
   @observable public address: string;
   @observable public balanceSCRT: string;
+  @observable public balanceSSCRT: string;
   @observable public balanceCSHBK: string;
   @observable public expectedSEFIFromCSHBK: number;
   @observable public ratioCSHBK: number;

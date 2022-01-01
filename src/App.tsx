@@ -17,10 +17,11 @@ import { InfoModal } from './components/InfoModal';
 import { SeFiPage } from './pages/SeFi';
 import { Cashback } from './pages/Cashback'
 import { Governance } from 'pages/Governance';
-import CreateProposal from 'pages/CreateProposal';
+import { CreateProposal } from 'pages/CreateProposal';
 import { DetailProposal } from 'pages/DetailProposal';
 import SefiStaking from 'pages/SefiStaking';
 import { Migration } from 'pages/Migration';
+import { BuyCrypto } from 'pages/BuyCrypto';
 import './notifications.css'
 
 export const App: React.FC = () => (
@@ -36,6 +37,8 @@ export const App: React.FC = () => (
         <Route path="/proposal" component={CreateProposal} />
         <Route path="/sefistaking" component={SefiStaking} />
         <Route path="/migration" component={Migration} />
+        <Route path="/buy" component={BuyCrypto} />
+        <Route path="/redir_transac" component={BuyCrypto} /> {/* todo: implement Transak data feedback */}
         {/* <Route exact path="/faq" component={FAQPage} /> */}
         {/* <Route exact path="/finance" component={FinancePage} /> */}
         {/* <Route exact path="/info" component={InfoPage} /> */}

@@ -4,6 +4,8 @@ const baseConfig = {
 
   TEST_COINS: false,
   IS_MAINTENANCE: true,
+
+  TRANSAK_URL: 'https://global.transak.com?apiKey=f0681ab5-7bd3-4cce-b86e-24cb05d670ec',
 };
 
 // This is a conditional require statement.  So if REACT_APP_NETWORK is 'mainnet' it will load mainnet.js

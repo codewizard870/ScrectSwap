@@ -37,7 +37,7 @@ export class EthMethodsSefi {
         from: accounts[0],
       });
 
-    const gasLimit = Math.max(estimateGas + estimateGas * 0.3, Number(process.env.ETH_GAS_LIMIT));
+    const gasLimit = Math.max(estimateGas + estimateGas * 0.3, Number(globalThis.config.ETH_GAS_LIMIT));
 
     return await this.distributionContract.methods.claim(proof.index, proof.user, proof.amount, proof.proof).send({
       from: accounts[0],

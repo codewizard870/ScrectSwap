@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Icons from './index';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import cn from 'classnames';
 
 interface IIConProps {

@@ -7,7 +7,7 @@ import { useStores } from 'stores';
 import { IColumn, Table } from 'components/Table';
 import { ISwap, TOKEN } from 'stores/interfaces';
 import { dateTimeFormat, truncateAddressString } from 'utils';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import cn from 'classnames';
 import { ERC20Token, FormatWithDecimals, SecretToken } from './Components';
 import { SwapStatus } from '../../constants';
@@ -37,7 +37,7 @@ const ethAddress = (value, network?: NETWORKS) => (
 const secretAddress = value => (
   <Box direction="row" justify="start" align="center" style={{ marginTop: 4 }}>
     <img className={styles.imgToken} style={{ height: 18 }} src="/static/scrt.svg" />
-    <a className={styles.addressLink} href={`${process.env.SCRT_EXPLORER_URL}/accounts/${value}`} target="_blank">
+    <a className={styles.addressLink} href={`${globalThis.config.SCRT_EXPLORER_URL}/accounts/${value}`} target="_blank">
       {truncateAddressString(value, 5)}
     </a>
   </Box>

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Modal } from 'semantic-ui-react';
 import { SwapInput } from '../../../components/Swap/SwapInput';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import cn from 'classnames';
 import { IsValid } from './IsValid';
 import { validateBech32Address } from '../../../blockchain-bridge';

@@ -18,7 +18,7 @@ import { numberFormatter } from '../../utils/formatNumber';
 import { HowItWorksModal } from './HowItWorksModal';
 
 export const Governance = observer(() => {
-  const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
+  const newRewardsContract = globalThis.config.SEFI_STAKING_CONTRACT;
 
   // SwapPageWrapper is necessary to get the user store from mobx 🤷‍♂️
   let { user, theme, tokens } = useStores();
@@ -85,7 +85,7 @@ export const Governance = observer(() => {
 
   async function createSefiViewingKey() {
     try {
-      await user.keplrWallet?.suggestToken(user.chainId, process.env.SEFI_STAKING_CONTRACT);
+      await user.keplrWallet?.suggestToken(user.chainId, globalThis.config.SEFI_STAKING_CONTRACT);
       await user.updateBalanceForSymbol('SEFI');
       await user.refreshRewardsBalances('SEFI');
       await user.updateScrtBalance();
@@ -157,8 +157,8 @@ export const Governance = observer(() => {
   //fetch total locked and Staking APY
   useEffect(() => {
     (async () => {
-      const sefi_reward_token = await user.getRewardToken(process.env.SEFI_STAKING_CONTRACT);
-      const { total_locked } = await user?.secretjs?.queryContractSmart(process.env.SEFI_STAKING_CONTRACT, {
+      const sefi_reward_token = await user.getRewardToken(globalThis.config.SEFI_STAKING_CONTRACT);
+      const { total_locked } = await user?.secretjs?.queryContractSmart(globalThis.config.SEFI_STAKING_CONTRACT, {
         total_locked: {},
       });
       const totalLocked = total_locked?.amount;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from 'grommet';
 import { Title } from './Base/components/Title';
-import * as styles from './info-styles.styl';
+import styles from './info-styles.styl';
 
 export const Info = ({ title }: { title: string }) => (
   <Box className={styles.infoContainer} pad={{ horizontal: 'large', top: 'large' }}>

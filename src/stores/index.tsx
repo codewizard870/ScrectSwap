@@ -43,8 +43,8 @@ stores.signerHealth = new SignerHealthStore(stores);
 stores.theme = new Theme();
 
 
-if (!process.env.production) {
-  window.stores = stores;
+if (!globalThis.config.production) {
+  globalThis.stores = stores;
 }
 
 const { StoresProvider, useStores } = createStoresContext<typeof stores>();

@@ -5,7 +5,7 @@ import { Container } from 'semantic-ui-react';
 import { UserStoreEx } from 'stores/UserStore';
 import { SwapTokenMap } from '../TokenModal/types/SwapToken';
 import cn from 'classnames';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { PairMap } from '../TokenModal/types/SwapPair';
 import Loader from 'react-loader-spinner';
 import { HistoryPanel } from './HistoryPanel';

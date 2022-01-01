@@ -1,6 +1,6 @@
+import { action, observable } from 'mobx';
 export * from './baseTheme';
 export * from './theme';
-import { action,observable } from 'mobx';
 
 const DARK ='dark';
 const LIGHT ='light';

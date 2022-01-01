@@ -73,7 +73,7 @@ export const Snip20SendToBridge = async (params: {
   recipient?: string;
 }): Promise<string> => {
   const tx = await Snip20Send({
-    recipient: params.recipient || process.env.SCRT_SWAP_CONTRACT,
+    recipient: params.recipient || globalThis.config.SCRT_SWAP_CONTRACT,
     ...params,
   });
 

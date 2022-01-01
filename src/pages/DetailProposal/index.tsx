@@ -3,7 +3,7 @@ import VoteModal from 'components/VoteModal'
 import moment from 'moment';
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { Button } from 'semantic-ui-react';
 import { useStores } from 'stores'
 import { sleep } from 'utils';
@@ -141,7 +141,7 @@ export const DetailProposal = observer((props) => {
 
     const sendVoteResults = async () => {
         try {
-            const res = await axios.post(`${process.env.BACKEND_URL}/secret_votes/finalize/${contractAddress}`);
+            const res = await axios.post(`${globalThis.config.BACKEND_URL}/secret_votes/finalize/${contractAddress}`);
             console.log('Post Response Success: ', res);
         } catch (err) {
             console.error('Post Response Error:', err);

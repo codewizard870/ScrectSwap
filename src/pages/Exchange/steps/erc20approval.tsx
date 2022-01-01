@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { Button, Icon, Text, Title } from 'components/Base';
 import { Modal } from 'semantic-ui-react';
 import { Box } from 'grommet';
-import * as styles from '../styles.styl';
+import styles from '../styles.styl';
 import { EXCHANGE_MODE } from 'stores/interfaces';
 import { EXCHANGE_STEPS } from '../../../stores/Exchange';
 import Loader from 'react-loader-spinner';

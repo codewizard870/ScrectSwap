@@ -16,8 +16,8 @@ import SpinnerDashes from 'ui/Spinner/SpinnerDashes';
 const MIGRATED_AMOUNT_KEY = '___sw_migrated_amount';
 
 export const Migration = observer(() => {
-  const newRewardsContract = process.env.SEFI_STAKING_CONTRACT;
-  const oldRewardsContract = process.env.SEFI_STAKING_OLD_CONTRACT;
+  const newRewardsContract = globalThis.config.SEFI_STAKING_CONTRACT;
+  const oldRewardsContract = globalThis.config.SEFI_STAKING_OLD_CONTRACT;
 
   const { theme, user, rewards } = useStores();
 
@@ -88,7 +88,7 @@ export const Migration = observer(() => {
       let balance = await getBalance(oldRewardsContract);
 
       if (!balance) {
-        await user.keplrWallet.suggestToken(process.env.CHAIN_ID, oldRewardsContract);
+        await user.keplrWallet.suggestToken(globalThis.config.CHAIN_ID, oldRewardsContract);
         balance = await getBalance(oldRewardsContract);
       }
 
@@ -118,7 +118,7 @@ export const Migration = observer(() => {
     const pool = rewards.allData.find(it => it.pool_address === newRewardsContract);
 
     if (pool) {
-      await user.keplrWallet.suggestToken(process.env.CHAIN_ID, newRewardsContract);
+      await user.keplrWallet.suggestToken(globalThis.config.CHAIN_ID, newRewardsContract);
 
       await DepositRewards({
         secretjs: user.secretjsSend,

@@ -1,0 +1,55 @@
+.convert-wrapper {
+  width: 568px;
+  padding: 26px;
+  border-radius: 16px;
+  height: fit-content;
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .ui.basic.button {
+      box-shadow: none;
+      -webkit-box-shadow: none;
+      &.inverted {
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+      }
+    }
+  }
+  .convert-learn-more {
+    width: 100%;
+    a {
+      text-align: start;
+      color: #ff726e;
+    }
+  }
+  .contenas {
+    width: 100%;
+    display: grid;
+    gap: 10px 0;
+    .ui.big.input {
+      width: 100%;
+    }
+  }
+}
+
+.light {
+  &.convert-wrapper {
+    color: black;
+    background: white;
+    box-shadow: 4px 4px 32px rgba(140, 140, 140, 0.25);
+    .description {
+      color: #5f5f6b;
+    }
+  }
+}
+.dark {
+  &.convert-wrapper {
+    color: white;
+    background: #0e0e10;
+    .description {
+      color: #999;
+    }
+  }
+}

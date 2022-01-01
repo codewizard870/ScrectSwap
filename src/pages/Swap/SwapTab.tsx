@@ -12,7 +12,7 @@ import { extractValueFromLogs, getFeeForExecute, Snip20Send } from '../../blockc
 import { FlexRowSpace } from '../../components/Swap/FlexRowSpace';
 import { PairMap, SwapPair } from '../TokenModal/types/SwapPair';
 import cn from 'classnames';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { storeTxResultLocally } from './utils';
 import { RouteRow } from 'components/Swap/RouteRow';
 import { Token } from '../TokenModal/types/trade';
@@ -63,7 +63,7 @@ function executeRouterSwap(
 ) {
   if (fromToken === 'uscrt') {
     return secretjsSender.asyncExecute(
-      process.env.AMM_ROUTER_CONTRACT,
+      globalThis.config.AMM_ROUTER_CONTRACT,
       {
         receive: {
           from: secretAddress,
@@ -91,7 +91,7 @@ function executeRouterSwap(
       fromToken,
       {
         send: {
-          recipient: process.env.AMM_ROUTER_CONTRACT,
+          recipient: globalThis.config.AMM_ROUTER_CONTRACT,
           amount: fromAmount,
           msg: btoa(
             JSON.stringify({
@@ -217,7 +217,7 @@ export class SwapTab extends React.Component<
     super(props);
 
     this.state = {
-      fromToken: this.props.selectedToken0 || this.props.tokens.get(process.env.SSCRT_CONTRACT)?.identifier || '',
+      fromToken: this.props.selectedToken0 || this.props.tokens.get(globalThis.config.SSCRT_CONTRACT)?.identifier || '',
       toToken: this.props.selectedToken1 || '',
       fromInput: '',
       toInput: '',
@@ -476,14 +476,14 @@ export class SwapTab extends React.Component<
     let expectedCSHBK = '0.0';
     let doubleCashback = false;
     if (!this.props.isSupported && this.state.bestRoute?.length > 2) {
-      doubleCashback = this.state.bestRoute?.some(address => address === process.env.SSCRT_CONTRACT);
+      doubleCashback = this.state.bestRoute?.some(address => address === globalThis.config.SSCRT_CONTRACT);
     }
 
     //Either From or To input is sSCRT or SCRT
     if (pair && this.props.isSupported) {
-      if (this.state.fromToken == 'uscrt' || this.state.fromToken == process.env.SSCRT_CONTRACT) {
+      if (this.state.fromToken == 'uscrt' || this.state.fromToken == globalThis.config.SSCRT_CONTRACT) {
         expectedCSHBK = this.state.fromInput;
-      } else if (this.state.toToken == 'uscrt' || this.state.toToken == process.env.SSCRT_CONTRACT) {
+      } else if (this.state.toToken == 'uscrt' || this.state.toToken == globalThis.config.SSCRT_CONTRACT) {
         expectedCSHBK = this.state.toInput;
       }
     } else if (!this.props.isSupported && doubleCashback) {
@@ -498,10 +498,10 @@ export class SwapTab extends React.Component<
     try {
       let { toToken, toInput, fromInput, fromToken } = this.state;
       let token = this.props.tokens.get(toToken);
-      const pair: SwapPair = this.props.pairs.get(`${process.env.SSCRT_CONTRACT}${SwapPair.id_delimiter}${toToken}`);
+      const pair: SwapPair = this.props.pairs.get(`${globalThis.config.SSCRT_CONTRACT}${SwapPair.id_delimiter}${toToken}`);
 
       if (pair) {
-        const { offer_pool, ask_pool } = await this.getOfferAndAskPools(toToken, process.env.SSCRT_CONTRACT, pair);
+        const { offer_pool, ask_pool } = await this.getOfferAndAskPools(toToken, globalThis.config.SSCRT_CONTRACT, pair);
         let offer_amount = new BigNumber(toInput);
         const { return_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
         const amount = return_amount.toFixed(token.decimals, BigNumber.ROUND_DOWN);

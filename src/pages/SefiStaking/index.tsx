@@ -4,7 +4,7 @@ import { Box } from 'grommet';
 import { BaseContainer, PageContainer } from 'components';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
-import * as styles from '../EthBridge/styles.styl';
+import styles from '../EthBridge/styles.styl';
 // import { IColumn, Table } from '../../components/Table';
 // import { ERC20Select } from '../Exchange/ERC20Select';
 import EarnRow from '../../components/Earn/EarnRow';
@@ -24,7 +24,7 @@ import EarnInfoBox from '../../components/Earn/EarnInfoBox';
 import { IRewardPool, ITokenInfo } from '../../stores/interfaces';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-import * as thisStyles from './styles.styl';
+import thisStyles from './styles.styl';
 import cn from 'classnames';
 import { ethMethodsSefi, web3 } from '../../blockchain-bridge/eth';
 import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
@@ -95,7 +95,7 @@ export const SeFiStakingPage = observer(() => {
     if (balance === unlockToken) {
       balance = unlockJsx({
         onClick: async () => {
-          await user.keplrWallet.suggestToken(user.chainId, process.env.SCRT_GOV_TOKEN_ADDRESS);
+          await user.keplrWallet.suggestToken(user.chainId, globalThis.config.SCRT_GOV_TOKEN_ADDRESS);
           await user.updateBalanceForSymbol('SEFI');
           setSefiBalance(user.balanceToken['SEFI']);
         },
@@ -112,7 +112,7 @@ export const SeFiStakingPage = observer(() => {
 
   const [sefiBalanceErc, setSefiBalanceErc] = useState<string>(undefined);
   const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
-  
+
   useEffect(() => {
     const asyncWrapper = async () => {
       while (rewards.isPending) {
@@ -123,8 +123,8 @@ export const SeFiStakingPage = observer(() => {
         .map(reward => {
           return { reward, token: filteredTokens.find(element => element.dst_address === reward.inc_token.address) };
         });
-      
-      
+
+
       setRewardsData(mappedRewards);
     };
     asyncWrapper().then(() => {});
@@ -199,7 +199,7 @@ export const SeFiStakingPage = observer(() => {
 
                 return 0;
               })
-              .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
+              .filter(rewardToken => (globalThis.config.TEST_COINS ? true : !rewardToken.reward.hidden))
               //@ts-ignore
               .map((rewardToken,i) => {
                 const rewardsToken = {
@@ -224,7 +224,7 @@ export const SeFiStakingPage = observer(() => {
                   rewardsSymbol: 'SEFI',
                 };
 
-                if(rewardToken.reward.pool_address === process.env.SEFI_STAKING_CONTRACT){
+                if(rewardToken.reward.pool_address === globalThis.config.SEFI_STAKING_CONTRACT){
                     return (
                       <EarnRow
                         notify={notify}
@@ -240,7 +240,7 @@ export const SeFiStakingPage = observer(() => {
               })}
           <InfoModalEarn />
       </div>
-        
+
     </ProposalLayout>
   );
 });

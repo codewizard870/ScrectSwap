@@ -7,7 +7,7 @@ import { useStores } from 'stores';
 import { IColumn, Table } from 'components/Table';
 import { ITokenInfo } from 'stores/interfaces';
 import { formatWithTwoDecimals, truncateAddressString } from 'utils';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { Text } from 'components/Base';
 import { SearchInput } from 'components/Search';
 import { getScrtAddress, networkFromToken, NETWORKS } from '../../blockchain-bridge';
@@ -52,7 +52,7 @@ const secretContractAddress = (value, num = 10) => (
     <img className={styles.imgToken} style={{ height: 18 }} src="/static/scrt.svg" alt={'scrt'} />
     <a
       className={styles.addressLink}
-      href={`${process.env.SCRT_EXPLORER_URL}/contracts/${value}`}
+      href={`${globalThis.config.SCRT_EXPLORER_URL}/contracts/${value}`}
       target="_blank"
       rel={'noreferrer'}
     >

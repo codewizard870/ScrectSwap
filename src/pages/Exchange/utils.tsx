@@ -3,7 +3,7 @@ import HeadShake from 'react-reveal/HeadShake';
 import { Box } from 'grommet';
 import { Text, Title, Icon } from 'components/Base';
 import Loader from 'react-loader-spinner';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { unlockToken, wrongNetwork } from 'utils';
 import { Icon as IconUI } from 'semantic-ui-react';
@@ -13,7 +13,7 @@ import PopupExample from './HealthPopup';
 import HealthPopup from './HealthPopup';
 
 export const createNotification = (type: 'success' | 'error', msg: string, hideAfterSec: number = 120) => {
-  if (type === 'error') {
+  if (type === 'error' && typeof(msg) === 'string') {
     msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
     msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
   }
@@ -165,7 +165,7 @@ export function healthFromStatus(health: HealthStatusDetailed): boolean {
       }
     }
   }
-  return online >= Number(process.env.SIG_THRESHOLD) && leaderOnline;
+  return online >= Number(globalThis.config.SIG_THRESHOLD) && leaderOnline;
 }
 
 export type NetworkTemplateInterface = {

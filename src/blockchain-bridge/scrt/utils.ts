@@ -10,11 +10,11 @@ const HRP = 'secret';
 export const swapContractAddress = (network: NETWORKS): string => {
   switch (network) {
     case NETWORKS.ETH:
-      return process.env.SCRT_SWAP_CONTRACT;
+      return globalThis.config.SCRT_SWAP_CONTRACT;
     case NETWORKS.BSC:
-      return process.env.BSC_SCRT_SWAP_CONTRACT;
+      return globalThis.config.BSC_SCRT_SWAP_CONTRACT;
     case NETWORKS.PLSM:
-      return process.env.PLSM_SWAP_CONTRACT;
+      return globalThis.config.PLSM_SWAP_CONTRACT;
   }
 };
 
@@ -70,9 +70,9 @@ export function notify(
   txHash?: string,
   useContainer: boolean = false,
 ) {
-  // if(process.env.IS_MAINTENANCE === 'true') return;
+  // if(globalThis.config.IS_MAINTENANCE === 'true') return;
   let cogoType: string = type;
-  if (type === 'error') {
+  if (type === 'error' && typeof(msg) === 'string') {
     msg = msg.replaceAll('Failed to decrypt the following error message: ', '');
     msg = msg.replace(/\. Decryption error of the error message:.+?/, '');
   }

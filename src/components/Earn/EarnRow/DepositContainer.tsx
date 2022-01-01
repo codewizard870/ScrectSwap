@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { Button, Icon, Input, Popup } from 'semantic-ui-react';
 import React from 'react';
 import { unlockToken } from '../../../utils';
@@ -99,7 +99,7 @@ const DepositContainer = props => {
           </div>
           <div className={cn(styles.subtitle)}>{props.balanceText}</div>
         </div>
-        { 
+        {
           props.deprecated
             ? <></>
             : <>
@@ -121,7 +121,7 @@ const DepositContainer = props => {
                 </div>
               </>
         }
-        <div>{props.action}</div>         
+        <div>{props.action}</div>
       </div>
     </div>
   );

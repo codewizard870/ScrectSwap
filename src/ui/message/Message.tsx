@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import './styles.scss';
-import { Link } from 'react-router-dom';
 import { useStores } from 'stores';
 
 const MessageDismiss = () => {

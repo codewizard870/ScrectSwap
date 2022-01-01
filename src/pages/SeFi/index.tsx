@@ -4,7 +4,7 @@ import { Box } from 'grommet';
 import { BaseContainer, PageContainer } from 'components';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
-import * as styles from '../EthBridge/styles.styl';
+import styles from '../EthBridge/styles.styl';
 // import { IColumn, Table } from '../../components/Table';
 // import { ERC20Select } from '../Exchange/ERC20Select';
 import EarnRow from '../../components/Earn/EarnRow';
@@ -24,7 +24,7 @@ import EarnInfoBox from '../../components/Earn/EarnInfoBox';
 import { IRewardPool, ITokenInfo } from '../../stores/interfaces';
 import Loader from 'react-loader-spinner';
 import { Text } from 'components/Base';
-import * as thisStyles from './styles.styl';
+import thisStyles from './styles.styl';
 import cn from 'classnames';
 import { ethMethodsSefi, web3 } from '../../blockchain-bridge/eth';
 import { CheckClaimModal } from '../../components/Earn/ClaimToken/CheckClaim';
@@ -33,7 +33,7 @@ import { unlockJsx, wrongViewingKey } from 'pages/Swap/utils';
 import BigNumber from 'bignumber.js';
 import { SwapToken, SwapTokenMap, TokenMapfromITokenInfo } from 'pages/TokenModal/types/SwapToken';
 import { notify } from '../../blockchain-bridge/scrt/utils';
-import ToggleButton from 'components/Earn/ToggleButton';
+import ToggleButton from '../../components/Earn/ToggleButton';
 
 const Web3 = require('web3');
 
@@ -144,7 +144,7 @@ export const SeFiPage = observer(() => {
         params: {
           type: 'ERC20', // Initially only supports ERC20, but eventually more!
           options: {
-            address: process.env.ETH_GOV_TOKEN_ADDRESS, // The address that the token is at.
+            address: globalThis.config.ETH_GOV_TOKEN_ADDRESS, // The address that the token is at.
             symbol: 'SEFI', // A ticker symbol or shorthand, up to 5 chars.
             decimals: 6, // The number of decimals in the token
             image: 'https://pbs.twimg.com/profile_images/1361712479546474498/1a3370iV_400x400.jpg', // A string url of the token logo
@@ -250,8 +250,8 @@ export const SeFiPage = observer(() => {
                 }
                 return order.indexOf(testA) - order.indexOf(testB);
               })
-              .filter(rewardToken => (process.env.TEST_COINS ? true : !rewardToken.reward.hidden))
-              .filter(a => (a.reward.deprecated && showOldPools) || !a.reward.deprecated)
+              .filter(rewardToken => globalThis.config.TEST_COINS || !rewardToken.reward.hidden)
+              .filter(a => showOldPools || (!a.reward.deprecated && !a.reward.zero))
               .map((rewardToken, i) => {
                 const rewardsToken = {
                   rewardsContract: rewardToken.reward.pool_address,
@@ -275,6 +275,7 @@ export const SeFiPage = observer(() => {
                   rewardsSymbol: 'SEFI',
                   deprecated: rewardToken.reward.deprecated,
                   deprecated_by: rewardToken.reward.deprecated_by,
+                  zero: rewardToken.reward.zero
                 };
 
                 return (

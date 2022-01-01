@@ -174,6 +174,7 @@ export interface IRewardPool {
   hidden?: boolean;
   deprecated?: boolean;
   deprecated_by?:string;
+  zero?: boolean;
 }
 
 export interface ISecretSwapPair {

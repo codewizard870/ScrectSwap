@@ -4,7 +4,7 @@ import { Box } from 'grommet';
 import { BaseContainer, PageContainer } from 'components';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
-import * as styles from '../EthBridge/styles.styl';
+import styles from '../EthBridge/styles.styl';
 // import { IColumn, Table } from '../../components/Table';
 // import { ERC20Select } from '../Exchange/ERC20Select';
 import EarnRow from '../../components/Earn/EarnRow';

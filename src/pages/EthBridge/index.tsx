@@ -4,7 +4,7 @@ import { Box } from 'grommet';
 import { BaseContainer, PageContainer } from 'components';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
-import * as styles from './styles.styl';
+import styles from './styles.styl';
 import { Exchange } from '../Exchange';
 import { Title } from 'components/Base';
 import { WalletBalances } from './WalletBalances';

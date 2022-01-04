@@ -12,3 +12,4 @@ export const GAS_FOR_SWAP_DIRECT = 135_000;
 export const GAS_FOR_VOTE = 30_000;
 export const GAS_FOR_CREATE_VOTE = 70_000;
 export const GAS_FOR_FINALIZE_VOTE = 30_000;
+export const GAS_FOR_WRAP = 26_000;

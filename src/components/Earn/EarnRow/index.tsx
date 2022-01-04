@@ -104,6 +104,25 @@ export const getAPRStats = (token: RewardsToken, price: number): StastsAPR => {
   return result;
 };
 
+const multipliers = {
+  'SEFI STAKING (V2)': '40',
+  'sUSDC - sUSDC(BSC)': '20',
+  'sETH - sETH(BSC)': '12',
+  'sSCRT - sUSDT': '28',
+  'sSCRT - sETH': '36',
+  'sSCRT - sWBTC': '36',
+  'sSCRT - SEFI': '52',
+  'SEFI - sXMR': '12',
+  'SEFI - sUSDC': '24',
+  'sETH - sWBTC': '12',
+  'sSCRT - sBNB(BSC)': '12',
+  'SEFI - sATOM': '8',
+  'SEFI - sLUNA': '12',
+  'SEFI - sOSMO': '4',
+  'SEFI - sDVPN': '4',
+  'sSCRT - sRUNE': '2'
+};
+
 const tokenImages = {
   'AAVE': '/static/token-images/aave_ethereum.svg',
   'ADA(BSC)': '/static/token-images/ada_binance.svg',
@@ -410,6 +429,17 @@ class EarnRow extends Component<
             <div className={cn(styles.title_item__container)}>
               <SoftTitleValue title={formatWithTwoDecimals(this.props.token.rewards)} subTitle={this.props.callToAction} />
             </div> */}
+
+          {/undefined/.test(multipliers[title]) ? (
+            <div />
+          ) : (
+          <div className={cn(styles.title_item__container)}>
+            <SoftTitleValue
+              title={multipliers[title] + 'x'}
+              subTitle={'Multiplier'}
+            />
+          </div>
+          )}
 
           <Icon
             className={`${styles.arrow}`}

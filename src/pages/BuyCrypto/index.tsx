@@ -54,7 +54,7 @@ export const BuyCrypto = observer(() => {
     try {
       setWrapLoading(true);
       //inputs 1 -> 1000000
-      const amount_convert = valueToDecimals(amount, token.decimals.toString());
+      const amount_convert = valueToDecimals(amount, token.decimals);
 
       const res = await user.secretjsSend.asyncExecute(
         token.address,
@@ -83,7 +83,7 @@ export const BuyCrypto = observer(() => {
     try {
       setUnwrapLoading(true);
       //inputs 1 -> 1000000
-      const amount_convert = valueToDecimals(amount, token.decimals.toString());
+      const amount_convert = valueToDecimals(amount, token.decimals);
 
       const res = await user.secretjsSend.asyncExecute(
         token.address,

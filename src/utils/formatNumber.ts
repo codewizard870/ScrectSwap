@@ -56,8 +56,27 @@ export const balanceNumberFormat = new Intl.NumberFormat('en-US', {
   useGrouping: true,
 });
 
-export const valueToDecimals = (value: string, decimals: string): string => {
-  return BigInt(parseFloat(value) * Math.pow(10, parseInt(decimals))).toString();
+export const valueToDecimals = (input: string, numDecimalsInResult: number): string => {
+  let numDecimalsInInput;
+  let decimalPos = input.indexOf('.');
+
+  if (decimalPos !== -1) {
+    numDecimalsInInput = input.length - decimalPos - 1;
+  } else {
+    // No decimal point in the string
+    numDecimalsInInput = 0;
+  }
+
+  let result = input.replace('.', '');
+
+  if (numDecimalsInResult >= numDecimalsInInput) {
+    result += '0'.repeat(numDecimalsInResult - numDecimalsInInput);
+  } else {
+    // This situation may never happen.  It's when the input has more decimal places than the result should have.
+    result = result.slice(0, numDecimalsInResult - numDecimalsInInput);
+  }
+
+  return result;
 };
 
 export const zeroDecimalsFormatter = new Intl.NumberFormat('en-US', {

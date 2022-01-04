@@ -9,7 +9,7 @@ import { getGasFee } from './gasFunctions';
 
 const WithdrawButton = ({ props, value, changeValue }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const amount = Number(value).toFixed(6);
+  const amount = valueToDecimals(value, props.token.decimals);
   const { theme, user } = useStores();
 
   return (
@@ -27,7 +27,7 @@ const WithdrawButton = ({ props, value, changeValue }) => {
           : Redeem({
               secretjs: props.userStore.secretjsSend,
               address: props.token.rewardsContract,
-              amount: valueToDecimals(amount, props.token.decimals),
+              amount: amount,
               fee: getGasFee(GAS_FOR_EARN_WITHDRAW, props.token.rewardsContract, user.numOfActiveProposals),
             });
 

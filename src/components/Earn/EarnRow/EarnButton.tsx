@@ -11,7 +11,7 @@ import { getGasFee } from './gasFunctions';
 // todo: add failed toast or something
 const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const amount = Number(value).toFixed(6);
+  const amount = valueToDecimals(value, props.token.decimals);
   const { theme, user } = useStores();
 
   return (
@@ -26,7 +26,7 @@ const EarnButton = ({ props, value, changeValue, togglePulse, setPulseInterval }
           recipient: props.token.rewardsContract,
           address: props.token.lockedAssetAddress,
           // maximum precision for the contract is 6 decimals
-          amount: valueToDecimals(amount, props.token.decimals),
+          amount: amount,
           fee: getGasFee(GAS_FOR_EARN_DEPOSIT, props.token.rewardsContract, user.numOfActiveProposals),
         })
           .then(_ => {

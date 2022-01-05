@@ -6,7 +6,9 @@ import { useStores } from 'stores';
 import { unlockToken, valueToDecimals } from 'utils';
 import { unlockJsx } from 'components/Header/utils';
 import { notify } from '../../blockchain-bridge/scrt/utils';
+import { getFeeForExecute } from '../../blockchain-bridge';
 import './style.scss';
+import { GAS_FOR_WRAP } from 'utils/gasPrices';
 
 const SSCRT: Token = {
   address: globalThis.config.SSCRT_CONTRACT,
@@ -52,18 +54,25 @@ export const BuyCrypto = observer(() => {
     try {
       setWrapLoading(true);
       //inputs 1 -> 1000000
-      const amount_convert = valueToDecimals(amount, token.decimals.toString());
-      const res = await user.secretjsSend.asyncExecute(token.address, { deposit: {} }, '', [
-        { denom: 'uscrt', amount: amount_convert },
-      ]);
+      const amount_convert = valueToDecimals(amount, token.decimals);
+
+      const res = await user.secretjsSend.asyncExecute(
+        token.address,
+        { deposit: { amount: amount_convert } },
+        '',
+        [{ denom: 'uscrt', amount: amount_convert }],
+        getFeeForExecute(GAS_FOR_WRAP)
+      );
+
       notify('success', 'converted ');
+
       await user.updateSScrtBalance();
       await user.updateScrtBalance();
       if ('function' === typeof (callback)) {
         callback();
       }
     } catch (error) {
-      notify('error', error);
+      notify('error', error.message);
     } finally {
       setAmountWrap('');
       setWrapLoading(false);
@@ -74,8 +83,16 @@ export const BuyCrypto = observer(() => {
     try {
       setUnwrapLoading(true);
       //inputs 1 -> 1000000
-      const amount_convert = valueToDecimals(amount, token.decimals.toString());
-      const res = await user.secretjsSend.asyncExecute(token.address, { redeem: { amount: amount_convert } });
+      const amount_convert = valueToDecimals(amount, token.decimals);
+
+      const res = await user.secretjsSend.asyncExecute(
+        token.address,
+        { redeem: { amount: amount_convert } },
+        '',
+        [{ denom: 'uscrt', amount: amount_convert }],
+        getFeeForExecute(GAS_FOR_WRAP)
+      );
+
       notify('success', 'converted ');
 
       await user.updateSScrtBalance();
@@ -84,7 +101,7 @@ export const BuyCrypto = observer(() => {
         callback();
       }
     } catch (error) {
-      notify('error', error);
+      notify('error', error.message);
     } finally {
       setAmountUnwrap('');
       setUnwrapLoading(false);

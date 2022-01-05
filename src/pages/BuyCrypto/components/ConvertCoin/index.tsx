@@ -42,7 +42,7 @@ const ConvertCoin = ({
     }
 
     if (amount_formatted < 0 || isNaN(amount_formatted)){
-      notify('error',`Insuficcient balance to ${title} ${n * 100} %`)
+      notify('error',`Insufficient balance to ${title} ${n * 100} %`)
       return;
     }
 

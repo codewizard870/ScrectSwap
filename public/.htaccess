@@ -1,4 +1,10 @@
 Options -MultiViews
 RewriteEngine On
+
+# Use React's client-side routing
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.html [QSA,L]
+
+# Redirect from HTTP to HTTPS
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST} [L,R=301,NE]

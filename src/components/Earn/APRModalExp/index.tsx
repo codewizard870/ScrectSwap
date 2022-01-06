@@ -12,6 +12,11 @@ interface ModalExplanationProps {
   theme: Theme;
   children?: ReactChild;
 }
+interface ModalMultiplierTipProps {
+  multiplier: String;
+  theme: Theme;
+  children?: ReactChild;
+}
 const getLabel = (n: string): string => {
   switch (n) {
     case 'd1':
@@ -27,7 +32,7 @@ const getLabel = (n: string): string => {
   }
 };
 
-const ModalExplanation = observer(({ token, theme, children }: ModalExplanationProps) => {
+export const ModalExplanation = observer(({ token, theme, children }: ModalExplanationProps) => {
   const stats = getAPRStats(token, Number(token.rewardsPrice));
 
   return (
@@ -76,7 +81,16 @@ const ModalExplanation = observer(({ token, theme, children }: ModalExplanationP
   );
 });
 
-export default ModalExplanation;
+export const ModalMultiplierTip = observer(({ multiplier, theme, children }: ModalMultiplierTipProps) => {
+  return (
+    <Popup position="bottom center" className={`${theme.currentTheme}`} trigger={children}>
+      <div className="extra-content">
+        <p>Multiplier represents the proportion of SEFI rewards each farm receives, as a proportion of the SEFI produced each block.</p>
+        <p>For example, if a 1x farm received 1 SEFI per block, a {multiplier}x farm would receive {multiplier} SEFI per block. This amount is already included in all APR calculations for the farm.</p>
+      </div>
+    </Popup>
+  );
+});
 
 const formatRoi = (n: string | number): string => {
   return numeral(n).format('0,0.00%');

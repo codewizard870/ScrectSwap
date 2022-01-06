@@ -14,7 +14,7 @@ import { Text } from '../../Base';
 import stores from 'stores';
 import Theme from 'themes';
 import MigrateAssets from '../MigrateTokens';
-import ModalExplanation from '../APRModalExp';
+import {ModalExplanation, ModalMultiplierTip} from '../APRModalExp';
 import { InfoIcon } from 'components/Base/components/Icons/tsx_svg_icons';
 import numeral from 'numeral';
 
@@ -435,7 +435,16 @@ class EarnRow extends Component<
           ) : (
           <div className={cn(styles.title_item__container)}>
             <SoftTitleValue
-              title={multipliers[title] + 'x'}
+              title={
+                <div className="earn_center_ele">
+                  {multipliers[title] + 'x'}
+                  <p style={{ marginLeft: '5px', fontFamily: 'poppins', fontSize: '17px' }}>
+                    <ModalMultiplierTip multiplier={multipliers[title]} theme={this.props.theme}>
+                      <img width="14px" src="/static/info.svg" alt="" />
+                    </ModalMultiplierTip>
+                  </p>
+                </div>
+              }
               subTitle={'Multiplier'}
             />
           </div>

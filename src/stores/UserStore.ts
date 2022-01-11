@@ -525,7 +525,8 @@ export class UserStoreEx extends StoreConstructor {
   @action public updateScrtBalance = async () => {
     this.secretjs.getAccount(this.address).then(account => {
       try {
-        this.balanceSCRT = formatWithSixDecimals(divDecimals(account.balance[0].amount, 6));
+        const scrt_account = account.balance.find((acc) => acc.denom === 'uscrt');
+        this.balanceSCRT = formatWithSixDecimals(divDecimals(scrt_account.amount, 6));
       } catch (e) {
         this.balanceSCRT = '0';
       }

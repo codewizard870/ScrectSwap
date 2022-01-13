@@ -21,8 +21,8 @@ import LocalStorageTokens from '../../blockchain-bridge/scrt/CustomTokens';
 import { pairIdFromTokenIds, PairMap, SwapPair } from '../TokenModal/types/SwapPair';
 import { NativeToken, Token } from '../TokenModal/types/trade';
 import { SecretSwapPairs } from 'stores/SecretSwapPairs';
-import Graph from 'node-dijkstra';
 import { SecretSwapPools } from 'stores/SecretSwapPools';
+import { getAllPaths } from 'utils/getAllPaths';
 import style from './styles.styl';
 
 export const SwapPageWrapper = observer(() => {
@@ -579,27 +579,12 @@ export class SwapRouter extends React.Component<
       await sleep(100);
     }
 
-    const routes: string[][] = [];
-    let graph = JSON.parse(JSON.stringify(this.state.routingGraph)); // deep copy
-    try {
-      while (true) {
-        const dijkstra = new Graph(graph);
-        const route: string[] = dijkstra.path(token0, token1) ?? [];
+    const tokens = await this.updateTokens();
+    let allPaths = getAllPaths(this.state.routingGraph, token0, token1, tokens);
 
-        if (route.length < 2) {
-          break;
-        }
-        routes.push(route);
-
-        delete graph[route[0]][route[1]];
-        delete graph[route[1]][route[0]];
-      }
-    } catch (e) {
-      console.error('Error computing selectedPairRoutes:', e.message);
-    }
     this.setState({
       selectedPair: selectedPair,
-      selectedPairRoutes: routes,
+      selectedPairRoutes: allPaths,
       isSupported: isSupported,
     });
 

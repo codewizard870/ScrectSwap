@@ -115,6 +115,7 @@ export const RouteRow = ({
                   return a.fromOutput.minus(b.fromOutput).toNumber();
                 }
               })
+              .slice(0, 10) // Only show the top 10 results in the pop-up
               .map(r => {
                 const outputToken = r.fromOutput ? tokens.get(r.route[0]) : tokens.get(r.route[r.route.length - 1]);
                 return (

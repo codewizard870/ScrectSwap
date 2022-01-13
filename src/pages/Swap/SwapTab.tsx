@@ -247,11 +247,15 @@ export class SwapTab extends React.Component<
     }
   }
 
-  async getOfferAndAskPools(
+  getOfferAndAskPools(
     fromToken: string,
     toToken: string,
     pair: SwapPair,
-  ): Promise<{ offer_pool: BigNumber; ask_pool: BigNumber }> {
+    ): { offer_pool: BigNumber; ask_pool: BigNumber } {
+    if (pair === undefined) {
+      return {offer_pool: new BigNumber(0), ask_pool: new BigNumber(0)}
+    }
+
     const fromDecimals = this.props.tokens.get(fromToken).decimals;
     const toDecimals = this.props.tokens.get(toToken).decimals;
 
@@ -268,11 +272,13 @@ export class SwapTab extends React.Component<
       toDecimals,
     );
 
-    if (offer_pool.isNaN() || ask_pool.isNaN()) {
-      const balances = await this.props.refreshPools({ pair });
-      offer_pool = humanizeBalance(new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any), fromDecimals);
-      ask_pool = humanizeBalance(new BigNumber(balances[`${toToken}-${pair.identifier()}`] as any), toDecimals);
-    }
+    // this condition tested as never true,
+    // therefore commented out in case a revert is needed later. 2021-01-13
+    // if (offer_pool.isNaN() || ask_pool.isNaN()) {
+    //   const balances = await this.props.refreshPools({ pair });
+    //   offer_pool = humanizeBalance(new BigNumber(balances[`${fromToken}-${pair.identifier()}`] as any), fromDecimals);
+    //   ask_pool = humanizeBalance(new BigNumber(balances[`${toToken}-${pair.identifier()}`] as any), toDecimals);
+    // }
 
     return { offer_pool, ask_pool };
   }
@@ -291,13 +297,9 @@ export class SwapTab extends React.Component<
     }
 
     this.setState({ loadingBestRoute: true, loadingBestRouteCount: 0, bestRoute: null, allRoutesOutputs: [] });
+
     try {
       const routes = this.props.selectedPairRoutes;
-      for (let i = 0; i < routes.length; i++) {
-        if (routes[i][0] === toToken && routes[i][routes[i].length - 1] === fromToken) {
-          routes[i] = routes[i].reverse();
-        }
-      }
 
       let bestRoute: string[] = null;
       let allRoutesOutputs: Array<{
@@ -322,7 +324,7 @@ export class SwapTab extends React.Component<
             const toToken = route[i + 1];
             const pair: SwapPair = this.props.pairs.get(`${fromToken}${SwapPair.id_delimiter}${toToken}`);
 
-            const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
+            const { offer_pool, ask_pool } = this.getOfferAndAskPools(fromToken, toToken, pair);
 
             const offer_amount = from;
             if (
@@ -368,7 +370,7 @@ export class SwapTab extends React.Component<
             const fromToken = route[i - 1];
             const toToken = route[i];
             const pair: SwapPair = this.props.pairs.get(`${fromToken}${SwapPair.id_delimiter}${toToken}`);
-            const { offer_pool, ask_pool } = await this.getOfferAndAskPools(fromToken, toToken, pair);
+            const { offer_pool, ask_pool } = this.getOfferAndAskPools(fromToken, toToken, pair);
 
             const ask_amount = to;
             if (
@@ -501,7 +503,7 @@ export class SwapTab extends React.Component<
       const pair: SwapPair = this.props.pairs.get(`${globalThis.config.SSCRT_CONTRACT}${SwapPair.id_delimiter}${toToken}`);
 
       if (pair) {
-        const { offer_pool, ask_pool } = await this.getOfferAndAskPools(toToken, globalThis.config.SSCRT_CONTRACT, pair);
+        const { offer_pool, ask_pool } = this.getOfferAndAskPools(toToken, globalThis.config.SSCRT_CONTRACT, pair);
         let offer_amount = new BigNumber(toInput);
         const { return_amount } = compute_swap(offer_pool, ask_pool, offer_amount);
         const amount = return_amount.toFixed(token.decimals, BigNumber.ROUND_DOWN);
@@ -983,7 +985,7 @@ export class SwapTab extends React.Component<
       await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.fromToken) {
-        this.updateInputs();
+        // this.updateInputs();
       }
     };
 
@@ -998,7 +1000,7 @@ export class SwapTab extends React.Component<
           fromInput: this.state.toInput,
           toInput: this.state.fromInput,
         },
-        () => setStateCallback(),
+        setStateCallback,
       );
     } else {
       this.setState(
@@ -1008,7 +1010,7 @@ export class SwapTab extends React.Component<
           isToEstimated: true,
           isFromEstimated: false,
         },
-        () => setStateCallback(),
+        setStateCallback,
       );
     }
   }
@@ -1020,7 +1022,7 @@ export class SwapTab extends React.Component<
       await this.props.onSetTokens(this.state.fromToken, this.state.toToken);
 
       if (this.state.toToken) {
-        this.updateInputs();
+        // this.updateInputs();
       }
     };
 
@@ -1035,7 +1037,7 @@ export class SwapTab extends React.Component<
           fromInput: this.state.toInput,
           toInput: this.state.fromInput,
         },
-        () => setStateCallback(),
+        setStateCallback,
       );
     } else {
       this.setState(
@@ -1045,7 +1047,7 @@ export class SwapTab extends React.Component<
           isFromEstimated: true,
           isToEstimated: false,
         },
-        () => setStateCallback(),
+        setStateCallback,
       );
     }
   }

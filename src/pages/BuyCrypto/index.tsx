@@ -64,7 +64,11 @@ export const BuyCrypto = observer(() => {
         getFeeForExecute(GAS_FOR_WRAP)
       );
 
-      notify('success', 'converted ');
+      if (res.logs) {
+        notify('success', 'Converted'); // The transaction was successful
+      } else {
+        throw new Error(res.raw_log); // The transaction was mined, but failed
+      }
 
       await user.updateSScrtBalance();
       await user.updateScrtBalance();
@@ -93,7 +97,11 @@ export const BuyCrypto = observer(() => {
         getFeeForExecute(GAS_FOR_WRAP)
       );
 
-      notify('success', 'converted ');
+      if (res.logs) {
+        notify('success', 'Converted'); // The transaction was successful
+      } else {
+        throw new Error(res.raw_log); // The transaction was mined, but failed
+      }
 
       await user.updateSScrtBalance();
       await user.updateScrtBalance();

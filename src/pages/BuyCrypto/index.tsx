@@ -93,7 +93,7 @@ export const BuyCrypto = observer(() => {
         token.address,
         { redeem: { amount: amount_convert } },
         '',
-        [{ denom: 'uscrt', amount: amount_convert }],
+        [],
         getFeeForExecute(GAS_FOR_WRAP)
       );
 

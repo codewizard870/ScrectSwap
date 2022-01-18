@@ -1,7 +1,10 @@
 import React from 'react';
+import {useStores} from '../../stores';
 
 const Tab: React.FC<{ name: string }> = ({ name }) => {
   const isSelected = window.location.hash === `#${name}`;
+  const { theme } = useStores();
+  const opacity = theme.currentTheme === 'dark' ? '0.8' : '0.2'
 
   return (
     <strong
@@ -11,8 +14,8 @@ const Tab: React.FC<{ name: string }> = ({ name }) => {
         cursor: 'pointer',
         borderRadius: '10px',
         width: '224px',
-        background: isSelected ? 'rgba(255, 114, 110, 0.2)' : null,
-        color: isSelected ? '#FF726E' : '#5F5F6B',
+        background: isSelected ? 'rgba(23,63,27,' + opacity + ')' : null,
+        color: isSelected ? '#3ba246' : '#5F5F6B',
         textAlign: 'center'
       }}
       onClick={() => {

@@ -30,10 +30,10 @@ const baseButtonStyle = {
   height: '46px',
 };
 const disableButtonStyle = { ...baseButtonStyle, color: '#5F5F6B', background: '#DEDEDE' };
-const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#ff726e' };
+const enableButtonStyle = { ...baseButtonStyle, color: '#FFFFFF', background: '#3ba246' };
 const errorButtonStyle = {
   ...baseButtonStyle,
-  color: '#ff726e',
+  color: '#3ba246',
   background: 'transparent',
   opacity: '1',
   cursor: 'default',

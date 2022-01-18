@@ -215,7 +215,7 @@ export class WithdrawLiquidityPanel extends React.Component<
           <Accordion.Content active={this.state.isActive}>
             {this.state.isLoadingBalance ? (
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Loader type="ThreeDots" color="#ff726e" height="0.5em" />
+                <Loader type="ThreeDots" color="#3ba246" height="0.5em" />
               </div>
             ) : null}
             <div hidden={this.state.isLoadingBalance}>

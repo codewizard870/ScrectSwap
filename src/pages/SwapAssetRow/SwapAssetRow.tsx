@@ -84,7 +84,7 @@ export const SwapAssetRow = ({
                 return (
                   <>
                     <span style={balanceStyle} />
-                    <Loader type="ThreeDots" color="#ff726e" height="1em" width="1em" style={{ margin: 'auto' }} />
+                    <Loader type="ThreeDots" color="#3ba246" height="1em" width="1em" style={{ margin: 'auto' }} />
                   </>
                 );
               }

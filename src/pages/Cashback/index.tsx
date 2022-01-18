@@ -121,7 +121,7 @@ export const Cashback = observer(props => {
   } else if (rateCSHBK > minLimit) {
     ratioColor = '#79CC81';
   } else {
-    ratioColor = '#FF726E';
+    ratioColor = '#3ba246';
   }
 
   const balanceCSHBK = numeral(user?.balanceCSHBK).format('0.00');
@@ -222,7 +222,7 @@ export const Cashback = observer(props => {
               </div>
               <div className="rate-svg__container">
                 <svg width="634" height="150" viewBox="0 0 634 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <text fill="#FF726E" x={topLeftChart} y="10" textAnchor="middle">
+                  <text fill="#3ba246" x={topLeftChart} y="10" textAnchor="middle">
                     Bad
                   </text>
                   <text fill="#79CC81" x={topRightChart - 5} y="10" textAnchor="middle">
@@ -258,7 +258,7 @@ export const Cashback = observer(props => {
                       y2="11.0001"
                       gradientUnits="userSpaceOnUse"
                     >
-                      <stop stopColor="#FF726E" />
+                      <stop stopColor="#3ba246" />
                       <stop offset="0.252143" stopColor="#F8EC99" />
                       <stop offset="0.573412" stopColor="#79CC81" />
                     </linearGradient>
@@ -300,7 +300,7 @@ export const Cashback = observer(props => {
                         y2="5.99996"
                         gradientUnits="userSpaceOnUse"
                       >
-                        <stop stopColor="#FF726E" />
+                        <stop stopColor="#3ba246" />
                         <stop offset="1" stopColor="#FCB084" />
                       </linearGradient>
                       <linearGradient

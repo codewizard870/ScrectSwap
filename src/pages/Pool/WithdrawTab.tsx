@@ -49,7 +49,7 @@ export class WithdrawTab extends React.Component<
         <Container className={`${styles.swapContainerStyle} ${styles[this.props.theme.currentTheme]}`}>
           <TabsHeader />
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Loader type="ThreeDots" color="#ff726e" height="0.5em" />
+            <Loader type="ThreeDots" color="#3ba246" height="0.5em" />
           </div>
         </Container>
       );

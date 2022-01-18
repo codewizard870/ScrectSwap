@@ -52,7 +52,7 @@ const ClaimButton = (props: {
         <strong>{formatSignificantFigures(props.available, 6)}</strong>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Loader type="ThreeDots" color="#ff726e" height="0.2em" />
+          <Loader type="ThreeDots" color="#3ba246" height="0.2em" />
         </div>
       );
     }

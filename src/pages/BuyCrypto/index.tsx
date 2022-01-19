@@ -152,7 +152,7 @@ export const BuyCrypto = observer(() => {
               <h1>Buy</h1>
               <div>
                 <iframe
-                  height="650"
+                  height="780"
                   width="450"
                   title="Transak On/Off Ramp Widget (Website)"
                   src={globalThis.config.TRANSAK_URL + transakConfig}

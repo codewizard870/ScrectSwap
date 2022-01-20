@@ -3,7 +3,8 @@ import { statusFetching } from '../constants';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { StoreConstructor } from './core/StoreConstructor';
 import * as contract from '../blockchain-bridge';
-import { getErc20Balance, getEthBalance, networkFromToken, NETWORKS } from '../blockchain-bridge';
+import { getErc20Balance, networkFromToken, NETWORKS } from '../blockchain-bridge';
+// import { getEthBalance } from '../blockchain-bridge';
 import { divDecimals, sleep } from '../utils';
 import Web3 from 'web3';
 import { IOperation, TOKEN } from './interfaces';
@@ -388,7 +389,7 @@ export class UserStoreMetamask extends StoreConstructor {
       await sleep(50);
     }
     // always load native balance, because why not? And this bypasses race conditions with this.stores.tokens
-    this.nativeBalance = await getEthBalance(this.ethAddress);
+    this.nativeBalance = "0" //await getEthBalance(this.ethAddress);
 
     this.nativeBalanceMin = this.balanceTokenMin[this.getNetworkFullName()];
 

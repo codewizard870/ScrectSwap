@@ -15,7 +15,7 @@ import { InfoModal } from './components/InfoModal';
 // import { FAQPage } from './pages/FAQ';
 // import { FinancePage } from './pages/Finance';
 import { SeFiPage } from './pages/SeFi';
-import { Cashback } from './pages/Cashback'
+// import { Cashback } from './pages/Cashback'
 import { Governance } from 'pages/Governance';
 import { CreateProposal } from 'pages/CreateProposal';
 import { DetailProposal } from 'pages/DetailProposal';
@@ -31,7 +31,7 @@ export const App: React.FC = () => (
         <Route path="/swap" component={SwapPageWrapper} />
         <Route path="/pool" component={SwapPagePool} />
         <Route path="/earn" component={SeFiPage} />
-        <Route path="/cashback" component={Cashback} />
+        {/*<Route path="/cashback" component={Cashback} />*/}
         <Route path="/governance" component={Governance} />
         <Route path="/proposal/:id" component={DetailProposal} /> {/* must test this match before route with no id */}
         <Route path="/proposal" component={CreateProposal} />

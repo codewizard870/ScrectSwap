@@ -15,7 +15,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
     const isPool = history.location.pathname === '/pool';
     const isEarn = history.location.pathname === '/earn';
     const isBuy = history.location.pathname === '/buy';
-    const isCashback = history.location.pathname === '/cashback';
+    // const isCashback = history.location.pathname === '/cashback';
     const isGovernance = governancePaths.some(string => history.location.pathname.includes(string));
 
 
@@ -57,8 +57,8 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
                             <li><span>|</span></li>
                             <li  className={isEarn ? 'active':''}><Link to="/earn">Earn</Link></li>
                             <li className='hide_mobile'><span>|</span></li>
-                            <li className={isCashback ? 'active hide_mobile':'hide_mobile'}><Link to="/cashback">Cashback</Link></li>
-                            <li><span>|</span></li>
+                            {/*<li className={isCashback ? 'active hide_mobile':'hide_mobile'}><Link to="/cashback">Cashback</Link></li>*/}
+                            {/*<li><span>|</span></li>*/}
                             <li className={isGovernance ? 'active hide_mobile':'hide_mobile'}><Link to="/governance">Governance</Link></li>
                         </ul>
                     </div>

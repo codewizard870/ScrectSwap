@@ -21,105 +21,104 @@ const GeneralState = (props:{
   
   return(
     <>
-      <div className={`table_container ${theme.currentTheme}`}>
-        <table>
-            <thead>
-              <tr>
-                <td className='align-left'>Token</td>
-                <td>Balance</td>
-                <td></td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr> 
-                <td className='bold_titles'>SEFI</td>
-                {
-                  (props.data.balance != '—')
-                    ? (props.data.balance.toLowerCase() != 'unlock' 
-                      && props.data.balance.replace(/ /g, "").toLowerCase() != 'fixunlock')
-                      ? <>
-                          <td>
-                            <strong>
-                              {
-                                isNaN(parseFloat(props.data.balance))
-                                  ? "0.0"
-                                  : props.data.balance
-                              }
-                            </strong>
-                          </td>
-                          <td>
-                            {
-                              (props.data.sefi_in_circulation !== '—')&&
-                              <button  
-                                disabled={(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)&&(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)}
-                                onClick={()=>{props.onClaimSefi()}}
-                              >
-                                Claim 
-                              </button>
-                            }
-                          </td>
-                        </>
-                      : <td colSpan={2}>{unlockJsx({onClick:props.createSefiViewingKey})}</td>
-                    : <div className="loader_container"><Loader size='mini' inline /></div>
-                }
-              </tr>
-              <tr> 
-                <td className='bold_titles'> 
-                  CSHBACK 
-                    <Popup 
-                      className="icon-info__popup" 
-                      position='top center'
-                      on='click'
-                      trigger={
-                        <Icon
-                          className="icon_info"
-                          name="info"
-                          circular
-                          size="tiny"
-                        />
-                      }
-                    >
-                      <p>
-                        When users trade, they acquire cashback tokens. These cashback tokens can be burned to claim SEFI. 
-                      </p> 
-                      {/* <a href="#">Learn more about cashback tokens</a> */}
-                    </Popup>   
-                </td>
-                {
-                  (props.data.cashback_balance != '—')
-                    ? (props.data.cashback_balance.toLowerCase() != 'unlock' && 
-                      props.data.cashback_balance.replace(/ /g, "").toLowerCase() != 'fixunlock')
-                      ? <>
-                          <td>
-                            <strong>
-                              {
-                                isNaN(parseFloat(props.data.cashback_balance))
-                                  ? "0.0"
-                                  : props.data.cashback_balance
-                              }
-                            </strong>
-                          </td>
-                          <td>
-                            {
-                              (props.data.cashback_balance !== '—')&&
-                              <button 
-                                disabled={parseFloat(props.data.cashback_balance) == 0}
-                                onClick={()=>{props.onClaimCashback()}}
-                              >
-                                  Redeem
-                              </button>
-
-                            }
-                          </td>
-                        </>
-                      : <td colSpan={2}>{unlockJsx({onClick:props.createCSHBKViewingKey})}</td>
-                    : <div className="loader_container"><Loader size='mini' inline /></div>
-                }
-              </tr>
-            </tbody>
-        </table>
-      </div>
-      <div className="join_message">
+      {/*<div className={`table_container ${theme.currentTheme}`}>*/}
+      {/*  <table>*/}
+      {/*      <thead>*/}
+      {/*        <tr>*/}
+      {/*          <td className='align-left'>Token</td>*/}
+      {/*          <td>Balance</td>*/}
+      {/*          <td></td>*/}
+      {/*        </tr>*/}
+      {/*      </thead>*/}
+      {/*      <tbody>*/}
+      {/*        <tr>*/}
+      {/*          <td className='bold_titles'>SEFI</td>*/}
+      {/*          {*/}
+      {/*            (props.data.balance != '—')*/}
+      {/*              ? (props.data.balance.toLowerCase() != 'unlock'*/}
+      {/*                && props.data.balance.replace(/ /g, "").toLowerCase() != 'fixunlock')*/}
+      {/*                ? <>*/}
+      {/*                    <td>*/}
+      {/*                      <strong>*/}
+      {/*                        {*/}
+      {/*                          isNaN(parseFloat(props.data.balance))*/}
+      {/*                            ? "0.0"*/}
+      {/*                            : props.data.balance*/}
+      {/*                        }*/}
+      {/*                      </strong>*/}
+      {/*                    </td>*/}
+      {/*                    <td>*/}
+      {/*                      {*/}
+      {/*                        (props.data.sefi_in_circulation !== '—')&&*/}
+      {/*                        <button*/}
+      {/*                          disabled={(isNaN(scrtBalance) || props.claimInfo?.scrt?.isClaimed || scrtBalance == 0)&&(isNaN(ethBalance) || props.claimInfo?.eth?.isClaimed || ethBalance == 0)}*/}
+      {/*                          onClick={()=>{props.onClaimSefi()}}*/}
+      {/*                        >*/}
+      {/*                          Claim*/}
+      {/*                        </button>*/}
+      {/*                      }*/}
+      {/*                    </td>*/}
+      {/*                  </>*/}
+      {/*                : <td colSpan={2}>{unlockJsx({onClick:props.createSefiViewingKey})}</td>*/}
+      {/*              : <div className="loader_container"><Loader size='mini' inline /></div>*/}
+      {/*          }*/}
+      {/*        </tr>*/}
+      {/*        <tr>*/}
+      {/*          <td className='bold_titles'> */}
+      {/*            CSHBACK */}
+      {/*              <Popup */}
+      {/*                className="icon-info__popup" */}
+      {/*                position='top center'*/}
+      {/*                on='click'*/}
+      {/*                trigger={*/}
+      {/*                  <Icon*/}
+      {/*                    className="icon_info"*/}
+      {/*                    name="info"*/}
+      {/*                    circular*/}
+      {/*                    size="tiny"*/}
+      {/*                  />*/}
+      {/*                }*/}
+      {/*              >*/}
+      {/*                <p>*/}
+      {/*                  When users trade, they acquire cashback tokens. These cashback tokens can be burned to claim SEFI. */}
+      {/*                </p> */}
+      {/*                /!* <a href="#">Learn more about cashback tokens</a> *!/*/}
+      {/*              </Popup>   */}
+      {/*          </td>*/}
+      {/*          {*/}
+      {/*            (props.data.cashback_balance != '—')*/}
+      {/*              ? (props.data.cashback_balance.toLowerCase() != 'unlock' &&*/}
+      {/*                props.data.cashback_balance.replace(/ /g, "").toLowerCase() != 'fixunlock')*/}
+      {/*                ? <>*/}
+      {/*                    <td>*/}
+      {/*                      <strong>*/}
+      {/*                        {*/}
+      {/*                          isNaN(parseFloat(props.data.cashback_balance))*/}
+      {/*                            ? "0.0"*/}
+      {/*                            : props.data.cashback_balance*/}
+      {/*                        }*/}
+      {/*                      </strong>*/}
+      {/*                    </td>*/}
+      {/*                    <td>*/}
+      {/*                      {*/}
+      {/*                        (props.data.cashback_balance !== '—')&&*/}
+      {/*                        <button*/}
+      {/*                          disabled={parseFloat(props.data.cashback_balance) == 0}*/}
+      {/*                          onClick={()=>{props.onClaimCashback()}}*/}
+      {/*                        >*/}
+      {/*                            Redeem*/}
+      {/*                        </button>*/}
+      {/*                      }*/}
+      {/*                    </td>*/}
+      {/*                  </>*/}
+      {/*                : <td colSpan={2}>{unlockJsx({onClick:props.createCSHBKViewingKey})}</td>*/}
+      {/*              : <div className="loader_container"><Loader size='mini' inline /></div>*/}
+      {/*          }*/}
+      {/*        </tr>*/}
+      {/*      </tbody>*/}
+      {/*  </table>*/}
+      {/*</div>*/}
+      <div className="join_message" style={{"padding": "0 42px !important"}}>
         <p>Join the privacy-first, front-running resistant open finance movement!</p>
       </div>
        {/* <div className={`sefi-grid__container background_free claim-sefi__container` }>
@@ -153,7 +152,7 @@ const GeneralState = (props:{
             >
               <p>When users trade, they acquire cashback tokens. These cashback tokens can be burned to claim SEFI.</p>
               <a href="#">Learn more about cashback tokens</a>
-            </Popup> 
+            </Popup>
           </span>
           <strong className='item right'> {(isNaN(parseFloat(props.data.unclaimed))?"0.0":props.data.unclaimed)} </strong>
         </div>
@@ -169,7 +168,7 @@ const GeneralState = (props:{
         <div className="sefi-grid__container links background_free">
               <strong className='item left'><a className={`view_analytics ${theme.currentTheme}`} href="https://secretanalytics.xyz/secretswap" target='_blank'>View Analytics</a></strong>
               {/* {
-                (!props.hasViewingKey) && 
+                (!props.hasViewingKey) &&
                   <strong onClick={props?.createViewingKey} className='item right primary'>
                     <a>Create viewing keys</a>
                   </strong>

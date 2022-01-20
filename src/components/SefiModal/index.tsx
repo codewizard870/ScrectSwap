@@ -234,20 +234,20 @@ export const SefiModal = (props: { user: UserStoreEx; tokens: Tokens; metaMask: 
         console.error('Error at getting SEFI balance');
       }
       //Load unclaimed
-      try {
-        const claimInfo = await getClaimInfo();
-        const { scrt, eth } = claimInfo;
-        const totalUnclaimed =
-          parseFloat(divDecimals(scrt?.amount?.toString() || 0, 6)) +
-          parseFloat(divDecimals(eth?.amount?.toString() || 0, 6));
-        unclaimed = numeral(totalUnclaimed)
-          .format(getFloatFormat(totalUnclaimed))
-          .toString()
-          .toUpperCase();
-        setClaimInfo(claimInfo);
-      } catch (error) {
-        console.error('Error at fetch unclaimed SEFI', error);
-      }
+      // try {
+      //   const claimInfo = await getClaimInfo();
+      //   const { scrt, eth } = claimInfo;
+      //   const totalUnclaimed =
+      //     parseFloat(divDecimals(scrt?.amount?.toString() || 0, 6)) +
+      //     parseFloat(divDecimals(eth?.amount?.toString() || 0, 6));
+      //   unclaimed = numeral(totalUnclaimed)
+      //     .format(getFloatFormat(totalUnclaimed))
+      //     .toString()
+      //     .toUpperCase();
+      //   setClaimInfo(claimInfo);
+      // } catch (error) {
+      //   console.error('Error at fetch unclaimed SEFI', error);
+      // }
       const price = await getSefiPrice();
       const price_formatted = numeral(price).format('$0.00');
       const sefi_circulation = await getCirculationSEFI();
@@ -427,7 +427,7 @@ export const SefiModal = (props: { user: UserStoreEx; tokens: Tokens; metaMask: 
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {status === SefiModalState.GENERAL && <span>Your SEFI Breakdown</span>}
+          {status === SefiModalState.GENERAL && <span>SEFI Breakdown</span>}
           {(status === SefiModalState.CLAIM || status === SefiModalState.CLAIM_CASH_BACK) && (
             <span>Claim your SEFI tokens</span>
           )}

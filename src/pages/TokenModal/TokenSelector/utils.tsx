@@ -10,7 +10,8 @@ export const ERROR_WRONG_VIEWING_KEY = 'Viewing Key Error';
 export async function getNativeBalance(walletAddress: string, secretjs: SigningCosmWasmClient) {
   return secretjs.getAccount(walletAddress).then(account => {
     try {
-      return new BigNumber(account.balance[0].amount);
+      const scrt_account = account.balance.find((acc) => acc.denom === 'uscrt');
+      return new BigNumber(scrt_account.amount);
     } catch (error) {
       return new BigNumber(0);
     }

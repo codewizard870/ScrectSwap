@@ -116,18 +116,24 @@ export const SefiModal = (props: { user: UserStoreEx; tokens: Tokens; metaMask: 
 
     const statsData = await axios({
       method: 'get',
-      url: 'https://storage.googleapis.com/astronaut/sefi.json?time=' + time,
+      // url: 'https://storage.googleapis.com/astronaut/sefi.json?time=' + time,
+      url: 'https://data.secretswap.io/apps/ss/sefi_comment.json',
     });
-    return parseFloat(statsData.data.price);
+    return parseFloat(statsData.data['SEFI/USDT'].price);
   }
   async function getCirculationSEFI() {
-    const INITIAL_SEFI = 100000000;
-    const CURRENT_BLOCK = await props.user.secretjs.getHeight();
-    const INITIAL_BLOCK = 2830000;
-    const SEFI_PER_BLOCK = 94.368341;
-    let totalSefi = INITIAL_SEFI + (CURRENT_BLOCK - INITIAL_BLOCK) * SEFI_PER_BLOCK;
 
-    return totalSefi;
+    let result = 0;
+    try {
+      const statsData = await axios({
+        method: 'get',
+        url: 'https://data.secretswap.io/apps/ss/sefi_comment.json'
+      });
+      result = parseFloat(statsData.data.sefi_circulating.value);
+    } catch (error) {
+      console.log("err: getCirculationSEFI()", error);
+    }
+    return result
   }
 
   const loadSRCTClaimInfo = async () => {
@@ -249,7 +255,7 @@ export const SefiModal = (props: { user: UserStoreEx; tokens: Tokens; metaMask: 
       //   console.error('Error at fetch unclaimed SEFI', error);
       // }
       const price = await getSefiPrice();
-      const price_formatted = numeral(price).format('$0.00');
+      const price_formatted = numeral(price).format('$0.000000');
       const sefi_circulation = await getCirculationSEFI();
       const total_sefi_circulation = numeral(sefi_circulation)
         .format(getFloatFormat(sefi_circulation))

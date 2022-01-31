@@ -35,7 +35,7 @@ export const BuyCrypto = observer(() => {
 
   const transakConfig = '&cryptoCurrencyCode=SCRT' +
       '&defaultCryptoAmount=15' +
-      '&redirectURL=app.secretswap.io/redir_transac' +
+      '&redirectURL=app.secretswap.net/redir_transac' +
       '&hideMenu=true' +
       '&exchangeScreenTitle=%20' +
       '&themeColor=008800';

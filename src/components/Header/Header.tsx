@@ -46,7 +46,7 @@ const Header = observer(({forceUpdate}:{forceUpdate:any}) =>{
             <div className={theme.currentTheme}>
                     <nav className={`menu`} >
                     <div className="menu-left">
-                        <a href="https://www.secretswap.io/">
+                        <a href="https://www.secretswap.net/">
                             <img src='/static/secret-swap.svg' alt="brand logo"/>
                         </a>
 

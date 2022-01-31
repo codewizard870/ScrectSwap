@@ -124,7 +124,7 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             <Box
               className={cn(styles.itemToken, isPool ? styles.selected : '')}
               onClick={() => {
-                const url = `https://app.secretswap.io/sefi`;
+                const url = `https://app.secretswap.net/sefi`;
                 const win = window.open(url, '_blank');
                 win.focus();
               }}
@@ -135,7 +135,7 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             <Box
               className={cn(styles.itemToken, isSeFi ? styles.selected : '')}
               onClick={() => {
-                const url = `https://app.secretswap.io`;
+                const url = `https://app.secretswap.net`;
                 const win = window.open(url, '_blank');
                 win.focus();
               }}

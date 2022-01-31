@@ -1,6 +1,6 @@
 # SecretSwap App
 
-Website hosted at https://app.secretswap.io
+Website hosted at https://app.secretswap.net
 
 Official repository at https://github.com/SecretFinance/SecretSwap
 

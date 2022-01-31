@@ -61,7 +61,7 @@ export const EthBridge = observer((props: any) => {
             <Message info>
               <Message.Header>
                 The
-                <a href="https://app.secretswap.io" style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer">
+                <a href="https://app.secretswap.net" style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer">
                   {' '}
                   New SecretSwap App{' '}
                 </a>

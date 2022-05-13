@@ -949,7 +949,7 @@ export class SwapTab extends React.Component<
         isToEstimated: false,
         isFromEstimated: true,
       },
-      () => this.updateInputs(),
+      // () => this.updateInputs(),
     );
   }
 
@@ -974,7 +974,7 @@ export class SwapTab extends React.Component<
         isFromEstimated: false,
         isToEstimated: true,
       },
-      () => this.updateInputs(),
+      // () => this.updateInputs(),
     );
   };
 

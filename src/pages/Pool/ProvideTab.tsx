@@ -649,8 +649,6 @@ export class ProvideTab extends React.Component<
   }
 
   private setAmount(value: string, token: TokenSelector) {
-console.log(value)
-console.log(token)
     if (value === '') {
       this.setState(
         {
@@ -659,7 +657,7 @@ console.log(token)
           isEstimatedA: false,
           isEstimatedB: false,
         },
-        () => this.updateInputs(),
+        // () => this.updateInputs(),
       );
       return;
     }
@@ -671,7 +669,7 @@ console.log(token)
         isEstimatedA: token !== TokenSelector.TokenA,
         isEstimatedB: token !== TokenSelector.TokenB,
       },
-      () => this.updateInputs(),
+      // () => this.updateInputs(),
     );
   }
 

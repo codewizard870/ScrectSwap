@@ -116,6 +116,7 @@ export const SwapAssetRow = ({
           error={error}
           disabled={disabled}
           setValue={value => {
+console.log(value)
             if (isNaN(Number(value))) {
               return;
             }

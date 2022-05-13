@@ -649,6 +649,8 @@ export class ProvideTab extends React.Component<
   }
 
   private setAmount(value: string, token: TokenSelector) {
+console.log(value)
+console.log(token)
     if (value === '') {
       this.setState(
         {

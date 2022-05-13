@@ -26,6 +26,7 @@ export const SwapInput = (props: {
       placeholder={(props.error)?'-':props.placeholder || '0.0'}
       value={props.value}
       onChange={(_, { value }: { value: string }) => {
+console.log(value)
         props.setValue(value);
       }}
     />

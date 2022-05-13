@@ -435,6 +435,8 @@ export class SwapRouter extends React.Component<
         });
       }
     }
+    if(tokenIdentifier == 'suscrt')
+      tokenIdentifier = "secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg";
 
     let balance = await this.props.user.getSnip20Balance(tokenIdentifier);
 
